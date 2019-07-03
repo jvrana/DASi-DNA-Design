@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "pkg"
+version = "0.0.1"
+description = ""
+authors = ["First Last <youemail@domain.com>"]
+homepage = "https://www.github.com/name/RepoName"
+repository = "https://www.github.com/name/RepoName"
+documentation = "https://www.github.com/name/RepoName"
+readme = 'README.md'
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+black = {version = "^18.3-alpha.0",allows-prereleases = true}
+pytest = "^4.6"
+pre-commit = "^1.17"
+toml = "^0.10.0"
+
+[tool.poetry.scripts]
+upver = 'pkg:_version.pull_version'
+version = 'pkg:_version.get_version'
+name = 'pkg:_version.get_name'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

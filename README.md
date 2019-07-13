@@ -19,6 +19,7 @@ and templates to produce an efficient and cost-effective cloning plan. Currently
 * heirarchical assembly
 * library support
 * front-end
+* connection to fabrication facility
 
 ### Use cases
 

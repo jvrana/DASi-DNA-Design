@@ -1,0 +1,32 @@
+LOCUS       Untitled                 655 bp ds-DNA     linear       14-OCT-2016
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     misc_feature    complement(53..60)
+                     /label="TATA box"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     primer_bind     complement(75..95)
+                     /label="CMV-Forward (Genewiz)"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_feature    complement(33..34)
+                     /label="TSS?"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     promoter        complement(1..655)
+                     /label="CMV"
+                     /ApEinfo_revcolor=#d59687
+                     /ApEinfo_fwdcolor=#d59687
+ORIGIN
+        1 AATTTCGATA AGCCAGTAAG CAGTGGGTTC TCTAGTTAGC CAGAGAGCTC TGCTTATATA
+       61 GACCTCCCAC CGTACACGCC TACCGCCCAT TTGCGTCAAT GGGGCGGAGT TGTTACGACA
+      121 TTTTGGAAAG TCCCGTTGAT TTTGGTGCCA AAACAAACTC CCATTGACGT CAATGGGGTG
+      181 GAGACTTGGA AATCCCCGTG AGTCAAACCG CTATCCACGC CCATTGATGT ACTGCCAAAA
+      241 CCGCATCACC ATGGTAATAG CGATGACTAA TACGTAGATG TACTGCCAAG TAGGAAAGTC
+      301 CCATAAGGTC ATGTACTGGG CATAATGCCA GGCGGGCCAT TTACCGTCAT TGACGTCAAT
+      361 AGGGGGCGTA CTTGGCATAT GATACACTTG ATGTACTGCC AAGTGGGCAG TTTACCGTAA
+      421 ATAGTCCACC CATTGACGTC AATGGAAAGT CCCTATTGGC GTTACTATGG GAACATACGT
+      481 CATTATTGAC GTCAATGGGC GGGGGTCGTT GGGCGGTCAG CCAGGCGGGC CATTTACCGT
+      541 AAGTTATGTA ACGCGGAACT CCATATATGG GCTATGAACT AATGACCCCG TAATTGATTA
+      601 CTATTAATAA CTAGTCAATA ATCAATGTCA ACGCGTATAT CTGGCCCGTA CATCG
+//

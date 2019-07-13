@@ -1,0 +1,24 @@
+LOCUS       primer                    16 bp ds-DNA     linear       04-FEB-2017
+DEFINITION  .
+ACCESSION   
+VERSION     
+SOURCE      .
+  ORGANISM  .
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     misc_feature    1..30
+                     /label=KAN CDS
+                     /ApEinfo_fwdcolor=#84b0dc
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_graphicformat=arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0
+     misc_feature    1..16
+                     /label=KanMX CDS
+                     /ApEinfo_fwdcolor=#9eafd2
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_graphicformat=arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0
+ORIGIN
+        1 ACTGCGATCCCCGGC
+//

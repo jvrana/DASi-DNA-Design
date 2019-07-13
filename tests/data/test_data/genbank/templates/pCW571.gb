@@ -1,0 +1,410 @@
+LOCUS       pCW57.1                 9354 bp ds-DNA     circular     04-OCT-2016
+DEFINITION  .
+KEYWORDS    "accession:addgene_41393_55166"                                    
+FEATURES             Location/Qualifiers
+     misc_feature                      210..547
+                                       /label="TRE Promoter"
+                                       /ApEinfo_revcolor=#ff9ccd
+                                       /ApEinfo_fwdcolor=#ff9ccd
+     rep_origin                        6515..7197
+                                       /label="ColE1 origin"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     origin                            6575..7194
+                                       /label="pBR322_origin"
+                                       /ApEinfo_revcolor=#84b0dc
+                                       /ApEinfo_fwdcolor=#84b0dc
+     primer_bind                       7565..7585
+                                       /label="M13-rev"
+                                       /ApEinfo_revcolor=#85dae9
+                                       /ApEinfo_fwdcolor=#85dae9
+     CDS                               2269..2286
+                                       /label="6x His Tag"
+                                       /ApEinfo_revcolor=#84b0dc
+                                       /ApEinfo_fwdcolor=#84b0dc
+     responsive element / DNA binding  434..452
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     regulatory                        8720..8953
+                                       /label="RRE"
+                                       /ApEinfo_revcolor=#b7e6d7
+                                       /ApEinfo_fwdcolor=#b7e6d7
+     CDS                               1874..2083
+                                       /label="ccdB"
+                                       /ApEinfo_revcolor=#ffef86
+                                       /ApEinfo_fwdcolor=#ffef86
+     feature                           1781..2086
+                                       /label="ccdB"
+                                       /ApEinfo_revcolor=#f8d3a9
+                                       /ApEinfo_fwdcolor=#f8d3a9
+     CDS                               5758..6417
+                                       /label="AmpR"
+                                       /ApEinfo_revcolor=#ffef86
+                                       /ApEinfo_fwdcolor=#ffef86
+     promoter                          7602..7621
+                                       /label="T3_promoter"
+                                       /ApEinfo_revcolor=#75c6a9
+                                       /ApEinfo_fwdcolor=#75c6a9
+     promoter                          7567..7585
+                                       /label="M13_reverse_primer"
+                                       /ApEinfo_revcolor=#ffef86
+                                       /ApEinfo_fwdcolor=#ffef86
+     responsive element / DNA binding  220..238
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     feature                           7875..8055
+                                       /label="HIV-1_5_LTR"
+                                       /ApEinfo_revcolor=#b7e6d7
+                                       /ApEinfo_fwdcolor=#b7e6d7
+     promoter                          5490..5518
+                                       /label="AmpR_promoter"
+                                       /ApEinfo_revcolor=#d6b295
+                                       /ApEinfo_fwdcolor=#d6b295
+     feature                           complement(2127..2234)
+                                       /label="attR1"
+                                       /ApEinfo_revcolor=#ff9ccd
+                                       /ApEinfo_fwdcolor=#ff9ccd
+     gene                              780..1439
+                                       /label="CAT/CamR"
+                                       /ApEinfo_revcolor=#b1ff67
+                                       /ApEinfo_fwdcolor=#b1ff67
+     Activation Domain                 4094..4126
+                                       /label="VP16"
+                                       /ApEinfo_revcolor=#b1ff67
+                                       /ApEinfo_fwdcolor=#b1ff67
+     terminator                        5195..5314
+                                       /label="SV40_PA_terminator"
+                                       /ApEinfo_revcolor=#b7e6d7
+                                       /ApEinfo_fwdcolor=#b7e6d7
+     misc_binding                      7537..7559
+                                       /label="LacO"
+                                       /ApEinfo_revcolor=#84b0dc
+                                       /ApEinfo_fwdcolor=#84b0dc
+     responsive element / DNA binding  256..274
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     feature                           8166..8210
+                                       /label="HIV-1_psi_pack"
+                                       /ApEinfo_revcolor=#b7e6d7
+                                       /ApEinfo_fwdcolor=#b7e6d7
+     misc_feature                      3413..3466
+                                       /label="T2A"
+                                       /ApEinfo_revcolor=#c7b0e3
+                                       /ApEinfo_fwdcolor=#c7b0e3
+     misc_recomb                       complement(2230..2250)
+                                       /label="attB2"
+                                       /ApEinfo_revcolor=#c7b0e3
+                                       /ApEinfo_fwdcolor=#c7b0e3
+     feature                           2127..2227
+                                       /label="attR2"
+                                       /ApEinfo_revcolor=#c6c9d1
+                                       /ApEinfo_fwdcolor=#c6c9d1
+     promoter                          7503..7533
+                                       /label="lac promoter"
+                                       /ApEinfo_revcolor=#c7b0e3
+                                       /ApEinfo_fwdcolor=#c7b0e3
+     primer                            7546..7568
+                                       /label="M13_pUC_rev_primer"
+                                       /ApEinfo_revcolor=#75c6a9
+                                       /ApEinfo_fwdcolor=#75c6a9
+     primer                            499..523
+                                       /label="LNCX_primer"
+                                       /ApEinfo_revcolor=#ffef86
+                                       /ApEinfo_fwdcolor=#ffef86
+     feature                           7875..8055
+                                       /label="truncHIV-1_3_LTR"
+                                       /ApEinfo_revcolor=#85dae9
+                                       /ApEinfo_fwdcolor=#85dae9
+     primer                            5415..5434
+                                       /label="SV40pro_F_primer"
+                                       /ApEinfo_revcolor=#b7e6d7
+                                       /ApEinfo_fwdcolor=#b7e6d7
+     Activation Domain                 4133..4165
+                                       /label="VP16"
+                                       /ApEinfo_revcolor=#b1ff67
+                                       /ApEinfo_fwdcolor=#b1ff67
+     misc_feature                      548..568
+                                       /label="Gateway recomb1"
+                                       /ApEinfo_revcolor=#f58a5e
+                                       /ApEinfo_fwdcolor=#f58a5e
+     feature                           4887..4939
+                                       /label="delta_U3"
+                                       /ApEinfo_revcolor=#84b0dc
+                                       /ApEinfo_fwdcolor=#84b0dc
+     misc_recomb                       548..568
+                                       /label="attB1"
+                                       /ApEinfo_revcolor=#c7b0e3
+                                       /ApEinfo_fwdcolor=#c7b0e3
+     gene                              5560..6420
+                                       /label="Ampicillin"
+                                       /ApEinfo_revcolor=#b1ff67
+                                       /ApEinfo_fwdcolor=#b1ff67
+     responsive element / DNA binding  398..416
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     feature                           4940..5120
+                                       /label="HIV-1_5_LTR"
+                                       /ApEinfo_revcolor=#85dae9
+                                       /ApEinfo_fwdcolor=#85dae9
+     Activation Domain                 4172..4204
+                                       /label="VP16"
+                                       /ApEinfo_revcolor=#b1ff67
+                                       /ApEinfo_fwdcolor=#b1ff67
+     promoter                          696..726
+                                       /label="lac UV5 promoter"
+                                       /ApEinfo_revcolor=#faac61
+                                       /ApEinfo_fwdcolor=#faac61
+     feature                           complement(571..671)
+                                       /label="attR2"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     primer                            5283..5302
+                                       /label="EBV_rev_primer"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     responsive element / DNA binding  363..381
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     primer_bind                       7603..7622
+                                       /label="T3"
+                                       /ApEinfo_revcolor=#85dae9
+                                       /ApEinfo_fwdcolor=#85dae9
+     misc_feature                      3467..4213
+                                       /label="rtTA"
+                                       /ApEinfo_revcolor=#f8d3a9
+                                       /ApEinfo_fwdcolor=#f8d3a9
+     origin                            5332..5430
+                                       /label="SV40_origin"
+                                       /ApEinfo_revcolor=#f58a5e
+                                       /ApEinfo_fwdcolor=#f58a5e
+     gene                              2816..3403
+                                       /label="puro (variant)"
+                                       /ApEinfo_revcolor=#f8d3a9
+                                       /ApEinfo_fwdcolor=#f8d3a9
+     CDS                               780..1436
+                                       /label="CmR"
+                                       /ApEinfo_revcolor=#ffef86
+                                       /ApEinfo_fwdcolor=#ffef86
+     feature                           547..671
+                                       /label="attR1"
+                                       /ApEinfo_revcolor=#85dae9
+                                       /ApEinfo_fwdcolor=#85dae9
+     feature                           4250..4777
+                                       /label="WPRE"
+                                       /ApEinfo_revcolor=#75c6a9
+                                       /ApEinfo_fwdcolor=#75c6a9
+     responsive element / DNA binding  291..309
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     primer                            497..516
+                                       /label="pCEP_fwd_primer"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     misc_feature                      3467..4093
+                                       /label="mut TetR"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     feature                           4940..5120
+                                       /label="truncHIV-1_3_LTR"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     responsive element / DNA binding  327..345
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     misc_feature                      complement(2230..2250)
+                                       /label="Gateway Recomb2"
+                                       /ApEinfo_revcolor=#f58a5e
+                                       /ApEinfo_fwdcolor=#f58a5e
+     feature                           45..60
+                                       /label="cPPT"
+                                       /ApEinfo_revcolor=#75c6a9
+                                       /ApEinfo_fwdcolor=#75c6a9
+     feature                           4870..4885
+                                       /label="cPPT"
+                                       /ApEinfo_revcolor=#75c6a9
+                                       /ApEinfo_fwdcolor=#75c6a9
+     promoter                          7503..7532
+                                       /label="lac_promoter"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     promoter                          7602..7620
+                                       /label="T3 promoter"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     misc_feature                      466..547
+                                       /label="min CMV"
+                                       /ApEinfo_revcolor=#f58a5e
+                                       /ApEinfo_fwdcolor=#f58a5e
+     promoter                          696..719
+                                       /label="lac_promoter"
+                                       /ApEinfo_revcolor=#9eafd2
+                                       /ApEinfo_fwdcolor=#9eafd2
+     feature                           4870..4891
+                                       /label="U3PPT"
+                                       /ApEinfo_revcolor=#b1ff67
+                                       /ApEinfo_fwdcolor=#b1ff67
+ORIGIN
+        1 AATTCTCGAC CTCGAGACAA ATGGCAGTAT TCATCCACAA TTTTAAAAGA AAAGGGGGGA
+       61 TTGGGGGGTA CAGTGCAGGG GAAAGAATAG TAGACATAAT AGCAACAGAC ATACAAACTA
+      121 AAGAATTACA AAAACAAATT ACAAAAATTC AAAATTTTCG GGTTTATTAC AGGGACAGCA
+      181 GAGATCCACT TTGGCCGCGA ATCGATATGT CGAGTTTACT CCCTATCAGT GATAGAGAAC
+      241 GTATGTCGAG TTTACTCCCT ATCAGTGATA GAGAACGATG TCGAGTTTAC TCCCTATCAG
+      301 TGATAGAGAA CGTATGTCGA GTTTACTCCC TATCAGTGAT AGAGAACGTA TGTCGAGTTT
+      361 ACTCCCTATC AGTGATAGAG AACGTATGTC GAGTTTATCC CTATCAGTGA TAGAGAACGT
+      421 ATGTCGAGTT TACTCCCTAT CAGTGATAGA GAACGTATGT CGAGGTAGGC GTGTACGGTG
+      481 GGAGGCCTAT ATAAGCAGAG CTCGTTTAGT GAACCGTCAG ATCGCCTGGA GAATTGGCTA
+      541 GCATCAACAA GTTTGTACAA AAAAGCTGAA CGAGAAACGT AAAATGATAT AAATATCAAT
+      601 ATATTAAATT AGATTTTGCA TAAAAAACAG ACTACATAAT ACTGTAAAAC ACAACATATC
+      661 CAGTCACTAT GGCGGCCGCA TTAGGCACCC CAGGCTTTAC ACTTTATGCT TCCGGCTCGT
+      721 ATAATGTGTG GATTTTGAGT TAGGATCCGT CGAGATTTTC AGGAGCTAAG GAAGCTAAAA
+      781 TGGAGAAAAA AATCACTGGA TATACCACCG TTGATATATC CCAATGGCAT CGTAAAGAAC
+      841 ATTTTGAGGC ATTTCAGTCA GTTGCTCAAT GTACCTATAA CCAGACCGTT CAGCTGGATA
+      901 TTACGGCCTT TTTAAAGACC GTAAAGAAAA ATAAGCACAA GTTTTATCCG GCCTTTATTC
+      961 ACATTCTTGC CCGCCTGATG AATGCTCATC CGGAATTCCG TATGGCAATG AAAGACGGTG
+     1021 AGCTGGTGAT ATGGGATAGT GTTCACCCTT GTTACACCGT TTTCCATGAG CAAACTGAAA
+     1081 CGTTTTCATC GCTCTGGAGT GAATACCACG ACGATTTCCG GCAGTTTCTA CACATATATT
+     1141 CGCAAGATGT GGCGTGTTAC GGTGAAAACC TGGCCTATTT CCCTAAAGGG TTTATTGAGA
+     1201 ATATGTTTTT CGTCTCAGCC AATCCCTGGG TGAGTTTCAC CAGTTTTGAT TTAAACGTGG
+     1261 CCAATATGGA CAACTTCTTC GCCCCCGTTT TCACCATGGG CAAATATTAT ACGCAAGGCG
+     1321 ACAAGGTGCT GATGCCGCTG GCGATTCAGG TTCATCATGC CGTTTGTGAT GGCTTCCATG
+     1381 TCGGCAGAAT GCTTAATGAA TTACAACAGT ACTGCGATGA GTGGCAGGGC GGGGCGTAAA
+     1441 GATCTGGATC CGGCTTACTA AAAGCCAGAT AACAGTATGC GTATTTGCGC GCTGATTTTT
+     1501 GCGGTATAAG AATATATACT GATATGTATA CCCGAAGTAT GTCAAAAAGA GGTATGCTAT
+     1561 GAAGCAGCGT ATTACAGTGA CAGTTGACAG CGACAGCTAT CAGTTGCTCA AGGCATATAT
+     1621 GATGTCAATA TCTCCGGTCT GGTAAGCACA ACCATGCAGA ATGAAGCCCG TCGTCTGCGT
+     1681 GCCGAACGCT GGAAAGCGGA AAATCAGGAA GGGATGGCTG AGGTCGCCCG GTTTATTGAA
+     1741 ATGAACGGCT CTTTTGCTGA CGAGAACAGG GGCTGGTGAA ATGCAGTTTA AGGTTTACAC
+     1801 CTATAAAAGA GAGAGCCGTT ATCGTCTGTT TGTGGATGTA CAGAGTGATA TTATTGACAC
+     1861 GCCCGGGCGA CGGATGGTGA TCCCCCTGGC CAGTGCACGT CTGCTGTCAG ATAAAGTCTC
+     1921 CCGTGAACTT TACCCGGTGG TGCATATCGG GGATGAAAGC TGGCGCATGA TGACCACCGA
+     1981 TATGGCCAGT GTGCCGGTCT CCGTTATCGG GGAAGAAGTG GCTGATCTCA GCCACCGCGA
+     2041 AAATGACATC AAAAACGCCA TTAACCTGAT GTTCTGGGGA ATATAAATGT CAGGCTCCCT
+     2101 TATACACAGC CAGTCTGCAG GTCGACCATA GTGACTGGAT ATGTTGTGTT TTACAGTATT
+     2161 ATGTAGTCTG TTTTTTATGC AAAATCTAAT TTAATATATT GATATTTATA TCATTTTACG
+     2221 TTTCTCGTTC AGCTTTCTTG TACAAAGTGG TTTAGTAATG AACCGGTCCA CCACCACCAC
+     2281 CACCACTAAG GATCCGGGGT TGGGGTTGCG CCTTTTCCAA GGCAGCCCTG GGTTTGCGCA
+     2341 GGGACGCGGC TGCTCTGGGC GTGGTTCCGG GAAACGCAGC GGCGCCGACC CTGGGTCTCG
+     2401 CACATTCTTC ACGTCCGTTC GCAGCGTCAC CCGGATCTTC GCCGCTACCC TTGTGGGCCC
+     2461 CCCGGCGACG CTTCCTGCTC CGCCCCTAAG TCGGGAAGGT TCCTTGCGGT TCGCGGCGTG
+     2521 CCGGACGTGA CAAACGGAAG CCGCACGTCT CACTAGTACC CTCGCAGACG GACAGCGCCA
+     2581 GGGAGCAATG GCAGCGCGCC GACCGCGATG GGCTGTGGCC AATAGCGGCT GCTCAGCAGG
+     2641 GCGCGCCGAG AGCAGCGGCC GGGAAGGGGC GGTGCGGGAG GCGGGGTGTG GGGCGGTAGT
+     2701 GTGGGCCCTG TTCCTGCCCG CGCGGTGTTC CGCATTCTGC AAGCCTCCGG AGCGCACGTC
+     2761 GGCAGTCGGC TCCCTCGTTG ACCGAATCAC CGACCTCTCT CCCCAGCAAT TCACCATGAC
+     2821 CGAGTACAAG CCCACGGTGC GCCTCGCCAC CCGCGACGAC GTCCCCAGGG CCGTACGCAC
+     2881 CCTCGCCGCC GCGTTCGCCG ACTACCCCGC CACGCGCCAC ACCGTCGATC CGGACCGCCA
+     2941 CATCGAGCGG GTCACCGAGC TGCAAGAACT CTTCCTCACG CGCGTCGGGC TCGACATCGG
+     3001 CAAGGTGTGG GTCGCGGACG ACGGCGCCGC GGTGGCGGTC TGGACCACGC CGGAGAGCGT
+     3061 CGAAGCGGGG GCGGTGTTCG CCGAGATCGG CCCGCGCATG GCCGAGTTGA GCGGTTCCCG
+     3121 GCTGGCCGCG CAGCAACAGA TGGAAGGCCT CCTGGCGCCG CACCGGCCCA AGGAGCCCGC
+     3181 GTGGTTCCTG GCCACCGTCG GCGTCTCGCC CGACCACCAG GGCAAGGGTC TGGGCAGCGC
+     3241 CGTCGTGCTC CCCGGAGTGG AGGCGGCCGA GCGCGCCGGG GTGCCCGCCT TCCTGGAGAC
+     3301 CTCCGCGCCC CGCAACCTCC CCTTCTACGA GCGGCTCGGC TTCACCGTCA CCGCCGACGT
+     3361 CGAGGTGCCC GAAGGACCGC GCACCTGGTG CATGACCCGC AAGCCCGGTG CCGAAGGTAG
+     3421 AGGTTCTCTC CTCACTTGTG GTGATGTTGA AGAAAACCCT GGTCCAATGT CTAGACTGGA
+     3481 CAAGAGCAAA GTCATAAACG GAGCTCTGGA ATTACTCAAT GGTGTCGGTA TCGAAGGCCT
+     3541 GACGACAAGG AAACTCGCTC AAAAGCTGGG AGTTGAGCAG CCTACCCTGT ACTGGCACGT
+     3601 GAAGAACAAG CGGGCCCTGC TCGATGCCCT GCCAATCGAG ATGCTGGACA GGCATCATAC
+     3661 CCACTTCTGC CCCCTGGAAG GCGAGTCATG GCAAGACTTT CTGCGGAACA ACGCCAAGTC
+     3721 ATACCGCTGT GCTCTCCTCT CACATCGCGA CGGGGCTAAA GTGCATCTCG GCACCCGCCC
+     3781 AACAGAGAAA CAGTACGAAA CCCTGGAAAA TCAGCTCGCG TTCCTGTGTC AGCAAGGCTT
+     3841 CTCCCTGGAG AACGCACTGT ACGCTCTGTC CGCCGTGGGC CACTTTACAC TGGGCTGCGT
+     3901 ATTGGAGGAA CAGGAGCATC AAGTAGCAAA AGAGGAAAGA GAGACACCTA CCACCGATTC
+     3961 TATGCCCCCA CTTCTGAGAC AAGCAATTGA GCTGTTCGAC CGGCAGGGAG CCGAACCTGC
+     4021 CTTCCTTTTC GGCCTGGAAC TAATCATATG TGGCCTGGAG AAACAGCTAA AGTGCGAAAG
+     4081 CGGCGGGCCG ACCGACGCCC TTGACGATTT TGACTTAGAC ATGCTCCCAG CCGATGCCCT
+     4141 TGACGACTTT GACCTTGATA TGCTGCCTGC TGACGCTCTT GACGATTTTG ACCTTGACAT
+     4201 GCTCCCCGGG TAACTAAGTA AGGATCGATC CAAGATATCG TATTCTTAAC TATGTTGCTC
+     4261 CTTTTACGCT ATGTGGATAC GCTGCTTTAA TGCCTTTGTA TCATGCTATT GCTTCCCGTA
+     4321 TGGCTTTCAT TTTCTCCTCC TTGTATAAAT CCTGGTTGCT GTCTCTTTAT GAGGAGTTGT
+     4381 GGCCCGTTGT CAGGCAACGT GGCGTGGTGT GCACTGTGTT TGCTGACGCA ACCCCCACTG
+     4441 GTTGGGGCAT TGCCACCACC TGTCAGCTCC TTTCCGGGAC TTTCGCTTTC CCCCTCCCTA
+     4501 TTGCCACGGC GGAACTCATC GCCGCCTGCC TTGCCCGCTG CTGGACAGGG GCTCGGCTGT
+     4561 TGGGCACTGA CAATTCCGTG GTGTTGTCGG GGAAGCTGAC GTCCTTTCCA TGGCTGCTCG
+     4621 CCTGTGTTGC CACCTGGATT CTGCGCGGGA CGTCCTTCTG CTACGTCCCT TCGGCCCTCA
+     4681 ATCCAGCGGA CCTTCCTTCC CGCGGCCTGC TGCCGGCTCT GCGGCCTCTT CCGCGTCTTC
+     4741 GCCTTCGCCC TCAGACGAGT CGGATCTCCC TTTGGGCCGC CTCCCCGCCT GTTTCGCCTC
+     4801 GGCGTCCGGA CTAGAGGTAC CTTTAAGACC AATGACTTAC AAGGCAGCTG TAGATCTTAG
+     4861 CCACTTTTTA AAAGAAAAGG GGGGACTGGA AGGGCTAATT CACTCCCAAC GAAGACAAGA
+     4921 TCTGCTTTTT GCTTGTACTG GGTCTCTCTG GTTAGACCAG ATCTGAGCCT GGGAGCTCTC
+     4981 TGGCTAACTA GGGAACCCAC TGCTTAAGCC TCAATAAAGC TTGCCTTGAG TGCTTCAAGT
+     5041 AGTGTGTGCC CGTCTGTTGT GTGACTCTGG TAACTAGAGA TCCCTCAGAC CCTTTTAGTC
+     5101 AGTGTGGAAA ATCTCTAGCA GTAGTAGTTC ATGTCATCTT ATTATTCAGT ATTTATAACT
+     5161 TGCAAAGAAA TGAATATCAG AGAGTGAGAG GAACTTGTTT ATTGCAGCTT ATAATGGTTA
+     5221 CAAATAAAGC AATAGCATCA CAAATTTCAC AAATAAAGCA TTTTTTTCAC TGCATTCTAG
+     5281 TTGTGGTTTG TCCAAACTCA TCAATGTATC TTATCATGTC TGGCTCTAGC TATCCCGCCC
+     5341 CTAACTCCGC CCATCCCGCC CCTAACTCCG CCCAGTTCCG CCCATTCTCC GCCCCATGGC
+     5401 TGACTAATTT TTTTTATTTA TGCAGAGGCC GAGGCCGCCT CGGCCTCTGA GCTATTCCAG
+     5461 AAGTAGTGAG GAGGCTTTTT TGGAGGCCTT TCAAATATGT ATCCGCTCAT GAGACAATAA
+     5521 CCCTGATAAA TGCTTCAATA ATATTGAAAA AGGAAGAGTA TGAGTATTCA ACATTTCCGT
+     5581 GTCGCCCTTA TTCCCTTTTT TGCGGCATTT TGCCTTCCTG TTTTTGCTCA CCCAGAAACG
+     5641 CTGGTGAAAG TAAAAGATGC TGAAGATCAG TTGGGTGCAC GAGTGGGTTA CATCGAACTG
+     5701 GATCTCAACA GCGGTAAGAT CCTTGAGAGT TTTCGCCCCG AAGAACGTTT TCCAATGATG
+     5761 AGCACTTTTA AAGTTCTGCT ATGTGGCGCG GTATTATCCC GTATTGACGC CGGGCAAGAG
+     5821 CAACTCGGTC GCCGCATACA CTATTCTCAG AATGACTTGG TTGAGTACTC ACCAGTCACA
+     5881 GAAAAGCATC TTACGGATGG CATGACAGTA AGAGAATTAT GCAGTGCTGC CATAACCATG
+     5941 AGTGATAACA CTGCGGCCAA CTTACTTCTG ACAACGATCG GAGGACCGAA GGAGCTAACC
+     6001 GCTTTTTTGC ACAACATGGG GGATCATGTA ACTCGCCTTG ATCGTTGGGA ACCGGAGCTG
+     6061 AATGAAGCCA TACCAAACGA CGAGCGTGAC ACCACGATGC CTGTAGCAAT GGCAACAACG
+     6121 TTGCGCAAAC TATTAACTGG CGAACTACTT ACTCTAGCTT CCCGGCAACA ATTAATAGAC
+     6181 TGGATGGAGG CGGATAAAGT TGCAGGACCA CTTCTGCGCT CGGCCCTTCC GGCTGGCTGG
+     6241 TTTATTGCTG ATAAATCTGG AGCCGGTGAG CGTGGGTCTC GCGGTATCAT TGCAGCACTG
+     6301 GGGCCAGATG GTAAGCCCTC CCGTATCGTA GTTATCTACA CGACGGGGAG TCAGGCAACT
+     6361 ATGGATGAAC GAAATAGACA GATCGCTGAG ATAGGTGCCT CACTGATTAA GCATTGGTAA
+     6421 CTGTCAGACC AAGTTTACTC ATATATACTT TAGATTGATT TAAAACTTCA TTTTTAATTT
+     6481 AAAAGGATCT AGGTGAAGAT CCTTTTTGAT AATCTCATGA CCAAAATCCC TTAACGTGAG
+     6541 TTTTCGTTCC ACTGAGCGTC AGACCCCGTA GAAAAGATCA AAGGATCTTC TTGAGATCCT
+     6601 TTTTTTCTGC GCGTAATCTG CTGCTTGCAA ACAAAAAAAC CACCGCTACC AGCGGTGGTT
+     6661 TGTTTGCCGG ATCAAGAGCT ACCAACTCTT TTTCCGAAGG TAACTGGCTT CAGCAGAGCG
+     6721 CAGATACCAA ATACTGTTCT TCTAGTGTAG CCGTAGTTAG GCCACCACTT CAAGAACTCT
+     6781 GTAGCACCGC CTACATACCT CGCTCTGCTA ATCCTGTTAC CAGTGGCTGC TGCCAGTGGC
+     6841 GATAAGTCGT GTCTTACCGG GTTGGACTCA AGACGATAGT TACCGGATAA GGCGCAGCGG
+     6901 TCGGGCTGAA CGGGGGGTTC GTGCACACAG CCCAGCTTGG AGCGAACGAC CTACACCGAA
+     6961 CTGAGATACC TACAGCGTGA GCTATGAGAA AGCGCCACGC TTCCCGAAGG GAGAAAGGCG
+     7021 GACAGGTATC CGGTAAGCGG CAGGGTCGGA ACAGGAGAGC GCACGAGGGA GCTTCCAGGG
+     7081 GGAAACGCCT GGTATCTTTA TAGTCCTGTC GGGTTTCGCC ACCTCTGACT TGAGCGTCGA
+     7141 TTTTTGTGAT GCTCGTCAGG GGGGCGGAGC CTATGGAAAA ACGCCAGCAA CGCGGCCTTT
+     7201 TTACGGTTCC TGGCCTTTTG CTGGCCTTTT GCTCACATGT TCTTTCCTGC GTTATCCCCT
+     7261 GATTCTGTGG ATAACCGTAT TACCGCCTTT GAGTGAGCTG ATACCGCTCG CCGCAGCCGA
+     7321 ACGACCGAGC GCAGCGAGTC AGTGAGCGAG GAAGCGGAAG AGCGCCCAAT ACGCAAACCG
+     7381 CCTCTCCCCG CGCGTTGGCC GATTCATTAA TGCAGCTGGC ACGACAGGTT TCCCGACTGG
+     7441 AAAGCGGGCA GTGAGCGCAA CGCAATTAAT GTGAGTTAGC TCACTCATTA GGCACCCCAG
+     7501 GCTTTACACT TTATGCTTCC GGCTCGTATG TTGTGTGGAA TTGTGAGCGG ATAACAATTT
+     7561 CACACAGGAA ACAGCTATGA CCATGATTAC GCCAAGCGCG CAATTAACCC TCACTAAAGG
+     7621 GAACAAAAGC TGGAGCTGCA AGCTTAATGT AGTCTTATGC AATACTCTTG TAGTCTTGCA
+     7681 ACATGGTAAC GATGAGTTAG CAACATGCCT TACAAGGAGA GAAAAAGCAC CGTGCATGCC
+     7741 GATTGGTGGA AGTAAGGTGG TACGATCGTG CCTTATTAGG AAGGCAACAG ACGGGTCTGA
+     7801 CATGGATTGG ACGAACCACT GAATTGCCGC ATTGCAGAGA TATTGTATTT AAGTGCCTAG
+     7861 CTCGATACAT AAACGGGTCT CTCTGGTTAG ACCAGATCTG AGCCTGGGAG CTCTCTGGCT
+     7921 AACTAGGGAA CCCACTGCTT AAGCCTCAAT AAAGCTTGCC TTGAGTGCTT CAAGTAGTGT
+     7981 GTGCCCGTCT GTTGTGTGAC TCTGGTAACT AGAGATCCCT CAGACCCTTT TAGTCAGTGT
+     8041 GGAAAATCTC TAGCAGTGGC GCCCGAACAG GGACTTGAAA GCGAAAGGGA AACCAGAGGA
+     8101 GCTCTCTCGA CGCAGGACTC GGCTTGCTGA AGCGCGCACG GCAAGAGGCG AGGGGCGGCG
+     8161 ACTGGTGAGT ACGCCAAAAA TTTTGACTAG CGGAGGCTAG AAGGAGAGAG ATGGGTGCGA
+     8221 GAGCGTCAGT ATTAAGCGGG GGAGAATTAG ATCGCGATGG GAAAAAATTC GGTTAAGGCC
+     8281 AGGGGGAAAG AAAAAATATA AATTAAAACA TATAGTATGG GCAAGCAGGG AGCTAGAACG
+     8341 ATTCGCAGTT AATCCTGGCC TGTTAGAAAC ATCAGAAGGC TGTAGACAAA TACTGGGACA
+     8401 GCTACAACCA TCCCTTCAGA CAGGATCAGA AGAACTTAGA TCATTATATA ATACAGTAGC
+     8461 AACCCTCTAT TGTGTGCATC AAAGGATAGA GATAAAAGAC ACCAAGGAAG CTTTAGACAA
+     8521 GATAGAGGAA GAGCAAAACA AAAGTAAGAC CACCGCACAG CAAGCGGCCG CTGATCTTCA
+     8581 GACCTGGAGG AGGAGATATG AGGGACAATT GGAGAAGTGA ATTATATAAA TATAAAGTAG
+     8641 TAAAAATTGA ACCATTAGGA GTAGCACCCA CCAAGGCAAA GAGAAGAGTG GTGCAGAGAG
+     8701 AAAAAAGAGC AGTGGGAATA GGAGCTTTGT TCCTTGGGTT CTTGGGAGCA GCAGGAAGCA
+     8761 CTATGGGCGC AGCGTCAATG ACGCTGACGG TACAGGCCAG ACAATTATTG TCTGGTATAG
+     8821 TGCAGCAGCA GAACAATTTG CTGAGGGCTA TTGAGGCGCA ACAGCATCTG TTGCAACTCA
+     8881 CAGTCTGGGG CATCAAGCAG CTCCAGGCAA GAATCCTGGC TGTGGAAAGA TACCTAAAGG
+     8941 ATCAACAGCT CCTGGGGATT TGGGGTTGCT CTGGAAAACT CATTTGCACC ACTGCTGTGC
+     9001 CTTGGAATGC TAGTTGGAGT AATAAATCTC TGGAACAGAT TTGGAATCAC ACGACCTGGA
+     9061 TGGAGTGGGA CAGAGAAATT AACAATTACA CAAGCTTAAT ACACTCCTTA ATTGAAGAAT
+     9121 CGCAAAACCA GCAAGAAAAG AATGAACAAG AATTATTGGA ATTAGATAAA TGGGCAAGTT
+     9181 TGTGGAATTG GTTTAACATA ACAAATTGGC TGTGGTATAT AAAATTATTC ATAATGATAG
+     9241 TAGGAGGCTT GGTAGGTTTA AGAATAGTTT TTGCTGTACT TTCTATAGTG AATAGAGTTA
+     9301 GGCAGGGATA TTCACCATTA TCGTTTCAGA CCCACCTCCC AACCCCGAGG GGAC
+//

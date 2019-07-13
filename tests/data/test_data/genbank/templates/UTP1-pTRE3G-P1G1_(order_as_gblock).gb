@@ -1,0 +1,57 @@
+LOCUS       UTP1-pTRE3G-P1G1_(order_ 424 bp ds-DNA     linear       14-OCT-2016
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     responsive element / DNA binding  245..263
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     misc_feature                      26..399
+                                       /label="pTRE3G"
+                                       /ApEinfo_revcolor=#ff9ccd
+                                       /ApEinfo_fwdcolor=#ff9ccd
+     responsive element / DNA binding  211..229
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     responsive element / DNA binding  103..121
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     responsive element / DNA binding  175..193
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     misc_feature                      276..399
+                                       /label="minCMV"
+                                       /ApEinfo_revcolor=#b7e6d7
+                                       /ApEinfo_fwdcolor=#b7e6d7
+     responsive element / DNA binding  31..49
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     responsive element / DNA binding  67..85
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     responsive element / DNA binding  139..157
+                                       /label="TetO"
+                                       /ApEinfo_revcolor=#d59687
+                                       /ApEinfo_fwdcolor=#d59687
+     misc_feature                      1..25
+                                       /label="UTP1"
+                                       /ApEinfo_revcolor=#c6c9d1
+                                       /ApEinfo_fwdcolor=#c6c9d1
+     misc_feature                      400..424
+                                       /label="P1G1"
+                                       /ApEinfo_revcolor=#c6c9d1
+                                       /ApEinfo_fwdcolor=#c6c9d1
+ORIGIN
+        1 GCCGATACGA AGGTTTTCTC CAGCGTTTAC TCCCTATCAG TGATAGAGAA CGTATGAAGA
+       61 GTTTACTCCC TATCAGTGAT AGAGAACGTA TGCAGACTTT ACTCCCTATC AGTGATAGAG
+      121 AACGTATAAG GAGTTTACTC CCTATCAGTG ATAGAGAACG TATGACCAGT TTACTCCCTA
+      181 TCAGTGATAG AGAACGTATC TACAGTTTAC TCCCTATCAG TGATAGAGAA CGTATTCAGT
+      241 TTACTCCCTA TCAGTGATAG AGAACGTATA AGCTTTAGGC GTGTACGGTG GGCGCCTATA
+      301 AAAGCAGAGC TCGTTTAGTG AACCGTCAGA TCGCCTGGAG CAATTCCACA ACACTTTTGT
+      361 CTTATACCAA CTTTCCGTAC CACTTCCTAC CCTCGTAAAG GGACCGTCAA CCCTGAACCA
+      421 CAAA
+//

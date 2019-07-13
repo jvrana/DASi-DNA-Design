@@ -26,8 +26,9 @@ docs:
 
 
 format:
-	poetry run upver
-	poetry run black pkg tests
+	poetry run keats version up
+	poetry run keats changelog up
+
 
 
 lock:
@@ -46,3 +47,9 @@ release:
 
 klocs:
 	find . -name '*.py' | xargs wc -l
+
+
+colab:
+	cd tests; jupyter notebook \
+   --NotebookApp.allow_origin='https://colab.research.google.com' \
+   --NotebookApp.port_retries=0 --port=8889

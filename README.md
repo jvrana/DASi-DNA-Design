@@ -1,9 +1,12 @@
 # Shoestring DNA
 
-**Shoestring** is an automatic DNA cloning plan designer aimed for operating on small (shoestring!) budgets.
+**Shoestring** is an automatic DNA cloning plan designer aimed for operating on small budgets.
+
+### Features
 
 **Shoestring** provides a DNA sequence to workflow interpreter, utilizing knowledge of existing primers, PCR fragments,
-and templates to produce an efficient and cost-effective cloning plan.
+and templates to produce an efficient and cost-effective cloning plan. Currently, it only supports homology assembly
+(such as *gibson assembly*)
 
 ### Use cases
 

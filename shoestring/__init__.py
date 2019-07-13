@@ -1,11 +1,16 @@
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
 
 from lobio.models import Region, Context
+import networkx as nx
 
 
 class Constants(object):
     PCR_PRODUCT = "PCR_PRODUCT"
     PRIMER = "PRIMER"
+
+    COLOR = "edge_type"
+    RED = "molecule"
+    BLUE = "assembly"
 
 
 class AlignmentException(Exception):
@@ -88,8 +93,21 @@ class AlignmentContainer(object):
             )
             self.alignments.append(alignment)
 
-    def expand_with_primers(self):
-        pass
+    def build_assembly_graph(self):
+        G = nx.DiGraph()
+
+        pcr_products = self.groups_by_type[Constants.PCR_PRODUCT]
+
+        for g in pcr_products:
+            G.add_edge(
+                g.query_region.start,
+                g.query_region.end,
+                **{Constants.COLOR: Constants.RED}
+            )
+
+    # def index_hash_table(self, alignments):
+    #     by_start = sorted(pcr_products, key=lambda a: a.query_region.start)
+    #     by_end = sorted(pcr_product, key=lambda a: a.query_region.end)
 
     @staticmethod
     def alignment_hash(a):

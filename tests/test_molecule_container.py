@@ -30,4 +30,4 @@ def test_load(new_bio_blast, new_primer_blast):
     print("Number of types: {}".format(len(container.groups_by_type)))
     print("Number of groups: {}".format(len(groups)))
 
-    container.expand_with_primers()
+    products = container.groups_by_type[Constants.PCR_PRODUCT]

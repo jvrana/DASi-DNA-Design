@@ -3,11 +3,19 @@ from shoestring.utils import perfect_subject
 import networkx as nx
 
 
-def test_load(new_bio_blast, new_primer_blast):
-    blast = new_bio_blast()
-    blast.quick_blastn()
+def test_load(blast_factory):
+    blast_factory, keys = blast_factory
+    blast = blast_factory.new(
+        keys['templates'],
+        keys['queries']
+    )
 
-    primer_blast = new_primer_blast()
+    primer_blast = blast_factory.new(
+        keys['primers'],
+        keys['queries']
+    )
+
+    blast.quick_blastn()
     primer_blast.quick_blastn_short()
 
     results = blast.get_perfect()
@@ -36,8 +44,12 @@ def test_load(new_bio_blast, new_primer_blast):
     print("Number of types: {}".format(len(container.groups_by_type)))
     print("Number of groups: {}".format(len(groups)))
 
+    # build assembly graph
     G = container.build_assembly_graph()
     print()
     print("=== Assembly Graph ===")
     print(nx.info(G))
     assert G.number_of_edges()
+
+    # compute shortest path
+    nx.all_pairs_shortest_path(G)

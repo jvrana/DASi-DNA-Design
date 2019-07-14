@@ -7,7 +7,7 @@ from bisect import bisect_left
 from typing import List, Dict
 from Bio.SeqRecord import SeqRecord
 from more_itertools import partition, flatten, unique_everseen
-
+from .blastbiofactory import BioBlastFactory
 
 class Constants(object):
     FRAGMENT = (
@@ -95,8 +95,8 @@ class Alignment(object):
         """
         query_copy = self.query_region.sub_region(qstart, qend)
         subject_copy = self.subject_region.copy()
-        delta_s = qstart - self.query_region.start
-        delta_e = self.query_region.end - qend
+        delta_s = qstart - self.query_region.left_end
+        delta_e = self.query_region.right_end - qend
         subject_copy.extend_left_end(-delta_s)
         subject_copy.extend_right_end(-delta_e)
         if type is None:
@@ -216,26 +216,26 @@ class AlignmentContainer(object):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
-        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.start)
-        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.end)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.left_end)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.right_end)
 
         pairs = []
 
         for g in alignment_groups:
             # add products with both existing products
             fwd_bind = bisect_slice_between(
-                fwd, fwd_keys, g.query_region.start + 10, g.query_region.end
+                fwd, fwd_keys, g.query_region.left_end + 10, g.query_region.right_end
             )
             rev_bind = bisect_slice_between(
-                rev, rev_keys, g.query_region.start, g.query_region.end - 10
+                rev, rev_keys, g.query_region.left_end, g.query_region.right_end - 10
             )
-            rkeys = [r.query_region.start for r in rev_bind]
+            rkeys = [r.query_region.left_end for r in rev_bind]
             for f in fwd_bind:
-                i = bisect_left(rkeys, f.query_region.start)
+                i = bisect_left(rkeys, f.query_region.left_end)
                 for r in rev_bind[i:]:
                     primer_group = g.sub_region(
-                        f.query_region.start,
-                        r.query_region.end,
+                        f.query_region.left_end,
+                        r.query_region.right_end,
                         Constants.PCR_PRODUCT_WITH_PRIMERS,
                     )
                     pairs += primer_group.alignments
@@ -243,15 +243,15 @@ class AlignmentContainer(object):
             # add products with one existing primer
             for f in fwd_bind:
                 left_primer_group = g.sub_region(
-                    f.query_region.start,
-                    g.query_region.end,
+                    f.query_region.left_end,
+                    g.query_region.right_end,
                     Constants.PCR_PRODUCT_WITH_LEFT_PRIMER
                 )
                 pairs += left_primer_group.alignments
             for r in rev_bind:
                 right_primer_group = g.sub_region(
-                    g.query_region.start,
-                    r.query_region.end,
+                    g.query_region.left_end,
+                    r.query_region.right_end,
                     Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
                 )
                 pairs += right_primer_group.alignments
@@ -261,31 +261,31 @@ class AlignmentContainer(object):
         self, alignment_groups: List[AlignmentGroup]
     ) -> List[Alignment]:
         group_sort, group_keys = sort_with_keys(
-            alignment_groups, key=lambda x: x.query_region.start
+            alignment_groups, key=lambda x: x.query_region.left_end
         )
         alignments = []
         for g in group_sort:
-            i = bisect_left(group_keys, g.query_region.start)
+            i = bisect_left(group_keys, g.query_region.left_end)
             arr, keys = sort_with_keys(
-                group_sort[i:], key=lambda x: x.query_region.start
+                group_sort[i:], key=lambda x: x.query_region.left_end
             )
             overlapping = bisect_slice_between(
-                arr, keys, g.query_region.start, g.query_region.end
+                arr, keys, g.query_region.left_end, g.query_region.right_end
             )
 
             for og in overlapping:
                 if og is not g:
-                    if og.query_region.start - g.query_region.start > 20:
+                    if og.query_region.left_end - g.query_region.left_end > 20:
                         ag1 = g.sub_region(
-                            g.query_region.start,
-                            og.query_region.start,
+                            g.query_region.left_end,
+                            og.query_region.left_end,
                             Constants.PCR_PRODUCT,
                         )
                         alignments += ag1.alignments
-                    if g.query_region.end - og.query_region.start > 20:
+                    if g.query_region.right_end - og.query_region.left_end > 20:
                         ag2 = g.sub_region(
-                            og.query_region.start,
-                            g.query_region.end,
+                            og.query_region.left_end,
+                            g.query_region.right_end,
                             Constants.PCR_PRODUCT,
                         )
                         alignments += ag2.alignments
@@ -321,18 +321,28 @@ class AlignmentContainer(object):
         G = nx.DiGraph(name="Assembly Graph")
         self.expand()
 
+        def add_edge(start, stop, context, color):
+            G.add_edge(
+                start, stop,
+                **{
+                    Constants.COLOR: color,
+                    "bp": context.span(start, stop)
+                }
+            )
+
         # RED edges
         for g in self.alignment_groups:
-            G.add_edge(
-                g.query_region.start,
-                g.query_region.end,
-                **{Constants.COLOR: Constants.RED}
+            add_edge(
+                g.query_region.left_end,
+                g.query_region.right_end,
+                context=g.query_region.context,
+                color=Constants.RED
             )
 
         # BLUE edges
         # TODO: tests for validating over-origin edges are being produced
         groups, group_keys = sort_with_keys(
-            self.alignment_groups, key=lambda g: g.query_region.start
+            self.alignment_groups, key=lambda g: g.query_region.left_end
         )
         for g in groups:
 
@@ -347,13 +357,19 @@ class AlignmentContainer(object):
 
                 for g2 in other_groups:
                     if g2 is not g:
-                            G.add_edge(
-                                g.query_region.end,
-                                g2.query_region.start,
-                                **{Constants.COLOR: Constants.BLUE}
+                        if not g2.query_region.context == g.query_region.context:
+                            print(g2.query_region)
+                            print(g.query_region)
+                            assert g2.query_region.context == g.query_region.context
+                        add_edge(
+                            g.query_region.right_end,
+                            g2.query_region.left_end,
+                            context=g.query_region.context,
+                            color=Constants.BLUE
                         )
             except IndexError:
                 pass
+
         return G
 
     # TODO: change 'start' and 'end' to left and right end for regions...
@@ -361,8 +377,8 @@ class AlignmentContainer(object):
     @staticmethod
     def alignment_hash(a):
         return (
-            a.query_region.start,
-            a.query_region.end,
+            a.query_region.left_end,
+            a.query_region.right_end,
             a.query_region.direction,
             a.type,
         )

@@ -11,6 +11,16 @@ def test_load(new_bio_blast, new_primer_blast):
     results = blast.get_perfect()
     primer_results = primer_blast.get_perfect()
 
+    def perfect_subject(data):
+        if data['strand'] == 1 and data['start'] == 1 and data['end'] == data['origin_sequence_length']:
+            return True
+        elif data['strand'] == -1 and data['end'] == 1 and data['start'] == data['origin_sequence_length']:
+            return True
+
+    primer_results = [p for p in primer_results if perfect_subject(p['subject'])]
+    print("Number of perfect primers: {}".format(len(primer_results)))
+    # primer_results = [p for p in primer_results if p['subject']['start'] == 1]
+
     # combine the sequence databases (for now)
     seqdb = {}
     seqdb.update(blast.seq_db.records)
@@ -30,4 +40,5 @@ def test_load(new_bio_blast, new_primer_blast):
     print("Number of types: {}".format(len(container.groups_by_type)))
     print("Number of groups: {}".format(len(groups)))
 
-    products = container.groups_by_type[Constants.PCR_PRODUCT]
+    G = container.build_assembly_graph()
+    assert G.number_of_edges()

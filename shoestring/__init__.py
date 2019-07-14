@@ -2,7 +2,9 @@ from .__version__ import __version__, __title__, __authors__, __homepage__, __re
 
 from lobio.models import Region, Context
 import networkx as nx
-
+from .utils import sort_with_keys, bisect_slice_between
+from more_itertools import partition, flatten
+from bisect import bisect_left
 
 class Constants(object):
     PCR_PRODUCT = "PCR_PRODUCT"
@@ -97,13 +99,30 @@ class AlignmentContainer(object):
         G = nx.DiGraph()
 
         pcr_products = self.groups_by_type[Constants.PCR_PRODUCT]
-
+        primers = list(flatten([g.alignments for g in self.groups_by_type[Constants.PRIMER]]))
         for g in pcr_products:
             G.add_edge(
                 g.query_region.start,
                 g.query_region.end,
                 **{Constants.COLOR: Constants.RED}
             )
+
+        rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.start)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.end)
+        pairs = []
+        for g in pcr_products:
+            fwd_bind = bisect_slice_between(fwd, fwd_keys, g.query_region.start+10, g.query_region.end)
+            rev_bind = bisect_slice_between(rev, rev_keys, g.query_region.start, g.query_region.end-10)
+            rkeys = [r.query_region.start for r in rev_bind]
+            for f in fwd_bind:
+                i = bisect_left(rkeys, f.query_region.start)
+                for r in rev_bind[:]:
+                    pairs.append((f, r))
+
+        print(len(pairs))
+        return G
+
 
     # def index_hash_table(self, alignments):
     #     by_start = sorted(pcr_products, key=lambda a: a.query_region.start)

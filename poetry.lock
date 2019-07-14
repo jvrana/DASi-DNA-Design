@@ -158,7 +158,7 @@ version = "0.1.0"
 biopython = ">=1.73,<2.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
@@ -345,7 +345,7 @@ python-versions = ">=2.7"
 version = "0.5.2"
 
 [metadata]
-content-hash = "6a61fa657bac4d1d00b77add4b27cbcb193831c1a16b13848d862b1edccd7579"
+content-hash = "c23887b0a180e8e3c2ef3204fe754cb022e34885713346ce83af62f47af2cb23"
 python-versions = "^3.6"
 
 [metadata.hashes]

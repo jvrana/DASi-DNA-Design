@@ -4,6 +4,8 @@ init:
 	poetry self:update
 	poetry install
 	poetry run pre-commit install
+	poetry run pyblast install
+	poetry run pyblast status
 
 
 clean:

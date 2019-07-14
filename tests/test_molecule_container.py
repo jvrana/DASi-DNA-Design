@@ -4,16 +4,8 @@ import networkx as nx
 
 
 def test_load(blast_factory):
-    blast_factory, keys = blast_factory
-    blast = blast_factory.new(
-        keys['templates'],
-        keys['queries']
-    )
-
-    primer_blast = blast_factory.new(
-        keys['primers'],
-        keys['queries']
-    )
+    blast = blast_factory("templates", "queries")
+    primer_blast = blast_factory("primers", "queries")
 
     blast.quick_blastn()
     primer_blast.quick_blastn_short()

@@ -9,31 +9,26 @@ from shoestring import BioBlastFactory
 def here():
     return dirname(abspath(__file__))
 
+PRIMERS = "primers"
+TEMPLATES = "templates"
+QUERIES = "queries"
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def blast_factory(here):
     factory = BioBlastFactory()
 
     primers = make_linear(
         load_fasta_glob(join(here, "data/test_data/primers/primers.fasta"))
     )
-    templates = load_genbank_glob(
-        join(here, "data/test_data/genbank/templates/*.gb")
-    )
+    templates = load_genbank_glob(join(here, "data/test_data/genbank/templates/*.gb"))
     queries = load_genbank_glob(
-        join(
-            here,
-            "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb",
-        )
+        join(here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb")
     )
 
+    factory.add_records(primers, PRIMERS)
+    factory.add_records(templates, TEMPLATES)
+    factory.add_records(queries, QUERIES)
 
-    primer_keys = factory.add_records(primers)
-    template_keys = factory.add_records(templates)
-    query_keys = factory.add_records(queries)
-
-    return factory, {
-        'primers': primer_keys,
-        'templates': template_keys,
-        'queries': query_keys
-    }
+    return (
+        factory
+    )

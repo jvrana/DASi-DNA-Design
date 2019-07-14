@@ -9,6 +9,7 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import partition, flatten, unique_everseen
 from .blastbiofactory import BioBlastFactory
 
+
 class Constants(object):
     FRAGMENT = (
         "PRE-MADE DNA FRAGMENT"
@@ -40,13 +41,7 @@ class AlignmentException(Exception):
 
 class Alignment(object):
 
-    __slots__ = [
-        'query_region',
-        'subject_region',
-        'type',
-        'query_key',
-        'subject_key'
-    ]
+    __slots__ = ["query_region", "subject_region", "type", "query_key", "subject_key"]
 
     def __init__(
         self,
@@ -118,10 +113,7 @@ class Alignment(object):
 
 class AlignmentGroup(object):
 
-    __slots__ = [
-        'query_region',
-        'alignments'
-    ]
+    __slots__ = ["query_region", "alignments"]
 
     def __init__(self, query_region: Region, alignments: List[Alignment]):
         self.query_region = query_region
@@ -164,7 +156,7 @@ class AlignmentContainer(object):
         Constants.FRAGMENT,
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
-        Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
+        Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
     ]
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
@@ -245,14 +237,14 @@ class AlignmentContainer(object):
                 left_primer_group = g.sub_region(
                     f.query_region.left_end,
                     g.query_region.right_end,
-                    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER
+                    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
                 )
                 pairs += left_primer_group.alignments
             for r in rev_bind:
                 right_primer_group = g.sub_region(
                     g.query_region.left_end,
                     r.query_region.right_end,
-                    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
+                    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
                 )
                 pairs += right_primer_group.alignments
         return pairs
@@ -323,11 +315,7 @@ class AlignmentContainer(object):
 
         def add_edge(start, stop, context, color):
             G.add_edge(
-                start, stop,
-                **{
-                    Constants.COLOR: color,
-                    "bp": context.span(start, stop)
-                }
+                start, stop, **{Constants.COLOR: color, "bp": context.span(start, stop)}
             )
 
         # RED edges
@@ -336,7 +324,7 @@ class AlignmentContainer(object):
                 g.query_region.left_end,
                 g.query_region.right_end,
                 context=g.query_region.context,
-                color=Constants.RED
+                color=Constants.RED,
             )
 
         # BLUE edges
@@ -347,7 +335,7 @@ class AlignmentContainer(object):
         for g in groups:
 
             try:
-                homology = g.query_region[-Constants.MAX_HOMOLOGY:]
+                homology = g.query_region[-Constants.MAX_HOMOLOGY :]
 
                 i = bisect_left(group_keys, homology.left_end)
                 other_groups = groups[i:]
@@ -365,7 +353,7 @@ class AlignmentContainer(object):
                             g.query_region.right_end,
                             g2.query_region.left_end,
                             context=g.query_region.context,
-                            color=Constants.BLUE
+                            color=Constants.BLUE,
                         )
             except IndexError:
                 pass

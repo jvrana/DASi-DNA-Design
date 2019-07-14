@@ -39,6 +39,15 @@ class AlignmentException(Exception):
 
 
 class Alignment(object):
+
+    __slots__ = [
+        'query_region',
+        'subject_region',
+        'type',
+        'query_key',
+        'subject_key'
+    ]
+
     def __init__(
         self,
         query_region: Region,
@@ -108,6 +117,12 @@ class Alignment(object):
 
 
 class AlignmentGroup(object):
+
+    __slots__ = [
+        'query_region',
+        'alignments'
+    ]
+
     def __init__(self, query_region: Region, alignments: List[Alignment]):
         self.query_region = query_region
         self.alignments = alignments
@@ -315,22 +330,33 @@ class AlignmentContainer(object):
             )
 
         # BLUE edges
-        # TODO: add edges for alignments at the end of the query if its circular...
+        # TODO: tests for validating over-origin edges are being produced
         groups, group_keys = sort_with_keys(
             self.alignment_groups, key=lambda g: g.query_region.start
         )
         for g in groups:
-            x = g.query_region.end - Constants.MAX_HOMOLOGY
-            i = bisect_left(group_keys, g.query_region.end - Constants.MAX_HOMOLOGY)
 
-            for g2 in groups[i:]:
-                if g2 is not g:
-                    G.add_edge(
-                        g.query_region.end,
-                        g.query_region.start,
-                        **{Constants.COLOR: Constants.BLUE}
-                    )
+            try:
+                homology = g.query_region[-Constants.MAX_HOMOLOGY:]
+
+                i = bisect_left(group_keys, homology.left_end)
+                other_groups = groups[i:]
+                if homology.spans_origin():
+                    i = bisect_left(group_keys, homology.right_end)
+                    other_groups += groups[:i]
+
+                for g2 in other_groups:
+                    if g2 is not g:
+                            G.add_edge(
+                                g.query_region.end,
+                                g2.query_region.start,
+                                **{Constants.COLOR: Constants.BLUE}
+                        )
+            except IndexError:
+                pass
         return G
+
+    # TODO: change 'start' and 'end' to left and right end for regions...
 
     @staticmethod
     def alignment_hash(a):

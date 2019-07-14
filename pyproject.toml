@@ -7,9 +7,9 @@ authors = ["jvrana <justin.vrana@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.6"
 pyblastbio = "^0.1.3"
-lobio = "^0.1.4"
 networkx = "^2.3"
 more-itertools = "^7.1"
+lobio = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^18.3-alpha.0", allows-prereleases = true}

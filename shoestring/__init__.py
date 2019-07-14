@@ -128,9 +128,10 @@ class AlignmentContainer(object):
     def find_primer_pairs(self):
         pcr_products = self.groups_by_type[Constants.PCR_PRODUCT]
         primers = list(flatten([g.alignments for g in self.groups_by_type[Constants.PRIMER]]))
+
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
-        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.start)
-        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.end)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.start)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.end)
 
         pairs = []
 

@@ -30,6 +30,7 @@ docs:
 format:
 	poetry run keats version up
 	poetry run keats changelog up
+	poetry run black shoestring tests
 
 
 

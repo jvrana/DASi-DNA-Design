@@ -27,3 +27,10 @@ def bisect_slice_between(a, keys, low, high):
     i, j = bisect_between(keys, low, high)
     return a[i:j]
 
+
+def perfect_subject(data):
+    """Determine whether a blast result consumes the entire subject."""
+    if data["strand"] == 1 and data["start"] == 1 and data["end"] == data["length"]:
+        return True
+    elif data["strand"] == -1 and data["end"] == 1 and data["start"] == data["length"]:
+        return True

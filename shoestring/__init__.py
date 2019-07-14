@@ -78,6 +78,8 @@ class AlignmentGroup(object):
         )
 
 
+
+
 def blast_to_region(query_or_subject, seqdb):
     data = query_or_subject
     l = data["length"]

@@ -356,6 +356,33 @@ class AlignmentContainer(object):
 
         # assemblies
         # TODO: tests for validating over-origin edges are being produced
+
+        def create_edge(group, other_group):
+            # verify contexts are the same
+            if not other_group.query_region.context == group.query_region.context:
+                assert other_group.query_region.context == group.query_region.context
+
+            if group.query_region.encompasses(other_group.query_region):
+                return
+            elif other_group.query_region.encompasses(group.query_region):
+                return
+            if not other_group.query_region.left_end == group.query_region.left_end:
+                overlap = group.query_region.get_overlap(other_group.query_region)
+                if overlap:
+                    add_edge(group, other_group, weight=50.0, name="overlap")
+                else:
+                    gap_span = group.query_region.get_gap_span(other_group.query_region)
+                    if gap_span is not None:
+                        add_edge(
+                            group, other_group, weight=gap_span + 100.0, name="gap"
+                        )
+                    else:
+                        raise Exception(
+                            "There must be either a gap or an overlap. There is no other option."
+                        )
+
+        # produce non-spanning edges
+        # makes edges for any regions
         groups, group_keys = sort_with_keys(
             self.alignment_groups, key=lambda g: g.query_region.left_end
         )
@@ -369,29 +396,8 @@ class AlignmentContainer(object):
             if homology.spans_origin():
                 i = bisect_left(group_keys, homology.right_end)
                 other_groups += groups[:i]
-
             for g2 in other_groups:
-                # verify contexts are the same
-                if not g2.query_region.context == g.query_region.context:
-                    assert g2.query_region.context == g.query_region.context
-
-                if g.query_region.encompasses(g2.query_region):
-                    continue
-                elif g2.query_region.encompasses(g.query_region):
-                    continue
-                if not g2.query_region.left_end == g.query_region.left_end:
-                    overlap = g.query_region.get_overlap(g2.query_region)
-                    if overlap:
-                        add_edge(g, g2, weight=50.0, name="overlap")
-                    else:
-                        gap_span = g.query_region.get_gap_span(g2.query_region)
-                        if gap_span is not None:
-                            add_edge(g, g2, weight=gap_span + 100.0, name="gap")
-                        else:
-                            raise Exception(
-                                "There must be either a gap or an overlap. There is no other option."
-                            )
-
+                create_edge(g, g2)
         return G
 
     # TODO: change 'start' and 'end' to left and right end for regions...

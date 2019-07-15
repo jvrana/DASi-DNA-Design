@@ -322,91 +322,75 @@ class AlignmentContainer(object):
         print("Number of total alignments: {}".format(len(self.alignments)))
         print("Number of total groups: {}".format(len(self.alignment_groups)))
 
+    # TODO: replace region methods with something faster.
+    # TODO: edge cost should include (i) cost of producing the source and (ii) cost of assembly
     # Verify queries have same context
     def build_assembly_graph(self):
         G = nx.DiGraph(name="Assembly Graph")
         self.expand()
 
-        def add_edge(start, stop, color, weight, **kwargs):
-            n1 = "{}_{}".format(start, "start")
-            n2 = "{}_{}".format(stop, "stop")
-            G.add_node(n1, ntype="start")
-            G.add_node(n2, ntype="stop")
-            edata = {Constants.COLOR: color, "weight": weight}
+        def add_edge(g1, g2, weight, **kwargs):
+            n1 = self.alignment_hash(g1.alignments[0])
+            n2 = self.alignment_hash(g2.alignments[0])
+            G.add_node(
+                n1,
+                start=g1.query_region.start,
+                end=g1.query_region.end,
+                color=Constants.RED,
+                region=str(g1.query_region),
+            )
+            G.add_node(
+                n2,
+                start=g2.query_region.start,
+                end=g2.query_region.end,
+                color=Constants.BLUE,
+                region=str(g2.query_region),
+            )
+            edata = {
+                "weight": weight,
+                "r1": str(g1.query_region),
+                "r2": str(g2.query_region),
+            }
             edata.update(kwargs)
             G.add_edge(n1, n2, **edata)
 
-        # RED edges
-        for g in self.alignment_groups:
-            add_edge(
-                g.query_region.left_end,
-                g.query_region.right_end,
-                color=Constants.RED,
-                weight=1,
-            )
-
-        # BLUE edges
+        # assemblies
         # TODO: tests for validating over-origin edges are being produced
         groups, group_keys = sort_with_keys(
             self.alignment_groups, key=lambda g: g.query_region.left_end
         )
         for g in groups:
-
             try:
                 homology = g.query_region[-Constants.MAX_HOMOLOGY :]
-
-                i = bisect_left(group_keys, homology.left_end)
-                other_groups = groups[i:]
-                if homology.spans_origin():
-                    i = bisect_left(group_keys, homology.right_end)
-                    other_groups += groups[:i]
-
-                for g2 in other_groups:
-                    # verify contexts are the same
-                    if not g2.query_region.context == g.query_region.context:
-                        assert g2.query_region.context == g.query_region.context
-
-                    if g.query_region.encompasses(g2.query_region):
-                        continue
-                    elif g is g2:
-                        continue
-                    elif g.query_region._span == g2.query_region._span:
-                        continue
-                    else:
-                        overlap = g.query_region.get_overlap(g2.query_region)
-                        if overlap:
-                            add_edge(
-                                g.query_region.right_end,
-                                g2.query_region.left_end,
-                                color=Constants.BLUE,
-                                q1=str(g.query_region),
-                                q2=str(g2.query_region),
-                                weight=10.0,
-                            )
-                    # if g2 is g:
-                    #     continue\
-                    #
-                    # if g.query_region.encompasses(g2.query_region):
-                    #     continue
-                    # else:
-                    #     overlap = g.query_region.get_overlap(g2.query_region)
-                    #     weight = 10
-                    #     if not overlap:
-                    #         overlap = Region(
-                    #             g.query_region.right_end,
-                    #             g2.query_region.left_end,
-                    #             context=g.query_region.context,
-                    #         )
-                    #         weight = len(overlap)
-                    #     add_edge(
-                    #         g.query_region.right_end,
-                    #         g2.query_region.left_end,
-                    #         length=len(overlap),
-                    #         color=Constants.BLUE,
-                    #         weight=weight,
-                    #     )
             except IndexError:
-                pass
+                continue
+            i = bisect_left(group_keys, homology.left_end)
+            other_groups = groups[i:]
+            if homology.spans_origin():
+                i = bisect_left(group_keys, homology.right_end)
+                other_groups += groups[:i]
+
+            for g2 in other_groups:
+                # verify contexts are the same
+                if not g2.query_region.context == g.query_region.context:
+                    assert g2.query_region.context == g.query_region.context
+
+                if g.query_region.encompasses(g2.query_region):
+                    continue
+                elif g2.query_region.encompasses(g.query_region):
+                    continue
+                if not g2.query_region.left_end == g.query_region.left_end:
+                    overlap = g.query_region.get_overlap(g2.query_region)
+                    if overlap:
+                        add_edge(g, g2, weight=50.0, name="overlap")
+                    else:
+                        gap_span = g.query_region.get_gap_span(g2.query_region)
+                        if gap_span is not None:
+                            add_edge(g, g2, weight=gap_span + 100.0, name="gap")
+                        else:
+                            raise Exception(
+                                "There must be either a gap or an overlap. There is no other option."
+                            )
 
         return G
 

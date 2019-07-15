@@ -4,7 +4,7 @@ import networkx as nx
 from os.path import join
 
 
-def test_load(blast_factory, here):
+def test_produce_assembly_graph(blast_factory, here):
     blast = blast_factory("templates", "queries")
     primer_blast = blast_factory("primers", "queries")
 
@@ -44,7 +44,5 @@ def test_load(blast_factory, here):
     print(nx.info(G))
     assert G.number_of_edges()
 
-    # compute shortest path
-    nx.all_pairs_shortest_path(G)
-
+    # print_graph
     nx.write_gexf(G, join(here, "out", "graph.gexf"))

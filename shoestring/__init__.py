@@ -1,13 +1,15 @@
-from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
-
-from lobio.models import Region, Context
-import networkx as nx
-from .utils import sort_with_keys, bisect_slice_between
 from bisect import bisect_left
+from copy import copy
 from typing import List, Dict
+
+import networkx as nx
 from Bio.SeqRecord import SeqRecord
+from lobio.models import Region, Context
 from more_itertools import partition, flatten, unique_everseen
+
+from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
 from .blastbiofactory import BioBlastFactory
+from .utils import sort_with_keys, bisect_slice_between
 
 
 class Constants(object):
@@ -40,7 +42,6 @@ class AlignmentException(Exception):
 
 
 class Alignment(object):
-
     __slots__ = ["query_region", "subject_region", "type", "query_key", "subject_key"]
 
     def __init__(
@@ -112,17 +113,30 @@ class Alignment(object):
 
 
 class AlignmentGroup(object):
+    """
+    A representative Alignment representing a group of alignments.
+    """
 
-    __slots__ = ["query_region", "alignments"]
+    __slots__ = ["query_region", "alignments", "name"]
 
-    def __init__(self, query_region: Region, alignments: List[Alignment]):
+    def __init__(self, query_region: Region, alignments: List[Alignment], name=None):
         self.query_region = query_region
         self.alignments = alignments
+        self.name = name
 
+    @property
+    def type(self):
+        return self.alignments[0].type
+
+    # TODO: making subregions for all alignments takes a LONG TIME (5X shorter if you skip this).
     def sub_region(self, qstart: int, qend: int, type: str):
+        alignments_copy = [a.sub_region(qstart, qend) for a in self.alignments]
+        for a in alignments_copy:
+            a.type = type
         return self.__class__(
             query_region=self.query_region.sub_region(qstart, qend),
-            alignments=[a.sub_region(qstart, qend, type) for a in self.alignments],
+            alignments=alignments_copy,
+            name="subregion",
         )
 
 
@@ -313,18 +327,22 @@ class AlignmentContainer(object):
         G = nx.DiGraph(name="Assembly Graph")
         self.expand()
 
-        def add_edge(start, stop, length, color):
-            G.add_edge(
-                start, stop, **{Constants.COLOR: color, "length": length, "weight": 1}
-            )
+        def add_edge(start, stop, color, weight, **kwargs):
+            n1 = "{}_{}".format(start, "start")
+            n2 = "{}_{}".format(stop, "stop")
+            G.add_node(n1, ntype="start")
+            G.add_node(n2, ntype="stop")
+            edata = {Constants.COLOR: color, "weight": weight}
+            edata.update(kwargs)
+            G.add_edge(n1, n2, **edata)
 
         # RED edges
         for g in self.alignment_groups:
             add_edge(
                 g.query_region.left_end,
                 g.query_region.right_end,
-                length=len(g.query_region),
                 color=Constants.RED,
+                weight=1,
             )
 
         # BLUE edges
@@ -344,26 +362,49 @@ class AlignmentContainer(object):
                     other_groups += groups[:i]
 
                 for g2 in other_groups:
-                    if g2 is not g:
-                        if not g2.query_region.context == g.query_region.context:
-                            assert g2.query_region.context == g.query_region.context
+                    # verify contexts are the same
+                    if not g2.query_region.context == g.query_region.context:
+                        assert g2.query_region.context == g.query_region.context
 
-                        if g.query_region.encompasses(g2.query_region):
-                            continue
-                        else:
-                            overlap = g.query_region.get_overlap(g2.query_region)
-                            if not overlap:
-                                overlap = Region(
-                                    g.query_region.right_end,
-                                    g2.query_region.left_end,
-                                    context=g.query_region.context,
-                                )
+                    if g.query_region.encompasses(g2.query_region):
+                        continue
+                    elif g is g2:
+                        continue
+                    elif g.query_region._span == g2.query_region._span:
+                        continue
+                    else:
+                        overlap = g.query_region.get_overlap(g2.query_region)
+                        if overlap:
                             add_edge(
                                 g.query_region.right_end,
                                 g2.query_region.left_end,
-                                length=len(overlap),
                                 color=Constants.BLUE,
+                                q1=str(g.query_region),
+                                q2=str(g2.query_region),
+                                weight=10.0,
                             )
+                    # if g2 is g:
+                    #     continue\
+                    #
+                    # if g.query_region.encompasses(g2.query_region):
+                    #     continue
+                    # else:
+                    #     overlap = g.query_region.get_overlap(g2.query_region)
+                    #     weight = 10
+                    #     if not overlap:
+                    #         overlap = Region(
+                    #             g.query_region.right_end,
+                    #             g2.query_region.left_end,
+                    #             context=g.query_region.context,
+                    #         )
+                    #         weight = len(overlap)
+                    #     add_edge(
+                    #         g.query_region.right_end,
+                    #         g2.query_region.left_end,
+                    #         length=len(overlap),
+                    #         color=Constants.BLUE,
+                    #         weight=weight,
+                    #     )
             except IndexError:
                 pass
 

@@ -313,9 +313,9 @@ class AlignmentContainer(object):
         G = nx.DiGraph(name="Assembly Graph")
         self.expand()
 
-        def add_edge(start, stop, context, color):
+        def add_edge(start, stop, length, color):
             G.add_edge(
-                start, stop, **{Constants.COLOR: color, "bp": context.span(start, stop)}
+                '{}_{}'.format(start, color), '{}_{}'.format(stop, color), **{Constants.COLOR: color, "length": length}
             )
 
         # RED edges
@@ -323,7 +323,7 @@ class AlignmentContainer(object):
             add_edge(
                 g.query_region.left_end,
                 g.query_region.right_end,
-                context=g.query_region.context,
+                length=len(g.query_region),
                 color=Constants.RED,
             )
 
@@ -346,15 +346,21 @@ class AlignmentContainer(object):
                 for g2 in other_groups:
                     if g2 is not g:
                         if not g2.query_region.context == g.query_region.context:
-                            print(g2.query_region)
-                            print(g.query_region)
                             assert g2.query_region.context == g.query_region.context
-                        add_edge(
-                            g.query_region.right_end,
-                            g2.query_region.left_end,
-                            context=g.query_region.context,
-                            color=Constants.BLUE,
-                        )
+
+                        if g.query_region.encompasses(g2.query_region):
+                            continue
+                        else:
+                            overlap = g.query_region.get_overlap(g2.query_region)
+                            if not overlap:
+                                overlap = Region(g.query_region.right_end, g2.query_region.left_end, context=
+                                                 g.query_region.context)
+                            add_edge(
+                                g.query_region.right_end,
+                                g2.query_region.left_end,
+                                length=len(overlap),
+                                color=Constants.BLUE,
+                            )
             except IndexError:
                 pass
 

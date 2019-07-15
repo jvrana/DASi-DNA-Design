@@ -1,9 +1,10 @@
 from shoestring import AlignmentContainer, Constants
 from shoestring.utils import perfect_subject
 import networkx as nx
+from os.path import join
 
 
-def test_load(blast_factory):
+def test_load(blast_factory, here):
     blast = blast_factory("templates", "queries")
     primer_blast = blast_factory("primers", "queries")
 
@@ -38,10 +39,12 @@ def test_load(blast_factory):
 
     # build assembly graph
     G = container.build_assembly_graph()
-    print()
+    # print()
     print("=== Assembly Graph ===")
     print(nx.info(G))
     assert G.number_of_edges()
 
     # compute shortest path
     nx.all_pairs_shortest_path(G)
+
+    nx.write_gexf(G, join(here, 'out', 'graph.gexf'))

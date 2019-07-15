@@ -10,6 +10,7 @@ from more_itertools import partition, flatten, unique_everseen
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
 from .blastbiofactory import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
+import itertools
 
 
 class Constants(object):
@@ -386,18 +387,25 @@ class AlignmentContainer(object):
         groups, group_keys = sort_with_keys(
             self.alignment_groups, key=lambda g: g.query_region.left_end
         )
-        for g in groups:
+        for g1, g2 in itertools.product(groups, repeat=2):
             try:
-                homology = g.query_region[-Constants.MAX_HOMOLOGY :]
+                homology = g1.query_region[-Constants.MAX_HOMOLOGY :]
             except IndexError:
                 continue
-            i = bisect_left(group_keys, homology.left_end)
-            other_groups = groups[i:]
-            if homology.spans_origin():
-                i = bisect_left(group_keys, homology.right_end)
-                other_groups += groups[:i]
-            for g2 in other_groups:
-                create_edge(g, g2)
+            create_edge(g1, g2)
+        # for g in groups:
+        #     try:
+        #         homology = g.query_region[-Constants.MAX_HOMOLOGY :]
+        #     except IndexError:
+        #         continue
+        #     i = bisect_left(group_keys, homology.left_end)
+        #     other_groups = groups[i:]
+        #     if homology.spans_origin():
+        #         print("SPANS!")
+        #         i = bisect_left(group_keys, homology.right_end)
+        #         other_groups += groups[:i]
+        #     for g2 in other_groups:
+        #         create_edge(g, g2)
         return G
 
     # TODO: change 'start' and 'end' to left and right end for regions...

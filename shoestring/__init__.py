@@ -315,9 +315,7 @@ class AlignmentContainer(object):
 
         def add_edge(start, stop, length, color):
             G.add_edge(
-                "{}_{}".format(start, color),
-                "{}_{}".format(stop, color),
-                **{Constants.COLOR: color, "length": length, "weight": 1}
+                start, stop, **{Constants.COLOR: color, "length": length, "weight": 1}
             )
 
         # RED edges

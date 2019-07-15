@@ -9,9 +9,11 @@ from shoestring import BioBlastFactory
 def here():
     return dirname(abspath(__file__))
 
+
 PRIMERS = "primers"
 TEMPLATES = "templates"
 QUERIES = "queries"
+
 
 @pytest.fixture(scope="module")
 def blast_factory(here):
@@ -29,6 +31,4 @@ def blast_factory(here):
     factory.add_records(templates, TEMPLATES)
     factory.add_records(queries, QUERIES)
 
-    return (
-        factory
-    )
+    return factory

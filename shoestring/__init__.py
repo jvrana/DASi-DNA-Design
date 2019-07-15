@@ -315,7 +315,9 @@ class AlignmentContainer(object):
 
         def add_edge(start, stop, length, color):
             G.add_edge(
-                '{}_{}'.format(start, color), '{}_{}'.format(stop, color), **{Constants.COLOR: color, "length": length}
+                "{}_{}".format(start, color),
+                "{}_{}".format(stop, color),
+                **{Constants.COLOR: color, "length": length, "weight": 1}
             )
 
         # RED edges
@@ -353,8 +355,11 @@ class AlignmentContainer(object):
                         else:
                             overlap = g.query_region.get_overlap(g2.query_region)
                             if not overlap:
-                                overlap = Region(g.query_region.right_end, g2.query_region.left_end, context=
-                                                 g.query_region.context)
+                                overlap = Region(
+                                    g.query_region.right_end,
+                                    g2.query_region.left_end,
+                                    context=g.query_region.context,
+                                )
                             add_edge(
                                 g.query_region.right_end,
                                 g2.query_region.left_end,

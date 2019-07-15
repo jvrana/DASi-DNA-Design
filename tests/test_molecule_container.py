@@ -47,4 +47,4 @@ def test_load(blast_factory, here):
     # compute shortest path
     nx.all_pairs_shortest_path(G)
 
-    nx.write_gexf(G, join(here, 'out', 'graph.gexf'))
+    nx.write_gexf(G, join(here, "out", "graph.gexf"))

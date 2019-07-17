@@ -42,6 +42,10 @@ class AlignmentException(Exception):
 
 
 class Alignment(object):
+    """
+    A pair of Regions that 'aligns' two regions of DNA sequences.
+    """
+
     __slots__ = ["query_region", "subject_region", "type", "query_key", "subject_key"]
 
     def __init__(
@@ -90,11 +94,9 @@ class Alignment(object):
         :return:
         """
         query_copy = self.query_region.sub(qstart, qend)
-        subject_copy = self.subject_region.copy()
-        delta_s = qstart - self.query_region.a
-        delta_e = self.query_region.b - qend
-        subject_copy.a += -delta_s
-        subject_copy.b += -delta_e
+        delta_a = qstart - self.query_region.a
+        delta_b = qend - self.query_region.b
+        subject_copy = self.subject_region.new(self.subject_region.a + delta_a, self.subject_region.b + delta_b, allow_wrap=True)
         if type is None:
             type = self.type
         self.validate()
@@ -130,12 +132,12 @@ class AlignmentGroup(object):
 
     # TODO: making subregions for all alignments takes a LONG TIME (5X shorter if you skip this).
     def sub_region(self, qstart: int, qend: int, type: str):
-        # alignments_copy = [a.sub_region(qstart, qend) for a in self.alignments]
-        # for a in alignments_copy:
-        #     a.type = type
+        alignments_copy = [a.sub_region(qstart, qend) for a in self.alignments]
+        for a in alignments_copy:
+            a.type = type
         return self.__class__(
             query_region=self.query_region.sub(qstart, qend),
-            alignments=[],
+            alignments=alignments_copy,
             name="subregion",
         )
 
@@ -368,31 +370,14 @@ class AlignmentContainer(object):
                     if overlap:
                         add_edge(group, other_group, weight=50.0, name="overlap")
                     else:
-                        connecting_span = group.query_region[
-                            group.query_region.a + 1, other_group.query_region.a - 1
-                        ]
-                        if len(connecting_span) > 0:
+                        connecting_span = group.query_region.connecting_span(other_group.query_region)
+                        if connecting_span:
                             add_edge(
                                 group,
                                 other_group,
                                 weight=100.0 + len(connecting_span),
                                 name="synthesis",
                             )
-                # overlap = group.query_region.get_overlap(other_group.query_region)
-                # if overlap:
-                #     add_edge(group, other_group, weight=50.0, name="overlap")
-                # else:
-                #     gap_span = group.query_region.get_gap_span(other_group.query_region)
-                #     if gap_span is not None:
-                #         add_edge(
-                #             group, other_group, weight=gap_span + 100.0, name="gap"
-                #         )
-                #     else:
-                #         # try it again
-                #         gap_span = group.query_region.get_gap_span(other_group.query_region)
-                #         raise Exception(
-                #             "There must be either a gap or an overlap. There is no other option."
-                #         )
 
         # produce non-spanning edges
         # makes edges for any regions
@@ -405,19 +390,6 @@ class AlignmentContainer(object):
             except IndexError:
                 continue
             create_edge(g1, g2)
-        # for g in groups:
-        #     try:
-        #         homology = g.query_region[-Constants.MAX_HOMOLOGY :]
-        #     except IndexError:
-        #         continue
-        #     i = bisect_left(group_keys, homology.a)
-        #     other_groups = groups[i:]
-        #     if homology.spans_origin():
-        #         print("SPANS!")
-        #         i = bisect_left(group_keys, homology.b)
-        #         other_groups += groups[:i]
-        #     for g2 in other_groups:
-        #         create_edge(g, g2)
         return G
 
     # TODO: change 'start' and 'end' to left and right end for regions...

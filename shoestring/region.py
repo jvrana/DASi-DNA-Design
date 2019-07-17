@@ -7,12 +7,14 @@ class SpanError(Exception):
     pass
 
 
-class Span(Container, Iterable, Sized):
+# TODO: move region code to lobio
 
+
+class Span(Container, Iterable, Sized):
     __slots__ = ["a", "b", "context_length", "cyclic", "index"]
 
     def __init__(self, a, b, l, cyclic=False, index=0, allow_wrap=False):
-        if b is not None and a > b and not cyclic:
+        if a > b and not cyclic:
             raise IndexError(
                 "Start {} cannot exceed end {} for linear spans".format(a, b)
             )
@@ -58,8 +60,8 @@ class Span(Container, Iterable, Sized):
         else:
             return [(self.a, self.b)]
 
-    def new(self, a, b):
-        return self.__class__(a, b, self.context_length, self.cyclic, index=self.index)
+    def new(self, a, b, allow_wrap=False):
+        return self.__class__(a, b, self.context_length, self.cyclic, index=self.index, allow_wrap=allow_wrap)
 
     def sub(self, a, b):
         if b is not None and a > b and not self.cyclic:
@@ -79,6 +81,16 @@ class Span(Container, Iterable, Sized):
     def force_context(self, other):
         if not self.same_context(other):
             raise SpanError("Cannot compare with different contexts")
+
+    def overlaps_with(self, other):
+        self.force_context(other)
+        if other in self:
+            return True
+        elif self in other:
+            return True
+        elif other.a in self or other.b - 1 in self or self.a in other or self.b - 1 in other:
+            return True
+        return False
 
     def differences(self, other):
         """Return a tuple of differences between this span and the other span."""
@@ -107,10 +119,28 @@ class Span(Container, Iterable, Sized):
             return self[:]
 
     def consecutive(self, other):
+        self.force_context(other)
         try:
             return self.b == other.t(other.a - 1)
         except IndexError:
             return False
+
+    def connecting_span(self, other):
+        """
+        Return the span that connects the two spans. Returns None
+
+        :param other:
+        :return:
+        """
+        self.force_context(other)
+        if self.consecutive(other):
+            return self[self.b, self.b]
+        elif self.overlaps_with(other):
+            return None
+        else:
+            if self.b > other.a and not self.cyclic:
+                return None
+            return self[self.b, other.a]
 
     # def union(self, other):
     #     self.force_context(other)
@@ -127,8 +157,9 @@ class Span(Container, Iterable, Sized):
     #             return self.new(self.a, None)
     #         return self.new(other.a, self.b)
 
-    #     def __le__(self, other):
-    #         return self.a <= other.a
+    # def __ge__(self, other):
+    #     self.force_context(other)
+    #     return self.a >= other.a
 
     #     def __lt__(self, other):
     #         return self.a < other.a
@@ -138,6 +169,19 @@ class Span(Container, Iterable, Sized):
 
     #     def __ge__(self, other):
     #         return self.a >= other.a
+
+    # def __invert__(self):
+    #     if self.a > self.b:
+    #         if self.cyclic:
+    #             return self[self.b+1, self.a-1],
+    #         else:
+                # return
+
+    def invert(self):
+        if self.cyclic:
+            return (self[self.b+1,self.a-1],)
+        else:
+            return self[:,self.a-1], self[self.b+1,:]
 
     def __eq__(self, other):
         return self.same_context(other) and self.a == other.a and self.b == other.b
@@ -166,6 +210,9 @@ class Span(Container, Iterable, Sized):
     def __iter__(self):
         for i in chain(*[range(*x) for x in self.ranges()]):
             yield i
+
+    def __invert__(self):
+        return self.invert()
 
     def __getitem__(self, val):
         if isinstance(val, int):
@@ -200,6 +247,16 @@ class Span(Container, Iterable, Sized):
                 raise ValueError(
                     "{} -- copying does only supports (start, stop)".format(val)
                 )
+            val = list(val)
+            for i in [0, 1]:
+                if val[i] == slice(None, None, None):
+                    val[i] = None
+            if val == (None, None):
+                val = self.bounds()
+            elif val[0] is None:
+                val = (self.bounds()[0], val[1])
+            elif val[1] is None:
+                val = (val[0], self.bounds()[1])
             return self.new(*val)
         else:
             raise ValueError("indexing does not support {}".format(type(val)))
@@ -232,7 +289,6 @@ Description: Basic functionality for defining regions of linear, circularized, o
 regions of a sequence.
 
 """
-from lobio.span import Span
 
 
 class Direction(object):

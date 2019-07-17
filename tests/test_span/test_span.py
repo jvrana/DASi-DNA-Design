@@ -348,29 +348,24 @@ class TestConsecutive:
     def test_consecutive(self):
         s1 = Span(20, 80, 100, True)
         s2 = Span(81, 95, 100, True)
-        assert s1.consecutive(s2)
+        assert not s1.consecutive(s2)
         assert not s2.consecutive(s1)
 
     def test_not_consecutive(self):
         s1 = Span(20, 80, 100, True)
         s2 = Span(80, 95, 100, True)
-        assert not s1.consecutive(s2)
-        assert not s2.consecutive(s1)
-
-    def test_self_consecutive_cyclic(self):
-        s1 = Span(2, 1, 10, True)
-        assert s1.consecutive(s1)
-
-    def test_consecutive_over_origin(self):
-        s1 = Span(7, 9, 10, True)
-        s2 = Span(0, 2, 10, True)
         assert s1.consecutive(s2)
         assert not s2.consecutive(s1)
 
-    def test_consecutive_over_origin(self):
-        s1 = Span(7, 9, 10, False)
-        s2 = Span(0, 2, 10, False)
-        assert not s1.consecutive(s2)
+    # TODO: how to represent wrap-around regions?
+    # def test_self_consecutive_cyclic(self):
+    #     s1 = Span(2, 1, 10, True)
+    #     assert s1.consecutive(s1)
+
+    def test_consecutive_over_origin1(self):
+        s1 = Span(7, 0, 10, True)
+        s2 = Span(0, 2, 10, True)
+        assert s1.consecutive(s2)
         assert not s2.consecutive(s1)
 
 

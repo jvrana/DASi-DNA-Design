@@ -133,7 +133,7 @@ class Span(Container, Iterable, Sized):
     def consecutive(self, other):
         self.force_context(other)
         try:
-            return self.b == other.t(other.a - 1)
+            return self.b == other.t(other.a)
         except IndexError:
             return False
 

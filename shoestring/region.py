@@ -91,11 +91,11 @@ class Span(Container, Iterable, Sized):
 
     def overlaps_with(self, other):
         self.force_context(other)
-        if other in self:
-            return True
-        elif self in other:
-            return True
-        elif (
+        # if other in self:
+        #     return True
+        # elif self in other:
+        #     return True
+        if (
             other.a in self
             or other.b - 1 in self
             or self.a in other
@@ -145,6 +145,8 @@ class Span(Container, Iterable, Sized):
         :return:
         """
         self.force_context(other)
+        if self.cyclic and self.a == other.a and self.b == other.b:
+            return self.invert()[0]
         if self.consecutive(other):
             return self[self.b, self.b]
         elif self.overlaps_with(other):
@@ -191,9 +193,9 @@ class Span(Container, Iterable, Sized):
 
     def invert(self):
         if self.cyclic:
-            return (self[self.b + 1, self.a - 1],)
+            return (self[self.b, self.a],)
         else:
-            return self[:, self.a - 1], self[self.b + 1, :]
+            return self[:, self.a], self[self.b, :]
 
     def __eq__(self, other):
         return self.same_context(other) and self.a == other.a and self.b == other.b

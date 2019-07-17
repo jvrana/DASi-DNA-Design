@@ -281,15 +281,15 @@ class TestSlice(object):
         s = Span(5, 15, 20, True)
         i1 = s.invert()[0]
 
-        assert i1.a == 16
-        assert i1.b == 4
+        assert i1.a == 15
+        assert i1.b == 5
 
     def test_invert_linear(self):
         s = Span(5, 15, 20, False)
         s1, s2 = s.invert()
         assert s1.a == 0
-        assert s1.b == 4
-        assert s2.a == 16
+        assert s1.b == 5
+        assert s2.a == 15
         assert s2.b == 20
 
 
@@ -392,6 +392,31 @@ def test_connecting_span_cyclic():
     s4 = s2.connecting_span(s1)
     assert s4.a == 90
     assert s4.b == 10
+
+
+def test_connecting_span_at_origin():
+
+    s1 = Span(50, 60, 100, True)
+    s2 = Span(0, 30, 100, True)
+    s3 = s1.connecting_span(s2)
+    assert s3.a == 60
+    assert s3.b == 0
+
+
+def test_connectin_span_over_origin():
+
+    s1 = Span(50, 60, 100, True)
+    s2 = Span(5, 30, 100, True)
+    s3 = s1.connecting_span(s2)
+    assert s3.a == 60
+    assert s3.b == 5
+
+
+def test_self_connecting_span():
+    s1 = Span(50, 60, 100, True)
+    s2 = s1.connecting_span(s1)
+    assert s2.a == 60
+    assert s2.b == 50
 
 
 def test_connectin_span_with_overlap():

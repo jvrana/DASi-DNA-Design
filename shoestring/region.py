@@ -24,15 +24,15 @@ class Span(Container, Iterable, Sized):
         self.cyclic = cyclic
         if not cyclic or not allow_wrap:
             bounds = self.bounds()
-            if not bounds[0] <= a <= bounds[1]:
+            if not bounds[0] <= a < bounds[1]:
                 raise IndexError(
-                    "Start {} must be within ({}, {})".format(a, index, index + l)
+                    "Start {} must be in [{}, {})".format(a, index, index + l)
                 )
             if not bounds[0] <= b <= bounds[1]:
                 raise IndexError(
-                    "End {} must be within ({}, {})".format(b, index, index + l)
+                    "End {} must be in [{}, {}]".format(b, index, index + l)
                 )
-        if a - index > l or a - index < 0:
+        if a - index >= l or a - index < 0:
             self.a = self.t(a)
         else:
             self.a = a
@@ -60,7 +60,7 @@ class Span(Container, Iterable, Sized):
         else:
             return [(self.a, self.b)]
 
-    def new(self, a, b, allow_wrap=False):
+    def new(self, a, b, allow_wrap=True):
         return self.__class__(
             a,
             b,
@@ -71,14 +71,21 @@ class Span(Container, Iterable, Sized):
         )
 
     def sub(self, a, b):
+        if a == b:
+            return self.new(a, b)
         if b is not None and a > b and not self.cyclic:
             raise ValueError(
                 "Start {} cannot exceed end {} for linear spans".format(a, b)
             )
-        copied = copy(self)
-        copied.a = a
-        copied.b = b
-        return copied
+        if a not in self:
+            raise IndexError(
+                "Cannot make subspan. Start {} is not contained in {}".format(a, self)
+            )
+        if self.t(b - 1) not in self:
+            raise IndexError(
+                "Cannot make subspan. End {} is not contained in {}".format(self.t(b - 1), self)
+            )
+        return self.new(a, b)
 
     def same_context(self, other):
         return (
@@ -108,13 +115,13 @@ class Span(Container, Iterable, Sized):
         """Return a tuple of differences between this span and the other span."""
         self.force_context(other)
         if other.a in self and other.b not in self:
-            return (self.sub(self.a, other.a),)
+            return (self.new(self.a, other.a),)
         elif other.b in self and other.a not in self:
-            return (self.sub(other.b, self.b),)
+            return (self.new(other.b, self.b),)
         if other in self:
-            return self.sub(self.a, other.a), self.sub(other.b, self.b)
+            return self.new(self.a, other.a), self.new(other.b, self.b)
         elif self in other:
-            return (self.sub(self.a, self.a),)
+            return (self.new(self.a, self.a),)
         else:
             return ((self[:]),)
 
@@ -212,11 +219,12 @@ class Span(Container, Iterable, Sized):
         elif issubclass(type(other), Span):
             if not self.same_context(other):
                 return False
-            return (
-                other.a in self
-                and other.t(other.b - 1) in self
-                and len(other) <= len(self)
-            )
+            if other.a == other.b == self.a:
+                # special case where starting indices and ending indices are the same
+                return True
+            else:
+                g = [other.a in self, other.t(other.b - 1) in self, len(other) <= len(self)]
+                return all(g)
 
     def __len__(self):
         return sum([r[1] - r[0] for r in self.ranges()])
@@ -255,7 +263,7 @@ class Span(Container, Iterable, Sized):
                 j = self.b
             else:
                 j = self[val.stop]
-            return self.sub(i, j)
+            return self.new(i, j)
         elif isinstance(val, tuple):
             if len(val) > 2:
                 raise ValueError(
@@ -328,7 +336,7 @@ class Region(Span):
         direction=FORWARD,
         name=None,
         id=None,
-        allow_wrap=False,
+        allow_wrap=True,
     ):
         self.name = name
         self.id = id

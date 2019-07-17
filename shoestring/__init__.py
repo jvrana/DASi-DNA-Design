@@ -361,42 +361,72 @@ class AlignmentContainer(object):
 
         def create_edge(group, other_group):
             # verify contexts are the same
-            assert other_group.query_region.same_context(group.query_region)
+            r1 = group.query_region
+            r2 = other_group.query_region
+            assert r2.same_context(r1)
 
-            if (
-                group.query_region in other_group.query_region
-                or other_group.query_region in group.query_region
-            ):
+            if r1 in r2 or r2 in r1:
                 return
-            if not other_group.query_region.a == group.query_region.a:
-                if group.query_region.a > other_group.query_region.a:
-                    overlap = group.query_region.intersection(other_group.query_region)
-                    if overlap:
-                        if len(overlap) > 15:
-                            add_edge(group, other_group, weight=50.0, name="overlap")
-                    else:
-                        connecting_span = group.query_region.connecting_span(
-                            other_group.query_region
-                        )
-                        if connecting_span:
-                            add_edge(
-                                group,
-                                other_group,
-                                weight=100.0 + len(connecting_span),
-                                name="synthesis",
-                            )
+            if r2.a in r1 and r2.b not in r1:
+                # strict forward overlap
+                overlap = r1.intersection(r2)
+                if not overlap:
+                    raise Exception("We expected an overlap here")
+                # TODO: penalize small overlap
+                add_edge(group, other_group, weight=50.0, name="overlap")
+            elif r2.a not in r1 and r2.b not in r1:
+                try:
+                    connecting_span = r1.connecting_span(r2)
+                except Exception as e:
+                    print(r1)
+                    print(r2)
+                    raise e
+                if connecting_span:
+                    span_length = len(connecting_span)
+                elif r1.consecutive(r2):
+                    span_length = 0
+                else:
+                    print(r1)
+                    print(r2)
+                    raise Exception("Everything must be overlap or have span")
+                add_edge(
+                    group, other_group, weight=100.0 + span_length, name="synthesis"
+                )
+
+            # if r2.a > r1.a:
+            #     if r1 in r2 or r2 in r1:
+            #         return
+            #     overlap = r1.intersection(r2)
+            #     if overlap:
+            #         if len(overlap) > 15:
+            #             add_edge(group, other_group, weight=50.0, name="overlap")
+            #     else:
+            #
+            #         connecting_span = r1.connecting_span(r2)
+            #         if connecting_span:
+            #             span_length = len(connecting_span)
+            #         else:
+            #             span_length = 0
+            #         add_edge(
+            #             group, other_group, weight=100.0 + span_length, name="synthesis"
+            #         )
 
         # produce non-spanning edges
         # makes edges for any regions
         groups, group_keys = sort_with_keys(
-            self.alignment_groups, key=lambda g: g.query_region.a
+            self.get_groups_by_types(
+                [
+                    Constants.PCR_PRODUCT,
+                    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+                    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+                    Constants.PCR_PRODUCT_WITH_PRIMERS,
+                    Constants.FRAGMENT,
+                ]
+            ),
+            key=lambda g: g.query_region.a,
         )
         for g1, g2 in itertools.product(groups, repeat=2):
-            try:
-                homology = g1.query_region[-Constants.MAX_HOMOLOGY :]
-                create_edge(g1, g2)
-            except IndexError:
-                continue
+            create_edge(g1, g2)
         return G
 
     # TODO: change 'start' and 'end' to left and right end for regions...

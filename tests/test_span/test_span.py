@@ -22,6 +22,15 @@ class TestInit:
             else:
                 assert len(s) == b - a
 
+    def test_init_should_raise(self):
+        with pytest.raises(IndexError):
+            Span(10, 10, 10, False)
+
+    def test_init_should_raise2(self):
+        with pytest.raises(IndexError):
+            Span(9408, 4219, 9408, True)
+
+
     def test_init_linear(self):
         s = Span(10, 80, 100, False)
         assert s.a == 10
@@ -132,6 +141,18 @@ class TestContains:
             assert s2 in s1
             assert not s1 in s2
 
+        def test_contains_empty(self):
+            s1 = Span(10, 50, 100, True)
+            s2 = Span(30, 30, 100, True)
+            assert s2 in s1
+            assert not s1 in s2
+
+        def test_contains_empty2(self):
+            s1 = Span(10, 50, 100, True)
+            s2 = Span(10, 10, 100, True)
+            assert s2 in s1
+            assert not s1 in s2
+
         def test_contains_self(self):
             s1 = Span(10, 50, 100, True)
             assert s1 in s1
@@ -152,6 +173,18 @@ class TestContains:
             s2 = Span(85, 10, 100, True)
             assert s2 in s1
             assert s1 not in s2
+
+        def test_contains_example(self):
+            r1 = Span(5947, 4219, 9408, True)
+            r2 = Span(9408, 4219, 9408, True)
+            assert r2 in r1
+            assert not r1 in r2
+
+        def test_contains_example2(self):
+            r1 = Span(59, 42, 94, True)
+            r2 = Span(94, 42, 94, True)
+            assert r2 in r1
+            assert not r1 in r2
 
 
 class TestIntersection:

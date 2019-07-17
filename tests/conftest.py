@@ -23,11 +23,10 @@ def blast_factory(here):
     )
     templates = load_genbank_glob(join(here, "data/test_data/genbank/templates/*.gb"))
     queries = make_circular(
-            load_genbank_glob(
+        load_genbank_glob(
             join(here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb")
         )
     )
-
 
     factory.add_records(primers, PRIMERS)
     factory.add_records(templates, TEMPLATES)

@@ -1,16 +1,15 @@
 from bisect import bisect_left
-from copy import copy
 from typing import List, Dict
 
 import networkx as nx
 from Bio.SeqRecord import SeqRecord
-from lobio.models import Region, Context
 from more_itertools import partition, flatten, unique_everseen
 
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
 from .blastbiofactory import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
 import itertools
+from .region import Region
 
 
 class Constants(object):
@@ -78,7 +77,7 @@ class Alignment(object):
             )
 
     def is_perfect_subject(self):
-        return len(self.subject_region) == len(self.subject_region.context)
+        return len(self.subject_region) == self.subject_region.context_length
 
     def sub_region(self, qstart: int, qend: int, type=None):
         """
@@ -90,12 +89,12 @@ class Alignment(object):
         :param type: optional type of alignment to return
         :return:
         """
-        query_copy = self.query_region.sub_region(qstart, qend)
+        query_copy = self.query_region.sub(qstart, qend)
         subject_copy = self.subject_region.copy()
-        delta_s = qstart - self.query_region.left_end
-        delta_e = self.query_region.right_end - qend
-        subject_copy.extend_left_end(-delta_s)
-        subject_copy.extend_right_end(-delta_e)
+        delta_s = qstart - self.query_region.a
+        delta_e = self.query_region.b - qend
+        subject_copy.a += -delta_s
+        subject_copy.b += -delta_e
         if type is None:
             type = self.type
         self.validate()
@@ -131,33 +130,35 @@ class AlignmentGroup(object):
 
     # TODO: making subregions for all alignments takes a LONG TIME (5X shorter if you skip this).
     def sub_region(self, qstart: int, qend: int, type: str):
-        alignments_copy = [a.sub_region(qstart, qend) for a in self.alignments]
-        for a in alignments_copy:
-            a.type = type
+        # alignments_copy = [a.sub_region(qstart, qend) for a in self.alignments]
+        # for a in alignments_copy:
+        #     a.type = type
         return self.__class__(
-            query_region=self.query_region.sub_region(qstart, qend),
-            alignments=alignments_copy,
+            query_region=self.query_region.sub(qstart, qend),
+            alignments=[],
             name="subregion",
         )
 
 
 def blast_to_region(query_or_subject, seqdb):
     data = query_or_subject
-    l = data["length"]
     record = seqdb[data["origin_key"]]
-    l = len(record)
-    # if data['circular']:
-    #     assert l % 2 == 0
-    #     l = int(l / 2.0)
+
     s, e = data["start"], data["end"]
     if data["strand"] == -1:
         s, e = e, s
+    l = len(record)
+    # if data['circular'] and e > l and data['length'] == 2 * l:
+    #     e -= l
     region = Region(
-        s,
+        s - 1,
         e,
+        length=l,
+        cyclic=data["circular"],
         direction=data["strand"],
-        context=Context(l, data["circular"], start_index=1),
+        index=0,
         name="{}: {}".format(record.id, record.name),
+        allow_wrap=True,
     )
     return region
 
@@ -223,26 +224,26 @@ class AlignmentContainer(object):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
-        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.left_end)
-        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.right_end)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.a)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.b)
 
         pairs = []
 
         for g in alignment_groups:
             # add products with both existing products
             fwd_bind = bisect_slice_between(
-                fwd, fwd_keys, g.query_region.left_end + 10, g.query_region.right_end
+                fwd, fwd_keys, g.query_region.a + 10, g.query_region.b
             )
             rev_bind = bisect_slice_between(
-                rev, rev_keys, g.query_region.left_end, g.query_region.right_end - 10
+                rev, rev_keys, g.query_region.a, g.query_region.b - 10
             )
-            rkeys = [r.query_region.left_end for r in rev_bind]
+            rkeys = [r.query_region.a for r in rev_bind]
             for f in fwd_bind:
-                i = bisect_left(rkeys, f.query_region.left_end)
+                i = bisect_left(rkeys, f.query_region.a)
                 for r in rev_bind[i:]:
                     primer_group = g.sub_region(
-                        f.query_region.left_end,
-                        r.query_region.right_end,
+                        f.query_region.a,
+                        r.query_region.b,
                         Constants.PCR_PRODUCT_WITH_PRIMERS,
                     )
                     pairs += primer_group.alignments
@@ -250,15 +251,15 @@ class AlignmentContainer(object):
             # add products with one existing primer
             for f in fwd_bind:
                 left_primer_group = g.sub_region(
-                    f.query_region.left_end,
-                    g.query_region.right_end,
+                    f.query_region.a,
+                    g.query_region.b,
                     Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
                 )
                 pairs += left_primer_group.alignments
             for r in rev_bind:
                 right_primer_group = g.sub_region(
-                    g.query_region.left_end,
-                    r.query_region.right_end,
+                    g.query_region.a,
+                    r.query_region.b,
                     Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
                 )
                 pairs += right_primer_group.alignments
@@ -268,32 +269,26 @@ class AlignmentContainer(object):
         self, alignment_groups: List[AlignmentGroup]
     ) -> List[Alignment]:
         group_sort, group_keys = sort_with_keys(
-            alignment_groups, key=lambda x: x.query_region.left_end
+            alignment_groups, key=lambda x: x.query_region.a
         )
         alignments = []
         for g in group_sort:
-            i = bisect_left(group_keys, g.query_region.left_end)
-            arr, keys = sort_with_keys(
-                group_sort[i:], key=lambda x: x.query_region.left_end
-            )
+            i = bisect_left(group_keys, g.query_region.a)
+            arr, keys = sort_with_keys(group_sort[i:], key=lambda x: x.query_region.a)
             overlapping = bisect_slice_between(
-                arr, keys, g.query_region.left_end, g.query_region.right_end
+                arr, keys, g.query_region.a, g.query_region.b
             )
 
             for og in overlapping:
                 if og is not g:
-                    if og.query_region.left_end - g.query_region.left_end > 20:
+                    if og.query_region.a - g.query_region.a > 20:
                         ag1 = g.sub_region(
-                            g.query_region.left_end,
-                            og.query_region.left_end,
-                            Constants.PCR_PRODUCT,
+                            g.query_region.a, og.query_region.a, Constants.PCR_PRODUCT
                         )
                         alignments += ag1.alignments
-                    if g.query_region.right_end - og.query_region.left_end > 20:
+                    if g.query_region.b - og.query_region.a > 20:
                         ag2 = g.sub_region(
-                            og.query_region.left_end,
-                            g.query_region.right_end,
-                            Constants.PCR_PRODUCT,
+                            og.query_region.a, g.query_region.b, Constants.PCR_PRODUCT
                         )
                         alignments += ag2.alignments
         return alignments
@@ -360,32 +355,49 @@ class AlignmentContainer(object):
 
         def create_edge(group, other_group):
             # verify contexts are the same
-            if not other_group.query_region.context == group.query_region.context:
-                assert other_group.query_region.context == group.query_region.context
+            assert other_group.query_region.same_context(group.query_region)
 
-            if group.query_region.encompasses(other_group.query_region):
+            if (
+                group.query_region in other_group.query_region
+                or other_group.query_region in group.query_region
+            ):
                 return
-            elif other_group.query_region.encompasses(group.query_region):
-                return
-            if not other_group.query_region.left_end == group.query_region.left_end:
-                overlap = group.query_region.get_overlap(other_group.query_region)
-                if overlap:
-                    add_edge(group, other_group, weight=50.0, name="overlap")
-                else:
-                    gap_span = group.query_region.get_gap_span(other_group.query_region)
-                    if gap_span is not None:
-                        add_edge(
-                            group, other_group, weight=gap_span + 100.0, name="gap"
-                        )
+            if not other_group.query_region.a == group.query_region.a:
+                if group.query_region.a > other_group.query_region.a:
+                    overlap = group.query_region.intersection(other_group.query_region)
+                    if overlap:
+                        add_edge(group, other_group, weight=50.0, name="overlap")
                     else:
-                        raise Exception(
-                            "There must be either a gap or an overlap. There is no other option."
-                        )
+                        connecting_span = group.query_region[
+                            group.query_region.a + 1, other_group.query_region.a - 1
+                        ]
+                        if len(connecting_span) > 0:
+                            add_edge(
+                                group,
+                                other_group,
+                                weight=100.0 + len(connecting_span),
+                                name="synthesis",
+                            )
+                # overlap = group.query_region.get_overlap(other_group.query_region)
+                # if overlap:
+                #     add_edge(group, other_group, weight=50.0, name="overlap")
+                # else:
+                #     gap_span = group.query_region.get_gap_span(other_group.query_region)
+                #     if gap_span is not None:
+                #         add_edge(
+                #             group, other_group, weight=gap_span + 100.0, name="gap"
+                #         )
+                #     else:
+                #         # try it again
+                #         gap_span = group.query_region.get_gap_span(other_group.query_region)
+                #         raise Exception(
+                #             "There must be either a gap or an overlap. There is no other option."
+                #         )
 
         # produce non-spanning edges
         # makes edges for any regions
         groups, group_keys = sort_with_keys(
-            self.alignment_groups, key=lambda g: g.query_region.left_end
+            self.alignment_groups, key=lambda g: g.query_region.a
         )
         for g1, g2 in itertools.product(groups, repeat=2):
             try:
@@ -398,11 +410,11 @@ class AlignmentContainer(object):
         #         homology = g.query_region[-Constants.MAX_HOMOLOGY :]
         #     except IndexError:
         #         continue
-        #     i = bisect_left(group_keys, homology.left_end)
+        #     i = bisect_left(group_keys, homology.a)
         #     other_groups = groups[i:]
         #     if homology.spans_origin():
         #         print("SPANS!")
-        #         i = bisect_left(group_keys, homology.right_end)
+        #         i = bisect_left(group_keys, homology.b)
         #         other_groups += groups[:i]
         #     for g2 in other_groups:
         #         create_edge(g, g2)
@@ -412,12 +424,7 @@ class AlignmentContainer(object):
 
     @staticmethod
     def alignment_hash(a):
-        return (
-            a.query_region.left_end,
-            a.query_region.right_end,
-            a.query_region.direction,
-            a.type,
-        )
+        return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
 
     @classmethod
     def group(cls, alignments):

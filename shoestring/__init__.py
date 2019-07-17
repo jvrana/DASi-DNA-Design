@@ -28,6 +28,15 @@ class Constants(object):
     PCR_PRODUCT_WITH_RIGHT_PRIMER = (
         "PCR_PRODUCT_WITH_RIGHT_PRIMER"
     )  # PCR product with existing right primer
+
+    PCR_COST = {
+        PCR_PRODUCT: 30 + 25 + 10,
+        PCR_PRODUCT_WITH_PRIMERS: 30,
+        PCR_PRODUCT_WITH_LEFT_PRIMER: 15,
+        PCR_PRODUCT_WITH_RIGHT_PRIMER: 15,
+        FRAGMENT: 0
+    }
+
     PRIMER = "PRIMER"  # a primer binding alignment
 
     COLOR = "edge_type"
@@ -363,6 +372,7 @@ class AlignmentContainer(object):
             # verify contexts are the same
             r1 = group.query_region
             r2 = other_group.query_region
+            r1_cost = Constants.PCR_COST[group.type]
             assert r2.same_context(r1)
 
             if r1 in r2 or r2 in r1:
@@ -373,44 +383,24 @@ class AlignmentContainer(object):
                 if not overlap:
                     raise Exception("We expected an overlap here")
                 # TODO: penalize small overlap
-                add_edge(group, other_group, weight=50.0, name="overlap")
+                add_edge(group, other_group, weight=50.0 + r1_cost, name="overlap")
             elif r2.a not in r1 and r2.b not in r1:
                 try:
                     connecting_span = r1.connecting_span(r2)
                 except Exception as e:
-                    print(r1)
-                    print(r2)
                     raise e
                 if connecting_span:
                     span_length = len(connecting_span)
                 elif r1.consecutive(r2):
                     span_length = 0
                 else:
+                    return
                     print(r1)
                     print(r2)
                     raise Exception("Everything must be overlap or have span")
                 add_edge(
-                    group, other_group, weight=100.0 + span_length, name="synthesis"
+                    group, other_group, weight=50.0 + span_length * 0.07 + 89 + r1_cost, name="synthesis"
                 )
-
-            # if r2.a > r1.a:
-            #     if r1 in r2 or r2 in r1:
-            #         return
-            #     overlap = r1.intersection(r2)
-            #     if overlap:
-            #         if len(overlap) > 15:
-            #             add_edge(group, other_group, weight=50.0, name="overlap")
-            #     else:
-            #
-            #         connecting_span = r1.connecting_span(r2)
-            #         if connecting_span:
-            #             span_length = len(connecting_span)
-            #         else:
-            #             span_length = 0
-            #         add_edge(
-            #             group, other_group, weight=100.0 + span_length, name="synthesis"
-            #         )
-
         # produce non-spanning edges
         # makes edges for any regions
         groups, group_keys = sort_with_keys(

@@ -61,7 +61,14 @@ class Span(Container, Iterable, Sized):
             return [(self.a, self.b)]
 
     def new(self, a, b, allow_wrap=False):
-        return self.__class__(a, b, self.context_length, self.cyclic, index=self.index, allow_wrap=allow_wrap)
+        return self.__class__(
+            a,
+            b,
+            self.context_length,
+            self.cyclic,
+            index=self.index,
+            allow_wrap=allow_wrap,
+        )
 
     def sub(self, a, b):
         if b is not None and a > b and not self.cyclic:
@@ -88,7 +95,12 @@ class Span(Container, Iterable, Sized):
             return True
         elif self in other:
             return True
-        elif other.a in self or other.b - 1 in self or self.a in other or self.b - 1 in other:
+        elif (
+            other.a in self
+            or other.b - 1 in self
+            or self.a in other
+            or self.b - 1 in other
+        ):
             return True
         return False
 
@@ -175,13 +187,13 @@ class Span(Container, Iterable, Sized):
     #         if self.cyclic:
     #             return self[self.b+1, self.a-1],
     #         else:
-                # return
+    # return
 
     def invert(self):
         if self.cyclic:
-            return (self[self.b+1,self.a-1],)
+            return (self[self.b + 1, self.a - 1],)
         else:
-            return self[:,self.a-1], self[self.b+1,:]
+            return self[:, self.a - 1], self[self.b + 1, :]
 
     def __eq__(self, other):
         return self.same_context(other) and self.a == other.a and self.b == other.b

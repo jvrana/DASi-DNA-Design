@@ -217,7 +217,7 @@ class TestSlice(object):
         sliced = s[i:j]
         assert len(sliced) == j - i
 
-    @pytest.mark.parametrize('i', range(10))
+    @pytest.mark.parametrize("i", range(10))
     def test_slice_and_invert_slice_should_total_length(self, i):
         s = Span(10, 100, 200, True)
         if i != 4:

@@ -96,7 +96,11 @@ class Alignment(object):
         query_copy = self.query_region.sub(qstart, qend)
         delta_a = qstart - self.query_region.a
         delta_b = qend - self.query_region.b
-        subject_copy = self.subject_region.new(self.subject_region.a + delta_a, self.subject_region.b + delta_b, allow_wrap=True)
+        subject_copy = self.subject_region.new(
+            self.subject_region.a + delta_a,
+            self.subject_region.b + delta_b,
+            allow_wrap=True,
+        )
         if type is None:
             type = self.type
         self.validate()
@@ -368,9 +372,12 @@ class AlignmentContainer(object):
                 if group.query_region.a > other_group.query_region.a:
                     overlap = group.query_region.intersection(other_group.query_region)
                     if overlap:
-                        add_edge(group, other_group, weight=50.0, name="overlap")
+                        if len(overlap) > 15:
+                            add_edge(group, other_group, weight=50.0, name="overlap")
                     else:
-                        connecting_span = group.query_region.connecting_span(other_group.query_region)
+                        connecting_span = group.query_region.connecting_span(
+                            other_group.query_region
+                        )
                         if connecting_span:
                             add_edge(
                                 group,
@@ -387,9 +394,9 @@ class AlignmentContainer(object):
         for g1, g2 in itertools.product(groups, repeat=2):
             try:
                 homology = g1.query_region[-Constants.MAX_HOMOLOGY :]
+                create_edge(g1, g2)
             except IndexError:
                 continue
-            create_edge(g1, g2)
         return G
 
     # TODO: change 'start' and 'end' to left and right end for regions...

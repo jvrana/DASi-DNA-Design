@@ -1,3 +1,5 @@
+# TODO: convert everything to numpy math
+
 from shoestring.utils import SpanDictionary, InfiniteDict
 from tqdm import tqdm
 from itertools import combinations

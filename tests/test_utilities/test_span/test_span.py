@@ -1,4 +1,4 @@
-from shoestring.region import Span
+from shoestring.utils import Span
 import pytest
 
 
@@ -29,7 +29,6 @@ class TestInit:
     def test_init_should_raise2(self):
         with pytest.raises(IndexError):
             Span(9408, 4219, 9408, True)
-
 
     def test_init_linear(self):
         s = Span(10, 80, 100, False)

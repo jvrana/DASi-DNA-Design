@@ -9,7 +9,7 @@ from .__version__ import __version__, __title__, __authors__, __homepage__, __re
 from .blastbiofactory import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
 import itertools
-from .region import Region
+from .utils import Region
 
 
 class Constants(object):
@@ -34,7 +34,7 @@ class Constants(object):
         PCR_PRODUCT_WITH_PRIMERS: 30,
         PCR_PRODUCT_WITH_LEFT_PRIMER: 15,
         PCR_PRODUCT_WITH_RIGHT_PRIMER: 15,
-        FRAGMENT: 0
+        FRAGMENT: 0,
     }
 
     PRIMER = "PRIMER"  # a primer binding alignment
@@ -399,8 +399,12 @@ class AlignmentContainer(object):
                     print(r2)
                     raise Exception("Everything must be overlap or have span")
                 add_edge(
-                    group, other_group, weight=50.0 + span_length * 0.07 + 89 + r1_cost, name="synthesis"
+                    group,
+                    other_group,
+                    weight=50.0 + span_length * 0.07 + 89 + r1_cost,
+                    name="synthesis",
                 )
+
         # produce non-spanning edges
         # makes edges for any regions
         groups, group_keys = sort_with_keys(

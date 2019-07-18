@@ -53,7 +53,7 @@ klocs:
 
 
 colab:
-	cd tests; jupyter notebook \
+	cd scratch; jupyter notebook \
    --NotebookApp.allow_origin='https://colab.research.google.com' \
    --NotebookApp.port_retries=0 --port=8889
 

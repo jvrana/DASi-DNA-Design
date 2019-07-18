@@ -1,13 +1,9 @@
 from collections.abc import Container, Iterable, Sized
 from itertools import chain
-from copy import copy
 
 
 class SpanError(Exception):
     pass
-
-
-# TODO: move region code to lobio
 
 
 class Span(Container, Iterable, Sized):
@@ -83,7 +79,9 @@ class Span(Container, Iterable, Sized):
             )
         if self.t(b - 1) not in self:
             raise IndexError(
-                "Cannot make subspan. End {} is not contained in {}".format(self.t(b - 1), self)
+                "Cannot make subspan. End {} is not contained in {}".format(
+                    self.t(b - 1), self
+                )
             )
         return self.new(a, b)
 
@@ -223,7 +221,11 @@ class Span(Container, Iterable, Sized):
                 # special case where starting indices and ending indices are the same
                 return True
             else:
-                g = [other.a in self, other.t(other.b - 1) in self, len(other) <= len(self)]
+                g = [
+                    other.a in self,
+                    other.t(other.b - 1) in self,
+                    len(other) <= len(self),
+                ]
                 return all(g)
 
     def __len__(self):
@@ -299,63 +301,3 @@ class Span(Container, Iterable, Sized):
             self.cyclic,
             self.index,
         )
-
-
-"""
-Project: jdna
-File: region
-Author: Justin
-Date: 2/21/17
-
-Description: Basic functionality for defining regions of linear, circularized, or reversed
-regions of a sequence.
-
-"""
-
-
-class Direction(object):
-    FORWARD = 1
-    REVERSE = -1
-    BOTH = 0
-
-
-class Region(Span):
-    __slots__ = ["name", "id", "direction"]
-
-    FORWARD = Direction.FORWARD
-    REVERSE = Direction.REVERSE
-    BOTH = Direction.BOTH
-
-    def __init__(
-        self,
-        start,
-        end,
-        length,
-        cyclic=False,
-        index=0,
-        direction=FORWARD,
-        name=None,
-        id=None,
-        allow_wrap=True,
-    ):
-        self.name = name
-        self.id = id
-        assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
-        self.direction = direction
-        super().__init__(
-            start, end, length, cyclic=cyclic, index=index, allow_wrap=allow_wrap
-        )
-
-    @property
-    def start(self):
-        if self.direction == self.REVERSE:
-            return self.b
-        else:
-            return self.a
-
-    @property
-    def end(self):
-        if self.direction == self.REVERSE:
-            return self.a
-        else:
-            return self.b

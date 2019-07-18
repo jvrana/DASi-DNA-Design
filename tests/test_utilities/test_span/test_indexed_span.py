@@ -1,4 +1,4 @@
-from shoestring.region import Span
+from shoestring.utils import Span
 import pytest
 
 

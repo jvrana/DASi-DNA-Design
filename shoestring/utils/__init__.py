@@ -1,4 +1,9 @@
 import bisect
+from .span_dictionary import SpanDictionary
+from .infinite_dictionary import InfiniteDict
+from .span import Span
+from .region import Region
+import functools
 
 
 def sort_with_keys(a, key):
@@ -34,3 +39,10 @@ def perfect_subject(data):
         return True
     elif data["strand"] == -1 and data["end"] == 1 and data["start"] == data["length"]:
         return True
+
+
+def partialclass(cls, *args, **kwds):
+    class PartialClass(cls):
+        __init__ = functools.partialmethod(cls.__init__, *args, **kwds)
+
+    return PartialClass

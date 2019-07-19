@@ -1,6 +1,7 @@
 from shoestring.utils import InfiniteDict
 import pytest
 
+
 def test_ceil_false():
     d = InfiniteDict()
     d[1] = 10
@@ -19,8 +20,8 @@ def test_ceil_false():
     assert d[102] == 200
 
 
-@pytest.mark.parametrize('ceil', [True, False])
-@pytest.mark.parametrize('i', range(-300, 300, 10))
+@pytest.mark.parametrize("ceil", [True, False])
+@pytest.mark.parametrize("i", range(-300, 300, 10))
 def test_infinite(ceil, i):
     d = InfiniteDict(ceil=ceil)
     d[1] = 10
@@ -43,4 +44,3 @@ def test_ceil_true():
     assert d[100] == 200
     assert d[101] == 200
     assert d[102] == 200
-

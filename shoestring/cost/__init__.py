@@ -1,253 +1,193 @@
-# TODO: convert everything to numpy math
+# this quickly computes the minimum cost per span for primers
+# todo: handle negative span
 
-from shoestring.utils import SpanDictionary, InfiniteDict
-from tqdm import tqdm
-from itertools import combinations
-class Cost(object):
-    INF = 100_000.0
+import numpy as np
 
-    SCORING = {"materials": 1.0, "time": 20.0, "efficiency": 1.0}
 
-    MIN_PRIMER_ANNEAL = 20
+class JunctionCost(object):
 
-    PRIMER_COST_PER_BP = SpanDictionary(
-        {
-            (0, 40): {"base": 0, "bp": 0.6, "time": 1.5},
-            (40, 80): {"base": 0, "bp": 0.8, "time": 2.0},
-        }
-    )
+    # jxn_efficiency[30:40] = 0.9" means for 30 <= bp < 40, junction efficiency is 90%
+    jxn_efficiency = np.zeros(301, dtype=np.float)
+    jxn_efficiency[:10] = 0.0
+    jxn_efficiency[10:20] = 0.1
+    jxn_efficiency[20:30] = 0.8
+    jxn_efficiency[30:40] = 0.9
+    jxn_efficiency[40:50] = 0.8
+    jxn_efficiency[50:100] = 0.75
+    jxn_efficiency[100:120] = 0.5
+    jxn_efficiency[120:150] = 0.3
+    jxn_efficiency[150:250] = 0.1
+    jxn_efficiency[250:300] = 0.0
 
-    PRIMER_COST = 0.60
+    day_cost = 20.0
+    material_importance = 1.0
 
-    GENE_SYNTHESIS_COST_RANGES = SpanDictionary(
-        {
-            (0, 1): {"base": 0.0, "time": 0},
-            (1, 100): {"base": INF, "time": INF},
-            (100, 500): {"base": 89.0, "time": 3.0},
-            (500, 750): {"base": 129.0, "time": 3.0},
-            (750, 1000): {"base": 149.0, "time": 4.0},
-            (1000, 1250): {"base": 209.0, "time": 7.0},
-            (1250, 1500): {"base": 249.0, "time": 7.0},
-            (1500, 1750): {"base": 289.0, "time": 7.0},
-            (1750, 2000): {"base": 329.0, "time": 7.0},
-            (2000, 2250): {"base": 399.0, "time": 7.0},
-        }
-    )
+    primers = np.array([[16.0, 60.0, 0.0, 0.3, 1.5], [45.0, 200.0, 0.0, 0.8, 2.5]])
 
-    JUNCTION_EFFICIENCY = SpanDictionary(
-        {
-            (-INF, 10): 0.0,
-            (10, 20): 0.1,
-            (20, 30): 0.75,
-            (30, 100): 0.9,
-            (100, INF): 0.0,
-        }
-    )
+    def __init__(self):
+        self.min_span = -300
 
-    JUNCTION_GAP_SPAN_RANGE = (-300, 1000, 5)
+        p = []  # cost array
+        a = []  # ranges array
+        for row in self.primers:
+            _a = np.arange(row[0], row[1], dtype=np.int64)
+            a.append(_a)
+            p.append(np.broadcast_to(row[2:], (_a.shape[0], row[2:].shape[0])))
+        a = np.concatenate(a).reshape(-1, 1)
+        p = np.concatenate(p)
 
-    def primer_extension_options(self):
-        return dict(self.PRIMER_COST_PER_BP.items())
+        assert len(a) == len(p)
 
-    @classmethod
-    def score(cls, materials, time, efficiency):
-        return {"materials": materials, "time": time, "efficiency": efficiency}
+        # 2D materials cost matrix
+        m = p[:, 1, np.newaxis] * a + p[:, 0, np.newaxis]
+        m = m + m.T
 
-    def _primer_cost(self, v, primer_length):
-        """Compute the cost of the primer from the parameter dictionaries above."""
-        return v["base"] + v["bp"] * primer_length
+        # 2D time cost matrix
+        t = p[:, 2, np.newaxis]
+        t = np.maximum(t, t.T)
 
-    def score_primer_extension_cost(
-        self, span, primer1=None, ext1=None, primer2=None, ext2=None
-    ):
-        """
+        # the spanning distance
+        max_span = 2 * a.max()
+        span = np.arange(self.min_span, max_span - self.min_span, 1)
 
-        :param span:
-        :param primer1: {'base', 'time', 'bp'}
-        :param primer2: {'base', 'time', 'bp'}
-        :param ext1:
-        :param ext2:
-        :return:
-        """
-        if primer1:
-            primer1_cost = self._primer_cost(primer1, self.MIN_PRIMER_ANNEAL + ext1)
-            t1 = primer1["time"]
+        # extension array
+        ext = a - min(a)
+
+        # overlap (sum of extensions - span) for primers of lengths a[x], a[y]
+        relative_span = span - (ext + ext.T)[:, :, np.newaxis]
+        relative_span = relative_span.swapaxes(2, 0).swapaxes(1, 2)
+
+        # sanity checks
+        assert relative_span[0].shape == (ext.shape[0], ext.shape[0])
+        assert relative_span[0, 0, 0] == self.min_span
+        assert relative_span[0, 1, 0] == self.min_span - 1
+        assert relative_span[0, 0, 1] == self.min_span - 1
+        assert relative_span[0, 1, 1] == self.min_span - 2
+
+        # final costs
+        e = self.jxn_efficiency[
+            np.clip(-relative_span, 0, len(self.jxn_efficiency) - 1)
+        ]
+        self.xyz_costs = (m * self.material_importance + t * self.day_cost) * 1.0 / e
+
+    def plot(self):
+        min_cost_per_span = self.xyz_costs[:, :, :].min(axis=(1, 2))
+
+        import seaborn as sns
+        import pylab as plt
+
+        fig = plt.figure(figsize=(6, 5))
+        ax = fig.gca()
+        sns.scatterplot(
+            y=min_cost_per_span,
+            x=self.min_span + np.arange(len(min_cost_per_span)),
+            ax=ax,
+        )
+        plt.show()
+
+        flexibility = []
+        span = []
+        for i, x in enumerate(self.xyz_costs):
+
+            span.append(i)
+            if x.min() != np.Inf:
+                opts = np.argwhere(x < x.min() + 10.0)
+                flexibility.append(len(opts))
+            else:
+                flexibility.append(0)
+
+        sns.scatterplot(x=np.array(span) + self.min_span, y=flexibility)
+        plt.title("Design Flexibility")
+
+    def junction_cost(self, x, ext=2):
+        if ext == 2:
+            min_cost_per_span = self.xyz_costs[:, :, :].min(axis=(1, 2))
+        elif ext == 1:
+            min_cost_per_span = self.xyz_costs[:, :1, :].min(axis=(1, 2))
         else:
-            primer1_cost = 0
-            ext1 = 0
-            t1 = 0
-        if primer2:
-            primer2_cost = self._primer_cost(primer2, self.MIN_PRIMER_ANNEAL + ext2)
-            t2 = primer2["time"]
-        else:
-            primer2_cost = 0
-            ext2 = 0
-            t2 = 0
-        junction_efficiency = self.JUNCTION_EFFICIENCY[-span + ext1 + ext2][0]
+            min_cost_per_span = self.xyz_costs[:, :1, :1].min(axis=(1, 2))
+        i = x - self.min_span
+        return min_cost_per_span[np.clip(i, 0, len(min_cost_per_span) - 1)]
 
-        m = max([5.0, primer1_cost + primer2_cost])
-        t = max([0.1, t1, t2])
-        score_dict = self.score(materials=m, time=t, efficiency=junction_efficiency)
-        return score_dict
+    def __getitem__(self, span):
+        return self.junction_cost(span)
 
-    def none_primer_extension_cost(self) -> dict:
-        span_to_score_dict = {}
-        for span in range(-150, 150):
 
-            span_to_score_dict.setdefault(span, []).append(
-                self.score_primer_extension_cost(span)
-            )
-        return span_to_score_dict
+class SynthesisCost(object):
+    gene_synthesis_cost = np.zeros((2250, 2))
+    d = {
+        (0, 1): {"base": 0.0, "time": 0},
+        (1, 100): {"base": np.Inf, "time": np.Inf},
+        (100, 500): {"base": 89.0, "time": 3.0},
+        (500, 750): {"base": 129.0, "time": 3.0},
+        (750, 1000): {"base": 149.0, "time": 4.0},
+        (1000, 1250): {"base": 209.0, "time": 7.0},
+        (1250, 1500): {"base": 249.0, "time": 7.0},
+        (1500, 1750): {"base": 289.0, "time": 7.0},
+        (1750, 2000): {"base": 329.0, "time": 7.0},
+        (2000, 2250): {"base": 399.0, "time": 7.0},
+    }
+    for k, v in d.items():
+        gene_synthesis_cost[k[0] : k[1]] = np.array([v["base"], v["time"]])
 
-    def single_primer_extension_cost(self) -> dict:
-        """Calculate scores for the case where only 1 fragment is extendable by primers
+    gene_sizes = np.arange(len(gene_synthesis_cost)).reshape(-1, 1)
+    gene_costs = gene_synthesis_cost[:, 0].reshape(-1, 1)
+    gene_times = gene_synthesis_cost[:, 1].reshape(-1, 1)
+    step_size = 10
 
-        -------|                fragment 1
-            <------             rev Primer
-                |--------       fragment
-        """
-        span_to_score_dict = {}
-        for span in range(-150, 150):
-            for (ext1, val1) in self.PRIMER_COST_PER_BP.items():
-                span_to_score_dict.setdefault(span, []).append(
-                    self.score_primer_extension_cost(span, val1[0], ext1)
-                )
-        return span_to_score_dict
+    def __init__(self, jxn_cost: JunctionCost):
+        self.jxn_cost = jxn_cost
+        self.cost_dict = None
+        self.make_cost_dict(self.step_size)
 
-    def dual_primer_extension_cost(self) -> dict:
-        """Calculate scores for the case where both fragments are extendable by primers
+    def compute_synthesis_costs(self, left_ext=0, right_ext=0, step_size=5):
+        sizes = self.gene_sizes[::step_size, :]
 
-        -------|                fragment 1
-            <------             rev Primer
-                 ------>        fwd primer
-                    |--------   fragment
-        """
-        span_to_score_dict = {}
-        for span in range(-150, 150):
-            for (ext1, val1), (ext2, val2) in combinations(
-                self.PRIMER_COST_PER_BP.items(), r=2
-            ):
-                span_to_score_dict.setdefault(span, []).append(
-                    self.score_primer_extension_cost(span, val1[0], ext1, val2[0], ext2)
-                )
-        return span_to_score_dict
+        span = np.arange(0, 3000, step_size).reshape(1, -1)
+        left_span = np.arange(-500, 500, step_size).reshape(-1, 1)[:, np.newaxis]
+        left_cost = self.jxn_cost.junction_cost(left_span, ext=left_ext)
+        right_span = span - sizes - left_span
+        right_cost = self.jxn_cost.junction_cost(right_span, ext=right_ext)
+        gene_cost = self.gene_costs[sizes]
+        gene_time = self.gene_times[sizes]
 
-    def synthesis_cost(self, primer_ext_cost_left: dict, primer_ext_cost_right: dict):
-        """
-        Computes the cost for a large span that supposed to connect two distance fragments.
+        # TODO:should just get the material costs here and multiply the efficiencies later
+        ext_costs = left_cost + right_cost
 
-        1. shifting the synthesized fragment
-        2. one, both, or none of the fragments are extendable
+        # size, left span, span
+        ext_costs = ext_costs.swapaxes(0, 1)
+        material = ext_costs + gene_cost
+        total = material + gene_time * 20.0
+        return total
 
-        ------------|                 |---------    fragments
-                <-------        --------->          primers
-                      |-------------|               synthesized fragment
+    def optimize_step_size(self, s, ds):
+        step_size = s
+        delta_step = ds
+        y1 = self.compute_synthesis_costs(0, 0, step_size).min(axis=(0, 1)).flatten()
+        x1 = np.arange(len(y1)) * step_size
 
-        :return:
-        """
+        y2 = (
+            self.compute_synthesis_costs(0, 0, step_size - delta_step)
+            .min(axis=(0, 1))
+            .flatten()
+        )
+        x2 = np.arange(len(y2)) * (step_size - delta_step)
+        y2_interp = np.interp(x1, x2, y2)
+        diff = ((y1 - y2_interp) ** 2).sum() / len(y1)
+        return diff
 
-        span_to_score_dict = {}
+    def make_cost_dict(self, step_size):
+        d = {"step": step_size}
 
-        for span in range(100, 2000, 3):
-            span_to_score_dict.setdefault(span, [])
-            for gene_size, gene_cost in self.GENE_SYNTHESIS_COST_RANGES.items(3):
-                gene_cost = gene_cost[0]
-                # e.g. 500bp spanned by 400bp gene would have 100bp span
-                #      500 + 0 - 400 == 100
-                # e.g. 500bp spanned by 400bp gene with -100 left offset would have 200bp span
-                #      500 - -100 - 400 = 200
+        d[0] = self.compute_synthesis_costs(0, 0, step_size).min(axis=(0, 1)).flatten()
+        d[1] = self.compute_synthesis_costs(1, 0, step_size).min(axis=(0, 1)).flatten()
+        d[2] = self.compute_synthesis_costs(1, 1, step_size).min(axis=(0, 1)).flatten()
+        self.cost_dict = d
+        return d
 
-                max_overlap = gene_size - span
-                for left_span in range(0, )
-                left_span = -20  # relative to first fragment
-                right_span = span - left_span - gene_size
-                left_cost = primer_ext_cost_left[left_span]
-                right_cost = primer_ext_cost_right[right_span]
-                score_dict = self.score(
-                    materials=left_cost["materials"]
-                    + right_cost["materials"]
-                    + gene_cost["base"],
-                    time=max(
-                        [left_cost["time"], right_cost["time"], gene_cost["time"]]
-                    ),
-                    efficiency=(
-                        left_cost["efficiency"] ** 2 + right_cost["efficiency"] ** 2
-                    )
-                    ** 0.5,
-                )
-                span_to_score_dict[span].append(score_dict)
-        return span_to_score_dict
+    def get_synthesis_cost(self, span, ext):
+        step_size = self.cost_dict["step"]
+        return self.cost_dict[ext][int(span / step_size)]
 
-    def compute_score(self, materials, time, efficiency):
-        if efficiency == 0:
-            return self.INF
-        m = materials * self.SCORING["materials"]
-        t = time * self.SCORING["time"]
-        if self.SCORING["efficiency"] == 0:
-            e = 1
-        else:
-            e = 1.0 / efficiency * self.SCORING["efficiency"]
-        return (m * t) * e
-
-    def sort_scores(self, d):
-        sorted_dict = {}
-        for span, score_dict_list in d.items():
-            tmp = [dict(_d) for _d in score_dict_list]
-            for s in tmp:
-                s["score"] = self.compute_score(**s)
-            sorted_dict[span] = sorted(tmp, key=lambda x: x["score"])
-        return sorted_dict
-
-    def resolve_scores(self, d):
-        return {k: v[0] for k, v in self.sort_scores(d).items()}
-
-    # def _optimize_primer(self, primer_choices):
-    #     """
-    #     Create a dictionary of gap_span to best_extension case.
-    #
-    #     :param gap_span_start:
-    #     :type gap_span_start:
-    #     :param gap_span_end:
-    #     :type gap_span_end:
-    #     :param gap_span_step:
-    #     :type gap_span_step:
-    #     :param primer_choices:
-    #     :type primer_choices:
-    #     :return:
-    #     :rtype:
-    #     """
-    #     results = {}
-    #
-    #     # iterate through gap span
-    #     for gap_span in tqdm(
-    #         range(*self.JUNCTION_GAP_SPAN_RANGE), desc="optimizing primers"
-    #     ):
-    #         results[gap_span] = None
-    #         for choice in primer_choices:
-    #             if not isinstance(choice, tuple):
-    #                 choice = (choice,)
-    #             extensions = [x["extension"] for x in choice]
-    #             costs = [x["cost"] for x in choice]
-    #             names = [x["name"] for x in choice]
-    #
-    #             total_extension = sum(extensions)
-    #             total_cost = sum(costs)
-    #             junction_efficiency = self._junction_efficiency(
-    #                 -gap_span + total_extension
-    #             )
-    #
-    #             # score
-    #             score = self.INF
-    #             if junction_efficiency > 0:
-    #                 score = total_cost / junction_efficiency
-    #
-    #             _x = results[gap_span]
-    #             if _x is None or score < _x["score"]:
-    #                 results[gap_span] = {
-    #                     "score": score,
-    #                     "cost": total_cost,
-    #                     "efficiency": junction_efficiency,
-    #                     "condition": f"{names}",
-    #                     "extension": f"{extensions}",
-    #                 }
-    #     return results
+    def __getitem__(self, span_ext_tuple: tuple):
+        return self.get_synthesis_cost(*span_ext_tuple)

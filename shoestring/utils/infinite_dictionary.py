@@ -25,4 +25,4 @@ class InfiniteDict(SortedDict):
                 return self.values()[i]
             else:
 
-                return self.values()[max(i-1,0)]
+                return self.values()[max(i - 1, 0)]

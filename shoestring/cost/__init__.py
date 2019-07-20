@@ -30,12 +30,21 @@ class JunctionCost(object):
             [min_anneal, min_anneal + 1, 0.0, 0.0, 0.5],  # special case
         ]
     )
+    primer_rows = [
+        "IDTPrimer",
+        "IDTUltramer",
+        "NoPrimer(Free)"
+    ]
+    primer_cols = [
+        "min_bp", "max_bp", "base_cost", "bp_cost", "time (days)"
+    ]
+
+    assert len(primer_rows) == len(primers)
+    assert len(primer_cols) == len(primers[0]
+                                   )
 
     def __init__(self):
-        self.min_span = (
-            -300
-        )  # the minimum spanning distance to evaluate. Means span[0] == -300
-
+        self.min_span = -300
         p = []  # cost array
         a = []  # ranges array
         for row in self.primers:
@@ -108,6 +117,7 @@ class JunctionCost(object):
         plt.show()
 
     def plot_design_flexibility(self):
+        """Makes a plot of the design flexibility for a given bp span"""
         flexibility = []
         span = []
         for i, x in enumerate(self.xyz_costs):
@@ -118,8 +128,12 @@ class JunctionCost(object):
                 flexibility.append(len(opts))
             else:
                 flexibility.append(0)
+        fig = plt.figure(figsize=(6,5))
+        ax = fig.gca()
 
-        sns.lineplot(x=np.array(span) + self.min_span, y=flexibility)
+        df = pd.DataFrame()
+
+        sns.lineplot(x=np.array(span) + self.min_span, y=flexibility, ax=ax)
         plt.title("Design Flexibility")
         plt.show()
 
@@ -242,8 +256,10 @@ class SynthesisCost(object):
         df = pd.melt(
             df, id_vars=["span"], value_vars=["e0", "e1", "e2"], value_name="cost"
         )
-        print(df)
-        sns.lineplot(x="span", y="cost", hue='variable', data=df)
+        fig = plt.figure(figsize=(6, 5))
+        ax = fig.gca()
+        ax.set_ylim(0, 1000)
+        sns.lineplot(x="span", y="cost", hue="variable", data=df, ax=ax)
         plt.show()
 
     def __getitem__(self, span_ext_tuple: tuple):

@@ -1,7 +1,7 @@
-# this quickly computes the minimum cost per span for primers
-# todo: handle negative span
-
+import seaborn as sns
+import pylab as plt
 import numpy as np
+import pandas as pd
 
 
 class JunctionCost(object):
@@ -22,10 +22,19 @@ class JunctionCost(object):
     day_cost = 20.0
     material_importance = 1.0
 
-    primers = np.array([[16.0, 60.0, 0.0, 0.3, 1.5], [45.0, 200.0, 0.0, 0.8, 2.5]])
+    min_anneal = 16
+    primers = np.array(
+        [
+            [16.0, 60.0, 0.0, 0.3, 1.5],
+            [45.0, 200.0, 0.0, 0.8, 2.5],
+            [min_anneal, min_anneal + 1, 0.0, 0.0, 0.5],  # special case
+        ]
+    )
 
     def __init__(self):
-        self.min_span = -300
+        self.min_span = (
+            -300
+        )  # the minimum spanning distance to evaluate. Means span[0] == -300
 
         p = []  # cost array
         a = []  # ranges array
@@ -51,15 +60,20 @@ class JunctionCost(object):
         span = np.arange(self.min_span, max_span - self.min_span, 1)
 
         # extension array
-        ext = a - min(a)
+        ext = a - self.min_anneal
 
+        # the span relative to extensions (i.e. the overlap)
         # overlap (sum of extensions - span) for primers of lengths a[x], a[y]
         relative_span = span - (ext + ext.T)[:, :, np.newaxis]
         relative_span = relative_span.swapaxes(2, 0).swapaxes(1, 2)
 
         # sanity checks
+        # span=0, left_size = 200, right_size
         assert relative_span[0].shape == (ext.shape[0], ext.shape[0])
-        assert relative_span[0, 0, 0] == self.min_span
+        # span=-300, primer_length=0, primer_length=0
+        assert (
+            relative_span[0, 0, 0] == self.min_span
+        )  # span=-300, primer_length=0, primer_length=0
         assert relative_span[0, 1, 0] == self.min_span - 1
         assert relative_span[0, 0, 1] == self.min_span - 1
         assert relative_span[0, 1, 1] == self.min_span - 2
@@ -70,21 +84,30 @@ class JunctionCost(object):
         ]
         self.xyz_costs = (m * self.material_importance + t * self.day_cost) * 1.0 / e
 
+        self.min_cost_dict = {
+            0: self.xyz_costs[:, -1:, -1:].min(axis=(1, 2)),
+            1: self.xyz_costs[:, -1:, :-1].min(axis=(1, 2)),
+            2: self.xyz_costs[:, :-1, :-1].min(axis=(1, 2)),
+        }
+
     def plot(self):
-        min_cost_per_span = self.xyz_costs[:, :, :].min(axis=(1, 2))
+        df = pd.DataFrame()
+        df["span"] = self.min_span + np.arange(len(self.min_cost_dict[0]))
+        df["none"] = self.min_cost_dict[0]
+        df["one"] = self.min_cost_dict[1]
+        df["two"] = self.min_cost_dict[2]
+        df = pd.melt(
+            df, id_vars=["span"], value_vars=["none", "one", "two"], value_name="cost"
+        )
 
-        import seaborn as sns
-        import pylab as plt
-
+        print(df.columns)
         fig = plt.figure(figsize=(6, 5))
         ax = fig.gca()
-        sns.scatterplot(
-            y=min_cost_per_span,
-            x=self.min_span + np.arange(len(min_cost_per_span)),
-            ax=ax,
-        )
+        sns.lineplot(y="cost", x="span", hue="variable", data=df, ax=ax)
+        ax.set_title("cost vs spanning distance (bp)")
         plt.show()
 
+    def plot_design_flexibility(self):
         flexibility = []
         span = []
         for i, x in enumerate(self.xyz_costs):
@@ -96,17 +119,13 @@ class JunctionCost(object):
             else:
                 flexibility.append(0)
 
-        sns.scatterplot(x=np.array(span) + self.min_span, y=flexibility)
+        sns.lineplot(x=np.array(span) + self.min_span, y=flexibility)
         plt.title("Design Flexibility")
+        plt.show()
 
     def junction_cost(self, x, ext=2):
-        if ext == 2:
-            min_cost_per_span = self.xyz_costs[:, :, :].min(axis=(1, 2))
-        elif ext == 1:
-            min_cost_per_span = self.xyz_costs[:, :1, :].min(axis=(1, 2))
-        else:
-            min_cost_per_span = self.xyz_costs[:, :1, :1].min(axis=(1, 2))
         i = x - self.min_span
+        min_cost_per_span = self.min_cost_dict[ext]
         return min_cost_per_span[np.clip(i, 0, len(min_cost_per_span) - 1)]
 
     def __getitem__(self, span):
@@ -138,15 +157,34 @@ class SynthesisCost(object):
     def __init__(self, jxn_cost: JunctionCost):
         self.jxn_cost = jxn_cost
         self.cost_dict = None
-        self.make_cost_dict(self.step_size)
+        self.cost_min_dict = None
+        self.span_range = (0, 3000)
+        self.left_span_range = (-500, 500)
+        self.make_cost_dict()
 
-    def compute_synthesis_costs(self, left_ext=0, right_ext=0, step_size=5):
-        sizes = self.gene_sizes[::step_size, :]
+    def compute_synthesis_costs(self, left_ext=0, right_ext=0):
+        sizes = self.gene_sizes[:: self.step_size, :]
 
-        span = np.arange(0, 3000, step_size).reshape(1, -1)
-        left_span = np.arange(-500, 500, step_size).reshape(-1, 1)[:, np.newaxis]
+        span = np.arange(
+            self.span_range[0], self.span_range[1], self.step_size
+        ).reshape(1, -1)
+        left_span = np.arange(
+            self.left_span_range[0], self.left_span_range[1], self.step_size
+        ).reshape(-1, 1)[:, np.newaxis]
         left_cost = self.jxn_cost.junction_cost(left_span, ext=left_ext)
         right_span = span - sizes - left_span
+
+        # sanity check
+        # left_span[0] == -500
+        # gene_sizes[0] * step_size == 0
+        # span[0] * step_size == 0
+        assert right_span[0, 100, 100] == 500
+
+        # left_span[10] == -400
+        # gene_sizes[100] == 1000
+        # span[50] == 500
+        assert right_span[10, 100, 50] == -100
+
         right_cost = self.jxn_cost.junction_cost(right_span, ext=right_ext)
         gene_cost = self.gene_costs[sizes]
         gene_time = self.gene_times[sizes]
@@ -158,6 +196,7 @@ class SynthesisCost(object):
         ext_costs = ext_costs.swapaxes(0, 1)
         material = ext_costs + gene_cost
         total = material + gene_time * 20.0
+        # axes are [gene_size, left_span, span]
         return total
 
     def optimize_step_size(self, s, ds):
@@ -176,18 +215,36 @@ class SynthesisCost(object):
         diff = ((y1 - y2_interp) ** 2).sum() / len(y1)
         return diff
 
-    def make_cost_dict(self, step_size):
-        d = {"step": step_size}
+    def make_cost_dict(self):
+        d = {"step": self.step_size}
 
-        d[0] = self.compute_synthesis_costs(0, 0, step_size).min(axis=(0, 1)).flatten()
-        d[1] = self.compute_synthesis_costs(1, 0, step_size).min(axis=(0, 1)).flatten()
-        d[2] = self.compute_synthesis_costs(1, 1, step_size).min(axis=(0, 1)).flatten()
+        d[0] = self.compute_synthesis_costs(0, 0)
+        d[1] = self.compute_synthesis_costs(1, 0)
+        d[2] = self.compute_synthesis_costs(1, 1)
         self.cost_dict = d
-        return d
+
+        m = {"step": self.step_size}
+        m[0] = d[0].min(axis=(0, 1)).flatten()
+        m[1] = d[1].min(axis=(0, 1)).flatten()
+        m[2] = d[2].min(axis=(0, 1)).flatten()
+        self.cost_min_dict = m
 
     def get_synthesis_cost(self, span, ext):
         step_size = self.cost_dict["step"]
-        return self.cost_dict[ext][int(span / step_size)]
+        return self.cost_min_dict[ext][int(span / step_size)]
+
+    def plot(self):
+        df = pd.DataFrame()
+        df["e0"] = self.cost_min_dict[0]
+        df["e1"] = self.cost_min_dict[1]
+        df["e2"] = self.cost_min_dict[2]
+        df["span"] = np.arange(self.span_range[0], self.span_range[1], self.step_size)
+        df = pd.melt(
+            df, id_vars=["span"], value_vars=["e0", "e1", "e2"], value_name="cost"
+        )
+        print(df)
+        sns.lineplot(x="span", y="cost", hue='variable', data=df)
+        plt.show()
 
     def __getitem__(self, span_ext_tuple: tuple):
         return self.get_synthesis_cost(*span_ext_tuple)

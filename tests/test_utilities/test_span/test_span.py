@@ -175,15 +175,13 @@ class TestContains:
 
         def test_contains_example(self):
             r1 = Span(5947, 4219, 9408, True)
-            r2 = Span(9408, 4219, 9408, True)
-            assert r2 in r1
-            assert not r1 in r2
+            with pytest.raises(IndexError):
+                r2 = Span(9408, 4219, 9408, True)
 
         def test_contains_example2(self):
             r1 = Span(59, 42, 94, True)
-            r2 = Span(94, 42, 94, True)
-            assert r2 in r1
-            assert not r1 in r2
+            with pytest.raises(IndexError):
+                r2 = Span(94, 42, 94, True)
 
 
 class TestIntersection:

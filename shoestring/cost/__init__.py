@@ -21,8 +21,8 @@ class JxnParams(object):
     jxn_efficiency[150:250] = 0.1
     jxn_efficiency[250:300] = 0.0
 
-    min_jxn_span = -300
-    min_anneal = 16
+    min_jxn_span = -300     # the minimum spanning junction we evaluate
+    min_anneal = 16         # the minimum annealing of each primer
     primers = np.array(
         [
             [16.0, 60.0, 0.0, 0.3, 1.5],
@@ -33,8 +33,16 @@ class JxnParams(object):
     primer_rows = ["IDTPrimer", "IDTUltramer", "NoPrimer(Free)"]
     primer_cols = ["min_bp", "max_bp", "base_cost", "bp_cost", "time (days)"]
 
+    # sanity check
     assert len(primer_rows) == len(primers)
     assert len(primer_cols) == len(primers[0])
+
+
+class Slicer(object):
+
+    def __getitem__(self, item):
+        return item
+slicer = Slicer()
 
 
 class SynParams(object):
@@ -118,14 +126,15 @@ class JunctionCost(object):
             np.clip(-relative_span, 0, len(JxnParams.jxn_efficiency) - 1)
         ]
         self.xyz_labels = ["span", "left_ext", "right_ext"]
-        self.xyz_costs = (m * CostParams.material + t * CostParams.time) * 1.0 / e
+        self.cost_matrix = (m * CostParams.material + t * CostParams.time) * 1.0 / e
 
-        self.cost_dict = {
-            (0, 0): self.xyz_costs[:, -1:, -1:],
-            (0, 1): self.xyz_costs[:, -1:, :-1],
-            (1, 0): self.xyz_costs[:, :-1, -1:],
-            (1, 1): self.xyz_costs[:, :-1, :-1],
+        self.slice_dict = {
+            (0, 0): slicer[:, -1:, -1:],
+            (0, 1): slicer[:, -1:, :-1],
+            (1, 0): slicer[:, :-1, -1:],
+            (1, 1): slicer[:, :-1, :-1],
         }
+        self.cost_dict = {k: self.cost_matrix[self.slice_dict[k]] for k in self.slice_dict}
         self.min_cost_dict = {k: v.min(axis=(1, 2)) for k, v in self.cost_dict.items()}
 
     def plot(self):
@@ -148,7 +157,7 @@ class JunctionCost(object):
     def plot_design_flexibility(self):
         """Makes a plot of the design flexibility for a given bp span"""
         options_arr = []
-        for x in self.xyz_costs:
+        for x in self.cost_matrix:
             if x.min() != np.Inf:
                 opts = np.argwhere(x < x.min() + 10.0)
                 options_arr.append(len(opts))

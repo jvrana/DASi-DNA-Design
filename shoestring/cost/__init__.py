@@ -44,7 +44,10 @@ class JunctionCost(object):
                                    )
 
     def __init__(self):
-        self.min_span = -300
+        min_span = -300
+        max_span = self.primers[:, 1].max() * 2 - min_span
+        self.span = np.arange(min_span, max_span, dtype=np.int64)
+
         p = []  # cost array
         a = []  # ranges array
         for row in self.primers:
@@ -64,16 +67,12 @@ class JunctionCost(object):
         t = p[:, 2, np.newaxis]
         t = np.maximum(t, t.T)
 
-        # the spanning distance
-        max_span = 2 * a.max()
-        span = np.arange(self.min_span, max_span - self.min_span, 1)
-
         # extension array
         ext = a - self.min_anneal
 
         # the span relative to extensions (i.e. the overlap)
         # overlap (sum of extensions - span) for primers of lengths a[x], a[y]
-        relative_span = span - (ext + ext.T)[:, :, np.newaxis]
+        relative_span = self.span - (ext + ext.T)[:, :, np.newaxis]
         relative_span = relative_span.swapaxes(2, 0).swapaxes(1, 2)
 
         # sanity checks
@@ -81,11 +80,11 @@ class JunctionCost(object):
         assert relative_span[0].shape == (ext.shape[0], ext.shape[0])
         # span=-300, primer_length=0, primer_length=0
         assert (
-            relative_span[0, 0, 0] == self.min_span
+            relative_span[0, 0, 0] == self.span.min()
         )  # span=-300, primer_length=0, primer_length=0
-        assert relative_span[0, 1, 0] == self.min_span - 1
-        assert relative_span[0, 0, 1] == self.min_span - 1
-        assert relative_span[0, 1, 1] == self.min_span - 2
+        assert relative_span[0, 1, 0] == self.span.min() - 1
+        assert relative_span[0, 0, 1] == self.span.min() - 1
+        assert relative_span[0, 1, 1] == self.span.min() - 2
 
         # final costs
         e = self.jxn_efficiency[
@@ -101,7 +100,7 @@ class JunctionCost(object):
 
     def plot(self):
         df = pd.DataFrame()
-        df["span"] = self.min_span + np.arange(len(self.min_cost_dict[0]))
+        df["span"] = self.span.min() + np.arange(len(self.min_cost_dict[0]))
         df["none"] = self.min_cost_dict[0]
         df["one"] = self.min_cost_dict[1]
         df["two"] = self.min_cost_dict[2]
@@ -133,12 +132,12 @@ class JunctionCost(object):
 
         df = pd.DataFrame()
 
-        sns.lineplot(x=np.array(span) + self.min_span, y=flexibility, ax=ax)
+        sns.lineplot(x=np.array(span) + self.span.min(), y=flexibility, ax=ax)
         plt.title("Design Flexibility")
         plt.show()
 
     def junction_cost(self, x, ext=2):
-        i = x - self.min_span
+        i = x - self.span.min()
         min_cost_per_span = self.min_cost_dict[ext]
         return min_cost_per_span[np.clip(i, 0, len(min_cost_per_span) - 1)]
 

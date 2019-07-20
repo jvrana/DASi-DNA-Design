@@ -8,8 +8,10 @@ from more_itertools import partition, flatten, unique_everseen
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
 from .blastbiofactory import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
+from .cost import SpanCost
 import itertools
 from .utils import Region
+import numpy as np
 
 
 class Constants(object):
@@ -44,6 +46,7 @@ class Constants(object):
     BLUE = "assembly"
 
     MAX_HOMOLOGY = 100
+    INF = 10.**6
 
 
 class AlignmentException(Exception):
@@ -193,6 +196,7 @@ class AlignmentContainer(object):
     def __init__(self, seqdb: Dict[str, SeqRecord]):
         self.alignments = []
         self.seqdb = seqdb
+        self.span_cost = SpanCost()
 
     def load_blast_json(self, data: dict, type: str):
         """
@@ -333,16 +337,33 @@ class AlignmentContainer(object):
         print("Number of total alignments: {}".format(len(self.alignments)))
         print("Number of total groups: {}".format(len(self.alignment_groups)))
 
+    def estimate_span_cost(self, span, ext):
+        return np.clip(self.span_cost.cost(span, ext), 0, Constants.INF)
+
+    def build_ext(self, left_type, right_type):
+        """Build the ext tuple key for cost calculation"""
+        if left_type == Constants.PCR_PRODUCT_WITH_PRIMERS or Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER:
+            l = 1
+        else:
+            l = 0
+
+        if right_type == Constants.PCR_PRODUCT_WITH_PRIMERS or Constants.PCR_PRODUCT_WITH_LEFT_PRIMER:
+            r = 1
+        else:
+            r = 0
+        return (l, r)
+
+    # TODO: clean up this code
     # TODO: replace region methods with something faster.
     # TODO: edge cost should include (i) cost of producing the source and (ii) cost of assembly
     # Verify queries have same context
     def build_assembly_graph(self):
         G = nx.DiGraph(name="Assembly Graph")
-        self.expand()
 
-        def add_edge(g1, g2, weight, **kwargs):
+        def add_edge(g1, g2, span_length, **kwargs):
             n1 = self.alignment_hash(g1.alignments[0])
             n2 = self.alignment_hash(g2.alignments[0])
+
             G.add_node(
                 n1,
                 start=g1.query_region.start,
@@ -357,8 +378,9 @@ class AlignmentContainer(object):
                 color=Constants.BLUE,
                 region=str(g2.query_region),
             )
+            ext = self.build_ext(g1.type, g2.type)
             edata = {
-                "weight": weight,
+                "weight": self.estimate_span_cost(span_length, ext),
                 "r1": str(g1.query_region),
                 "r2": str(g2.query_region),
             }
@@ -383,7 +405,7 @@ class AlignmentContainer(object):
                 if not overlap:
                     raise Exception("We expected an overlap here")
                 # TODO: penalize small overlap
-                add_edge(group, other_group, weight=50.0 + r1_cost, name="overlap")
+                add_edge(group, other_group, span_length=-len(overlap), name="overlap")
             elif r2.a not in r1 and r2.b not in r1:
                 try:
                     connecting_span = r1.connecting_span(r2)
@@ -395,13 +417,10 @@ class AlignmentContainer(object):
                     span_length = 0
                 else:
                     return
-                    print(r1)
-                    print(r2)
-                    raise Exception("Everything must be overlap or have span")
                 add_edge(
                     group,
                     other_group,
-                    weight=50.0 + span_length * 0.07 + 89 + r1_cost,
+                    span_length=span_length,
                     name="synthesis",
                 )
 
@@ -466,3 +485,8 @@ class AlignmentContainer(object):
     @property
     def alignment_groups(self):
         return self.group(self.alignments)
+
+
+class AssemblyGraphBuilder(object):
+
+    def

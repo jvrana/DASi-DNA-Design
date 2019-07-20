@@ -3,8 +3,9 @@ import pylab as plt
 import numpy as np
 import pandas as pd
 
+# TODO: backtrack options
 
-class JunctionCost(object):
+class JxnParams(object):
 
     # jxn_efficiency[30:40] = 0.9" means for 30 <= bp < 40, junction efficiency is 90%
     jxn_efficiency = np.zeros(301, dtype=np.float)
@@ -19,9 +20,7 @@ class JunctionCost(object):
     jxn_efficiency[150:250] = 0.1
     jxn_efficiency[250:300] = 0.0
 
-    day_cost = 20.0
-    material_importance = 1.0
-
+    min_jxn_span = -300
     min_anneal = 16
     primers = np.array(
         [
@@ -30,31 +29,58 @@ class JunctionCost(object):
             [min_anneal, min_anneal + 1, 0.0, 0.0, 0.5],  # special case
         ]
     )
-    primer_rows = [
-        "IDTPrimer",
-        "IDTUltramer",
-        "NoPrimer(Free)"
-    ]
-    primer_cols = [
-        "min_bp", "max_bp", "base_cost", "bp_cost", "time (days)"
-    ]
+    primer_rows = ["IDTPrimer", "IDTUltramer", "NoPrimer(Free)"]
+    primer_cols = ["min_bp", "max_bp", "base_cost", "bp_cost", "time (days)"]
 
     assert len(primer_rows) == len(primers)
-    assert len(primer_cols) == len(primers[0]
-                                   )
+    assert len(primer_cols) == len(primers[0])
 
+
+class SynParams(object):
+    gene_synthesis_cost = np.zeros((2250, 2))
+    d = {
+        (0, 1): {"base": 0.0, "time": 0},
+        (1, 100): {"base": np.Inf, "time": np.Inf},
+        (100, 500): {"base": 89.0, "time": 3.0},
+        (500, 750): {"base": 129.0, "time": 3.0},
+        (750, 1000): {"base": 149.0, "time": 4.0},
+        (1000, 1250): {"base": 209.0, "time": 7.0},
+        (1250, 1500): {"base": 249.0, "time": 7.0},
+        (1500, 1750): {"base": 289.0, "time": 7.0},
+        (1750, 2000): {"base": 329.0, "time": 7.0},
+        (2000, 2250): {"base": 399.0, "time": 7.0},
+    }
+    for k, v in d.items():
+        gene_synthesis_cost[k[0] : k[1]] = np.array([v["base"], v["time"]])
+
+    synthesis_span_range = (0, 3000)
+    gene_sizes = np.arange(len(gene_synthesis_cost)).reshape(-1, 1)
+    gene_costs = gene_synthesis_cost[:, 0].reshape(-1, 1)
+    gene_times = gene_synthesis_cost[:, 1].reshape(-1, 1)
+    synthesis_step_size = 10
+    synthesis_left_span_range = (-500, 500)
+
+
+class CostParams(object):
+
+    time = 50.0  # dollar cost of 24 hours
+    material = 1.0  # multiply material cost by this amount
+
+
+class JunctionCost(object):
     def __init__(self):
-        min_span = -300
-        max_span = self.primers[:, 1].max() * 2 - min_span
+        min_span = JxnParams.min_jxn_span
+        max_span = JxnParams.primers[:, 1].max() * 2 - min_span
         self.span = np.arange(min_span, max_span, dtype=np.int64)
 
         p = []  # cost array
         a = []  # ranges array
-        for row in self.primers:
+        for row in JxnParams.primers:
             _a = np.arange(row[0], row[1], dtype=np.int64)
             a.append(_a)
             p.append(np.broadcast_to(row[2:], (_a.shape[0], row[2:].shape[0])))
         a = np.concatenate(a).reshape(-1, 1)
+        self.primer_lengths_array = a
         p = np.concatenate(p)
 
         assert len(a) == len(p)
@@ -68,7 +94,7 @@ class JunctionCost(object):
         t = np.maximum(t, t.T)
 
         # extension array
-        ext = a - self.min_anneal
+        ext = a - JxnParams.min_anneal
 
         # the span relative to extensions (i.e. the overlap)
         # overlap (sum of extensions - span) for primers of lengths a[x], a[y]
@@ -87,23 +113,26 @@ class JunctionCost(object):
         assert relative_span[0, 1, 1] == self.span.min() - 2
 
         # final costs
-        e = self.jxn_efficiency[
-            np.clip(-relative_span, 0, len(self.jxn_efficiency) - 1)
+        e = JxnParams.jxn_efficiency[
+            np.clip(-relative_span, 0, len(JxnParams.jxn_efficiency) - 1)
         ]
-        self.xyz_costs = (m * self.material_importance + t * self.day_cost) * 1.0 / e
+        self.xyz_labels = ['span', 'left_ext', 'right_ext']
+        self.xyz_costs = (m * CostParams.material + t * CostParams.time) * 1.0 / e
 
-        self.min_cost_dict = {
-            0: self.xyz_costs[:, -1:, -1:].min(axis=(1, 2)),
-            1: self.xyz_costs[:, -1:, :-1].min(axis=(1, 2)),
-            2: self.xyz_costs[:, :-1, :-1].min(axis=(1, 2)),
+        self.cost_dict = {
+            (0, 0): self.xyz_costs[:, -1:, -1:],
+            (0, 1): self.xyz_costs[:, -1:, :-1],
+            (1, 0): self.xyz_costs[:, :-1, -1:],
+            (1, 1): self.xyz_costs[:, :-1, :-1]
         }
+        self.min_cost_dict = {k: v.min(axis=(1, 2)) for k, v in self.cost_dict.items()}
 
     def plot(self):
         df = pd.DataFrame()
-        df["span"] = self.span.min() + np.arange(len(self.min_cost_dict[0]))
-        df["none"] = self.min_cost_dict[0]
-        df["one"] = self.min_cost_dict[1]
-        df["two"] = self.min_cost_dict[2]
+        df["span"] = self.span
+        df["none"] = self.min_cost_dict[(0,0)]
+        df["one"] = self.min_cost_dict[(1, 0)]
+        df["two"] = self.min_cost_dict[(1, 1)]
         df = pd.melt(
             df, id_vars=["span"], value_vars=["none", "one", "two"], value_name="cost"
         )
@@ -117,74 +146,69 @@ class JunctionCost(object):
 
     def plot_design_flexibility(self):
         """Makes a plot of the design flexibility for a given bp span"""
-        flexibility = []
-        span = []
-        for i, x in enumerate(self.xyz_costs):
-
-            span.append(i)
+        options_arr = []
+        for x in self.xyz_costs:
             if x.min() != np.Inf:
                 opts = np.argwhere(x < x.min() + 10.0)
-                flexibility.append(len(opts))
+                options_arr.append(len(opts))
             else:
-                flexibility.append(0)
-        fig = plt.figure(figsize=(6,5))
-        ax = fig.gca()
+                options_arr.append(0)
 
         df = pd.DataFrame()
+        df["span"] = self.span
+        df["options"] = options_arr
 
-        sns.lineplot(x=np.array(span) + self.span.min(), y=flexibility, ax=ax)
+        fig = plt.figure(figsize=(6, 5))
+        ax = fig.gca()
+
+        sns.lineplot(x="span", y="options", ax=ax, data=df)
         plt.title("Design Flexibility")
         plt.show()
 
-    def junction_cost(self, x, ext=2):
-        i = x - self.span.min()
-        min_cost_per_span = self.min_cost_dict[ext]
-        return min_cost_per_span[np.clip(i, 0, len(min_cost_per_span) - 1)]
+    # def options(self, span, ext, max_cost):
+    #     m = self.cost_dict[ext][span]
+    #     print(m.min())
+    #     indices = np.argwhere(m <= max_cost)
+    #     return indices
+    #
+    # def _span_to_index(self, span):
+    #     i = span - self.span.min()
+    #     i = np.clip(i, 0, self.cost_dict.shape[0] - 1)
+    #     return i
+    #
+    #
+    #
+    # def cost_matrix(self, span, ext):
+    #     return self.cost_dict[ext][self._span_to_index(span)]
 
-    def __getitem__(self, span):
-        return self.junction_cost(span)
+    def cost(self, span, ext):
+        i = span - self.span.min()
+        i = np.clip(i, 0, self.min_cost_dict[ext].shape[0] - 1)
+        return self.min_cost_dict[ext][i]
 
 
 class SynthesisCost(object):
-    gene_synthesis_cost = np.zeros((2250, 2))
-    d = {
-        (0, 1): {"base": 0.0, "time": 0},
-        (1, 100): {"base": np.Inf, "time": np.Inf},
-        (100, 500): {"base": 89.0, "time": 3.0},
-        (500, 750): {"base": 129.0, "time": 3.0},
-        (750, 1000): {"base": 149.0, "time": 4.0},
-        (1000, 1250): {"base": 209.0, "time": 7.0},
-        (1250, 1500): {"base": 249.0, "time": 7.0},
-        (1500, 1750): {"base": 289.0, "time": 7.0},
-        (1750, 2000): {"base": 329.0, "time": 7.0},
-        (2000, 2250): {"base": 399.0, "time": 7.0},
-    }
-    for k, v in d.items():
-        gene_synthesis_cost[k[0] : k[1]] = np.array([v["base"], v["time"]])
-
-    gene_sizes = np.arange(len(gene_synthesis_cost)).reshape(-1, 1)
-    gene_costs = gene_synthesis_cost[:, 0].reshape(-1, 1)
-    gene_times = gene_synthesis_cost[:, 1].reshape(-1, 1)
-    step_size = 10
-
     def __init__(self, jxn_cost: JunctionCost):
         self.jxn_cost = jxn_cost
         self.cost_dict = None
         self.cost_min_dict = None
-        self.span_range = (0, 3000)
-        self.left_span_range = (-500, 500)
+        self.span = np.arange(
+            SynParams.synthesis_span_range[0],
+            SynParams.synthesis_span_range[1],
+            SynParams.synthesis_step_size)
+        self.sizes = SynParams.gene_sizes[:: SynParams.synthesis_step_size, :]
         self.make_cost_dict()
 
     def compute_synthesis_costs(self, left_ext=0, right_ext=0):
-        sizes = self.gene_sizes[:: self.step_size, :]
+        sizes = self.sizes
+        span = self.span.reshape(1, -1)
 
-        span = np.arange(
-            self.span_range[0], self.span_range[1], self.step_size
-        ).reshape(1, -1)
         left_span = np.arange(
-            self.left_span_range[0], self.left_span_range[1], self.step_size
+            SynParams.synthesis_left_span_range[0],
+            SynParams.synthesis_left_span_range[1],
+            SynParams.synthesis_step_size,
         ).reshape(-1, 1)[:, np.newaxis]
-        left_cost = self.jxn_cost.junction_cost(left_span, ext=left_ext)
+        left_cost = self.jxn_cost.cost(left_span, ext=(left_ext, 0))
         right_span = span - sizes - left_span
 
         # sanity check
@@ -198,9 +222,9 @@ class SynthesisCost(object):
         # span[50] == 500
         assert right_span[10, 100, 50] == -100
 
-        right_cost = self.jxn_cost.junction_cost(right_span, ext=right_ext)
-        gene_cost = self.gene_costs[sizes]
-        gene_time = self.gene_times[sizes]
+        right_cost = self.jxn_cost.cost(right_span, ext=(0, right_ext))
+        gene_cost = SynParams.gene_costs[sizes]
+        gene_time = SynParams.gene_times[sizes]
 
         # TODO:should just get the material costs here and multiply the efficiencies later
         ext_costs = left_cost + right_cost
@@ -208,7 +232,7 @@ class SynthesisCost(object):
         # size, left span, span
         ext_costs = ext_costs.swapaxes(0, 1)
         material = ext_costs + gene_cost
-        total = material + gene_time * 20.0
+        total = material * CostParams.material + gene_time * CostParams.time
         # axes are [gene_size, left_span, span]
         return total
 
@@ -229,29 +253,33 @@ class SynthesisCost(object):
         return diff
 
     def make_cost_dict(self):
-        d = {"step": self.step_size}
-
-        d[0] = self.compute_synthesis_costs(0, 0)
-        d[1] = self.compute_synthesis_costs(1, 0)
-        d[2] = self.compute_synthesis_costs(1, 1)
+        d = {}
+        d[(0, 0)] = self.compute_synthesis_costs(0, 0)
+        d[(1, 0)] = self.compute_synthesis_costs(1, 0)
+        d[(0, 1)] = self.compute_synthesis_costs(0, 1)
+        d[(1, 1)] = self.compute_synthesis_costs(1, 1)
         self.cost_dict = d
+        self.cost_min_dict = {k: v.min(axis=(0, 1)).flatten() for k, v in self.cost_dict.items()}
+        self.cost_dict['step'] = SynParams.synthesis_step_size
+        self.cost_min_dict['step'] = SynParams.synthesis_step_size
 
-        m = {"step": self.step_size}
-        m[0] = d[0].min(axis=(0, 1)).flatten()
-        m[1] = d[1].min(axis=(0, 1)).flatten()
-        m[2] = d[2].min(axis=(0, 1)).flatten()
-        self.cost_min_dict = m
-
-    def get_synthesis_cost(self, span, ext):
+    def cost(self, span, ext):
+        assert self.span[0] == 0
         step_size = self.cost_dict["step"]
-        return self.cost_min_dict[ext][int(span / step_size)]
+        i = np.array(span / step_size, dtype=np.int64)
+        i = np.clip(i, 0, len(self.span)-1)
+        return self.cost_min_dict[ext][i]
 
     def plot(self):
         df = pd.DataFrame()
-        df["e0"] = self.cost_min_dict[0]
-        df["e1"] = self.cost_min_dict[1]
-        df["e2"] = self.cost_min_dict[2]
-        df["span"] = np.arange(self.span_range[0], self.span_range[1], self.step_size)
+        df["e0"] = self.cost_min_dict[(0, 0)]
+        df["e1"] = self.cost_min_dict[(1, 0)]
+        df["e2"] = self.cost_min_dict[(1, 1)]
+        df["span"] = np.arange(
+            SynParams.synthesis_span_range[0],
+            SynParams.synthesis_span_range[1],
+            SynParams.synthesis_step_size,
+        )
         df = pd.melt(
             df, id_vars=["span"], value_vars=["e0", "e1", "e2"], value_name="cost"
         )
@@ -261,5 +289,13 @@ class SynthesisCost(object):
         sns.lineplot(x="span", y="cost", hue="variable", data=df, ax=ax)
         plt.show()
 
-    def __getitem__(self, span_ext_tuple: tuple):
-        return self.get_synthesis_cost(*span_ext_tuple)
+
+class SpanCost(object):
+
+    def __init__(self):
+        self.junction_cost = JunctionCost()
+        self.synthesis_cost = SynthesisCost(self.junction_cost)
+
+    def cost(self, span: int, ext: int) -> float:
+        x = np.array([self.junction_cost.cost(span, ext), self.synthesis_cost.cost(span, ext)])
+        return x.min(axis=0)

@@ -16,7 +16,7 @@ def syncost(jxncost):
 
 
 @pytest.mark.parametrize("span", list(range(-300, 500, 11)))
-@pytest.mark.parametrize("ext", [(0, 0), (1, 0), (1,1)])
+@pytest.mark.parametrize("ext", [(0, 0), (1, 0), (1, 1)])
 def test_junction_cost(jxncost, span, ext):
     cost = jxncost.cost(span, ext)
 

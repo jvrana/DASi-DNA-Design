@@ -5,6 +5,7 @@ import pandas as pd
 
 # TODO: backtrack options
 
+
 class JxnParams(object):
 
     # jxn_efficiency[30:40] = 0.9" means for 30 <= bp < 40, junction efficiency is 90%
@@ -116,21 +117,21 @@ class JunctionCost(object):
         e = JxnParams.jxn_efficiency[
             np.clip(-relative_span, 0, len(JxnParams.jxn_efficiency) - 1)
         ]
-        self.xyz_labels = ['span', 'left_ext', 'right_ext']
+        self.xyz_labels = ["span", "left_ext", "right_ext"]
         self.xyz_costs = (m * CostParams.material + t * CostParams.time) * 1.0 / e
 
         self.cost_dict = {
             (0, 0): self.xyz_costs[:, -1:, -1:],
             (0, 1): self.xyz_costs[:, -1:, :-1],
             (1, 0): self.xyz_costs[:, :-1, -1:],
-            (1, 1): self.xyz_costs[:, :-1, :-1]
+            (1, 1): self.xyz_costs[:, :-1, :-1],
         }
         self.min_cost_dict = {k: v.min(axis=(1, 2)) for k, v in self.cost_dict.items()}
 
     def plot(self):
         df = pd.DataFrame()
         df["span"] = self.span
-        df["none"] = self.min_cost_dict[(0,0)]
+        df["none"] = self.min_cost_dict[(0, 0)]
         df["one"] = self.min_cost_dict[(1, 0)]
         df["two"] = self.min_cost_dict[(1, 1)]
         df = pd.melt(
@@ -195,7 +196,8 @@ class SynthesisCost(object):
         self.span = np.arange(
             SynParams.synthesis_span_range[0],
             SynParams.synthesis_span_range[1],
-            SynParams.synthesis_step_size)
+            SynParams.synthesis_step_size,
+        )
         self.sizes = SynParams.gene_sizes[:: SynParams.synthesis_step_size, :]
         self.make_cost_dict()
 
@@ -259,15 +261,17 @@ class SynthesisCost(object):
         d[(0, 1)] = self.compute_synthesis_costs(0, 1)
         d[(1, 1)] = self.compute_synthesis_costs(1, 1)
         self.cost_dict = d
-        self.cost_min_dict = {k: v.min(axis=(0, 1)).flatten() for k, v in self.cost_dict.items()}
-        self.cost_dict['step'] = SynParams.synthesis_step_size
-        self.cost_min_dict['step'] = SynParams.synthesis_step_size
+        self.cost_min_dict = {
+            k: v.min(axis=(0, 1)).flatten() for k, v in self.cost_dict.items()
+        }
+        self.cost_dict["step"] = SynParams.synthesis_step_size
+        self.cost_min_dict["step"] = SynParams.synthesis_step_size
 
     def cost(self, span, ext):
         assert self.span[0] == 0
         step_size = self.cost_dict["step"]
         i = np.array(span / step_size, dtype=np.int64)
-        i = np.clip(i, 0, len(self.span)-1)
+        i = np.clip(i, 0, len(self.span) - 1)
         return self.cost_min_dict[ext][i]
 
     def plot(self):
@@ -291,11 +295,12 @@ class SynthesisCost(object):
 
 
 class SpanCost(object):
-
     def __init__(self):
         self.junction_cost = JunctionCost()
         self.synthesis_cost = SynthesisCost(self.junction_cost)
 
     def cost(self, span: int, ext: int) -> float:
-        x = np.array([self.junction_cost.cost(span, ext), self.synthesis_cost.cost(span, ext)])
+        x = np.array(
+            [self.junction_cost.cost(span, ext), self.synthesis_cost.cost(span, ext)]
+        )
         return x.min(axis=0)

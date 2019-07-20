@@ -1,4 +1,4 @@
-from shoestring import AlignmentContainer, Constants
+from shoestring import AlignmentContainer, Constants, AssemblyGraphBuilder
 from shoestring.utils import perfect_subject
 import networkx as nx
 from os.path import join
@@ -38,7 +38,8 @@ def test_produce_assembly_graph(blast_factory, here):
     print("Number of groups: {}".format(len(groups)))
 
     # build assembly graph
-    G = container.build_assembly_graph()
+    graph_builder = AssemblyGraphBuilder(container)
+    G = graph_builder.build_assembly_graph()
     # print()
     print("=== Assembly Graph ===")
     print(nx.info(G))

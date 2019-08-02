@@ -5,6 +5,8 @@ re-use.
 
 Saves money, time, and materials.
 
+Bottom-line: Converts a nucleotide sequence to an executable assembly plan. No fuss.
+
 ### Features
 
 **Shoestring** provides a DNA sequence to workflow interpreter, utilizing knowledge of existing primers, PCR fragments,

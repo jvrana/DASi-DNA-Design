@@ -42,6 +42,7 @@ class Slicer(object):
 
     def __getitem__(self, item):
         return item
+    
 slicer = Slicer()
 
 

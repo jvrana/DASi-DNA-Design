@@ -12,6 +12,12 @@ from .cost import SpanCost
 import itertools
 from .utils import Region
 import numpy as np
+from .log import logger
+
+import pylab as plt
+from numpy import inf
+
+import seaborn as sns
 
 
 # TODO: having the costs mixed up between classes is confusing
@@ -193,6 +199,7 @@ class AlignmentContainer(object):
     def __init__(self, seqdb: Dict[str, SeqRecord]):
         self.alignments = []
         self.seqdb = seqdb
+        self.logger = logger(self)
 
     def load_blast_json(self, data: dict, type: str):
         """
@@ -309,30 +316,35 @@ class AlignmentContainer(object):
         return alignments
 
     def expand(self):
-        print()
-        print("=== Expanding alignments ===")
+        progress_log = self.logger.track("INFO", total=5).enter()
+
+        self.logger.info("=== Expanding alignments ===")
         # We annotate any original PCR_PRODUCT with FRAGMENT if they are 'perfect_subjects'
         # This means they already exist as pre-made fragments
-        print("Number of alignments: {}".format(len(self.alignments)))
+        self.logger.info("Number of alignments: {}".format(len(self.alignments)))
+
+        # TODO: what is annotate_fragments for?
         annotated = self.annotate_fragments(
             self.get_alignments_by_types(Constants.PCR_PRODUCT)
         )
 
-        print("Number of perfect subjects: {}".format(len(annotated)))
+        self.logger.info("Number of perfect subjects: {}".format(len(annotated)))
         templates = self.get_groups_by_types(
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
         )
 
+        progress_log.update(1, "Expanding primer pairs")
         pairs = self.expand_primer_pairs(templates)
         self.alignments += pairs
-        print("Number of pairs: {}".format(len(pairs)))
+        self.logger.info("Number of pairs: {}".format(len(pairs)))
 
+        progress_log.update(2, "Expanding pcr products")
         expanded = self.expand_pcr_products(templates)
         self.alignments += expanded
-        print("Number of new alignments: {}".format(len(expanded)))
-        print("Number of total alignments: {}".format(len(self.alignments)))
-        print("Number of total groups: {}".format(len(self.alignment_groups)))
-
+        self.logger.info("Number of new alignments: {}".format(len(expanded)))
+        self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
+        self.logger.info("Number of total groups: {}".format(len(self.alignment_groups)))
+        progress_log.exit()
     # TODO: change 'start' and 'end' to left and right end for regions...
 
     @staticmethod
@@ -350,7 +362,7 @@ class AlignmentContainer(object):
         return alignment_groups
 
     @property
-    def types(self):
+    def types(self) -> List[str]:
         return tuple(self.valid_types)
 
     def get_groups_by_types(self, types: List[str]) -> List[AlignmentGroup]:
@@ -387,8 +399,11 @@ class AssemblyGraphBuilder(object):
     def _edge_weight(self, type1: str, type2: str, span: int) -> float:
         ext = self._extension_tuple_from_types(type1, type2)
         assembly_cost = np.clip(self.span_cost.cost(span, ext), 0, Constants.INF)
-        frag_cost1 = Constants.PCR_COST[type1] # we only count the source fragment cost
-        return assembly_cost + frag_cost1
+        frag_cost1 = Constants.PCR_COST[type1]  # we only count the source fragment cost
+        return {
+            'junction': assembly_cost,
+            "material": frag_cost1
+        }
 
     def _extension_tuple_from_types(self, left_type, right_type):
         """
@@ -461,11 +476,15 @@ class AssemblyGraphBuilder(object):
         must be provided."""
         n1 = self._add_node(g1)
         n2 = self._add_node(g2)
+        cost = self._edge_weight(g1.type, g2.type, span_length)
+
         edata = {
-            "weight": self._edge_weight(g1.type, g2.type, span_length),
+            "weight": sum(cost.values()),
+            "span_length": span_length,
             "region_1": str(g1.query_region),
             "region_2": str(g2.query_region),
         }
+        edata['cost'] = cost
         edata.update(kwargs)
         self.G.add_edge(n1, n2, **edata)
 
@@ -505,7 +524,7 @@ class AssemblyGraphBuilder(object):
             else:
                 return
             self._add_edge(
-                group, other_group, span_length=span_length, name="synthesis"
+                group, other_group, span_length=span_length, name="gap"
             )
 
     # TODO: linear assemblies
@@ -513,6 +532,7 @@ class AssemblyGraphBuilder(object):
     # TODO: edge cost should include (i) cost of producing the source and (ii) cost of assembly
     # Verify queries have same context
     def build_assembly_graph(self):
+
         self.G = nx.DiGraph(name="Assembly Graph")
         # TODO: tests for validating over-origin edges are being produced
         # produce non-spanning edges
@@ -532,3 +552,42 @@ class AssemblyGraphBuilder(object):
         for g1, g2 in itertools.product(groups, repeat=2):
             self.add_edge(g1, g2)
         return self.G
+
+
+# class AssemblyOptimizer(object):
+#
+#     def optimize(self, G: nx.DiGraph):
+#         nodelist = list(G.nodes())
+#         matrix = np.array(nx.floyd_warshall_numpy(G, nodelist=nodelist, weight='weight'))
+#
+#         cycles = []
+#         paths = []
+#         for i, _ in enumerate(matrix):
+#             for j, _ in enumerate(matrix[i]):
+#                 a = matrix[i, j]
+#                 b = matrix[j, i]
+#                 if i == j:
+#                     continue
+#
+#                 anode = nodelist[i]
+#                 bnode = nodelist[j]
+#                 if a != np.inf:
+#                     paths.append((anode, bnode, a))
+#                 if b != np.inf:
+#                     paths.append((bnode, anode, b))
+#                 if a != np.inf and b != np.inf:
+#                     cycles.append((anode, bnode, a, b, a + b))
+#
+#         cycles = sorted(cycles, key=lambda c: c[-1])
+#         print("Cycles: {}".format(len(cycles)))
+#         print("Paths: {}".format(len(paths)))
+#
+#     def plot_heat_map_matrix(self, matrix: np.array):
+#         plot_matrix = matrix.copy()
+#         plot_matrix[plot_matrix == inf] = 10000
+#         plot_matrix = np.nan_to_num(plot_matrix)
+#
+#         fig = plt.figure(figsize=(24, 20))
+#         ax = fig.gca()
+#         step = 1
+#         sns.heatmap(plot_matrix[::step, ::step], ax=ax)

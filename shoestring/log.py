@@ -1,6 +1,3 @@
-import logging
+from loggable import Loggable
 
-
-logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.WARNING)
-logger = logging.getLogger("DASi")
-logger.setLevel(logging.DEBUG)
+logger = Loggable("shoestring")

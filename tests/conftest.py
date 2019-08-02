@@ -2,7 +2,9 @@ import pytest
 from os.path import dirname, abspath, join
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 from shoestring import BioBlastFactory
+from shoestring.log import logger
 
+logger.set_level("INFO")
 
 @pytest.fixture(scope="module")
 def here():

@@ -31,6 +31,8 @@ def test_produce_assembly_graph(blast_factory, here):
     # load the primer results
     container.load_blast_json(primer_results, Constants.PRIMER)
 
+    container.expand()
+
     # group by query_regions
     groups = container.alignment_groups
 

@@ -251,7 +251,7 @@ class AlignmentContainer(object):
 
         pairs = []
 
-        for g in alignment_groups:
+        for g in self.logger.tqdm(alignment_groups, "INFO", desc="Expanding primer pair"):
             # add products with both existing products
             fwd_bind = bisect_slice_between(
                 fwd, fwd_keys, g.query_region.a + 10, g.query_region.b
@@ -290,11 +290,14 @@ class AlignmentContainer(object):
     def expand_pcr_products(
         self, alignment_groups: List[AlignmentGroup]
     ) -> List[Alignment]:
+
+
+
         group_sort, group_keys = sort_with_keys(
             alignment_groups, key=lambda x: x.query_region.a
         )
         alignments = []
-        for g in group_sort:
+        for g in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
             i = bisect_left(group_keys, g.query_region.a)
             arr, keys = sort_with_keys(group_sort[i:], key=lambda x: x.query_region.a)
             overlapping = bisect_slice_between(
@@ -316,7 +319,6 @@ class AlignmentContainer(object):
         return alignments
 
     def expand(self):
-        progress_log = self.logger.track("INFO", total=5).enter()
 
         self.logger.info("=== Expanding alignments ===")
         # We annotate any original PCR_PRODUCT with FRAGMENT if they are 'perfect_subjects'
@@ -333,18 +335,15 @@ class AlignmentContainer(object):
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
         )
 
-        progress_log.update(1, "Expanding primer pairs")
         pairs = self.expand_primer_pairs(templates)
         self.alignments += pairs
         self.logger.info("Number of pairs: {}".format(len(pairs)))
 
-        progress_log.update(2, "Expanding pcr products")
         expanded = self.expand_pcr_products(templates)
         self.alignments += expanded
         self.logger.info("Number of new alignments: {}".format(len(expanded)))
         self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
         self.logger.info("Number of total groups: {}".format(len(self.alignment_groups)))
-        progress_log.exit()
     # TODO: change 'start' and 'end' to left and right end for regions...
 
     @staticmethod
@@ -552,42 +551,3 @@ class AssemblyGraphBuilder(object):
         for g1, g2 in itertools.product(groups, repeat=2):
             self.add_edge(g1, g2)
         return self.G
-
-
-# class AssemblyOptimizer(object):
-#
-#     def optimize(self, G: nx.DiGraph):
-#         nodelist = list(G.nodes())
-#         matrix = np.array(nx.floyd_warshall_numpy(G, nodelist=nodelist, weight='weight'))
-#
-#         cycles = []
-#         paths = []
-#         for i, _ in enumerate(matrix):
-#             for j, _ in enumerate(matrix[i]):
-#                 a = matrix[i, j]
-#                 b = matrix[j, i]
-#                 if i == j:
-#                     continue
-#
-#                 anode = nodelist[i]
-#                 bnode = nodelist[j]
-#                 if a != np.inf:
-#                     paths.append((anode, bnode, a))
-#                 if b != np.inf:
-#                     paths.append((bnode, anode, b))
-#                 if a != np.inf and b != np.inf:
-#                     cycles.append((anode, bnode, a, b, a + b))
-#
-#         cycles = sorted(cycles, key=lambda c: c[-1])
-#         print("Cycles: {}".format(len(cycles)))
-#         print("Paths: {}".format(len(paths)))
-#
-#     def plot_heat_map_matrix(self, matrix: np.array):
-#         plot_matrix = matrix.copy()
-#         plot_matrix[plot_matrix == inf] = 10000
-#         plot_matrix = np.nan_to_num(plot_matrix)
-#
-#         fig = plt.figure(figsize=(24, 20))
-#         ax = fig.gca()
-#         step = 1
-#         sns.heatmap(plot_matrix[::step, ::step], ax=ax)

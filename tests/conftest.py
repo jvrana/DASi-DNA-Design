@@ -17,13 +17,14 @@ TEMPLATES = "templates"
 QUERIES = "queries"
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def paths(here):
     return {
         PRIMERS: join(here, "data/test_data/primers/primers.fasta"),
         TEMPLATES: join(here, "data/test_data/genbank/templates/*.gb"),
-        QUERIES: join(here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb"),
-
+        QUERIES: join(
+            here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb"
+        ),
     }
 
 
@@ -31,15 +32,9 @@ def paths(here):
 def blast_factory(paths):
     factory = BioBlastFactory()
 
-    primers = make_linear(
-        load_fasta_glob(paths[PRIMERS])
-    )
+    primers = make_linear(load_fasta_glob(paths[PRIMERS]))
     templates = load_genbank_glob(paths[TEMPLATES])
-    queries = make_circular(
-        load_genbank_glob(
-            paths[QUERIES]
-        )
-    )
+    queries = make_circular(load_genbank_glob(paths[QUERIES]))
 
     factory.add_records(primers, PRIMERS)
     factory.add_records(templates, TEMPLATES)

@@ -208,25 +208,32 @@ class Span(Container, Iterable, Sized):
     def __ne__(self, other):
         return not (self.__eq__(other))
 
+    def contains_pos(self, other):
+        for r in self.ranges():
+            if r[0] <= other < r[1]:
+                return True
+        return False
+
+    def contains_span(self, other):
+        if not self.same_context(other):
+            return False
+        if other.a == other.b == self.a:
+            # special case where starting indices and ending indices are the same
+            return True
+        else:
+            if not self.contains_pos(other.a):
+                return False
+            elif not self.contains_pos(other.t(other.b - 1)):
+                return False
+            elif not len(other) <= len(self):
+                return False
+            return True
+
     def __contains__(self, other):
         if isinstance(other, int):
-            for r in self.ranges():
-                if r[0] <= other < r[1]:
-                    return True
-            return False
+            return self.contains_pos(other)
         elif issubclass(type(other), Span):
-            if not self.same_context(other):
-                return False
-            if other.a == other.b == self.a:
-                # special case where starting indices and ending indices are the same
-                return True
-            else:
-                g = [
-                    other.a in self,
-                    other.t(other.b - 1) in self,
-                    len(other) <= len(self),
-                ]
-                return all(g)
+            return self.contains_span(other)
 
     def __len__(self):
         return sum([r[1] - r[0] for r in self.ranges()])

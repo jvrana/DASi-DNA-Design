@@ -14,13 +14,9 @@ from .utils import Region
 import numpy as np
 from .log import logger
 
-import pylab as plt
-from numpy import inf
-
-import seaborn as sns
-
 
 # TODO: having the costs mixed up between classes is confusing
+# TODO: move these to their own classes?
 class Constants(object):
     FRAGMENT = (
         "PRE-MADE DNA FRAGMENT"
@@ -48,6 +44,7 @@ class Constants(object):
 
     PRIMER = "PRIMER"  # a primer binding alignment
 
+    MIN_OVERLAP = 20
     MAX_HOMOLOGY = 100
     INF = 10.0 ** 6
 
@@ -194,7 +191,7 @@ class AlignmentContainer(object):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-    ]
+    ]  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
         self.alignments = []
@@ -209,6 +206,7 @@ class AlignmentContainer(object):
         :param type: the type of alignment to initialize
         :return: None
         """
+        self.logger.info("Loading blast json")
         assert type in self.valid_types
         for d in data:
             query_region = blast_to_region(d["query"], self.seqdb)
@@ -226,6 +224,7 @@ class AlignmentContainer(object):
             self.alignments.append(alignment)
 
     def annotate_fragments(self, alignments) -> List[Alignment]:
+        self.logger.info("annotating fragments")
         annotated = []
         for a in alignments:
             if a.is_perfect_subject() and not a.subject_region.circular:
@@ -251,7 +250,9 @@ class AlignmentContainer(object):
 
         pairs = []
 
-        for g in self.logger.tqdm(alignment_groups, "INFO", desc="Expanding primer pair"):
+        for g in self.logger.tqdm(
+            alignment_groups, "INFO", desc="Expanding primer pair"
+        ):
             # add products with both existing products
             fwd_bind = bisect_slice_between(
                 fwd, fwd_keys, g.query_region.a + 10, g.query_region.b
@@ -260,6 +261,8 @@ class AlignmentContainer(object):
                 rev, rev_keys, g.query_region.a, g.query_region.b - 10
             )
             rkeys = [r.query_region.a for r in rev_bind]
+
+            # both primers
             for f in fwd_bind:
                 i = bisect_left(rkeys, f.query_region.a)
                 for r in rev_bind[i:]:
@@ -270,7 +273,7 @@ class AlignmentContainer(object):
                     )
                     pairs += primer_group.alignments
 
-            # add products with one existing primer
+            # left primer
             for f in fwd_bind:
                 left_primer_group = g.sub_region(
                     f.query_region.a,
@@ -278,6 +281,8 @@ class AlignmentContainer(object):
                     Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
                 )
                 pairs += left_primer_group.alignments
+
+            # right primer
             for r in rev_bind:
                 right_primer_group = g.sub_region(
                     g.query_region.a,
@@ -290,35 +295,56 @@ class AlignmentContainer(object):
     def expand_pcr_products(
         self, alignment_groups: List[AlignmentGroup]
     ) -> List[Alignment]:
+        """
+        Expand the list of alignments from existing regions. Produces new fragments in
+        the following two situations:
 
+        ::
 
+            |--------|          alignment 1
+                |--------|      alignment 2
+            |---|               new alignment
 
+        ::
+
+            |--------|          alignment 1
+                 |--------|     alignment 2
+                 |---|          new alignment
+
+        :param alignment_groups:
+        :return:
+        """
+
+        MIN_OVERLAP = Constants.MIN_OVERLAP
         group_sort, group_keys = sort_with_keys(
             alignment_groups, key=lambda x: x.query_region.a
         )
         alignments = []
-        for g in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
-            i = bisect_left(group_keys, g.query_region.a)
+        for group in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
+            i = bisect_left(group_keys, group.query_region.a)
             arr, keys = sort_with_keys(group_sort[i:], key=lambda x: x.query_region.a)
+
+            # get list of overlapping alignments
             overlapping = bisect_slice_between(
-                arr, keys, g.query_region.a, g.query_region.b
+                arr, keys, group.query_region.a, group.query_region.b
             )
 
+            #
             for og in overlapping:
-                if og is not g:
-                    if og.query_region.a - g.query_region.a > 20:
-                        ag1 = g.sub_region(
-                            g.query_region.a, og.query_region.a, Constants.PCR_PRODUCT
+                if og is not group:
+                    if og.query_region.a - group.query_region.a > MIN_OVERLAP:
+                        ag1 = group.sub_region(
+                            group.query_region.a, og.query_region.a, Constants.PCR_PRODUCT
                         )
                         alignments += ag1.alignments
-                    if g.query_region.b - og.query_region.a > 20:
-                        ag2 = g.sub_region(
-                            og.query_region.a, g.query_region.b, Constants.PCR_PRODUCT
+                    if group.query_region.b - og.query_region.a > MIN_OVERLAP:
+                        ag2 = group.sub_region(
+                            og.query_region.a, group.query_region.b, Constants.PCR_PRODUCT
                         )
                         alignments += ag2.alignments
         return alignments
 
-    def expand(self):
+    def expand(self, expand_overlaps=True, expand_primers=True):
 
         self.logger.info("=== Expanding alignments ===")
         # We annotate any original PCR_PRODUCT with FRAGMENT if they are 'perfect_subjects'
@@ -335,15 +361,20 @@ class AlignmentContainer(object):
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
         )
 
-        pairs = self.expand_primer_pairs(templates)
-        self.alignments += pairs
-        self.logger.info("Number of pairs: {}".format(len(pairs)))
+        if expand_primers:
+            pairs = self.expand_primer_pairs(templates)
+            self.alignments += pairs
+            self.logger.info("Number of pairs: {}".format(len(pairs)))
 
-        expanded = self.expand_pcr_products(templates)
-        self.alignments += expanded
-        self.logger.info("Number of new alignments: {}".format(len(expanded)))
+        if expand_overlaps:
+            expanded = self.expand_pcr_products(templates)
+            self.alignments += expanded
+            self.logger.info("Number of new alignments: {}".format(len(expanded)))
         self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
-        self.logger.info("Number of total groups: {}".format(len(self.alignment_groups)))
+        self.logger.info(
+            "Number of total groups: {}".format(len(self.alignment_groups))
+        )
+
     # TODO: change 'start' and 'end' to left and right end for regions...
 
     @staticmethod
@@ -351,7 +382,13 @@ class AlignmentContainer(object):
         return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
 
     @classmethod
-    def group(cls, alignments):
+    def group(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
+        """
+        Return AlignmentGroups that have been grouped by alignment_hash
+
+        :param alignments:
+        :return:
+        """
         grouped = {}
         for a in alignments:
             grouped.setdefault(cls.alignment_hash(a), list()).append(a)
@@ -362,9 +399,20 @@ class AlignmentContainer(object):
 
     @property
     def types(self) -> List[str]:
+        """
+        Return all valid types
+
+        :return:
+        """
         return tuple(self.valid_types)
 
     def get_groups_by_types(self, types: List[str]) -> List[AlignmentGroup]:
+        """
+        Return AlignmentGroups by fragment type
+
+        :param types: list of types
+        :return:
+        """
         groups = self.groups_by_type
         if isinstance(types, str):
             return groups[types]
@@ -376,7 +424,7 @@ class AlignmentContainer(object):
         return list(flatten([g.alignments for g in groups]))
 
     @property
-    def groups_by_type(self):
+    def groups_by_type(self) -> Dict[str, AlignmentGroup]:
         d = {}
         for t in self.valid_types:
             d[t] = []
@@ -386,6 +434,11 @@ class AlignmentContainer(object):
 
     @property
     def alignment_groups(self):
+        """
+        Return all alignment groups
+
+        :return:
+        """
         return self.group(self.alignments)
 
 
@@ -394,15 +447,13 @@ class AssemblyGraphBuilder(object):
         self.container = alignment_container
         self.span_cost = SpanCost()
         self.G = None
+        self.logger = logger(self)
 
     def _edge_weight(self, type1: str, type2: str, span: int) -> float:
         ext = self._extension_tuple_from_types(type1, type2)
         assembly_cost = np.clip(self.span_cost.cost(span, ext), 0, Constants.INF)
         frag_cost1 = Constants.PCR_COST[type1]  # we only count the source fragment cost
-        return {
-            'junction': assembly_cost,
-            "material": frag_cost1
-        }
+        return {"junction": assembly_cost, "material": frag_cost1}
 
     def _extension_tuple_from_types(self, left_type, right_type):
         """
@@ -483,10 +534,11 @@ class AssemblyGraphBuilder(object):
             "region_1": str(g1.query_region),
             "region_2": str(g2.query_region),
         }
-        edata['cost'] = cost
+        edata["cost"] = cost
         edata.update(kwargs)
         self.G.add_edge(n1, n2, **edata)
 
+    # TODO: speed improvment
     def add_edge(self, group, other_group):
         """
         Create an edge between one alignment group and another.
@@ -500,9 +552,10 @@ class AssemblyGraphBuilder(object):
         r2 = other_group.query_region
         assert r2.same_context(r1)
 
-        if r1 in r2 or r2 in r1:
+        # TODO: replace by faster method
+        if r2.contains_span(r1) or r1.contains_span(r2):
             return
-        if r2.a in r1 and r2.b not in r1:
+        if r1.contains_pos(r2.a) and not r1.contains_pos(r2.b):
             # strict forward overlap
             overlap = r1.intersection(r2)
             if not overlap:
@@ -522,9 +575,7 @@ class AssemblyGraphBuilder(object):
                 span_length = 0
             else:
                 return
-            self._add_edge(
-                group, other_group, span_length=span_length, name="gap"
-            )
+            self._add_edge(group, other_group, span_length=span_length, name="gap")
 
     # TODO: linear assemblies
     # TODO: replace region methods with something faster.
@@ -548,6 +599,8 @@ class AssemblyGraphBuilder(object):
             ),
             key=lambda g: g.query_region.a,
         )
-        for g1, g2 in itertools.product(groups, repeat=2):
+
+        # TODO: reduce number of times edge
+        for g1, g2 in self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges"):
             self.add_edge(g1, g2)
         return self.G

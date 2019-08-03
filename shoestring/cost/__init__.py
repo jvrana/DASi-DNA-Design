@@ -21,8 +21,8 @@ class JxnParams(object):
     jxn_efficiency[150:250] = 0.1
     jxn_efficiency[250:300] = 0.0
 
-    min_jxn_span = -300     # the minimum spanning junction we evaluate
-    min_anneal = 16         # the minimum annealing of each primer
+    min_jxn_span = -300  # the minimum spanning junction we evaluate
+    min_anneal = 16  # the minimum annealing of each primer
     primers = np.array(
         [
             [16.0, 60.0, 0.0, 0.3, 1.5],
@@ -39,10 +39,10 @@ class JxnParams(object):
 
 
 class Slicer(object):
-
     def __getitem__(self, item):
         return item
-    
+
+
 slicer = Slicer()
 
 
@@ -135,7 +135,9 @@ class JunctionCost(object):
             (1, 0): slicer[:, :-1, -1:],
             (1, 1): slicer[:, :-1, :-1],
         }
-        self.cost_dict = {k: self.cost_matrix[self.slice_dict[k]] for k in self.slice_dict}
+        self.cost_dict = {
+            k: self.cost_matrix[self.slice_dict[k]] for k in self.slice_dict
+        }
         self.min_cost_dict = {k: v.min(axis=(1, 2)) for k, v in self.cost_dict.items()}
 
     def plot(self):
@@ -211,6 +213,7 @@ class SynthesisCost(object):
         self.sizes = SynParams.gene_sizes[:: SynParams.synthesis_step_size, :]
         self.make_cost_dict()
 
+    # TODO: synthesis means another fragment which reduces efficiency
     def compute_synthesis_costs(self, left_ext=0, right_ext=0):
         sizes = self.sizes
         span = self.span.reshape(1, -1)

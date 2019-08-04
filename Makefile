@@ -61,3 +61,8 @@ colab:
 updatedeps:
 	poetry cache:clear --all pypi
 	poetry update
+
+
+benchmark:
+	poetry run pytest tests/test_benchmark --benchmark-autosave --benchmark-max-time=0.1
+	poetry run pytest-benchmark compare

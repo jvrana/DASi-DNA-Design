@@ -4,7 +4,7 @@ from .infinite_dictionary import InfiniteDict
 from .span import Span
 from .region import Region
 import functools
-
+from .async_wrapper import make_async
 
 def sort_with_keys(a, key):
     s = sorted(a, key=key)

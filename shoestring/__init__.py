@@ -13,7 +13,7 @@ import itertools
 from .utils import Region
 import numpy as np
 from .log import logger
-
+from shoestring.utils import make_async
 
 # TODO: having the costs mixed up between classes is confusing
 # TODO: move these to their own classes?
@@ -527,7 +527,6 @@ class AssemblyGraphBuilder(object):
         n1 = self._add_node(g1)
         n2 = self._add_node(g2)
         cost = self._edge_weight(g1.type, g2.type, span_length)
-
         edata = {
             "weight": sum(cost.values()),
             "span_length": span_length,
@@ -564,7 +563,7 @@ class AssemblyGraphBuilder(object):
             self._add_edge(
                 group, other_group, span_length=-len(overlap), name="overlap"
             )
-        elif r2.a not in r1 and r2.b not in r1:
+        elif not r1.contains_pos(r2.a) and not r1.contains_pos(r2.b):
             try:
                 connecting_span = r1.connecting_span(r2)
             except Exception as e:
@@ -601,6 +600,15 @@ class AssemblyGraphBuilder(object):
         )
 
         # TODO: reduce number of times edge
-        for g1, g2 in self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges"):
-            self.add_edge(g1, g2)
+
+        @make_async(10)
+        def add_edges(pairs):
+            for g1, g2 in pairs:
+                self.add_edge(g1, g2)
+
+        pairs = itertools.product(groups, repeat=2)
+        # pairs = self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges")
+
+        add_edges(pairs)
+
         return self.G

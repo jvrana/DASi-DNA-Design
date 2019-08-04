@@ -2,6 +2,7 @@ import seaborn as sns
 import pylab as plt
 import numpy as np
 import pandas as pd
+from typing import Tuple
 
 # TODO: backtrack options
 
@@ -312,8 +313,22 @@ class SpanCost(object):
         self.junction_cost = JunctionCost()
         self.synthesis_cost = SynthesisCost(self.junction_cost)
 
-    def cost(self, span: int, ext: int) -> float:
-        x = np.array(
-            [self.junction_cost.cost(span, ext), self.synthesis_cost.cost(span, ext)]
-        )
-        return x.min(axis=0)
+        self.cost_dictionary = {}
+        x = [
+            self.junction_cost.span.min(),
+            self.junction_cost.span.max(),
+            self.synthesis_cost.span.min(),
+            self.synthesis_cost.span.max()
+        ]
+        self._span = (min(x), max(x))
+        span_range = np.arange(min(x), max(x)+1)
+        for ext in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+            a = self.junction_cost.cost(span_range, ext)
+            b = self.synthesis_cost.cost(span_range, ext)
+            c = np.stack([a, b])
+            d = c.min(axis=0)
+            self.cost_dictionary[ext] = d
+
+    def cost(self, span: int, ext: Tuple[int, int]) -> float:
+        span = np.clip(span, self._span[0], self._span[1])
+        return self.cost_dictionary[ext][span]

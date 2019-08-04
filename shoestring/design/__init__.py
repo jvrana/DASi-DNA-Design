@@ -21,6 +21,7 @@ class Design(object):
         self.factory = BioBlastFactory()
         self.logger = logger(self)
         self.G = None
+        self.container = None
 
     def add_materials(
         self,
@@ -65,25 +66,25 @@ class Design(object):
         seqdb.update(blast.seq_db.records)
         seqdb.update(primer_blast.seq_db.records)
 
-        container = AlignmentContainer(seqdb)
+        self.container = AlignmentContainer(seqdb)
 
         # load the results (potential PCR Products)
-        container.load_blast_json(results, Constants.PCR_PRODUCT)
+        self.container.load_blast_json(results, Constants.PCR_PRODUCT)
 
         # load the primer results
-        container.load_blast_json(primer_results, Constants.PRIMER)
+        self.container.load_blast_json(primer_results, Constants.PRIMER)
 
         # TODO modify expand
-        container.expand(expand_overlaps=True, expand_primers=True)
+        self.container.expand(expand_overlaps=True, expand_primers=True)
 
         # group by query_regions
-        groups = container.alignment_groups
+        groups = self.container.alignment_groups
 
-        self.logger.info("Number of types: {}".format(len(container.groups_by_type)))
+        self.logger.info("Number of types: {}".format(len(self.container.groups_by_type)))
         self.logger.info("Number of groups: {}".format(len(groups)))
 
         # build assembly graph
-        graph_builder = AssemblyGraphBuilder(container)
+        graph_builder = AssemblyGraphBuilder(self.container)
         G = graph_builder.build_assembly_graph()
 
         self.logger.info("=== Assembly Graph ===")

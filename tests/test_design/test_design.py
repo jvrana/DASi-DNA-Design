@@ -1,11 +1,11 @@
 from shoestring.design import Design
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 import pytest
-from os.path import join, abspath, dirname
+from os.path import join
 
 
 @pytest.mark.parametrize('query', [
-    "pmodkan-ho-pact1-z4-er-vpr.gb",
+    # "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb'
 ])
 def test_design(here, paths, query):

@@ -377,6 +377,7 @@ class AlignmentContainer(object):
 
     # TODO: change 'start' and 'end' to left and right end for regions...
 
+    # TODO: type increases computation time exponentially, we only need 'b' from group1 and 'a' from group2
     @staticmethod
     def alignment_hash(a):
         return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
@@ -601,7 +602,7 @@ class AssemblyGraphBuilder(object):
 
         # TODO: reduce number of times edge
 
-        @make_async(10)
+        # @make_async(10)
         def add_edges(pairs):
             for g1, g2 in pairs:
                 self.add_edge(g1, g2)

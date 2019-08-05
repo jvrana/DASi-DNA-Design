@@ -345,6 +345,7 @@ class AlignmentContainer(object):
                         alignments += ag2.alignments
         return alignments
 
+    # TODO: expand should just add more nodes
     def expand(self, expand_overlaps=True, expand_primers=True):
 
         self.logger.info("=== Expanding alignments ===")

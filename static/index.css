@@ -1,0 +1,19 @@
+rect.query {
+    fill: #626361;
+    stroke: black;
+}
+
+rect.subject {
+    fill: #fff7fb;
+    stroke: rgba(0, 0, 0, 0.99)
+}
+
+rect.overOrigin {
+    fill: #0013ff;
+    stroke: rgba(0, 0, 0, 0.96)
+}
+
+line.overOrigin {
+    stroke: #92c6de;
+    stroke-width: 1;
+}

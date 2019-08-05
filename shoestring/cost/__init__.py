@@ -330,5 +330,15 @@ class SpanCost(object):
             self.cost_dictionary[ext] = d
 
     def cost(self, span: int, ext: Tuple[int, int]) -> float:
+        """
+        Return cost of span. Span may be a np.ndarray
+
+        :param span:
+        :type span:
+        :param ext:
+        :type ext:
+        :return:
+        :rtype:
+        """
         span = np.clip(span, self._span[0], self._span[1])
         return self.cost_dictionary[ext][span]

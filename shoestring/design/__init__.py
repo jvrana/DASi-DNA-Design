@@ -45,7 +45,7 @@ class Design(object):
         self.logger.info("Adding queries")
         self.factory.add_records(queries, self.QUERIES)
 
-    def compile(self):
+    def _blast(self):
         self.logger.info("Compiling assembly graph")
 
         blast = self.factory("templates", "queries")
@@ -74,7 +74,9 @@ class Design(object):
         # load the primer results
         self.container.load_blast_json(primer_results, Constants.PRIMER)
 
-        # TODO modify expand
+    def compile(self):
+        self._blast()
+
         self.container.expand(expand_overlaps=True, expand_primers=True)
 
         # group by query_regions

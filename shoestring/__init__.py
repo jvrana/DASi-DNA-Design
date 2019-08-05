@@ -15,6 +15,7 @@ import numpy as np
 from .log import logger
 from shoestring.utils import make_async
 
+# TODO: instead of matching fragments, match 'b's to 'a's (e.g. 360000 edges vs 6390 edges!)
 # TODO: having the costs mixed up between classes is confusing
 # TODO: move these to their own classes?
 class Constants(object):
@@ -602,10 +603,9 @@ class AssemblyGraphBuilder(object):
 
         # TODO: reduce number of times edge
 
-        # @make_async(10)
         def add_edges(pairs):
             for g1, g2 in pairs:
-                self.add_edge(g1, g2)
+                self.r(g1, g2)
 
         pairs = itertools.product(groups, repeat=2)
         # pairs = self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges")

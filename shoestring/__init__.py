@@ -345,7 +345,7 @@ class AlignmentContainer(object):
                         alignments += ag2.alignments
         return alignments
 
-    # TODO: expand should just add more nodes
+    # TODO: expand should just add more
     def expand(self, expand_overlaps=True, expand_primers=True):
 
         self.logger.info("=== Expanding alignments ===")
@@ -452,143 +452,10 @@ class AssemblyGraphBuilder(object):
         self.G = None
         self.logger = logger(self)
 
-    def _edge_weight(self, type1: str, type2: str, span: int) -> float:
-        ext = self._extension_tuple_from_types(type1, type2)
-        assembly_cost = np.clip(self.span_cost.cost(span, ext), 0, Constants.INF)
-        frag_cost1 = Constants.PCR_COST[type1]  # we only count the source fragment cost
-        return {"junction": assembly_cost, "material": frag_cost1}
-
-    def _extension_tuple_from_types(self, left_type, right_type):
-        """
-        Converts two "TYPES" into an 'extension tuple' that can be consumed by
-        the cost classes. The 'extension tuple' is a tuple representing the ability
-        of the fragments across a junction to be design to bridge a gap. For example:
-
-        (0, 0) means the following gap cannot be spanned:
-
-        ::
-            (0, 0)
-            ------|      |------
-
-        It is also important to note that "0" means the either the primer for that fragment
-        exists
-
-        While the follow gap *may* be spanned by designing the left fragment with a longer
-        primer:
-
-        ::
-
-            (1, 0)
-            -------|    |-------
-               <----------
-
-        And finally, the following gap may be spanned by both primers.
-
-
-        ::
-
-            (1, 1)
-                    -------->
-            -------|    |-------
-               <----------
-
-        :param left_type:
-        :param right_type:
-        :return:
-        """
-        if (
-            left_type == Constants.PCR_PRODUCT_WITH_PRIMERS
-            or Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
-        ):
-            left_extendable = 1
-        else:
-            left_extendable = 0
-
-        if (
-            right_type == Constants.PCR_PRODUCT_WITH_PRIMERS
-            or Constants.PCR_PRODUCT_WITH_LEFT_PRIMER
-        ):
-            right_extendable = 1
-        else:
-            right_extendable = 0
-        return (left_extendable, right_extendable)
-
-    def _add_node(self, g1: AlignmentGroup):
-        """Add a node from an alignment group to the graph."""
-        n1 = self.container.alignment_hash(g1.alignments[0])
-        self.G.add_node(
-            n1,
-            start=g1.query_region.start,
-            end=g1.query_region.end,
-            region=str(g1.query_region),
-        )
-        return n1
-
-    def _add_edge(self, g1, g2, span_length, **kwargs):
-        """Add nodes, edge, and edge_weight from two alignment groups. A spanning distance (bp)
-        must be provided."""
-        n1 = self._add_node(g1)
-        n2 = self._add_node(g2)
-        cost = self._edge_weight(g1.type, g2.type, span_length)
-        edata = {
-            "weight": sum(cost.values()),
-            "span_length": span_length,
-            "region_1": str(g1.query_region),
-            "region_2": str(g2.query_region),
-        }
-        edata["cost"] = cost
-        edata.update(kwargs)
-        self.G.add_edge(n1, n2, **edata)
-
-    # TODO: speed improvment
-    def add_edge(self, group, other_group):
-        """
-        Create an edge between one alignment group and another.
-
-        :param group:
-        :param other_group:
-        :return:
-        """
-        # verify contexts are the same
-        r1 = group.query_region
-        r2 = other_group.query_region
-        assert r2.same_context(r1)
-
-        # TODO: replace by faster method
-        if r2.contains_span(r1) or r1.contains_span(r2):
-            return
-        if r1.contains_pos(r2.a) and not r1.contains_pos(r2.b):
-            # strict forward overlap
-            overlap = r1.intersection(r2)
-            if not overlap:
-                raise Exception("We expected an overlap here")
-            # TODO: penalize small overlap
-            self._add_edge(
-                group, other_group, span_length=-len(overlap), name="overlap"
-            )
-        elif not r1.contains_pos(r2.a) and not r1.contains_pos(r2.b):
-            try:
-                connecting_span = r1.connecting_span(r2)
-            except Exception as e:
-                raise e
-            if connecting_span:
-                span_length = len(connecting_span)
-            elif r1.consecutive(r2):
-                span_length = 0
-            else:
-                return
-            self._add_edge(group, other_group, span_length=span_length, name="gap")
-
-    # TODO: linear assemblies
-    # TODO: replace region methods with something faster.
-    # TODO: edge cost should include (i) cost of producing the source and (ii) cost of assembly
-    # Verify queries have same context
     def build_assembly_graph(self):
 
         self.G = nx.DiGraph(name="Assembly Graph")
-        # TODO: tests for validating over-origin edges are being produced
-        # produce non-spanning edges
-        # makes edges for any regions
+
         groups, group_keys = sort_with_keys(
             self.container.get_groups_by_types(
                 [
@@ -604,13 +471,54 @@ class AssemblyGraphBuilder(object):
 
         # TODO: reduce number of times edge
 
-        def add_edges(pairs):
-            for g1, g2 in pairs:
-                self.r(g1, g2)
+        a_arr = set()
+        b_arr = set()
 
-        pairs = itertools.product(groups, repeat=2)
+        internal_edge_costs = {
+            (0, 0, 1): 0,
+            (0, 0, 0): 30 + 15 + 15,
+            (0, 1, 0): 30 + 15,
+            (1, 0, 0): 30 + 15,
+            (1, 1, 0): 30
+        }
+
+        for g in groups:
+            q = g.query_region
+            b_expand = True
+            a_expand = True
+
+            # TODO: Constants should be a class?
+            if g.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+                b_expand = False
+            if g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+                a_expand = False
+
+            ### INTERNAL EDGE
+            if g.type == Constants.FRAGMENT:
+                internal_cost = 0
+            elif g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
+                internal_cost = 30 + 15
+            elif g.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
+                internal_cost = 30
+            elif g.type == Constants.PCR_PRODUCT:
+                internal_cost = 30 + 15 + 15
+
+            self.G.add_edge(
+                (q.a, a_expand),
+                (q.b, b_expand),
+                cost=internal_cost
+            )
+
+            a_arr.add((q.a, a_expand))
+            b_arr.add((q.b, b_expand))
+
+        ### EXTERNAL EDGES
+        for (b, b_expand), (a, a_expand) in itertools.product(b_arr, a_arr):
+            self.span_cost.cost(a - b)
+
+
+        pairs = itertools.product(b_arr, repeat=2)
         # pairs = self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges")
 
-        add_edges(pairs)
 
         return self.G

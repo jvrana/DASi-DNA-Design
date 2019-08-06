@@ -17,10 +17,11 @@ class Design(object):
     TEMPLATES = "templates"
     QUERIES = "queries"
 
-    def __init__(self):
+    def __init__(self, span_cost=None):
         self.factory = BioBlastFactory()
         self.logger = logger(self)
         self.G = None
+        self.span_cost = span_cost
         self.container = None
 
     def add_materials(
@@ -86,7 +87,7 @@ class Design(object):
         self.logger.info("Number of groups: {}".format(len(groups)))
 
         # build assembly graph
-        graph_builder = AssemblyGraphBuilder(self.container)
+        graph_builder = AssemblyGraphBuilder(self.container, span_cost=self.span_cost)
         G = graph_builder.build_assembly_graph()
 
         self.logger.info("=== Assembly Graph ===")

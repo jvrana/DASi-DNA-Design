@@ -1,4 +1,5 @@
 from shoestring.design import Design
+from shoestring.cost import SpanCost
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 import pytest
 from os.path import join
@@ -32,6 +33,7 @@ def test_num_groups_vs_endpoints(here, paths, query):
 
     print(len(a_arr) * len(b_arr))
 
+span_cost = SpanCost()
 
 
 @pytest.mark.parametrize('query', [
@@ -45,7 +47,7 @@ def test_design(here, paths, query):
     query_path = join(here, 'data/test_data/genbank/designs', query)
     queries = make_circular(load_genbank_glob(query_path))
 
-    design = Design()
+    design = Design(span_cost=span_cost)
 
     design.add_materials(primers=primers, templates=templates, queries=queries)
 

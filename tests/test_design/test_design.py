@@ -4,6 +4,7 @@ from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_
 import pytest
 from os.path import join
 
+
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb'
@@ -35,10 +36,10 @@ def test_num_groups_vs_endpoints(here, paths, query):
 
 span_cost = SpanCost()
 
-
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
-    'plko-pef1a-frt-tdtomato-wpre.gb'
+    'plko-pef1a-frt-tdtomato-wpre.gb',
+    'pins-01-hu6-sv40-nt1-optgrna.gb'
 ])
 def test_design(here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))

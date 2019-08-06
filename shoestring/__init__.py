@@ -228,7 +228,7 @@ class AlignmentContainer(object):
         self.logger.info("annotating fragments")
         annotated = []
         for a in alignments:
-            if a.is_perfect_subject() and not a.subject_region.circular:
+            if a.is_perfect_subject() and not a.subject_region.cyclic:
                 a.type = Constants.FRAGMENT
                 annotated.append(a)
         return annotated
@@ -477,14 +477,6 @@ class AssemblyGraphBuilder(object):
         a_arr = set()
         b_arr = set()
 
-        internal_edge_costs = {
-            (0, 0, 1): 0,
-            (0, 0, 0): 30 + 15 + 15,
-            (0, 1, 0): 30 + 15,
-            (1, 0, 0): 30 + 15,
-            (1, 1, 0): 30
-        }
-
         for g in groups:
             q = g.query_region
             b_expand = True
@@ -500,11 +492,11 @@ class AssemblyGraphBuilder(object):
             if g.type == Constants.FRAGMENT:
                 internal_cost = 0
             elif g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
-                internal_cost = 30 + 15
+                internal_cost = 30 + 30
             elif g.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
                 internal_cost = 30
             elif g.type == Constants.PCR_PRODUCT:
-                internal_cost = 30 + 15 + 15
+                internal_cost = 30 + 30 + 30
 
             self.G.add_edge(
                 (q.a, a_expand, 'A'),
@@ -522,12 +514,12 @@ class AssemblyGraphBuilder(object):
             query = groups[0].query_region
             for (b, b_expand, bid), (a, a_expand, aid) in itertools.product(b_arr, a_arr):
                 if a != b:
-                    r1 = query[b:a]
-                    # r2 = query[a:b]
-                    for r in [r1]:
-                        cost = self.span_cost.cost(len(r), (b_expand, a_expand))
-                        if cost > 10000:
-                            continue
+                    ba = query[b:a]
+                    ab = query[a:b]
+
+                    r = ba # sorted([(r1, len(r1)), (r2, len(r2))], key=lambda x: x[1])[0][0]
+                    cost = self.span_cost.cost(len(r), (b_expand, a_expand))
+                    if cost < 10000:
                         self.G.add_edge(
                             (b, b_expand, bid),
                             (a, a_expand, aid),

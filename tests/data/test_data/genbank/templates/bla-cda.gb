@@ -1,0 +1,68 @@
+LOCUS       bla_CDA                 1097 bp ds-DNA     linear       06-AUG-2019
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     CDS             98..757
+                     /label="AmpR"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     promoter        956..1060
+                     /label="bla promoter"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     CDS             complement(231..955)
+                     /label="bla CDS"
+                     /ApEinfo_revcolor=#d6b295
+                     /ApEinfo_fwdcolor=#d6b295
+     misc_feature    1061..1072
+                     /label="GG_Pos0"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    1061..1066
+                     /label="BbsI"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     gene            95..230
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     misc            231..255
+                     /label="Tm: 67.0°C"
+                     /ApEinfo_revcolor=#68b4b2
+                     /ApEinfo_fwdcolor=#68b4b2
+     misc_feature    1061..1072
+                     /label="GGPos0"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    1069..1072
+                     /label="stickyend"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    complement(239..239)
+                     /label="c>t mutation"
+                     /ApEinfo_revcolor=#d59687
+                     /ApEinfo_fwdcolor=#d59687
+     misc_feature    1073..1097
+                     /label="BBUT"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+ORIGIN
+        1 GATTATCAAA AAGGATCTTC ACCTAGATCC TTTTAAATTA AAAATGAAGT TTTAAATCAA
+       61 TCTAAAGTAT ATATGAGTAA ACTTGGTCTG ACAGTTACCA ATGCTTAATC AGTGAGGCAC
+      121 CTATCTCAGC GATCTGTCTA TTTCGTTCAT CCATAGTTGC CTGACTCCCC GTCGTGTAGA
+      181 TAACTACGAT ACGGGAGGGC TTACCATCTG GCCCCAGTGC TGCAATGATA ccgcgagatc
+      241 cacgctcacc ggctccagat ttatcagcaa taaaccagcc agccggaagg gccgagcgca
+      301 gaagtggtcc tgcaacttta tccgcctcca tccagtctat taattgttgc cgggaagcta
+      361 gagtaagtag ttcgccagtt aatagtttgc gcaacgttgt tgccattgct acaggcatcg
+      421 tggtgtcacg ctcgtcgttt ggtatggctt cattcagctc cggttcccaa cgatcaaggc
+      481 gagttacatg atcccccatg ttgtgcaaaa aagcggttag ctccttcggt cctccgatcg
+      541 ttgtcagaag taagttggcc gcagtgttat cactcatggt tatggcagca ctgcataatt
+      601 ctcttactgt catgccatcc gtaagatgct tttctgtgac tggtgagtac tcaaccaagt
+      661 cattctgaga atagtgtatg cggcgaccga gttgctcttg cccggcgtca atacgggata
+      721 ataccgcgcc acatagcaga actttaaaag tgctcatcat tggaaaacgt tcttcggggc
+      781 gaaaactctc aaggatctta ccgctgttga gatccagttc gatgtaaccc actcgtgcac
+      841 ccaactgatc ttcagcatct tttactttca ccagcgtttc tgggtgagca aaaacaggaa
+      901 ggcaaaatgc cgcaaaaaag ggaataaggg cgacacggaa atgttgaata ctcatactct
+      961 tcctttttca atattattga agcatttatc agggttattg tctcatgagc ggatacatat
+     1021 ttgaatgtat ttagaaaaat aaacaaatag gggttccgcg gAAGAcCcaa tgGTCGGCGG
+     1081 GACCAGGGAG TTTAAAC
+//

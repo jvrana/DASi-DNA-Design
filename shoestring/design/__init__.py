@@ -95,18 +95,14 @@ class Design(object):
         assert G.number_of_edges()
         self.G = G
 
-    def optimize(self):
-        self.logger.info("Optimizing...")
-
-        # shortest path matrix
-        nodelist = list(self.G.nodes())
-        matrix = np.array(nx.floyd_warshall_numpy(self.G, nodelist=nodelist, weight='weight'))
-
+    # def plot_matrix(self, matrix):
         ## plot matrix
         # import pylab as plt
+        # import seaborn as sns
+        # import numpy as np
         #
         # plot_matrix = matrix.copy()
-        # plot_matrix[plot_matrix == inf] = 10000
+        # plot_matrix[plot_matrix == np.inf] = 10000
         # plot_matrix = np.nan_to_num(plot_matrix)
         #
         # fig = plt.figure(figsize=(24, 20))
@@ -114,13 +110,20 @@ class Design(object):
         # step = 1
         # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
+    def optimize(self):
+        self.logger.info("Optimizing...")
+
+        # shortest path matrix
+        nodelist = list(self.G.nodes())
+        weight_matrix = np.array(nx.floyd_warshall_numpy(self.G, nodelist=nodelist, weight='weight'))
+
         # shortest cycles (estimated)
         cycles = []
         paths = []
-        for i, _ in enumerate(matrix):
-            for j, _ in enumerate(matrix[i]):
-                a = matrix[i, j]
-                b = matrix[j, i]
+        for i, _ in enumerate(weight_matrix):
+            for j, _ in enumerate(weight_matrix[i]):
+                a = weight_matrix[i, j]
+                b = weight_matrix[j, i]
                 if i == j:
                     continue
 

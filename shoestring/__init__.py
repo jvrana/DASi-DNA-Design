@@ -517,7 +517,7 @@ class AssemblyGraphBuilder(object):
                     ba = query[b:a]
                     ab = query[a:b]
 
-
+                    # TODO: no way to determine overlaps from just end points
 
                     r = ba # sorted([(r1, len(r1)), (r2, len(r2))], key=lambda x: x[1])[0][0]
                     cost = self.span_cost.cost(len(r), (b_expand, a_expand))

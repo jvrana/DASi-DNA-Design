@@ -145,5 +145,5 @@ class Design(object):
             path = path1 + path2[1:]
             for n1, n2 in pairwise(path):
                 edata = self.G[n1][n2]
-                print('{} {} {} {} > {}'.format(edata['weight'], edata['name'], edata['span_length'], n1, n2))
+                print('{} > {} Weight={} name={} span={}'.format(n1, n2, edata['weight'], edata['name'], edata['span_length']))
             print()

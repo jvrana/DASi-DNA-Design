@@ -504,21 +504,34 @@ class AssemblyGraphBuilder(object):
                 internal_cost = 30 + 15 + 15
 
             self.G.add_edge(
-                (q.a, a_expand),
-                (q.b, b_expand),
-                cost=internal_cost
+                (q.a, a_expand, 'A'),
+                (q.b, b_expand, 'B'),
+                weight=internal_cost,
+                name='',
+                span_length=len(g.query_region)
             )
 
-            a_arr.add((q.a, a_expand))
-            b_arr.add((q.b, b_expand))
+            a_arr.add((q.a, a_expand, 'A'))
+            b_arr.add((q.b, b_expand, 'B'))
 
         ### EXTERNAL EDGES
-        for (b, b_expand), (a, a_expand) in itertools.product(b_arr, a_arr):
-            self.span_cost.cost(a - b)
-
-
-        pairs = itertools.product(b_arr, repeat=2)
-        # pairs = self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges")
-
-
+        if groups:
+            query = groups[0].query_region
+            for (b, b_expand, bid), (a, a_expand, aid) in itertools.product(b_arr, a_arr):
+                if a != b:
+                    r1 = query[b:a]
+                    # r2 = query[a:b]
+                    for r in [r1]:
+                        cost = self.span_cost.cost(len(r), (b_expand, a_expand))
+                        if cost > 10000:
+                            continue
+                        self.G.add_edge(
+                            (b, b_expand, bid),
+                            (a, a_expand, aid),
+                            weight=cost,
+                            name='',
+                            span_length=len(r)
+                        )
+        else:
+            self.logger.warn("There is nothing to assembly. There are no alignments.")
         return self.G

@@ -229,6 +229,11 @@ class Span(Container, Iterable, Sized):
                 return False
             return True
 
+    def spans_origin(self):
+        if self.cyclic:
+            return self.contains_pos(self.index)
+        return False
+
     def __contains__(self, other):
         if isinstance(other, int):
             return self.contains_pos(other)

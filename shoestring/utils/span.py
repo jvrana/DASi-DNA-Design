@@ -51,12 +51,19 @@ class Span(Container, Iterable, Sized):
         return (p % self.context_length) + self.bounds()[0]
 
     def ranges(self):
+        """
+        Return ranges of valid positions.
+
+        :return:
+        :rtype:
+        """
         if self.cyclic and self.a > self.b:
             return [(self.a, self.bounds()[1]), (self.bounds()[0], self.b)]
         else:
             return [(self.a, self.b)]
 
     def new(self, a, b, allow_wrap=True):
+        """Create a new span using the same context."""
         return self.__class__(
             a,
             b,
@@ -67,6 +74,15 @@ class Span(Container, Iterable, Sized):
         )
 
     def sub(self, a, b):
+        """
+        Create a sub region starting from a to b.
+        :param a:
+        :type a:
+        :param b:
+        :type b:
+        :return:
+        :rtype:
+        """
         if a == b:
             return self.new(a, b)
         if b is not None and a > b and not self.cyclic:

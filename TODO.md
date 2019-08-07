@@ -11,6 +11,7 @@
 We then break down subject alignments to each original query.
 1. We also need to find shared primers somehow. Enumerating every shared primer would be very comp intensive in the
 same way we do with shared edges is probably not possible.
+2. After we align primers to each query
 
 1. For each plasmid, enumerate all possible shared edges. For example, if a assembly graph has a single shared
 edge with another assembly graph, then there are two solutions, one in which the shared edge is not used and 

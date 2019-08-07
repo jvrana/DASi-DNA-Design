@@ -11,8 +11,8 @@ builder.build_assembly_graph()
 
 def make_fake_alignment(a, b):
     alignment = Alignment(
-        Region(a, b, 10000),
-        Region(a, b, 10000),
+        Region(a, b, 10000, cyclic=True),
+        Region(a, b, 10000, cyclic=True),
         type=Constants.PCR_PRODUCT,
         query_key="",
         subject_key="",

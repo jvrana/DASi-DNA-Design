@@ -9,6 +9,29 @@ from typing import List
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 from more_itertools import pairwise
+from abc import ABC, abstractmethod
+
+
+class DNADesign(ABC):
+
+    @abstractmethod
+    def design(self, span, seq1, seq2, query_seq):
+        pass
+
+
+class PrimerDesign(object):
+
+    # TODO: how much to expand?
+    # TODO: what kind of constraints?
+    # TODO: re-evaluate costs after refinement
+    def design(self, span, seq1, seq2, query_seq, expand_left=True, expand_right=True):
+        pass
+
+
+class SynthesisDesign(object):
+
+    def design(self, span, seq1, seq2, query_seq):
+        pass
 
 
 class Design(object):

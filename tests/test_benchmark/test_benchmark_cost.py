@@ -6,6 +6,7 @@ from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_
 import pytest
 from os.path import join
 
+
 class TestBenchmarkCosts(object):
 
     def test_span_cost_constructor(self, benchmark):

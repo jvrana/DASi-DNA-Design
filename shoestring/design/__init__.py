@@ -1,6 +1,6 @@
 """Primer and synthesis design"""
 
-from shoestring import AlignmentContainer, Constants, AssemblyGraphBuilder
+from shoestring import AlignmentContainerFactory, Constants, AssemblyGraphBuilder
 from shoestring.utils import perfect_subject
 import networkx as nx
 from shoestring import BioBlastFactory
@@ -41,11 +41,11 @@ class Design(object):
     QUERIES = "queries"
 
     def __init__(self, span_cost=None):
-        self.factory = BioBlastFactory()
+        self.blast_factory = BioBlastFactory()
         self.logger = logger(self)
-        self.G = None
+        self.graphs = {}
         self.span_cost = span_cost
-        self.container = None
+        self.container_factory = None
 
     def add_materials(
         self,
@@ -59,21 +59,21 @@ class Design(object):
 
     def add_primers(self, primers: List[SeqRecord]):
         self.logger.info("Adding primers")
-        self.factory.add_records(primers, self.PRIMERS)
+        self.blast_factory.add_records(primers, self.PRIMERS)
 
     def add_templates(self, templates: List[SeqRecord]):
         self.logger.info("Adding templates")
-        self.factory.add_records(templates, self.TEMPLATES)
+        self.blast_factory.add_records(templates, self.TEMPLATES)
 
     def add_queries(self, queries: List[SeqRecord]):
         self.logger.info("Adding queries")
-        self.factory.add_records(queries, self.QUERIES)
+        self.blast_factory.add_records(queries, self.QUERIES)
 
     def _blast(self):
         self.logger.info("Compiling assembly graph")
 
-        blast = self.factory("templates", "queries")
-        primer_blast = self.factory("primers", "queries")
+        blast = self.blast_factory("templates", "queries")
+        primer_blast = self.blast_factory("primers", "queries")
 
         blast.quick_blastn()
         primer_blast.quick_blastn_short()
@@ -90,33 +90,30 @@ class Design(object):
         seqdb.update(blast.seq_db.records)
         seqdb.update(primer_blast.seq_db.records)
 
-        self.container = AlignmentContainer(seqdb)
-
-        # load the results (potential PCR Products)
-        self.container.load_blast_json(results, Constants.PCR_PRODUCT)
-
-        # load the primer results
-        self.container.load_blast_json(primer_results, Constants.PRIMER)
+        self.container_factory = AlignmentContainerFactory(seqdb)
+        self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+        self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
     def compile(self):
         self._blast()
 
-        self.container.expand(expand_overlaps=True, expand_primers=True)
+        for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), desc='compiling all containers'):
+            container.expand(expand_overlaps=True, expand_primers=True)
 
-        # group by query_regions
-        groups = self.container.alignment_groups
+            # group by query_regions
+            groups = container.alignment_groups
 
-        self.logger.info("Number of types: {}".format(len(self.container.groups_by_type)))
-        self.logger.info("Number of groups: {}".format(len(groups)))
+            self.logger.info("Number of types: {}".format(len(container.groups_by_type)))
+            self.logger.info("Number of groups: {}".format(len(groups)))
 
-        # build assembly graph
-        graph_builder = AssemblyGraphBuilder(self.container, span_cost=self.span_cost)
-        G = graph_builder.build_assembly_graph()
+            # build assembly graph
+            graph_builder = AssemblyGraphBuilder(container, span_cost=self.span_cost)
+            G = graph_builder.build_assembly_graph()
 
-        self.logger.info("=== Assembly Graph ===")
-        self.logger.info(nx.info(G))
-        assert G.number_of_edges()
-        self.G = G
+            self.logger.info("=== Assembly Graph ===")
+            self.logger.info(nx.info(G))
+            assert G.number_of_edges()
+            self.graphs[query_key] = G
 
     # def plot_matrix(self, matrix):
         ## plot matrix
@@ -134,11 +131,15 @@ class Design(object):
         # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
     def optimize(self):
-        self.logger.info("Optimizing...")
+        for query_key, G in self.logger.tqdm(self.graphs.items(), desc='optimizing graphs'):
+            self.logger.info("Optimizing {}".format(query_key))
+            self._optimize_graph(G)
+
+    def _optimize_graph(self, graph):
 
         # shortest path matrix
-        nodelist = list(self.G.nodes())
-        weight_matrix = np.array(nx.floyd_warshall_numpy(self.G, nodelist=nodelist, weight='weight'))
+        nodelist = list(graph.nodes())
+        weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight='weight'))
 
         # shortest cycles (estimated)
         cycles = []
@@ -167,10 +168,10 @@ class Design(object):
         # print cycles
         for c in cycles[:20]:
             print(c)
-            path1 = nx.shortest_path(self.G, c[0], c[1], weight='weight')
-            path2 = nx.shortest_path(self.G, c[1], c[0], weight='weight')
+            path1 = nx.shortest_path(graph, c[0], c[1], weight='weight')
+            path2 = nx.shortest_path(graph, c[1], c[0], weight='weight')
             path = path1 + path2[1:]
             for n1, n2 in pairwise(path):
-                edata = self.G[n1][n2]
+                edata = graph[n1][n2]
                 print('{} > {} Weight={} name={} span={}'.format(n1, n2, edata['weight'], edata['name'], edata['span_length']))
             print()

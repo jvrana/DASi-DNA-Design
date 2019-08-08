@@ -185,44 +185,30 @@ def blast_to_region(query_or_subject, seqdb):
 # TODO: This assumes a single query. Verify this.
 # TODO: need way to run blast from multiple databases on a single query
 class AlignmentContainer(object):
-    valid_types = [
+    valid_types = (
         Constants.PCR_PRODUCT,
         Constants.PRIMER,
         Constants.FRAGMENT,
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-    ]  # valid fragment types
+    )  # valid fragment types
 
-    def __init__(self, seqdb: Dict[str, SeqRecord]):
-        self.alignments = []
+    def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
+        if alignments is None:
+            self.alignments = []
+        else:
+            self.alignments = alignments
+        self._check_single_query_key(self.alignments)
         self.seqdb = seqdb
         self.logger = logger(self)
 
-    def load_blast_json(self, data: dict, type: str):
-        """
-        Create alignments from a formatted BLAST JSON result.
-
-        :param data: formatted BLAST JSON result
-        :param type: the type of alignment to initialize
-        :return: None
-        """
-        self.logger.info("Loading blast json")
-        assert type in self.valid_types
-        for d in data:
-            query_region = blast_to_region(d["query"], self.seqdb)
-            subject_region = blast_to_region(d["subject"], self.seqdb)
-            query_key = d["query"]["origin_key"]
-            subject_key = d["subject"]["origin_key"]
-
-            alignment = Alignment(
-                query_region,
-                subject_region,
-                type=type,
-                query_key=query_key,
-                subject_key=subject_key,
-            )
-            self.alignments.append(alignment)
+    @staticmethod
+    def _check_single_query_key(alignments):
+        keys = set(a.query_key for a in alignments)
+        if len(keys) > 1:
+            raise ValueError("AlignmentContainer cannot contain more than one query. Contains the following"
+                             "query keys: {}".format(keys))
 
     def annotate_fragments(self, alignments) -> List[Alignment]:
         self.logger.info("annotating fragments")
@@ -443,6 +429,53 @@ class AlignmentContainer(object):
         :return:
         """
         return self.group(self.alignments)
+
+
+class AlignmentContainerFactory(object):
+    valid_types = (
+        Constants.PCR_PRODUCT,
+        Constants.PRIMER,
+        Constants.FRAGMENT,
+        Constants.PCR_PRODUCT_WITH_PRIMERS,
+        Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+        Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+    )  # valid fragment types
+
+    def __init__(self, seqdb: Dict[str, SeqRecord]):
+        self.alignments = {}
+        self.logger = logger(self)
+        self.seqdb = seqdb
+
+    def load_blast_json(self, data: dict, type: str):
+        """
+        Create alignments from a formatted BLAST JSON result.
+
+        :param data: formatted BLAST JSON result
+        :param type: the type of alignment to initialize
+        :return: None
+        """
+        self.logger.info("Loading blast json")
+        assert type in self.valid_types
+        for d in data:
+            query_region = blast_to_region(d["query"], self.seqdb)
+            subject_region = blast_to_region(d["subject"], self.seqdb)
+            query_key = d["query"]["origin_key"]
+            subject_key = d["subject"]["origin_key"]
+
+            alignment = Alignment(
+                query_region,
+                subject_region,
+                type=type,
+                query_key=query_key,
+                subject_key=subject_key,
+            )
+            self.alignments.setdefault(query_key, list()).append(alignment)
+
+    def containers(self):
+        container_dict = {}
+        for key, alignments in self.alignments.items():
+            container_dict[key] = AlignmentContainer(self.seqdb, alignments=alignments)
+        return container_dict
 
 
 class AssemblyGraphBuilder(object):

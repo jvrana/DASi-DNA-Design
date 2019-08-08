@@ -42,12 +42,9 @@ class BioBlastFactory(object):
             self.record_groups[record_group_name] = records
         return records
 
-    def new(self, subjects, queries, **config):
-        return BioBlast(subjects=subjects, queries=queries, seq_db=self.db, **config)
-
     def __call__(self, subject, query, **config):
         if isinstance(subject, str):
-            subject = self.record_groups[subject]
+            subjects = self.record_groups[subject]
         if isinstance(query, str):
-            query = self.record_groups[query]
-        return self.new(subject, query, **config)
+            queries = self.record_groups[query]
+        return BioBlast(subjects=subjects, queries=queries, seq_db=self.db, **config)

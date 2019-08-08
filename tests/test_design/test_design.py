@@ -54,5 +54,5 @@ def test_design(here, paths, query):
 
     design.compile()
 
-    design.optimize()
+    design._optimize_graph()
 

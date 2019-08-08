@@ -8,12 +8,12 @@ authors = ["jvrana <justin.vrana@gmail.com>"]
 python = "^3.6"
 networkx = "^2.3"
 more-itertools = "^7.1"
-pyblastbio = "^0.2.4"
 tqdm = "^4.32"
 sortedcontainers = "^2.1"
 loggable-jdv = "^0.1.2"
 uvloop = "^0.12.2"
 nest_asyncio = "^1.0"
+pyblastbio = "^0.2.8"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^18.3-alpha.0", allows-prereleases = true}

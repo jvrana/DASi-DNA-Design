@@ -94,10 +94,13 @@ class Design(object):
         self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
+    def container_list(self):
+        return list(self.container_factory.containers().values())
+
     def compile(self):
         self._blast()
 
-        for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), desc='compiling all containers'):
+        for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), "INFO", desc='compiling all containers'):
             container.expand(expand_overlaps=True, expand_primers=True)
 
             # group by query_regions
@@ -131,7 +134,7 @@ class Design(object):
         # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
     def optimize(self):
-        for query_key, G in self.logger.tqdm(self.graphs.items(), desc='optimizing graphs'):
+        for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             self.logger.info("Optimizing {}".format(query_key))
             self._optimize_graph(G)
 

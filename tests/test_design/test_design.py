@@ -21,8 +21,11 @@ def test_num_groups_vs_endpoints(here, paths, query):
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
     design._blast()
-    design.container.expand()
-    groups = design.container.alignment_groups
+    containers = design.container_list()
+    assert len(containers) == 1
+    container = containers[0]
+    container.expand()
+    groups = container.alignment_groups
     print(len(groups)**2)
 
     a_arr = set()
@@ -54,5 +57,27 @@ def test_design(here, paths, query):
 
     design.compile()
 
-    design._optimize_graph()
+    assert len(design.graphs) == len(queries)
+    assert len(design.graphs) == 1
 
+    design.optimize()
+
+
+def test_multidesign(here, paths):
+    """Expect more than one graph to be output if multiple queries are provided"""
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["templates"])
+
+    query_path = join(here, 'data/test_data/genbank/designs/*.gb')
+    queries = make_circular(load_genbank_glob(query_path))
+
+    design = Design(span_cost=span_cost)
+
+    design.add_materials(primers=primers, templates=templates, queries=queries)
+
+    design.compile()
+
+    assert len(design.graphs) == len(queries)
+    assert len(design.graphs) > 1
+
+    design.optimize()

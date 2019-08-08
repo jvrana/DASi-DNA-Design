@@ -158,7 +158,7 @@ class AlignmentGroup(object):
             name="subregion",
         )
 
-
+# TODO: make a test for this conversion
 def blast_to_region(query_or_subject, seqdb):
     data = query_or_subject
     record = seqdb[data["origin_key"]]

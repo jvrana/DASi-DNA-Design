@@ -43,6 +43,8 @@ class Design(object):
     def __init__(self, span_cost=None):
         self.blast_factory = BioBlastFactory()
         self.logger = logger(self)
+
+        # graph by query_key
         self.graphs = {}
         self.span_cost = span_cost
         self.container_factory = None
@@ -135,9 +137,23 @@ class Design(object):
         # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
     def optimize(self):
+        query_key_to_path = {}
         for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             self.logger.info("Optimizing {}".format(query_key))
-            self._optimize_graph(G)
+            paths = self._optimize_graph(G)
+            for path in paths:
+                for n1, n2 in pairwise(path):
+                    edata = G[n1][n2]
+                    print('{} > {} Weight={} name={} span={} type={}'.format(n1, n2, edata['weight'], edata['name'],                                                      edata['span_length'], edata['type']))
+                print()
+            query_key_to_path[query_key] = paths
+        return query_key_to_path
+
+    def path_to_design(self, graph, query_key):
+        fragments = []
+        for n1, n2, edata in graph.edges(data=True):
+            if n1[0] == 'A' and n2[0] == 'B':
+                pass
 
     def _optimize_graph(self, graph):
 
@@ -170,12 +186,11 @@ class Design(object):
         self.logger.info("Paths: {}".format(len(paths)))
 
         # print cycles
+        paths = []
         for c in cycles[:20]:
             print(c)
             path1 = nx.shortest_path(graph, c[0], c[1], weight='weight')
             path2 = nx.shortest_path(graph, c[1], c[0], weight='weight')
             path = path1 + path2[1:]
-            for n1, n2 in pairwise(path):
-                edata = graph[n1][n2]
-                print('{} > {} Weight={} name={} span={}'.format(n1, n2, edata['weight'], edata['name'], edata['span_length']))
-            print()
+            paths.append(path)
+        return paths

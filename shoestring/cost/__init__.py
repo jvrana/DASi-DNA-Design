@@ -2,7 +2,7 @@ import seaborn as sns
 import pylab as plt
 import numpy as np
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, Any
 
 # TODO: backtrack options
 
@@ -271,7 +271,7 @@ class SynthesisCost(object):
         gene_time = SynParams.gene_times[sizes]
 
         # TODO:should just get the material costs here and multiply the efficiencies later
-        # auto broadcad
+        # auto broadcast
         ext_costs = left_cost + right_cost
 
         # TODO: need to broadcast left and right ext_choice
@@ -362,12 +362,12 @@ class SpanCost(object):
             self.synthesis_cost.span.max()
         ]
         self._span = (min(x), max(x))
-        span_range = np.arange(min(x), max(x)+1)
+        self._span_range = np.arange(min(x), max(x)+1)
 
         # TODO: here return whether we are synthesizing or using primers
         for ext in [(0, 0), (0, 1), (1, 0), (1, 1)]:
-            a = self.junction_cost.cost(span_range, ext)
-            b = self.synthesis_cost.cost(span_range, ext)
+            a = self.junction_cost.cost(self._span_range, ext)
+            b = self.synthesis_cost.cost(self._span_range, ext)
             c = np.stack([a, b])
 
             d = c.min(axis=0)
@@ -386,11 +386,14 @@ class SpanCost(object):
         :return:
         :rtype:
         """
-        span = np.clip(span, self._span[0], self._span[1])
-        return self.min_cost_dict[ext][span]
+        self.cost_and_desc(span, ext)[0]
 
-    def cost_and_desc(self, span: int, ext: Tuple[int, int]) -> float:
-        span = np.slip(span, self._span[0], self._span[1])
-        cost = self.min_cost_dict[ext][span]
-        desc = self.argmin_cost_dict[self.argmin_cost_dict[ext][span]]
+    # TODO: cost_and_desc is broken somehow
+    def cost_and_desc(self, span: int, ext: Tuple[int, int]) -> Tuple[float, Any]:
+        # need to convert span to span index
+        i = np.where(self._span_range == span)[0]
+        if not i:
+            return np.Inf, "out of bounds, not able to evaluate"
+        cost = self.min_cost_dict[ext][i[0]]
+        desc = self.arg_desc[self.argmin_cost_dict[ext][i[0]]]
         return cost, desc

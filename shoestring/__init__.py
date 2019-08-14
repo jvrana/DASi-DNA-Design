@@ -479,6 +479,9 @@ class AlignmentContainerFactory(object):
 
 
 class AssemblyGraphBuilder(object):
+
+    COST_THRESHOLD = 10000
+
     def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
         self.container = alignment_container
         if span_cost is None:
@@ -551,18 +554,18 @@ class AssemblyGraphBuilder(object):
                     ba = query.new(b, a)
                     ab = query.new(a, b)
 
-                    # TODO: no way to determine overlaps from just end points
+                    # TODO: PRIORITY no way to determine overlaps from just end points
 
                     r = ba # sorted([(r1, len(r1)), (r2, len(r2))], key=lambda x: x[1])[0][0]
-                    cost = self.span_cost.cost(len(r), (b_expand, a_expand))
-                    if cost < 10000:
+                    cost, desc = self.span_cost.cost_and_desc(len(r), (b_expand, a_expand))
+                    if cost < self.COST_THRESHOLD:
                         self.G.add_edge(
                             (b, b_expand, bid),
                             (a, a_expand, aid),
                             weight=cost,
                             name='',
                             span_length=len(r),
-                            type='gap'
+                            type=desc
                         )
         else:
             self.logger.warn("There is nothing to assembly. There are no alignments.")

@@ -10,6 +10,8 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 from more_itertools import pairwise
 from abc import ABC, abstractmethod
+from pyblast.utils import Span
+import pandas as pd
 
 
 class DNADesign(ABC):
@@ -136,16 +138,83 @@ class Design(object):
         # step = 1
         # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
-    def optimize(self):
+    def path_to_df(self, paths_dict):
+        def find(a, b, alignments):
+            for align in alignments:
+                if a == align.query_region.a and b == align.query_region.b:
+                    yield align
+
+        rows = []
+
+        for qk, paths in paths_dict.items():
+            G = self.graphs[qk]
+            alignments = self.container_factory.alignments[qk]
+            record = self.container_factory.seqdb[qk]
+            path = paths[0]
+
+            for n1, n2 in pairwise(path):
+                edata = G[n1][n2]
+                cost = edata['weight']
+                print(edata)
+                if n1[-1] == 'A' and n2[-1] == 'B':
+                    A = n1[0]
+                    B = n2[0]
+                    align = list(find(A, B, alignments))[0]
+                    sk = align.subject_key
+                    subject_rec = self.container_factory.seqdb[sk]
+                    subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
+
+                    rows.append({
+                        'query': qk,
+                        'query_name': record.name,
+                        'query_region': (align.query_region.a, align.query_region.b),
+                        'subject': sk,
+                        'subject_name': subject_rec.name,
+                        'subject_region': (align.subject_region.a, align.subject_region.b),
+                        'fragment_length': len(align.subject_region),
+                        'fragment_seq': subject_seq,
+                        'cost': cost,
+                        'type': edata['type']
+                    })
+                else:
+                    B = n1[0]
+                    A = n2[0]
+                    span = Span(B, A, len(record), cyclic=is_circular(record), allow_wrap=True)
+                    ranges = span.ranges()
+                    frag_seq = record[ranges[0][0]:ranges[0][1]]
+                    for r in ranges[1:]:
+                        frag_seq += record[r[0]:r[1]]
+
+                    rows.append({
+                        'query': qk,
+                        'query_name': record.name,
+                        'query_region': (B, A),
+                        'subject': None,
+                        'subject_name': 'SYNTHESIS',
+                        'subject_region': None,
+                        'fragment_length': len(span),
+                        'fragment_seq': str(frag_seq.seq),
+                        'cost': cost,
+                        'type': edata['type']
+                    })
+        pd.DataFrame(rows)
+
+    def design(self):
+        path_dict = self.optimize()
+        df = self.path_to_df(path_dict)
+        return df
+
+    def optimize(self, verbose=False):
         query_key_to_path = {}
         for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             self.logger.info("Optimizing {}".format(query_key))
             paths = self._optimize_graph(G)
-            for path in paths:
-                for n1, n2 in pairwise(path):
-                    edata = G[n1][n2]
-                    print('{} > {} Weight={} name={} span={} type={}'.format(n1, n2, edata['weight'], edata['name'],                                                      edata['span_length'], edata['type']))
-                print()
+            if verbose:
+                for path in paths:
+                    for n1, n2 in pairwise(path):
+                        edata = G[n1][n2]
+                        print('{} > {} Weight={} name={} span={} type={}'.format(n1, n2, edata['weight'], edata['name'],                                                      edata['span_length'], edata['type']))
+                    print()
             query_key_to_path[query_key] = paths
         return query_key_to_path
 

@@ -6,7 +6,7 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import partition, flatten, unique_everseen
 
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
-from .blastbiofactory import BioBlastFactory
+from pyblast import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
 from .cost import SpanCost
 import itertools
@@ -164,11 +164,11 @@ def blast_to_region(query_or_subject, seqdb):
     record = seqdb[data["origin_key"]]
 
     s, e = data["start"], data["end"]
-    if data["strand"] == -1:
-        s, e = e, s
     l = len(record)
     # if data['circular'] and e > l and data['length'] == 2 * l:
     #     e -= l
+    if data['strand'] == -1:
+        s, e = e, s
     region = Region(
         s - 1,
         e,

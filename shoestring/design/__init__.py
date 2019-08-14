@@ -10,7 +10,7 @@ from Bio.SeqRecord import SeqRecord
 import numpy as np
 from more_itertools import pairwise
 from abc import ABC, abstractmethod
-from pyblast.utils import Span
+from pyblast.utils import Span, is_circular
 import pandas as pd
 
 
@@ -155,7 +155,6 @@ class Design(object):
             for n1, n2 in pairwise(path):
                 edata = G[n1][n2]
                 cost = edata['weight']
-                print(edata)
                 if n1[-1] == 'A' and n2[-1] == 'B':
                     A = n1[0]
                     B = n2[0]
@@ -197,7 +196,7 @@ class Design(object):
                         'cost': cost,
                         'type': edata['type']
                     })
-        pd.DataFrame(rows)
+        return pd.DataFrame(rows)
 
     def design(self):
         path_dict = self.optimize()
@@ -217,12 +216,6 @@ class Design(object):
                     print()
             query_key_to_path[query_key] = paths
         return query_key_to_path
-
-    def path_to_design(self, graph, query_key):
-        fragments = []
-        for n1, n2, edata in graph.edges(data=True):
-            if n1[0] == 'A' and n2[0] == 'B':
-                pass
 
     def _optimize_graph(self, graph):
 
@@ -257,7 +250,6 @@ class Design(object):
         # print cycles
         paths = []
         for c in cycles[:20]:
-            print(c)
             path1 = nx.shortest_path(graph, c[0], c[1], weight='weight')
             path2 = nx.shortest_path(graph, c[1], c[0], weight='weight')
             path = path1 + path2[1:]

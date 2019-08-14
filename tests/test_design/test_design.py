@@ -37,7 +37,9 @@ def test_num_groups_vs_endpoints(here, paths, query):
 
     print(len(a_arr) * len(b_arr))
 
+
 span_cost = SpanCost()
+
 
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
@@ -60,7 +62,8 @@ def test_design(here, paths, query):
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) == 1
 
-    design.optimize()
+    df = design.design()
+    print(df)
 
 
 def test_multidesign(here, paths):

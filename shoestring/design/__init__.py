@@ -3,7 +3,7 @@
 from shoestring import AlignmentContainerFactory, Constants, AssemblyGraphBuilder
 from shoestring.utils import perfect_subject
 import networkx as nx
-from shoestring import BioBlastFactory
+from pyblast import BioBlastFactory
 from shoestring.log import logger
 from typing import List
 from Bio.SeqRecord import SeqRecord
@@ -175,10 +175,46 @@ class Design(object):
                         'cost': cost,
                         'type': edata['type']
                     })
+
+                    # TODO: design overhangs (how long?)
+                    if n1[1]:
+                        rows.append({
+                            'query': qk,
+                            'query_name': record.name,
+                            'query_region': (align.query_region.a, align.query_region.b),
+                            'subject': sk,
+                            'subject_name': subject_rec.name,
+                            'subject_region': (align.subject_region.a, align.subject_region.a + 20),
+                            'fragment_length': 0,
+                            'anneal_seq': str(subject_rec[align.subject_region.a:align.subject_region.a + 20].seq),
+                            'cost': '?',
+                            'type': 'PRIMER'
+                        })
+                    if n2[1]:
+                        rows.append({
+                            'query': qk,
+                            'query_name': record.name,
+                            'query_region': (align.query_region.a, align.query_region.b),
+                            'subject': sk,
+                            'subject_name': subject_rec.name,
+                            'subject_region': (align.subject_region.b - 20, align.subject_region.b),
+                            'fragment_length': 0,
+                            'anneal_seq': str(subject_rec[align.subject_region.b-20:align.subject_region.b].reverse_complement().seq),
+                            'cost': '?',
+                            'type': 'PRIMER'
+                        })
+
                 else:
                     B = n1[0]
                     A = n2[0]
                     span = Span(B, A, len(record), cyclic=is_circular(record), allow_wrap=True)
+
+                    # TODO: extending the gene synthesis
+                    if not n1[1]:
+                        span.b = span.b - 20
+                    if not n2[1]:
+                        span.a = span.a + 20
+
                     ranges = span.ranges()
                     frag_seq = record[ranges[0][0]:ranges[0][1]]
                     for r in ranges[1:]:

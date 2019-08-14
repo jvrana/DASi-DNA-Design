@@ -1,7 +1,7 @@
 import pytest
 from os.path import dirname, abspath, join
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
-from shoestring import BioBlastFactory
+from pyblast import BioBlastFactory
 from shoestring.log import logger
 import warnings
 from Bio import BiopythonParserWarning

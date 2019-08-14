@@ -6,12 +6,10 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import partition, flatten, unique_everseen
 
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
-from pyblast import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
 from .cost import SpanCost
 import itertools
 from .utils import Region
-import numpy as np
 from .log import logger
 from shoestring.utils import make_async
 
@@ -45,6 +43,7 @@ class Constants(object):
 
     PRIMER = "PRIMER"  # a primer binding alignment
 
+    PRIMER_MIN_BIND = 15
     MIN_OVERLAP = 20
     MAX_HOMOLOGY = 100
     INF = 10.0 ** 6
@@ -242,10 +241,10 @@ class AlignmentContainer(object):
         ):
             # add products with both existing products
             fwd_bind = bisect_slice_between(
-                fwd, fwd_keys, g.query_region.a + 10, g.query_region.b
+                fwd, fwd_keys, g.query_region.a + Constants.PRIMER_MIN_BIND, g.query_region.b
             )
             rev_bind = bisect_slice_between(
-                rev, rev_keys, g.query_region.a, g.query_region.b - 10
+                rev, rev_keys, g.query_region.a, g.query_region.b - Constants.PRIMER_MIN_BIND
             )
             rkeys = [r.query_region.a for r in rev_bind]
 

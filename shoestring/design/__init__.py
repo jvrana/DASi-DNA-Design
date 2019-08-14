@@ -98,6 +98,7 @@ class Design(object):
         return list(self.container_factory.containers().values())
 
     def compile(self):
+        """Compile materials to assembly graph"""
         self._blast()
 
         for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), "INFO", desc='compiling all containers'):

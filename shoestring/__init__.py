@@ -536,7 +536,8 @@ class AssemblyGraphBuilder(object):
                 (q.b, b_expand, 'B'),
                 weight=internal_cost,
                 name='',
-                span_length=len(g.query_region)
+                span_length=len(g.query_region),
+                type=g.type,
             )
 
             a_arr.add((q.a, a_expand, 'A'))
@@ -560,7 +561,8 @@ class AssemblyGraphBuilder(object):
                             (a, a_expand, aid),
                             weight=cost,
                             name='',
-                            span_length=len(r)
+                            span_length=len(r),
+                            type='gap'
                         )
         else:
             self.logger.warn("There is nothing to assembly. There are no alignments.")

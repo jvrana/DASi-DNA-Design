@@ -490,6 +490,31 @@ class AssemblyGraphBuilder(object):
         self.G = None
         self.logger = logger(self)
 
+    def alignment_to_internal_edge(self, align):
+        q = align.query_region
+        a_expand, b_expand = True, True
+        if align.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+            b_expand = False
+        if align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+            a_expand = False
+
+        ### INTERNAL EDGE
+        if align.type == Constants.FRAGMENT:
+            internal_cost = 0
+        elif align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
+            internal_cost = 30 + 30
+        elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
+            internal_cost = 30
+        elif align.type == Constants.PCR_PRODUCT:
+            internal_cost = 30 + 30 + 30
+
+        return (q.a, a_expand, 'A'), (q.b, b_expand, 'B'), dict(
+                    weight=internal_cost,
+                    name='',
+                    span_length=len(align.query_region),
+                    type=align.type
+                )
+
     def build_assembly_graph(self):
 
         self.G = nx.DiGraph(name="Assembly Graph")
@@ -513,37 +538,10 @@ class AssemblyGraphBuilder(object):
         b_arr = set()
 
         for g in groups:
-            q = g.query_region
-            b_expand = True
-            a_expand = True
-
-            # TODO: Constants should be a class?
-            if g.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
-                b_expand = False
-            if g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
-                a_expand = False
-
-            ### INTERNAL EDGE
-            if g.type == Constants.FRAGMENT:
-                internal_cost = 0
-            elif g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
-                internal_cost = 30 + 30
-            elif g.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
-                internal_cost = 30
-            elif g.type == Constants.PCR_PRODUCT:
-                internal_cost = 30 + 30 + 30
-
-            self.G.add_edge(
-                (q.a, a_expand, 'A'),
-                (q.b, b_expand, 'B'),
-                weight=internal_cost,
-                name='',
-                span_length=len(g.query_region),
-                type=g.type,
-            )
-
-            a_arr.add((q.a, a_expand, 'A'))
-            b_arr.add((q.b, b_expand, 'B'))
+            a, b, ab_data = self.alignment_to_internal_edge(g)
+            self.G.add_edge(a, b, **ab_data)
+            a_arr.add(a)
+            b_arr.add(b)
 
         ### EXTERNAL EDGES
         if groups:

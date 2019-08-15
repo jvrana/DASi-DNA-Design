@@ -23,3 +23,7 @@ both edges (A->B cost /= 3). The total number of solutions will be equal to `s1*
 number of shared edges for edge `i`. We should optionally provide a way to boost solutions that share edges.
 2. Once all solutions have been enumerated with corresponding costs, we find compatible solutions (those with shared edges)
 and simply choose the smallest cost.
+
+** Hierarchical optimization**
+
+How do you optimize a plasmid AND then potentially use that as a template for the next plasmid?

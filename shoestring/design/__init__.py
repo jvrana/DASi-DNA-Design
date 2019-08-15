@@ -12,7 +12,7 @@ from more_itertools import pairwise
 from abc import ABC, abstractmethod
 from pyblast.utils import Span, is_circular
 import pandas as pd
-
+from typing import Tuple
 
 class DNADesign(ABC):
 
@@ -36,7 +36,7 @@ class SynthesisDesign(object):
         pass
 
 
-class Design(object):
+class DesignBase(object):
 
     PRIMERS = "primers"
     TEMPLATES = "templates"
@@ -49,7 +49,10 @@ class Design(object):
         # graph by query_key
         self.graphs = {}
         self.span_cost = span_cost
-        self.container_factory = None
+        self.container_factory = AlignmentContainerFactory({})
+
+
+class Design(DesignBase):
 
     def add_materials(
         self,
@@ -73,6 +76,7 @@ class Design(object):
         self.logger.info("Adding queries")
         self.blast_factory.add_records(queries, self.QUERIES)
 
+
     def _blast(self):
         self.logger.info("Compiling assembly graph")
 
@@ -89,12 +93,8 @@ class Design(object):
         self.logger.info("Number of perfect primers: {}".format(len(primer_results)))
         # primer_results = [p for p in primer_results if p['subject']['start'] == 1]
 
-        # combine the sequence databases (for now)
-        seqdb = {}
-        seqdb.update(blast.seq_db.records)
-        seqdb.update(primer_blast.seq_db.records)
-
-        self.container_factory = AlignmentContainerFactory(seqdb)
+        self.container_factory.seqdb.update(blast.seq_db.records)
+        self.container_factory.seqdb.update(primer_blast.seq_db.records)
         self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
@@ -138,13 +138,52 @@ class Design(object):
         # step = 1
         # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
+    @staticmethod
+    def _find_iter_alignment(a, b, alignments):
+        for align in alignments:
+            if a == align.query_region.a and b == align.query_region.b:
+                yield align
+
+    def _fragment(self, query_key, a, b, fragment_type, cost):
+
+        def sub_record(record, span):
+            ranges = span.ranges()
+            sub = record[ranges[0][0]:ranges[0][1]]
+            for r in ranges[1:]:
+                sub += record[r[0]:r[1]]
+            sub.annotations = record.annotations
+            return sub
+
+        alignments = self.container_factory.alignments[query_key]
+        align = list(self._find_iter_alignment(a, b, alignments))[0]
+        subject_key = align.subject_key
+        subject_rec = self.container_factory.seqdb[subject_key]
+        query_rec = self.container_factory.seqdb[query_key]
+
+        subject_seq = sub_record(subject_rec, align.subject_region)
+
+        fragment_info = {
+            'query_id': query_key,
+            'query_name': query_rec.name,
+            'query_region': (align.query_region.a, align.query_region.b),
+            'subject_id': subject_key,
+            'subject_name': subject_rec.name,
+            'subject_region': (align.subject_region.a, align.subject_region.b),
+            'fragment_length': len(align.subject_region),
+            'fragment_seq': subject_seq,
+            'cost': cost,
+            'type': fragment_type,
+        }
+
+
     def path_to_df(self, paths_dict):
         def find(a, b, alignments):
             for align in alignments:
                 if a == align.query_region.a and b == align.query_region.b:
                     yield align
 
-        rows = []
+        fragments = []
+        primers = []
 
         for qk, paths in paths_dict.items():
             G = self.graphs[qk]
@@ -163,7 +202,7 @@ class Design(object):
                     subject_rec = self.container_factory.seqdb[sk]
                     subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
 
-                    rows.append({
+                    fragments.append({
                         'query': qk,
                         'query_name': record.name,
                         'query_region': (align.query_region.a, align.query_region.b),
@@ -178,20 +217,20 @@ class Design(object):
 
                     # TODO: design overhangs (how long?)
                     if n1[1]:
-                        rows.append({
+                        primers.append({
                             'query': qk,
                             'query_name': record.name,
                             'query_region': (align.query_region.a, align.query_region.b),
                             'subject': sk,
                             'subject_name': subject_rec.name,
                             'subject_region': (align.subject_region.a, align.subject_region.a + 20),
-                            'fragment_length': 0,
                             'anneal_seq': str(subject_rec[align.subject_region.a:align.subject_region.a + 20].seq),
+                            'overhang_seq': '?',
                             'cost': '?',
                             'type': 'PRIMER'
                         })
                     if n2[1]:
-                        rows.append({
+                        primers.append({
                             'query': qk,
                             'query_name': record.name,
                             'query_region': (align.query_region.a, align.query_region.b),
@@ -200,6 +239,7 @@ class Design(object):
                             'subject_region': (align.subject_region.b - 20, align.subject_region.b),
                             'fragment_length': 0,
                             'anneal_seq': str(subject_rec[align.subject_region.b-20:align.subject_region.b].reverse_complement().seq),
+                            'overhang_seq': '?',
                             'cost': '?',
                             'type': 'PRIMER'
                         })
@@ -220,7 +260,7 @@ class Design(object):
                     for r in ranges[1:]:
                         frag_seq += record[r[0]:r[1]]
 
-                    rows.append({
+                    fragments.append({
                         'query': qk,
                         'query_name': record.name,
                         'query_region': (B, A),
@@ -232,7 +272,7 @@ class Design(object):
                         'cost': cost,
                         'type': edata['type']
                     })
-        return pd.DataFrame(rows)
+        return pd.DataFrame(fragments), pd.DataFrame(primers)
 
     def design(self):
         path_dict = self.optimize()
@@ -248,8 +288,7 @@ class Design(object):
                 for path in paths:
                     for n1, n2 in pairwise(path):
                         edata = G[n1][n2]
-                        print('{} > {} Weight={} name={} span={} type={}'.format(n1, n2, edata['weight'], edata['name'],                                                      edata['span_length'], edata['type']))
-                    print()
+                        print('{} > {} Weight={} name={} span={} type={}'.format(n1, n2, edata['weight'], edata['name']))
             query_key_to_path[query_key] = paths
         return query_key_to_path
 
@@ -262,8 +301,8 @@ class Design(object):
         # shortest cycles (estimated)
         cycles = []
         paths = []
-        for i, _ in enumerate(weight_matrix):
-            for j, _ in enumerate(weight_matrix[i]):
+        for i in range(len(weight_matrix)):
+            for j in range(len(weight_matrix[0])):
                 a = weight_matrix[i, j]
                 b = weight_matrix[j, i]
                 if i == j:
@@ -291,3 +330,54 @@ class Design(object):
             path = path1 + path2[1:]
             paths.append(path)
         return paths
+
+
+class LibraryDesign(Design):
+
+    def __init__(self, span_cost=None):
+        super().__init__(span_cost)
+        self.shared_alignments = []
+        self._edges = []
+
+    def _blast(self):
+        super()._blast()
+        self._share_query_blast()
+
+
+    def _share_query_blast(self):
+        self.logger.info("Finding shared fragments among queries")
+
+        blast = self.blast_factory(self.QUERIES, self.QUERIES)
+        blast.quick_blastn()
+        results = blast.get_perfect()
+
+        self.logger.info("Found {} shared alignments between the queries".format(len(results)))
+        self.shared_alignments = results
+
+        self.container_factory.seqdb.update(blast.seq_db.records)
+
+        # TODO: need to expand certain points from these results...
+        # TODO: method that expands a list of points
+        # self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+
+        edges = set()
+        for result in results:
+            a = result['query']['start']
+            b = result['query']['end']
+            k = result['query']['origin_key']
+            edges.add((a, b, k))
+        self._edges = edges
+        self.logger.info("{} possible ways to share fragments between {} goal plasmids.".format(2**len(edges), len(self.container_factory.alignments)))
+
+    def optimize_library(self):
+        combinations = range(2**len(self._edges))
+        for e in self.logger.tqdm(combinations, "INFO", desc="optimizing for shared materials"):
+            self.optimize()
+        # # combine the sequence databases (for now)
+        # seqdb = {}
+        # seqdb.update(blast.seq_db.records)
+        # seqdb.update(primer_blast.seq_db.records)
+        #
+        # self.container_factory = AlignmentContainerFactory(seqdb)
+        # self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+        # self.container_factory.load_blast_json(primer_results, Constants.PRIMER)

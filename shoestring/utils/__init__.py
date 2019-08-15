@@ -1,7 +1,5 @@
 import bisect
 from .span_dictionary import SpanDictionary
-from .infinite_dictionary import InfiniteDict
-from .span import Span
 from .region import Region
 import functools
 from .async_wrapper import make_async

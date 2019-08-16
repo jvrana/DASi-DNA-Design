@@ -353,12 +353,12 @@ class LibraryDesign(Design):
     #             repeats.append((qk, r['query']['start'], r['query']['end']))
     #     return repeats
 
-    def _get_repeats(self, alignments: List[Alignment]):
+    def _get_iter_repeats(self, alignments: List[Alignment]):
         for align in alignments:
             qk = align.query_key
             sk = align.subject_key
             if qk == sk:
-                print("REPEAT")
+                yield (qk, align.query_region.a, align.query_region.b)
 
 
     def _share_query_blast(self):
@@ -396,13 +396,35 @@ class LibraryDesign(Design):
 
 
         repeats = []
-        for container in self.container_list():
+        for query_key, container in self.container_factory.containers().items():
             # get all shared fragments
             alignments = container.get_alignments_by_types(Constants.SHARED_FRAGMENT)
-
+            self.logger.info("{} shared fragments for {}".format(len(alignments), query_key))
             # add to list of possible repeats
-            repeats += self._get_repeats(alignments)
-        x = 1
+            repeats += list(self._get_iter_repeats(alignments))
+
+        # create interaction graph
+        for r in design.shared_alignments:
+            qk = r['query']['origin_key']
+            sk = r['subject']['origin_key']
+
+            if qk != sk:
+                n1 = (sk, r['subject']['start'], r['subject']['end'])
+                n2 = (qk, r['query']['start'], r['query']['end'])
+                if n1 not in repeats and n2 not in repeats:
+                    query = design.container_factory.seqdb[qk]
+                    subject = design.container_factory.seqdb[sk]
+
+                    s1, e1 = r['query']['start'], r['query']['end']
+                    s2, e2 = r['subject']['start'], r['subject']['end']
+
+                    non_repeat_interactions.setdefault(n1, set()).add(n2)
+                    non_repeat_interactions.setdefault(n2, set()).add(n1)
+
+        G = nx.Graph()
+        for k, v in non_repeat_interactions.items():
+            for _v in v:
+                G.add_edge(k, _v)
 
 
 

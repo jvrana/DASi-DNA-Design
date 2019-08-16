@@ -14,7 +14,7 @@ The software goals are reminiscent of j5 or Teselegen but focused on:
 
 * Golden-gate support
 * heirarchical assembly
-* library support
+* library support (with bayesian search to optimize shared parts)
 * front-end
 * connection to fabrication facility
 

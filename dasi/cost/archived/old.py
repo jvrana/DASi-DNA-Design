@@ -4,7 +4,7 @@ import os
 import time
 from tqdm import tqdm
 import numpy as np
-from shoestring.log import logger
+from dasi.log import logger
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))

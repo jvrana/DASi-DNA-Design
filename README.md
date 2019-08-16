@@ -1,19 +1,14 @@
-# Shoestring DNA
+# DASI DNA
 
-**Shoestring** is an automatic DNA cloning plan designer aimed for operating on small budgets by focusing on material
+**DASi** is an automatic DNA cloning plan designer aimed for operating on small budgets by focusing on material
 re-use.
 
-Saves money, time, and materials.
+The software converts a nucleotide sequence, or a library of sequences, to an executable molecular assembly plan while 
+optimizing material cost, assembly efficiency, and assembly time.
 
-Bottom-line: Converts a nucleotide sequence to an executable assembly plan. No fuss.
-
-### Features
-
-**Shoestring** provides a DNA sequence to workflow interpreter, utilizing knowledge of existing primers, PCR fragments,
-and templates to produce an efficient and cost-effective cloning plan. Currently, it only supports homology assembly
-(such as *gibson assembly*).
-
-
+The software goals are reminiscent of j5 or Teselegen but focused on:
+1. having a dead-simple user interface and 
+1. utilizing information about current laboratory inventory in its optimization algorithm
 
 ### Planned Features
 

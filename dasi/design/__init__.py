@@ -1,10 +1,10 @@
 """Primer and synthesis design"""
 
-from shoestring import Alignment, AlignmentContainer, AlignmentContainerFactory, Constants, AssemblyGraphBuilder
-from shoestring.utils import perfect_subject
+from dasi import Alignment, AlignmentContainer, AlignmentContainerFactory, Constants, AssemblyGraphBuilder
+from dasi.utils import perfect_subject
 import networkx as nx
 from pyblast import BioBlastFactory
-from shoestring.log import logger
+from dasi.log import logger
 from typing import List
 from Bio.SeqRecord import SeqRecord
 import numpy as np

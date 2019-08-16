@@ -1,4 +1,4 @@
-from shoestring.utils import Span
+from dasi.utils import Span
 import pytest
 
 

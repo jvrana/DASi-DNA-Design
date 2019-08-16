@@ -1,4 +1,4 @@
-from shoestring.design import Design
+from dasi.design import Design
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 import pytest
 from os.path import join

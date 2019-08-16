@@ -1,4 +1,4 @@
-from shoestring.utils import SpanDictionary
+from dasi.utils import SpanDictionary
 import pytest
 
 

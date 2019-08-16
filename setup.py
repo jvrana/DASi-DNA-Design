@@ -23,7 +23,7 @@ here = path.abspath(path.dirname(__file__))
 # Fields marked as "Optional" may be commented out.
 setup(
     # https://packaging.python.org/specifications/core-metadata/#name
-    name='shoestring',  # Required
+    name='dasi',  # Required
     # https://www.python.org/dev/peps/pep-0440/
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.0.1',  # Required

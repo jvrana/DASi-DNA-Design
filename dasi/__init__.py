@@ -11,7 +11,7 @@ from .cost import SpanCost
 import itertools
 from .utils import Region
 from .log import logger
-from shoestring.utils import make_async
+from dasi.utils import make_async
 
 # TODO: instead of matching fragments, match 'b's to 'a's (e.g. 360000 edges vs 6390 edges!)
 # TODO: having the costs mixed up between classes is confusing

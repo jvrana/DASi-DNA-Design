@@ -1,4 +1,4 @@
-from shoestring.cost import JunctionCost, SynthesisCost, SpanCost
+from dasi.cost import JunctionCost, SynthesisCost, SpanCost
 import pytest
 import numpy as np
 import seaborn as sns

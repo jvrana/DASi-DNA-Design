@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "shoestring"
+name = "dasi"
 version = "0.0.1"
 description = ""
 authors = ["jvrana <justin.vrana@gmail.com>"]

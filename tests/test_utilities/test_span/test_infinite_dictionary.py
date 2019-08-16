@@ -1,4 +1,4 @@
-from shoestring.utils import InfiniteDict
+from dasi.utils import InfiniteDict
 import pytest
 
 

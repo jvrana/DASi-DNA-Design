@@ -1,5 +1,5 @@
-from shoestring import AlignmentContainer, Constants, AssemblyGraphBuilder
-from shoestring.utils import perfect_subject
+from dasi import AlignmentContainer, Constants, AssemblyGraphBuilder
+from dasi.utils import perfect_subject
 import networkx as nx
 from os.path import join
 

@@ -1,5 +1,5 @@
-from shoestring.design import LibraryDesign
-from shoestring.cost import SpanCost
+from dasi.design import LibraryDesign
+from dasi.cost import SpanCost
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 from os.path import join
 

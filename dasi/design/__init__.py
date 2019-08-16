@@ -53,6 +53,9 @@ class DesignBase(object):
 
 
 class Design(DesignBase):
+    """
+    Design class that returns optimal assemblies from a set of materials.
+    """
 
     def add_materials(
         self,
@@ -101,10 +104,7 @@ class Design(DesignBase):
     def container_list(self):
         return list(self.container_factory.containers().values())
 
-    def compile(self):
-        """Compile materials to assembly graph"""
-        self._blast()
-
+    def assemble_graphs(self):
         for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), "INFO", desc='compiling all containers'):
             container.expand(expand_overlaps=True, expand_primers=True)
 
@@ -122,6 +122,12 @@ class Design(DesignBase):
             self.logger.info(nx.info(G))
             assert G.number_of_edges()
             self.graphs[query_key] = G
+
+    def compile(self):
+        """Compile materials to assembly graph"""
+        self.graphs = {}
+        self._blast()
+        self.assemble_graphs()
 
     # def plot_matrix(self, matrix):
         ## plot matrix
@@ -333,15 +339,14 @@ class Design(DesignBase):
 
 
 class LibraryDesign(Design):
+    """
+    Design class for producing assemblies for libraries.
+    """
 
     def __init__(self, span_cost=None):
         super().__init__(span_cost)
         self.shared_alignments = []
         self._edges = []
-
-    def _blast(self):
-        super()._blast()
-        self._share_query_blast()
 
     # @staticmethod
     # def _get_repeats_from_results(results):
@@ -354,6 +359,11 @@ class LibraryDesign(Design):
     #     return repeats
 
     def _get_iter_repeats(self, alignments: List[Alignment]):
+        """
+        Return repeat regions of alignments
+        :param alignments:
+        :return:
+        """
         for align in alignments:
             qk = align.query_key
             sk = align.subject_key
@@ -362,6 +372,11 @@ class LibraryDesign(Design):
 
 
     def _share_query_blast(self):
+        """
+        Find and use shared fragments across queries.
+
+        :return:
+        """
         self.logger.info("=== Expanding shared library fragments ===")
 
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
@@ -380,6 +395,9 @@ class LibraryDesign(Design):
             original_shared_fragments = container.get_groups_by_types(Constants.SHARED_FRAGMENT)
             new_shared_fragments = container.expand_pcr_products(original_shared_fragments,
                                           Constants.SHARED_FRAGMENT)
+
+
+
             self.logger.info("{}: Expanded {} shared from original {} shared fragments".format(
                 query_key,
                 len(new_shared_fragments),
@@ -422,70 +440,14 @@ class LibraryDesign(Design):
             # add to list of possible repeats
             repeats += list(self._get_iter_repeats(alignments))
         self.repeats = repeats
-        # # create interaction graph
-        # for r in design.shared_alignments:
-        #     qk = r['query']['origin_key']
-        #     sk = r['subject']['origin_key']
-        #
-        #     if qk != sk:
-        #         n1 = (sk, r['subject']['start'], r['subject']['end'])
-        #         n2 = (qk, r['query']['start'], r['query']['end'])
-        #         if n1 not in repeats and n2 not in repeats:
-        #             query = design.container_factory.seqdb[qk]
-        #             subject = design.container_factory.seqdb[sk]
-        #
-        #             s1, e1 = r['query']['start'], r['query']['end']
-        #             s2, e2 = r['subject']['start'], r['subject']['end']
-        #
-        #             non_repeat_interactions.setdefault(n1, set()).add(n2)
-        #             non_repeat_interactions.setdefault(n2, set()).add(n1)
-        #
-        # G = nx.Graph()
-        # for k, v in non_repeat_interactions.items():
-        #     for _v in v:
-        #         G.add_edge(k, _v)
 
-
-
-        # # filter self alignmenbts
-        #
-        # for r in results:
-        #     qk = r['query']['origin_key']
-        #     sk = r['subject']['origin_key']
-        #
-        #     if qk != sk:
-        #         n1 = (sk, r['subject']['start'], r['subject']['end'])
-        #         n2 = (qk, r['query']['start'], r['query']['end'])
-        #         if n1 not in repeats and n2 not in repeats:
-        #             yield n1, n2
-
-        # self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
-        # # TODO: need to expand certain points from these results...
-        # # TODO: method that expands a list of points
-        # # self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
-        #
-        # edges = set()
-        # for result in results:
-        #     a = result['query']['start']
-        #     b = result['query']['end']
-        #     k = result['query']['origin_key']
-        #     edges.add((a, b, k))
-        # self._edges = edges
-        # self.logger.info("{} possible ways to share fragments between {} goal plasmids.".format(2**len(edges), len(self.container_factory.alignments)))
-
-
+    def compile_library(self):
+        """Compile the materials list into assembly graphs."""
+        self.graphs = {}
+        self._blast()
+        self._share_query_blast()
+        self.assemble_graphs()
 
     def optimize_library(self):
-        combinations = range(2**len(self._edges))
-        for e in self.logger.tqdm(combinations, "INFO", desc="optimizing for shared materials"):
-            self.optimize()
-
-
-        # # combine the sequence databases (for now)
-        # seqdb = {}
-        # seqdb.update(blast.seq_db.records)
-        # seqdb.update(primer_blast.seq_db.records)
-        #
-        # self.container_factory = AlignmentContainerFactory(seqdb)
-        # self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
-        # self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
+        """Optimize the assembly graph for library assembly."""
+        raise NotImplementedError

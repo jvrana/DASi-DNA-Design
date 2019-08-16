@@ -12,10 +12,10 @@ The software goals are reminiscent of j5 or Teselegen but focused on:
 
 ### Planned Features
 
-* Golden-gate support
-* heirarchical assembly
 * library support
-* front-end
+* heirarchical assembly
+* Golden-gate support
+* front-end UI with real-time assembly and cost calculations
 * connection to fabrication facility
 
 ### Use cases

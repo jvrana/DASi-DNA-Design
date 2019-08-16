@@ -17,7 +17,7 @@ def test_library_design(paths, here):
 
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
-    design.compile()
+    design.compile_library()
 
     # design.optimize_library()
 

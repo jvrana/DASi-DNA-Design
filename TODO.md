@@ -7,6 +7,7 @@
 * after finding shortest paths, refine weights using simulation, update weights, repeat until there is no improvements
 * force parts
 * avoid repeats
+* consider design flexibility in optimization algorithm
 
 **Multi-plasmid optimization**
 

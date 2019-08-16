@@ -12,10 +12,13 @@ import itertools
 from .utils import Region
 from .log import logger
 from dasi.utils import make_async
+from collections.abc import Sized
+
 
 # TODO: instead of matching fragments, match 'b's to 'a's (e.g. 360000 edges vs 6390 edges!)
 # TODO: having the costs mixed up between classes is confusing
 # TODO: move these to their own classes?
+
 class Constants(object):
     FRAGMENT = (
         "PRE-MADE DNA FRAGMENT"
@@ -135,7 +138,8 @@ class Alignment(object):
 
 class AlignmentGroup(object):
     """
-    A representative Alignment representing a group of alignments.
+    A representative Alignment representing a group of alignments sharing the
+    same starting and ending position for a query sequence.
     """
 
     __slots__ = ["query_region", "alignments", "name"]
@@ -186,7 +190,16 @@ def blast_to_region(query_or_subject, seqdb):
 
 # TODO: This assumes a single query. Verify this.
 # TODO: need way to run blast from multiple databases on a single query
-class AlignmentContainer(object):
+class AlignmentContainer(Sized):
+    """
+    Container for a set of query-to-subject alignments for a single query.
+
+    This class contains:
+        1. Methods grouping alignments together according to those
+    alignments that share the same starting and ending points.
+        2. Methods for 'expanding' alignments
+    """
+
     valid_types = (
         Constants.PCR_PRODUCT,
         Constants.PRIMER,
@@ -303,7 +316,7 @@ class AlignmentContainer(object):
                  |---|          new alignment
 
         :param alignment_groups:
-        :return:
+        :return: list
         """
 
         MIN_OVERLAP = Constants.MIN_OVERLAP
@@ -337,6 +350,13 @@ class AlignmentContainer(object):
 
     # TODO: expand should just add more
     def expand(self, expand_overlaps=True, expand_primers=True):
+        """
+        Expand the number of alignments in this container using overlaps or primers.
+
+        :param expand_overlaps:
+        :param expand_primers:
+        :return:
+        """
 
         self.logger.info("=== Expanding alignments ===")
         # We annotate any original PCR_PRODUCT with FRAGMENT if they are 'perfect_subjects'
@@ -368,10 +388,10 @@ class AlignmentContainer(object):
         )
 
     # TODO: change 'start' and 'end' to left and right end for regions...
-
     # TODO: type increases computation time exponentially, we only need 'b' from group1 and 'a' from group2
     @staticmethod
-    def alignment_hash(a):
+    def _alignment_hash(a):
+        """A hashable representation of an alignment for grouping."""
         return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
 
     @classmethod
@@ -384,7 +404,7 @@ class AlignmentContainer(object):
         """
         grouped = {}
         for a in alignments:
-            grouped.setdefault(cls.alignment_hash(a), list()).append(a)
+            grouped.setdefault(cls._alignment_hash(a), list()).append(a)
         alignment_groups = []
         for group in grouped.values():
             alignment_groups.append(AlignmentGroup(group[0].query_region, group))
@@ -393,7 +413,7 @@ class AlignmentContainer(object):
     @property
     def types(self) -> List[str]:
         """
-        Return all valid types
+        Return all valid types.
 
         :return:
         """
@@ -418,6 +438,11 @@ class AlignmentContainer(object):
 
     @property
     def groups_by_type(self) -> Dict[str, AlignmentGroup]:
+        """
+        Return alignment groups according to their alignment 'type'
+
+        :return: dict
+        """
         d = {}
         for t in self.valid_types:
             d[t] = []
@@ -434,8 +459,16 @@ class AlignmentContainer(object):
         """
         return self.group(self.alignments)
 
+    def __len__(self):
+        return len(self.alignments)
+
 
 class AlignmentContainerFactory(object):
+    """
+    Class that maintains a shared list of alignments and shared sequence database.
+
+    AlignmentContainers can be retrieved in a dict grouped by their query via `.containers()`
+    """
     valid_types = (
         Constants.PCR_PRODUCT,
         Constants.PRIMER,
@@ -484,6 +517,9 @@ class AlignmentContainerFactory(object):
 
 
 class AssemblyGraphBuilder(object):
+    """
+    Class that builds an AssemblyGraph from an alignment container.
+    """
 
     COST_THRESHOLD = 10000
 

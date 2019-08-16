@@ -1,6 +1,6 @@
 import bisect
-from .span_dictionary import SpanDictionary
 from .region import Region
+from .span import Span
 import functools
 from .async_wrapper import make_async
 

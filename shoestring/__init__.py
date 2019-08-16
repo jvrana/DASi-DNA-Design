@@ -32,6 +32,9 @@ class Constants(object):
     PCR_PRODUCT_WITH_RIGHT_PRIMER = (
         "PCR_PRODUCT_WITH_RIGHT_PRIMER"
     )  # PCR product with existing right primer
+    SHARED_FRAGMENT = (
+        "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
+    )  # A fragment alignment that is shared with other queries for potential reuse
 
     PCR_COST = {
         PCR_PRODUCT: 30 + 25 + 10,
@@ -191,6 +194,7 @@ class AlignmentContainer(object):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SHARED_FRAGMENT
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -279,7 +283,8 @@ class AlignmentContainer(object):
         return pairs
 
     def expand_pcr_products(
-        self, alignment_groups: List[AlignmentGroup]
+        self, alignment_groups: List[AlignmentGroup],
+            type=Constants.PCR_PRODUCT
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -320,12 +325,12 @@ class AlignmentContainer(object):
                 if og is not group:
                     if og.query_region.a - group.query_region.a > MIN_OVERLAP:
                         ag1 = group.sub_region(
-                            group.query_region.a, og.query_region.a, Constants.PCR_PRODUCT
+                            group.query_region.a, og.query_region.a, type
                         )
                         alignments += ag1.alignments
                     if group.query_region.b - og.query_region.a > MIN_OVERLAP:
                         ag2 = group.sub_region(
-                            og.query_region.a, group.query_region.b, Constants.PCR_PRODUCT
+                            og.query_region.a, group.query_region.b, type
                         )
                         alignments += ag2.alignments
         return alignments
@@ -438,6 +443,7 @@ class AlignmentContainerFactory(object):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SHARED_FRAGMENT
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
@@ -453,7 +459,7 @@ class AlignmentContainerFactory(object):
         :param type: the type of alignment to initialize
         :return: None
         """
-        self.logger.info("Loading blast json")
+        self.logger.info("Loading blast json ({} entries) to fragment type \"{}\"".format(len(data), type))
         assert type in self.valid_types
         for d in data:
             query_region = blast_to_region(d["query"], self.seqdb)
@@ -490,6 +496,31 @@ class AssemblyGraphBuilder(object):
         self.G = None
         self.logger = logger(self)
 
+    def alignment_to_internal_edge(self, align):
+        q = align.query_region
+        a_expand, b_expand = True, True
+        if align.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+            b_expand = False
+        if align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+            a_expand = False
+
+        ### INTERNAL EDGE
+        if align.type == Constants.FRAGMENT:
+            internal_cost = 0
+        elif align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
+            internal_cost = 30 + 30
+        elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
+            internal_cost = 30
+        elif align.type == Constants.PCR_PRODUCT:
+            internal_cost = 30 + 30 + 30
+
+        return (q.a, a_expand, 'A'), (q.b, b_expand, 'B'), dict(
+                    weight=internal_cost,
+                    name='',
+                    span_length=len(align.query_region),
+                    type=align.type
+                )
+
     def build_assembly_graph(self):
 
         self.G = nx.DiGraph(name="Assembly Graph")
@@ -513,37 +544,10 @@ class AssemblyGraphBuilder(object):
         b_arr = set()
 
         for g in groups:
-            q = g.query_region
-            b_expand = True
-            a_expand = True
-
-            # TODO: Constants should be a class?
-            if g.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
-                b_expand = False
-            if g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
-                a_expand = False
-
-            ### INTERNAL EDGE
-            if g.type == Constants.FRAGMENT:
-                internal_cost = 0
-            elif g.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
-                internal_cost = 30 + 30
-            elif g.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
-                internal_cost = 30
-            elif g.type == Constants.PCR_PRODUCT:
-                internal_cost = 30 + 30 + 30
-
-            self.G.add_edge(
-                (q.a, a_expand, 'A'),
-                (q.b, b_expand, 'B'),
-                weight=internal_cost,
-                name='',
-                span_length=len(g.query_region),
-                type=g.type,
-            )
-
-            a_arr.add((q.a, a_expand, 'A'))
-            b_arr.add((q.b, b_expand, 'B'))
+            a, b, ab_data = self.alignment_to_internal_edge(g)
+            self.G.add_edge(a, b, **ab_data)
+            a_arr.add(a)
+            b_arr.add(b)
 
         ### EXTERNAL EDGES
         if groups:

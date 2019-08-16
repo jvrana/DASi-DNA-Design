@@ -6,12 +6,10 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import partition, flatten, unique_everseen
 
 from .__version__ import __version__, __title__, __authors__, __homepage__, __repo__
-from .blastbiofactory import BioBlastFactory
 from .utils import sort_with_keys, bisect_slice_between
 from .cost import SpanCost
 import itertools
 from .utils import Region
-import numpy as np
 from .log import logger
 from shoestring.utils import make_async
 
@@ -34,6 +32,9 @@ class Constants(object):
     PCR_PRODUCT_WITH_RIGHT_PRIMER = (
         "PCR_PRODUCT_WITH_RIGHT_PRIMER"
     )  # PCR product with existing right primer
+    SHARED_FRAGMENT = (
+        "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
+    )  # A fragment alignment that is shared with other queries for potential reuse
 
     PCR_COST = {
         PCR_PRODUCT: 30 + 25 + 10,
@@ -45,6 +46,7 @@ class Constants(object):
 
     PRIMER = "PRIMER"  # a primer binding alignment
 
+    PRIMER_MIN_BIND = 15
     MIN_OVERLAP = 20
     MAX_HOMOLOGY = 100
     INF = 10.0 ** 6
@@ -158,17 +160,17 @@ class AlignmentGroup(object):
             name="subregion",
         )
 
-
+# TODO: make a test for this conversion
 def blast_to_region(query_or_subject, seqdb):
     data = query_or_subject
     record = seqdb[data["origin_key"]]
 
     s, e = data["start"], data["end"]
-    if data["strand"] == -1:
-        s, e = e, s
     l = len(record)
     # if data['circular'] and e > l and data['length'] == 2 * l:
     #     e -= l
+    if data['strand'] == -1:
+        s, e = e, s
     region = Region(
         s - 1,
         e,
@@ -185,50 +187,37 @@ def blast_to_region(query_or_subject, seqdb):
 # TODO: This assumes a single query. Verify this.
 # TODO: need way to run blast from multiple databases on a single query
 class AlignmentContainer(object):
-    valid_types = [
+    valid_types = (
         Constants.PCR_PRODUCT,
         Constants.PRIMER,
         Constants.FRAGMENT,
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-    ]  # valid fragment types
+        Constants.SHARED_FRAGMENT
+    )  # valid fragment types
 
-    def __init__(self, seqdb: Dict[str, SeqRecord]):
-        self.alignments = []
+    def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
+        if alignments is None:
+            self.alignments = []
+        else:
+            self.alignments = alignments
+        self._check_single_query_key(self.alignments)
         self.seqdb = seqdb
         self.logger = logger(self)
 
-    def load_blast_json(self, data: dict, type: str):
-        """
-        Create alignments from a formatted BLAST JSON result.
-
-        :param data: formatted BLAST JSON result
-        :param type: the type of alignment to initialize
-        :return: None
-        """
-        self.logger.info("Loading blast json")
-        assert type in self.valid_types
-        for d in data:
-            query_region = blast_to_region(d["query"], self.seqdb)
-            subject_region = blast_to_region(d["subject"], self.seqdb)
-            query_key = d["query"]["origin_key"]
-            subject_key = d["subject"]["origin_key"]
-
-            alignment = Alignment(
-                query_region,
-                subject_region,
-                type=type,
-                query_key=query_key,
-                subject_key=subject_key,
-            )
-            self.alignments.append(alignment)
+    @staticmethod
+    def _check_single_query_key(alignments):
+        keys = set(a.query_key for a in alignments)
+        if len(keys) > 1:
+            raise ValueError("AlignmentContainer cannot contain more than one query. Contains the following"
+                             "query keys: {}".format(keys))
 
     def annotate_fragments(self, alignments) -> List[Alignment]:
         self.logger.info("annotating fragments")
         annotated = []
         for a in alignments:
-            if a.is_perfect_subject() and not a.subject_region.circular:
+            if a.is_perfect_subject() and not a.subject_region.cyclic:
                 a.type = Constants.FRAGMENT
                 annotated.append(a)
         return annotated
@@ -256,10 +245,10 @@ class AlignmentContainer(object):
         ):
             # add products with both existing products
             fwd_bind = bisect_slice_between(
-                fwd, fwd_keys, g.query_region.a + 10, g.query_region.b
+                fwd, fwd_keys, g.query_region.a + Constants.PRIMER_MIN_BIND, g.query_region.b
             )
             rev_bind = bisect_slice_between(
-                rev, rev_keys, g.query_region.a, g.query_region.b - 10
+                rev, rev_keys, g.query_region.a, g.query_region.b - Constants.PRIMER_MIN_BIND
             )
             rkeys = [r.query_region.a for r in rev_bind]
 
@@ -294,7 +283,8 @@ class AlignmentContainer(object):
         return pairs
 
     def expand_pcr_products(
-        self, alignment_groups: List[AlignmentGroup]
+        self, alignment_groups: List[AlignmentGroup],
+            type=Constants.PCR_PRODUCT
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -335,17 +325,17 @@ class AlignmentContainer(object):
                 if og is not group:
                     if og.query_region.a - group.query_region.a > MIN_OVERLAP:
                         ag1 = group.sub_region(
-                            group.query_region.a, og.query_region.a, Constants.PCR_PRODUCT
+                            group.query_region.a, og.query_region.a, type
                         )
                         alignments += ag1.alignments
                     if group.query_region.b - og.query_region.a > MIN_OVERLAP:
                         ag2 = group.sub_region(
-                            og.query_region.a, group.query_region.b, Constants.PCR_PRODUCT
+                            og.query_region.a, group.query_region.b, type
                         )
                         alignments += ag2.alignments
         return alignments
 
-    # TODO: expand should just add more nodes
+    # TODO: expand should just add more
     def expand(self, expand_overlaps=True, expand_primers=True):
 
         self.logger.info("=== Expanding alignments ===")
@@ -445,150 +435,96 @@ class AlignmentContainer(object):
         return self.group(self.alignments)
 
 
+class AlignmentContainerFactory(object):
+    valid_types = (
+        Constants.PCR_PRODUCT,
+        Constants.PRIMER,
+        Constants.FRAGMENT,
+        Constants.PCR_PRODUCT_WITH_PRIMERS,
+        Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+        Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SHARED_FRAGMENT
+    )  # valid fragment types
+
+    def __init__(self, seqdb: Dict[str, SeqRecord]):
+        self.alignments = {}
+        self.logger = logger(self)
+        self.seqdb = seqdb
+
+    def load_blast_json(self, data: dict, type: str):
+        """
+        Create alignments from a formatted BLAST JSON result.
+
+        :param data: formatted BLAST JSON result
+        :param type: the type of alignment to initialize
+        :return: None
+        """
+        self.logger.info("Loading blast json ({} entries) to fragment type \"{}\"".format(len(data), type))
+        assert type in self.valid_types
+        for d in data:
+            query_region = blast_to_region(d["query"], self.seqdb)
+            subject_region = blast_to_region(d["subject"], self.seqdb)
+            query_key = d["query"]["origin_key"]
+            subject_key = d["subject"]["origin_key"]
+
+            alignment = Alignment(
+                query_region,
+                subject_region,
+                type=type,
+                query_key=query_key,
+                subject_key=subject_key,
+            )
+            self.alignments.setdefault(query_key, list()).append(alignment)
+
+    def containers(self):
+        container_dict = {}
+        for key, alignments in self.alignments.items():
+            container_dict[key] = AlignmentContainer(self.seqdb, alignments=alignments)
+        return container_dict
+
+
 class AssemblyGraphBuilder(object):
-    def __init__(self, alignment_container: AlignmentContainer):
+
+    COST_THRESHOLD = 10000
+
+    def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
         self.container = alignment_container
-        self.span_cost = SpanCost()
+        if span_cost is None:
+            self.span_cost = SpanCost()
+        else:
+            self.span_cost = span_cost
         self.G = None
         self.logger = logger(self)
 
-    def _edge_weight(self, type1: str, type2: str, span: int) -> float:
-        ext = self._extension_tuple_from_types(type1, type2)
-        assembly_cost = np.clip(self.span_cost.cost(span, ext), 0, Constants.INF)
-        frag_cost1 = Constants.PCR_COST[type1]  # we only count the source fragment cost
-        return {"junction": assembly_cost, "material": frag_cost1}
+    def alignment_to_internal_edge(self, align):
+        q = align.query_region
+        a_expand, b_expand = True, True
+        if align.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+            b_expand = False
+        if align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+            a_expand = False
 
-    def _extension_tuple_from_types(self, left_type, right_type):
-        """
-        Converts two "TYPES" into an 'extension tuple' that can be consumed by
-        the cost classes. The 'extension tuple' is a tuple representing the ability
-        of the fragments across a junction to be design to bridge a gap. For example:
+        ### INTERNAL EDGE
+        if align.type == Constants.FRAGMENT:
+            internal_cost = 0
+        elif align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
+            internal_cost = 30 + 30
+        elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
+            internal_cost = 30
+        elif align.type == Constants.PCR_PRODUCT:
+            internal_cost = 30 + 30 + 30
 
-        (0, 0) means the following gap cannot be spanned:
+        return (q.a, a_expand, 'A'), (q.b, b_expand, 'B'), dict(
+                    weight=internal_cost,
+                    name='',
+                    span_length=len(align.query_region),
+                    type=align.type
+                )
 
-        ::
-            (0, 0)
-            ------|      |------
-
-        It is also important to note that "0" means the either the primer for that fragment
-        exists
-
-        While the follow gap *may* be spanned by designing the left fragment with a longer
-        primer:
-
-        ::
-
-            (1, 0)
-            -------|    |-------
-               <----------
-
-        And finally, the following gap may be spanned by both primers.
-
-
-        ::
-
-            (1, 1)
-                    -------->
-            -------|    |-------
-               <----------
-
-        :param left_type:
-        :param right_type:
-        :return:
-        """
-        if (
-            left_type == Constants.PCR_PRODUCT_WITH_PRIMERS
-            or Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
-        ):
-            left_extendable = 1
-        else:
-            left_extendable = 0
-
-        if (
-            right_type == Constants.PCR_PRODUCT_WITH_PRIMERS
-            or Constants.PCR_PRODUCT_WITH_LEFT_PRIMER
-        ):
-            right_extendable = 1
-        else:
-            right_extendable = 0
-        return (left_extendable, right_extendable)
-
-    def _add_node(self, g1: AlignmentGroup):
-        """Add a node from an alignment group to the graph."""
-        n1 = self.container.alignment_hash(g1.alignments[0])
-        self.G.add_node(
-            n1,
-            start=g1.query_region.start,
-            end=g1.query_region.end,
-            region=str(g1.query_region),
-        )
-        return n1
-
-    def _add_edge(self, g1, g2, span_length, **kwargs):
-        """Add nodes, edge, and edge_weight from two alignment groups. A spanning distance (bp)
-        must be provided."""
-        n1 = self._add_node(g1)
-        n2 = self._add_node(g2)
-        cost = self._edge_weight(g1.type, g2.type, span_length)
-        edata = {
-            "weight": sum(cost.values()),
-            "span_length": span_length,
-            "region_1": str(g1.query_region),
-            "region_2": str(g2.query_region),
-        }
-        edata["cost"] = cost
-        edata.update(kwargs)
-        self.G.add_edge(n1, n2, **edata)
-
-    # TODO: speed improvment
-    def add_edge(self, group, other_group):
-        """
-        Create an edge between one alignment group and another.
-
-        :param group:
-        :param other_group:
-        :return:
-        """
-        # verify contexts are the same
-        r1 = group.query_region
-        r2 = other_group.query_region
-        assert r2.same_context(r1)
-
-        # TODO: replace by faster method
-        if r2.contains_span(r1) or r1.contains_span(r2):
-            return
-        if r1.contains_pos(r2.a) and not r1.contains_pos(r2.b):
-            # strict forward overlap
-            overlap = r1.intersection(r2)
-            if not overlap:
-                raise Exception("We expected an overlap here")
-            # TODO: penalize small overlap
-            self._add_edge(
-                group, other_group, span_length=-len(overlap), name="overlap"
-            )
-        elif not r1.contains_pos(r2.a) and not r1.contains_pos(r2.b):
-            try:
-                connecting_span = r1.connecting_span(r2)
-            except Exception as e:
-                raise e
-            if connecting_span:
-                span_length = len(connecting_span)
-            elif r1.consecutive(r2):
-                span_length = 0
-            else:
-                return
-            self._add_edge(group, other_group, span_length=span_length, name="gap")
-
-    # TODO: linear assemblies
-    # TODO: replace region methods with something faster.
-    # TODO: edge cost should include (i) cost of producing the source and (ii) cost of assembly
-    # Verify queries have same context
     def build_assembly_graph(self):
 
         self.G = nx.DiGraph(name="Assembly Graph")
-        # TODO: tests for validating over-origin edges are being produced
-        # produce non-spanning edges
-        # makes edges for any regions
+
         groups, group_keys = sort_with_keys(
             self.container.get_groups_by_types(
                 [
@@ -604,13 +540,36 @@ class AssemblyGraphBuilder(object):
 
         # TODO: reduce number of times edge
 
-        def add_edges(pairs):
-            for g1, g2 in pairs:
-                self.r(g1, g2)
+        a_arr = set()
+        b_arr = set()
 
-        pairs = itertools.product(groups, repeat=2)
-        # pairs = self.logger.tqdm(itertools.product(groups, repeat=2), "INFO", total=len(groups)**2, desc="adding edges")
+        for g in groups:
+            a, b, ab_data = self.alignment_to_internal_edge(g)
+            self.G.add_edge(a, b, **ab_data)
+            a_arr.add(a)
+            b_arr.add(b)
 
-        add_edges(pairs)
+        ### EXTERNAL EDGES
+        if groups:
+            query = groups[0].query_region
+            for (b, b_expand, bid), (a, a_expand, aid) in itertools.product(b_arr, a_arr):
+                if a != b:
+                    ba = query.new(b, a)
+                    ab = query.new(a, b)
 
+                    # TODO: PRIORITY no way to determine overlaps from just end points
+
+                    r = ba # sorted([(r1, len(r1)), (r2, len(r2))], key=lambda x: x[1])[0][0]
+                    cost, desc = self.span_cost.cost_and_desc(len(r), (b_expand, a_expand))
+                    if cost < self.COST_THRESHOLD:
+                        self.G.add_edge(
+                            (b, b_expand, bid),
+                            (a, a_expand, aid),
+                            weight=cost,
+                            name='',
+                            span_length=len(r),
+                            type=desc
+                        )
+        else:
+            self.logger.warn("There is nothing to assembly. There are no alignments.")
         return self.G

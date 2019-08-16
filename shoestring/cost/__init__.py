@@ -2,7 +2,7 @@ import seaborn as sns
 import pylab as plt
 import numpy as np
 import pandas as pd
-from typing import Tuple
+from typing import Tuple, Any
 
 # TODO: backtrack options
 
@@ -80,6 +80,7 @@ class CostParams(object):
 
 class JunctionCost(object):
     def __init__(self):
+        # the min and max spans to evaluate
         min_span = JxnParams.min_jxn_span
         max_span = JxnParams.primers[:, 1].max() * 2 - min_span
         self.span = np.arange(min_span, max_span, dtype=np.int64)
@@ -141,6 +142,26 @@ class JunctionCost(object):
         }
         self.min_cost_dict = {k: v.min(axis=(1, 2)) for k, v in self.cost_dict.items()}
 
+        def argmin_and_unravel(m):
+            dims = m.shape
+
+            # flatten along first axis
+            x = m.reshape(m.shape[0], -1)
+
+            # TODO: this could be many options...
+            # unravel
+            g = x.argmin(axis=1)
+            unraveled = np.unravel_index(g, dims)
+
+            # convert to array of 3s, one for each index
+            min_indices = np.dstack(unraveled).reshape(-1, 3)
+            assert min_indices.shape[0] == m.shape[0]
+            return min_indices
+
+        # TODO: meanings behind the args...
+        # there are '200' choices for primer lengths
+        self.ext_dict = {k: a.flatten()[argmin_and_unravel(v)] for k, v in self.cost_dict.items()}
+
     def plot(self):
         df = pd.DataFrame()
         df["span"] = self.span
@@ -200,6 +221,13 @@ class JunctionCost(object):
         i = np.clip(i, 0, self.min_cost_dict[ext].shape[0] - 1)
         return self.min_cost_dict[ext][i]
 
+    def cost_and_desc(self, span, ext):
+        i = span - self.span.min()
+        i = np.clip(i, 0, self.min_cost_dict[ext].shape[0] - 1)
+        cost = self.min_cost_dict[ext][i]
+        ext = self.ext_dict[ext][i]
+        return cost, ext
+
 
 class SynthesisCost(object):
     def __init__(self, jxn_cost: JunctionCost):
@@ -224,7 +252,7 @@ class SynthesisCost(object):
             SynParams.synthesis_left_span_range[1],
             SynParams.synthesis_step_size,
         ).reshape(-1, 1)[:, np.newaxis]
-        left_cost = self.jxn_cost.cost(left_span, ext=(left_ext, 0))
+        left_cost, left_ext_choice = self.jxn_cost.cost_and_desc(left_span, ext=(left_ext, 0))
         right_span = span - sizes - left_span
 
         # sanity check
@@ -238,12 +266,15 @@ class SynthesisCost(object):
         # span[50] == 500
         assert right_span[10, 100, 50] == -100
 
-        right_cost = self.jxn_cost.cost(right_span, ext=(0, right_ext))
+        right_cost, right_ext_choice = self.jxn_cost.cost_and_desc(right_span, ext=(0, right_ext))
         gene_cost = SynParams.gene_costs[sizes]
         gene_time = SynParams.gene_times[sizes]
 
         # TODO:should just get the material costs here and multiply the efficiencies later
+        # auto broadcast
         ext_costs = left_cost + right_cost
+
+        # TODO: need to broadcast left and right ext_choice
 
         # size, left span, span
         ext_costs = ext_costs.swapaxes(0, 1)
@@ -309,11 +340,21 @@ class SynthesisCost(object):
 
 
 class SpanCost(object):
+
+    JUNCTION_BY_PRIMERS = "JUNCTION_BY_PRIMERS"
+    JUNCTION_BY_SYNTHESIS = "JUNCTION_BY_SYNTHESIS"
+
     def __init__(self):
         self.junction_cost = JunctionCost()
         self.synthesis_cost = SynthesisCost(self.junction_cost)
+        self.min_cost_dict = {}
+        self.argmin_cost_dict = {}
 
-        self.cost_dictionary = {}
+        # TODO make sure this matches with the np.stack below
+        self.arg_desc = np.array([
+                self.JUNCTION_BY_PRIMERS,
+                self.JUNCTION_BY_SYNTHESIS
+            ])
         x = [
             self.junction_cost.span.min(),
             self.junction_cost.span.max(),
@@ -321,13 +362,18 @@ class SpanCost(object):
             self.synthesis_cost.span.max()
         ]
         self._span = (min(x), max(x))
-        span_range = np.arange(min(x), max(x)+1)
+        self._span_range = np.arange(min(x), max(x)+1)
+
+        # TODO: here return whether we are synthesizing or using primers
         for ext in [(0, 0), (0, 1), (1, 0), (1, 1)]:
-            a = self.junction_cost.cost(span_range, ext)
-            b = self.synthesis_cost.cost(span_range, ext)
+            a = self.junction_cost.cost(self._span_range, ext)
+            b = self.synthesis_cost.cost(self._span_range, ext)
             c = np.stack([a, b])
+
             d = c.min(axis=0)
-            self.cost_dictionary[ext] = d
+            darg = c.argmin(axis=0)
+            self.argmin_cost_dict[ext] = darg
+            self.min_cost_dict[ext] = d
 
     def cost(self, span: int, ext: Tuple[int, int]) -> float:
         """
@@ -340,5 +386,14 @@ class SpanCost(object):
         :return:
         :rtype:
         """
-        span = np.clip(span, self._span[0], self._span[1])
-        return self.cost_dictionary[ext][span]
+        self.cost_and_desc(span, ext)[0]
+
+    # TODO: cost_and_desc is broken somehow
+    def cost_and_desc(self, span: int, ext: Tuple[int, int]) -> Tuple[float, Any]:
+        # need to convert span to span index
+        i = np.where(self._span_range == span)[0]
+        if not i:
+            return np.Inf, "out of bounds, not able to evaluate"
+        cost = self.min_cost_dict[ext][i[0]]
+        desc = self.arg_desc[self.argmin_cost_dict[ext][i[0]]]
+        return cost, desc

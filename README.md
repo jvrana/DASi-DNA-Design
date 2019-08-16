@@ -1,4 +1,4 @@
-# DASI DNA
+# DASi DNA Design
 
 **DASi** is an automatic DNA cloning plan designer aimed for operating on small budgets by focusing on material
 re-use.

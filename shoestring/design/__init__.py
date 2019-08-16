@@ -1,6 +1,6 @@
 """Primer and synthesis design"""
 
-from shoestring import AlignmentContainerFactory, Constants, AssemblyGraphBuilder
+from shoestring import Alignment, AlignmentContainer, AlignmentContainerFactory, Constants, AssemblyGraphBuilder
 from shoestring.utils import perfect_subject
 import networkx as nx
 from pyblast import BioBlastFactory
@@ -343,6 +343,23 @@ class LibraryDesign(Design):
         super()._blast()
         self._share_query_blast()
 
+    # @staticmethod
+    # def _get_repeats_from_results(results):
+    #     repeats = []
+    #     for r in results:
+    #         qk = r['query']['origin_key']
+    #         sk = r['subject']['origin_key']
+    #         if qk == sk:
+    #             repeats.append((qk, r['query']['start'], r['query']['end']))
+    #     return repeats
+
+    def _get_repeats(self, alignments: List[Alignment]):
+        for align in alignments:
+            qk = align.query_key
+            sk = align.subject_key
+            if qk == sk:
+                print("REPEAT")
+
 
     def _share_query_blast(self):
         self.logger.info("Finding shared fragments among queries")
@@ -354,25 +371,75 @@ class LibraryDesign(Design):
         self.logger.info("Found {} shared alignments between the queries".format(len(results)))
         self.shared_alignments = results
 
+        filtered_results = []
         self.container_factory.seqdb.update(blast.seq_db.records)
+        self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
 
-        # TODO: need to expand certain points from these results...
-        # TODO: method that expands a list of points
-        # self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+        # TODO: expand the normal fragments with the shared fragments
+        for container in self.container_list():
+            # expand the share fragments using their own endpoints
+            container.expand_pcr_products(container.get_groups_by_types(Constants.SHARED_FRAGMENT),
+                                          Constants.SHARED_FRAGMENT)
 
-        edges = set()
-        for result in results:
-            a = result['query']['start']
-            b = result['query']['end']
-            k = result['query']['origin_key']
-            edges.add((a, b, k))
-        self._edges = edges
-        self.logger.info("{} possible ways to share fragments between {} goal plasmids.".format(2**len(edges), len(self.container_factory.alignments)))
+            # expand the existing fragments with endpoints from the share alignments
+            container.expand_pcr_products(container.get_groups_by_types(
+                [Constants.FRAGMENT,
+                Constants.PCR_PRODUCT,
+                Constants.SHARED_FRAGMENT]
+            ), Constants.PCR_PRODUCT)
+
+            # grab the pcr products and expand primer pairs (again)
+            templates = container.get_groups_by_types(
+                Constants.PCR_PRODUCT
+            )
+            container.expand_primer_pairs(templates)
+
+
+        repeats = []
+        for container in self.container_list():
+            # get all shared fragments
+            alignments = container.get_alignments_by_types(Constants.SHARED_FRAGMENT)
+
+            # add to list of possible repeats
+            repeats += self._get_repeats(alignments)
+        x = 1
+
+
+
+        # # filter self alignmenbts
+        #
+        # for r in results:
+        #     qk = r['query']['origin_key']
+        #     sk = r['subject']['origin_key']
+        #
+        #     if qk != sk:
+        #         n1 = (sk, r['subject']['start'], r['subject']['end'])
+        #         n2 = (qk, r['query']['start'], r['query']['end'])
+        #         if n1 not in repeats and n2 not in repeats:
+        #             yield n1, n2
+
+        # self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
+        # # TODO: need to expand certain points from these results...
+        # # TODO: method that expands a list of points
+        # # self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+        #
+        # edges = set()
+        # for result in results:
+        #     a = result['query']['start']
+        #     b = result['query']['end']
+        #     k = result['query']['origin_key']
+        #     edges.add((a, b, k))
+        # self._edges = edges
+        # self.logger.info("{} possible ways to share fragments between {} goal plasmids.".format(2**len(edges), len(self.container_factory.alignments)))
+
+
 
     def optimize_library(self):
         combinations = range(2**len(self._edges))
         for e in self.logger.tqdm(combinations, "INFO", desc="optimizing for shared materials"):
             self.optimize()
+
+
         # # combine the sequence databases (for now)
         # seqdb = {}
         # seqdb.update(blast.seq_db.records)

@@ -32,6 +32,9 @@ class Constants(object):
     PCR_PRODUCT_WITH_RIGHT_PRIMER = (
         "PCR_PRODUCT_WITH_RIGHT_PRIMER"
     )  # PCR product with existing right primer
+    SHARED_FRAGMENT = (
+        "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
+    )  # A fragment alignment that is shared with other queries for potential reuse
 
     PCR_COST = {
         PCR_PRODUCT: 30 + 25 + 10,
@@ -191,6 +194,7 @@ class AlignmentContainer(object):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SHARED_FRAGMENT
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -279,7 +283,8 @@ class AlignmentContainer(object):
         return pairs
 
     def expand_pcr_products(
-        self, alignment_groups: List[AlignmentGroup]
+        self, alignment_groups: List[AlignmentGroup],
+            type=Constants.PCR_PRODUCT
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -320,12 +325,12 @@ class AlignmentContainer(object):
                 if og is not group:
                     if og.query_region.a - group.query_region.a > MIN_OVERLAP:
                         ag1 = group.sub_region(
-                            group.query_region.a, og.query_region.a, Constants.PCR_PRODUCT
+                            group.query_region.a, og.query_region.a, type
                         )
                         alignments += ag1.alignments
                     if group.query_region.b - og.query_region.a > MIN_OVERLAP:
                         ag2 = group.sub_region(
-                            og.query_region.a, group.query_region.b, Constants.PCR_PRODUCT
+                            og.query_region.a, group.query_region.b, type
                         )
                         alignments += ag2.alignments
         return alignments
@@ -438,6 +443,7 @@ class AlignmentContainerFactory(object):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SHARED_FRAGMENT
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):

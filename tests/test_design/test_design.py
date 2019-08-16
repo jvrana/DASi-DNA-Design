@@ -84,7 +84,3 @@ def test_multidesign(here, paths):
     assert len(design.graphs) > 1
 
     design.optimize()
-
-
-class TestLibraryDesign(object):
-

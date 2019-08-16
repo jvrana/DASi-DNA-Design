@@ -362,7 +362,7 @@ class LibraryDesign(Design):
 
 
     def _share_query_blast(self):
-        self.logger.info("Finding shared fragments among queries")
+        self.logger.info("=== Expanding shared library fragments ===")
 
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
         blast.quick_blastn()
@@ -371,28 +371,47 @@ class LibraryDesign(Design):
         self.logger.info("Found {} shared alignments between the queries".format(len(results)))
         self.shared_alignments = results
 
-        filtered_results = []
         self.container_factory.seqdb.update(blast.seq_db.records)
         self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
 
         # TODO: expand the normal fragments with the shared fragments
-        for container in self.container_list():
+        for query_key, container in self.container_factory.containers().items():
             # expand the share fragments using their own endpoints
-            container.expand_pcr_products(container.get_groups_by_types(Constants.SHARED_FRAGMENT),
+            original_shared_fragments = container.get_groups_by_types(Constants.SHARED_FRAGMENT)
+            new_shared_fragments = container.expand_pcr_products(original_shared_fragments,
                                           Constants.SHARED_FRAGMENT)
+            self.logger.info("{}: Expanded {} shared from original {} shared fragments".format(
+                query_key,
+                len(new_shared_fragments),
+                len(original_shared_fragments)
+            ))
 
             # expand the existing fragments with endpoints from the share alignments
-            container.expand_pcr_products(container.get_groups_by_types(
+
+            # TODO: what if there is no template for shared fragment?
+            # TODO: shared fragment has to be contained wholly in another fragment
+            new_alignments = container.expand_pcr_products(container.get_groups_by_types(
                 [Constants.FRAGMENT,
                 Constants.PCR_PRODUCT,
                 Constants.SHARED_FRAGMENT]
             ), Constants.PCR_PRODUCT)
-
+            self.logger.info("{}: Expanded {} using {} and found {} new alignments.".format(
+                query_key,
+                Constants.PCR_PRODUCT,
+                Constants.SHARED_FRAGMENT,
+                len(new_alignments)
+            ))
             # grab the pcr products and expand primer pairs (again)
             templates = container.get_groups_by_types(
                 Constants.PCR_PRODUCT
             )
-            container.expand_primer_pairs(templates)
+            new_primer_pairs = container.expand_primer_pairs(templates)
+            self.logger.info("{}: Expanded {} {} using {}".format(
+                query_key,
+                len(new_primer_pairs),
+                "PRODUCTS_WITH_PRIMERS",
+                Constants.SHARED_FRAGMENT
+            ))
 
 
         repeats = []
@@ -402,29 +421,29 @@ class LibraryDesign(Design):
             self.logger.info("{} shared fragments for {}".format(len(alignments), query_key))
             # add to list of possible repeats
             repeats += list(self._get_iter_repeats(alignments))
-
-        # create interaction graph
-        for r in design.shared_alignments:
-            qk = r['query']['origin_key']
-            sk = r['subject']['origin_key']
-
-            if qk != sk:
-                n1 = (sk, r['subject']['start'], r['subject']['end'])
-                n2 = (qk, r['query']['start'], r['query']['end'])
-                if n1 not in repeats and n2 not in repeats:
-                    query = design.container_factory.seqdb[qk]
-                    subject = design.container_factory.seqdb[sk]
-
-                    s1, e1 = r['query']['start'], r['query']['end']
-                    s2, e2 = r['subject']['start'], r['subject']['end']
-
-                    non_repeat_interactions.setdefault(n1, set()).add(n2)
-                    non_repeat_interactions.setdefault(n2, set()).add(n1)
-
-        G = nx.Graph()
-        for k, v in non_repeat_interactions.items():
-            for _v in v:
-                G.add_edge(k, _v)
+        self.repeats = repeats
+        # # create interaction graph
+        # for r in design.shared_alignments:
+        #     qk = r['query']['origin_key']
+        #     sk = r['subject']['origin_key']
+        #
+        #     if qk != sk:
+        #         n1 = (sk, r['subject']['start'], r['subject']['end'])
+        #         n2 = (qk, r['query']['start'], r['query']['end'])
+        #         if n1 not in repeats and n2 not in repeats:
+        #             query = design.container_factory.seqdb[qk]
+        #             subject = design.container_factory.seqdb[sk]
+        #
+        #             s1, e1 = r['query']['start'], r['query']['end']
+        #             s2, e2 = r['subject']['start'], r['subject']['end']
+        #
+        #             non_repeat_interactions.setdefault(n1, set()).add(n2)
+        #             non_repeat_interactions.setdefault(n2, set()).add(n1)
+        #
+        # G = nx.Graph()
+        # for k, v in non_repeat_interactions.items():
+        #     for _v in v:
+        #         G.add_edge(k, _v)
 
 
 

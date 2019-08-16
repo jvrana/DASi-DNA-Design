@@ -459,7 +459,7 @@ class AlignmentContainerFactory(object):
         :param type: the type of alignment to initialize
         :return: None
         """
-        self.logger.info("Loading blast json")
+        self.logger.info("Loading blast json ({} entries) to fragment type \"{}\"".format(len(data), type))
         assert type in self.valid_types
         for d in data:
             query_region = blast_to_region(d["query"], self.seqdb)

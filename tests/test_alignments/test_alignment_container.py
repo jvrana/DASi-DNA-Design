@@ -259,20 +259,36 @@ class TestExpandPrimers():
 
 
 
-class TestExpandProducts():
+class TestExpandOverlaps():
 
-    def test_expand(self, container):
-        new_alignment_in_container(container, 500, 2000, Constants.PCR_PRODUCT)
+    def overlap_container(self, container, x1, x2, x3, x4):
+        container.alignments = [new_alignment_in_container(container, x1, x2, Constants.PCR_PRODUCT)]
+        new_alignment_in_container(container, x3, x4, Constants.PCR_PRODUCT)
+        return deepcopy(container)
+
+    @pytest.mark.parametrize('x', [
+            (100, 1000, 500, 2000),
+            (200, 800, 700, 1000),
+            (9000, 1000, 500, 2000)
+        ],
+        ids=[
+            'basic_1',
+            'basic_2',
+            'over_origin_1']
+    )
+    def test_expand_overlaps(self, container, x):
+        container = self.overlap_container(container, *x)
+        assert len(container) == 2
 
         groups = container.get_groups_by_types(Constants.PCR_PRODUCT)
-        alignments = container.expand_pcr_products(groups)
+        alignments = container.expand_overlaps(groups)
         assert len(alignments) == 3
 
         indices = []
         for a in alignments:
             indices.append((a.query_region.a, a.query_region.b))
         indices.sort()
-        assert indices == [(100, 500), (500, 1000), (1000, 2000)]
+        assert indices == sorted([(x[0], x[2]), (x[2], x[1]), (x[1], x[3])])
 
 def test_alignments_by_types():
     raise NotImplementedError

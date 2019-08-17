@@ -328,7 +328,7 @@ class AlignmentContainer(Sized):
                 pairs += right_primer_group.alignments
         return pairs
 
-    def expand_pcr_products(
+    def expand_overlaps(
         self, alignment_groups: List[AlignmentGroup],
             type=Constants.PCR_PRODUCT
     ) -> List[Alignment]:
@@ -421,7 +421,7 @@ class AlignmentContainer(Sized):
             self.logger.info("Number of pairs: {}".format(len(pairs)))
 
         if expand_overlaps:
-            expanded = self.expand_pcr_products(templates)
+            expanded = self.expand_overlaps(templates)
             self.alignments += expanded
             self.logger.info("Number of new alignments: {}".format(len(expanded)))
         self.logger.info("Number of total alignments: {}".format(len(self.alignments)))

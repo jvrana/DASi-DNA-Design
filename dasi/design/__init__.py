@@ -393,8 +393,8 @@ class LibraryDesign(Design):
         for query_key, container in self.container_factory.containers().items():
             # expand the share fragments using their own endpoints
             original_shared_fragments = container.get_groups_by_types(Constants.SHARED_FRAGMENT)
-            new_shared_fragments = container.expand_pcr_products(original_shared_fragments,
-                                          Constants.SHARED_FRAGMENT)
+            new_shared_fragments = container.expand_overlaps(original_shared_fragments,
+                                                             Constants.SHARED_FRAGMENT)
 
 
 
@@ -408,7 +408,7 @@ class LibraryDesign(Design):
 
             # TODO: what if there is no template for shared fragment?
             # TODO: shared fragment has to be contained wholly in another fragment
-            new_alignments = container.expand_pcr_products(container.get_groups_by_types(
+            new_alignments = container.expand_overlaps(container.get_groups_by_types(
                 [Constants.FRAGMENT,
                 Constants.PCR_PRODUCT,
                 Constants.SHARED_FRAGMENT]

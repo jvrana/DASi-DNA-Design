@@ -143,6 +143,9 @@ class Alignment(object):
             self.__class__.__name__, self.type, self.query_region, self.subject_region
         )
 
+    def __repr__(self):
+        return str(self)
+
 
 class AlignmentGroup(object):
     """
@@ -263,27 +266,42 @@ class AlignmentContainer(Sized):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
-        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.a)
-        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.b)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
 
         pairs = []
 
         for g in self.logger.tqdm(
             alignment_groups, "INFO", desc="Expanding primer pair"
         ):
-            # add products with both existing products
-            fwd_bind = bisect_slice_between(
-                fwd, fwd_keys, g.query_region.a + Constants.PRIMER_MIN_BIND, g.query_region.b
-            )
-            rev_bind = bisect_slice_between(
-                rev, rev_keys, g.query_region.a, g.query_region.b - Constants.PRIMER_MIN_BIND
-            )
+            query_ranges = g.query_region.ranges()
+            fwd_bind_region = g.query_region[Constants.PRIMER_MIN_BIND:]
+            rev_bind_region = g.query_region[:-Constants.PRIMER_MIN_BIND]
+            fwd_bind, rev_bind = [], []
+            for a, b in fwd_bind_region.ranges():
+                fwd_bind += bisect_slice_between(
+                    fwd, fwd_keys, a, b
+                )
+            for a, b in rev_bind_region.ranges():
+                rev_bind += bisect_slice_between(
+                    rev, rev_keys, a, b
+                )
             rkeys = [r.query_region.a for r in rev_bind]
 
             # both primers
             for f in fwd_bind:
-                i = bisect_left(rkeys, f.query_region.a)
-                for r in rev_bind[i:]:
+                _rev_bind = []
+                if len(query_ranges) == 1:
+                    i = bisect_left(rkeys, f.query_region.a)
+                    _rev_bind = rev_bind[i:]
+                else:
+                    _rev_span = g.query_region.new(f.query_region.a, g.query_region.b, allow_wrap=True)
+                    for a, b in _rev_span.ranges():
+
+                        _rev_bind += bisect_slice_between(
+                            rev_bind, rkeys, a, b
+                        )
+                for r in _rev_bind:
                     primer_group = g.sub_region(
                         f.query_region.a,
                         r.query_region.b,
@@ -316,7 +334,7 @@ class AlignmentContainer(Sized):
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
-        the following two situations:
+        the following three situations:
 
         ::
 
@@ -324,11 +342,15 @@ class AlignmentContainer(Sized):
                 |--------|      alignment 2
             |---|               new alignment
 
-        ::
 
             |--------|          alignment 1
                  |--------|     alignment 2
                  |---|          new alignment
+
+
+            |--------|          alignment 1
+                 |--------|     alignment 2
+                     |----|     new alignment
 
         :param alignment_groups:
         :return: list
@@ -339,28 +361,33 @@ class AlignmentContainer(Sized):
             alignment_groups, key=lambda x: x.query_region.a
         )
         alignments = []
-        for group in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
-            i = bisect_left(group_keys, group.query_region.a)
+        for group_a in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
+            i = bisect_left(group_keys, group_a.query_region.a)
             arr, keys = sort_with_keys(group_sort[i:], key=lambda x: x.query_region.a)
 
             # get list of overlapping alignments
             overlapping = bisect_slice_between(
-                arr, keys, group.query_region.a, group.query_region.b
+                arr, keys, group_a.query_region.a, group_a.query_region.b
             )
 
             #
-            for og in overlapping:
-                if og is not group:
-                    if og.query_region.a - group.query_region.a > MIN_OVERLAP:
-                        ag1 = group.sub_region(
-                            group.query_region.a, og.query_region.a, type
+            for group_b in overlapping:
+                if group_b is not group_a:
+                    if group_b.query_region.a - group_a.query_region.a > MIN_OVERLAP:
+                        ag1 = group_a.sub_region(
+                            group_a.query_region.a, group_b.query_region.a, type
                         )
                         alignments += ag1.alignments
-                    if group.query_region.b - og.query_region.a > MIN_OVERLAP:
-                        ag2 = group.sub_region(
-                            og.query_region.a, group.query_region.b, type
+                    if group_a.query_region.b - group_b.query_region.a > MIN_OVERLAP:
+                        ag2 = group_a.sub_region(
+                            group_b.query_region.a, group_a.query_region.b, type
                         )
                         alignments += ag2.alignments
+                    if group_b.query_region.b - group_a.query_region.b > MIN_OVERLAP:
+                        ag3 = group_b.sub_region(
+                            group_a.query_region.b, group_b.query_region.b, type
+                        )
+                        alignments += ag3.alignments
         return alignments
 
     # TODO: expand should just add more

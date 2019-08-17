@@ -256,11 +256,32 @@ class TestExpandPrimers():
         print(indices)
         assert indices == [(9000, 830), (9500, 830), (9500, 1000)]
 
-    def test_overhand_on_primer(self, container):
-        new_alignment_in_container(container, 1000-Constants.PRIMER_MIN_BIND, 1000, Constants.PRIMER, -1)
+    def test_expand_over_origin2(self, container):
+        container = random_container(2, 1, Constants.PCR_PRODUCT)
+        container.alignments = [new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)]
+
+        new_alignment_in_container(container, 9500, 9530, Constants.PRIMER, -1)
+        new_alignment_in_container(container, 800, 830, Constants.PRIMER, 1)
 
         alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
-        assert len(alignments)
+        assert len(alignments) == 2
+
+        indices = []
+        for a in alignments:
+            print(a)
+            indices.append((a.query_region.a, a.query_region.b))
+        indices.sort()
+        print(indices)
+        assert indices == [(800, 1000), (9000, 9530)]
+
+    def test_overhang_on_primer(self, container):
+        new_alignment_in_container(container, 1000-Constants.PRIMER_MIN_BIND, 1100, Constants.PRIMER, -1)
+        assert len(container) == 2
+
+        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        assert len(alignments) == 1
+        assert alignments[0].query_region.a == 100
+        assert alignments[0].query_region.b == 1100
 
 
 class TestExpandOverlaps():

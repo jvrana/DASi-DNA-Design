@@ -67,12 +67,18 @@ class AlignmentContainerException(DASiException):
     pass
 
 
+ALIGNMENT_SLOTS = ["query_region", "subject_region", "type", "query_key", "subject_key"]
+
+
 class Alignment(object):
     """
-    A pair of Regions that 'aligns' two regions of DNA sequences.
+    A pair of Regions that 'aligns' two regions of DNA sequences. Regions must be
+    the same length.
+
+    A subregion of both regions may be taken.
     """
 
-    __slots__ = ["query_region", "subject_region", "type", "query_key", "subject_key"]
+    __slots__ = ALIGNMENT_SLOTS[:]
 
     def __init__(
         self,
@@ -149,7 +155,6 @@ class Alignment(object):
     def __repr__(self):
         return str(self)
 
-
 class AlignmentGroup(object):
     """
     A representative Alignment representing a group of alignments sharing the
@@ -177,6 +182,7 @@ class AlignmentGroup(object):
             alignments=alignments_copy,
             name="subregion",
         )
+
 
 # TODO: make a test for this conversion
 def blast_to_region(query_or_subject, seqdb):

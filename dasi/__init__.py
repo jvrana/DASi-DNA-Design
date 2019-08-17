@@ -262,6 +262,17 @@ class AlignmentContainer(Sized):
                 annotated.append(a)
         return annotated
 
+    # TODO: test for this method
+    @classmethod
+    def filter_alignments_by_span(cls, alignments, region, key_func=None):
+        fwd, fwd_keys = sort_with_keys(alignments, key=key_func)
+        found = []
+        for a, b in region.ranges():
+            found += bisect_slice_between(
+                fwd, fwd_keys, a, b
+            )
+        return found
+
     def expand_primer_pairs(
         self, alignment_groups: List[AlignmentGroup]
     ) -> List[Alignment]:
@@ -286,17 +297,10 @@ class AlignmentContainer(Sized):
             query_ranges = g.query_region.ranges()
             fwd_bind_region = g.query_region[Constants.PRIMER_MIN_BIND:]
             rev_bind_region = g.query_region[:-Constants.PRIMER_MIN_BIND]
-            fwd_bind, rev_bind = [], []
-            for a, b in fwd_bind_region.ranges():
-                fwd_bind += bisect_slice_between(
-                    fwd, fwd_keys, a, b
-                )
-            for a, b in rev_bind_region.ranges():
-                rev_bind += bisect_slice_between(
-                    rev, rev_keys, a, b
-                )
+            fwd_bind = self.filter_alignments_by_span(fwd, fwd_bind_region, key=lambda p: p.query_region.b)
+            rev_bind = self.filter_alignments_by_span(rev, rev_bind_region, key=lambda p: p.query_region.a)
             rkeys = [r.query_region.a for r in rev_bind]
-
+;lhdfga;dlsfgh;
             # both primers
             for f in fwd_bind:
                 _rev_bind = []
@@ -304,19 +308,22 @@ class AlignmentContainer(Sized):
                     i = bisect_left(rkeys, f.query_region.a)
                     _rev_bind = rev_bind[i:]
                 else:
-                    _rev_span = g.query_region.new(f.query_region.a, g.query_region.b, allow_wrap=True)
+                    _rev_span = g.query_region.sub(f.query_region.a, g.query_region.b)
                     for a, b in _rev_span.ranges():
 
                         _rev_bind += bisect_slice_between(
                             rev_bind, rkeys, a, b
                         )
                 for r in _rev_bind:
-                    primer_group = g.sub_region(
-                        f.query_region.a,
-                        r.query_region.b,
-                        Constants.PCR_PRODUCT_WITH_PRIMERS,
-                    )
-                    pairs += primer_group.alignments
+                    try:
+                        primer_group = g.sub_region(
+                            f.query_region.a,
+                            r.query_region.b,
+                            Constants.PCR_PRODUCT_WITH_PRIMERS,
+                        )
+                        pairs += primer_group.alignments
+                    except IndexError:
+                        pass
 
             # left primer
             for f in fwd_bind:

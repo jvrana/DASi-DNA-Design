@@ -65,3 +65,8 @@ class TestSubRegion():
         assert new_alignment.query_region.b == _q.b
         assert new_alignment.subject_region.a == _s.a
         assert new_alignment.subject_region.b == _s.b
+
+
+def test_find_alignments():
+    # TODO: fast methods for finding alignments from a span?
+    raise NotImplemented

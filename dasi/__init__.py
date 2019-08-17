@@ -55,7 +55,15 @@ class Constants(object):
     INF = 10.0 ** 6
 
 
-class AlignmentException(Exception):
+class DASiException(Exception):
+    pass
+
+
+class AlignmentException(DASiException):
+    pass
+
+
+class AlignmentContainerException(DASiException):
     pass
 
 
@@ -211,19 +219,26 @@ class AlignmentContainer(Sized):
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
-        if alignments is None:
-            self.alignments = []
-        else:
+        self._alignments = []
+        if alignments is not None:
             self.alignments = alignments
-        self._check_single_query_key(self.alignments)
         self.seqdb = seqdb
         self.logger = logger(self)
+
+    @property
+    def alignments(self):
+        return self._alignments
+
+    @alignments.setter
+    def alignments(self, v):
+        self._alignments = v
+        self._check_single_query_key(self._alignments)
 
     @staticmethod
     def _check_single_query_key(alignments):
         keys = set(a.query_key for a in alignments)
         if len(keys) > 1:
-            raise ValueError("AlignmentContainer cannot contain more than one query. Contains the following"
+            raise AlignmentContainerException("AlignmentContainer cannot contain more than one query. Contains the following"
                              "query keys: {}".format(keys))
 
     def annotate_fragments(self, alignments) -> List[Alignment]:

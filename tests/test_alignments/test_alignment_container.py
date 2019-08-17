@@ -256,7 +256,11 @@ class TestExpandPrimers():
         print(indices)
         assert indices == [(9000, 830), (9500, 830), (9500, 1000)]
 
+    def test_overhand_on_primer(self, container):
+        new_alignment_in_container(container, 1000-Constants.PRIMER_MIN_BIND, 1000, Constants.PRIMER, -1)
 
+        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        assert len(alignments)
 
 
 class TestExpandOverlaps():

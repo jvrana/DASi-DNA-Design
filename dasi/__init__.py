@@ -264,8 +264,8 @@ class AlignmentContainer(Sized):
 
     # TODO: test for this method
     @classmethod
-    def filter_alignments_by_span(cls, alignments, region, key_func=None):
-        fwd, fwd_keys = sort_with_keys(alignments, key=key_func)
+    def filter_alignments_by_span(cls, alignments, region, key=None):
+        fwd, fwd_keys = sort_with_keys(alignments, key=key)
         found = []
         for a, b in region.ranges():
             found += bisect_slice_between(
@@ -286,8 +286,8 @@ class AlignmentContainer(Sized):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
-        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
-        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
+        # fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
+        # rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
 
         pairs = []
 
@@ -300,7 +300,7 @@ class AlignmentContainer(Sized):
             fwd_bind = self.filter_alignments_by_span(fwd, fwd_bind_region, key=lambda p: p.query_region.b)
             rev_bind = self.filter_alignments_by_span(rev, rev_bind_region, key=lambda p: p.query_region.a)
             rkeys = [r.query_region.a for r in rev_bind]
-;lhdfga;dlsfgh;
+
             # both primers
             for f in fwd_bind:
                 _rev_bind = []

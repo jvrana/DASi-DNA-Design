@@ -465,3 +465,8 @@ def test_connecting_span_linear_no_span():
     s2 = Span(0, 10, 100, False)
     s3 = s1.connecting_span(s2)
     assert s3 is None
+
+
+def test_invalid_span():
+    s1 = Span(5947, 4219, 10000, cyclic=True, allow_wrap=True)
+    s1.sub(28, 5989)

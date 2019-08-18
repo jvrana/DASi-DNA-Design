@@ -469,4 +469,5 @@ def test_connecting_span_linear_no_span():
 
 def test_invalid_span():
     s1 = Span(5947, 4219, 10000, cyclic=True, allow_wrap=True)
-    s1.sub(28, 5989)
+    with pytest.raises(IndexError):
+        s1.sub(28, 5989)

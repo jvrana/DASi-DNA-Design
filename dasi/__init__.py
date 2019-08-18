@@ -126,10 +126,16 @@ class Alignment(object):
         :return:
         """
         query_copy = self.query_region.sub(qstart, qend)
-        delta_a_span = self.query_region.sub(self.query_region.a, qstart)
-        delta_b_span = self.query_region.sub(qend, self.query_region.b)
-        delta_a = len(delta_a_span)
-        delta_b = -len(delta_b_span)
+        if self.query_region.a != qstart:
+            delta_a_span = self.query_region.sub(self.query_region.a, qstart)
+            delta_a = len(delta_a_span)
+        else:
+            delta_a = 0
+        if qend != self.query_region.b:
+            delta_b_span = self.query_region.sub(qend, self.query_region.b)
+            delta_b = -len(delta_b_span)
+        else:
+            delta_b = 0
         if delta_a == 0:
             delta_a = None
         if delta_b == 0:

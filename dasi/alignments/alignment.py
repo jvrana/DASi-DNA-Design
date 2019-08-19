@@ -1,11 +1,12 @@
 from dasi.utils import Region
 from dasi.exceptions import AlignmentException
 from typing import List
+from collections.abc import Sized
 
 ALIGNMENT_SLOTS = ["query_region", "subject_region", "type", "query_key", "subject_key", "grouping_tags"]
 
 
-class Alignment(object):
+class Alignment(Sized):
     """
     A pair of Regions that 'aligns' two regions of DNA sequences. Regions must be
     the same length.
@@ -88,6 +89,9 @@ class Alignment(object):
             query_key=self.query_key,
             subject_key=self.subject_key,
         )
+
+    def __len__(self):
+        return len(self.query_region)
 
     def __str__(self):
         return "<{} {} {} {}>".format(

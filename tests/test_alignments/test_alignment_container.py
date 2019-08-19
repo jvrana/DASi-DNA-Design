@@ -331,6 +331,7 @@ class TestExpandOverlaps():
         indices.sort()
         assert indices == sorted([(x[0], x[2]), (x[2], x[1]), (x[1], x[3])])
 
+
 def test_alignments_by_types():
     raise NotImplementedError
 

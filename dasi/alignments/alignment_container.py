@@ -218,21 +218,18 @@ class AlignmentContainer(Sized):
             #
             for group_b in overlapping:
                 if group_b is not group_a:
-                    if group_b.query_region.a - group_a.query_region.a > MIN_OVERLAP:
-                        ag1 = group_a.sub_region(
-                            group_a.query_region.a, group_b.query_region.a, type
-                        )
-                        alignments += ag1.alignments
-                    if group_a.query_region.b - group_b.query_region.a > MIN_OVERLAP:
-                        ag2 = group_a.sub_region(
-                            group_b.query_region.a, group_a.query_region.b, type
-                        )
-                        alignments += ag2.alignments
-                    if group_b.query_region.b - group_a.query_region.b > MIN_OVERLAP:
-                        ag3 = group_b.sub_region(
-                            group_a.query_region.b, group_b.query_region.b, type
-                        )
-                        alignments += ag3.alignments
+                    left = group_a.sub_region(group_a.query_region.a, group_b.query_region.a, type)
+                    overlap = group_a.sub_region(group_b.query_region.a, group_a.query_region.b, type)
+                    right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
+
+                    if len(left.query_region) > MIN_OVERLAP:
+                        alignments += left.alignments
+
+                    if len(overlap.query_region) > MIN_OVERLAP:
+                        alignments += overlap.alignments
+
+                    if len(right.query_region) > MIN_OVERLAP:
+                        alignments += right.alignments
         return alignments
 
     # TODO: expand should just add more

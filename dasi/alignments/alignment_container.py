@@ -308,7 +308,7 @@ class AlignmentContainer(Sized):
             for (uuid, type), i in a.grouping_tags.items():
                 key_to_alignments.setdefault((uuid, type), list()).append((i, a))
         complex_groups = []
-        for (uuid, type), alist in key_to_alignments:
+        for (uuid, type), alist in key_to_alignments.items():
             sorted_alist = [x[-1] for x in sorted(alist)]
             complex_groups.append(ComplexAlignmentGroup(sorted_alist, type))
         return complex_groups

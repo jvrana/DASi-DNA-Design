@@ -1,6 +1,8 @@
 """Primer and synthesis design"""
 
-from dasi import Alignment, AlignmentContainer, AlignmentContainerFactory, Constants, AssemblyGraphBuilder
+from dasi.alignments import Alignment, AlignmentContainerFactory
+from dasi.constants import Constants
+from dasi.assembly import AssemblyGraphBuilder
 from dasi.utils import perfect_subject
 import networkx as nx
 from pyblast import BioBlastFactory
@@ -9,31 +11,8 @@ from typing import List
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 from more_itertools import pairwise
-from abc import ABC, abstractmethod
 from pyblast.utils import Span, is_circular
 import pandas as pd
-from typing import Tuple
-
-class DNADesign(ABC):
-
-    @abstractmethod
-    def design(self, span, seq1, seq2, query_seq):
-        pass
-
-
-class PrimerDesign(object):
-
-    # TODO: how much to expand?
-    # TODO: what kind of constraints?
-    # TODO: re-evaluate costs after refinement
-    def design(self, span, seq1, seq2, query_seq, expand_left=True, expand_right=True):
-        pass
-
-
-class SynthesisDesign(object):
-
-    def design(self, span, seq1, seq2, query_seq):
-        pass
 
 
 class DesignBase(object):
@@ -204,51 +183,61 @@ class Design(DesignBase):
                     A = n1[0]
                     B = n2[0]
                     align = list(find(A, B, alignments))[0]
-                    sk = align.subject_key
-                    subject_rec = self.container_factory.seqdb[sk]
-                    subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
+
+                    # TODO: this really needs fixing
+                    try:
+                        sk = align.subject_key
+                        subject_rec = self.container_factory.seqdb[sk]
+                        subject_rec_name = subject_rec.name
+                        subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
+                        subject_region = (align.subject_region.a, align.subject_region.b)
+                    except:
+                        sk = align.subject_keys
+                        subject_rec_name = [self.container_factory.seqdb[sk] for sk in align.subject_keys]
+                        subject_seq = '?'
+                        subject_region = '?'
 
                     fragments.append({
                         'query': qk,
                         'query_name': record.name,
                         'query_region': (align.query_region.a, align.query_region.b),
                         'subject': sk,
-                        'subject_name': subject_rec.name,
-                        'subject_region': (align.subject_region.a, align.subject_region.b),
-                        'fragment_length': len(align.subject_region),
+                        'subject_name': subject_rec_name,
+                        'subject_region': subject_region,
+                        'fragment_length': len(align.query_region),
                         'fragment_seq': subject_seq,
                         'cost': cost,
                         'type': edata['type']
                     })
 
                     # TODO: design overhangs (how long?)
-                    if n1[1]:
-                        primers.append({
-                            'query': qk,
-                            'query_name': record.name,
-                            'query_region': (align.query_region.a, align.query_region.b),
-                            'subject': sk,
-                            'subject_name': subject_rec.name,
-                            'subject_region': (align.subject_region.a, align.subject_region.a + 20),
-                            'anneal_seq': str(subject_rec[align.subject_region.a:align.subject_region.a + 20].seq),
-                            'overhang_seq': '?',
-                            'cost': '?',
-                            'type': 'PRIMER'
-                        })
-                    if n2[1]:
-                        primers.append({
-                            'query': qk,
-                            'query_name': record.name,
-                            'query_region': (align.query_region.a, align.query_region.b),
-                            'subject': sk,
-                            'subject_name': subject_rec.name,
-                            'subject_region': (align.subject_region.b - 20, align.subject_region.b),
-                            'fragment_length': 0,
-                            'anneal_seq': str(subject_rec[align.subject_region.b-20:align.subject_region.b].reverse_complement().seq),
-                            'overhang_seq': '?',
-                            'cost': '?',
-                            'type': 'PRIMER'
-                        })
+                    # if n1[1]:
+                    #     primers.append({
+                    #         'query': qk,
+                    #         'query_name': record.name,
+                    #         'query_region': (align.query_region.a, align.query_region.b),
+                    #         'subject': sk,
+                    #         'subject_name': subject_rec.name,
+                    #         'subject_region': (align.subject_region.a, align.subject_region.a + 20),
+                    #         'anneal_seq': str(subject_rec[align.subject_region.a:align.subject_region.a + 20].seq),
+                    #         'overhang_seq': '?',
+                    #         'cost': '?',
+                    #         'type': 'PRIMER'
+                    #     })
+                    # if n2[1]:
+                    #     primers.append({
+                    #         'query': qk,
+                    #         'query_name': record.name,
+                    #         'query_region': (align.query_region.a, align.query_region.b),
+                    #         'subject': sk,
+                    #         'subject_name': subject_rec.name,
+                    #         'subject_region': (align.subject_region.b - 20, align.subject_region.b),
+                    #         'fragment_length': 0,
+                    #         'anneal_seq': str(subject_rec[align.subject_region.b-20:align.subject_region.b].reverse_complement().seq),
+                    #         'overhang_seq': '?',
+                    #         'cost': '?',
+                    #         'type': 'PRIMER'
+                    #     })
 
                 else:
                     B = n1[0]

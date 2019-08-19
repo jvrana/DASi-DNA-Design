@@ -1,4 +1,6 @@
-from dasi import AlignmentContainer, Constants, AssemblyGraphBuilder
+from dasi.alignments import AlignmentContainer
+from dasi.constants import Constants
+from dasi.assembly import AssemblyGraphBuilder
 from dasi.utils import perfect_subject
 import networkx as nx
 from os.path import join

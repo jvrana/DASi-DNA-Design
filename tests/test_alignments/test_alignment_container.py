@@ -1,4 +1,6 @@
-from dasi import Alignment, AlignmentContainer, Constants, AlignmentContainerException
+from dasi.alignments import Alignment, AlignmentContainer
+from dasi.constants import Constants
+from dasi.exceptions import AlignmentContainerException
 from dasi.utils import Region
 import pytest
 import random

@@ -1,5 +1,7 @@
 from dasi.utils import Span
-from dasi import Alignment, Constants, AlignmentException
+from dasi.alignments import Alignment
+from dasi.constants import Constants
+from dasi.exceptions import AlignmentException
 import pytest
 
 
@@ -69,4 +71,4 @@ class TestSubRegion():
 
 def test_find_alignments():
     # TODO: fast methods for finding alignments from a span?
-    raise NotImplemented
+    raise NotImplementedError()

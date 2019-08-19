@@ -161,6 +161,24 @@ class Alignment(object):
     def __repr__(self):
         return str(self)
 
+
+class OverlappingAlignment(Alignment):
+
+    __slots__ = ['query_key', 'alignments', 'query_region', 'subject_regions', 'subject_keys']
+
+    def __init__(self, alignments):
+        self.alignments = alignments
+        query_keys = set(a.query_key for a in self.alignments)
+        assert len(query_keys) == 1
+        self.query_key = query_keys[0]
+        self.query_region = self.alignments[0].query_region.new(self.alignments[0].query_region.a, self.alignments[-1].query_region.b)
+        self.subject_regions = [a.subject_region for a in self.alignments]
+        self.subject_keys = [a.subject_key for a in self.alignments]
+
+    def sub_region(self, *args, **kwargs):
+        raise NotImplementedError("Sub region is not implemented for {}".format(self.__class__.__name__))
+
+
 class AlignmentGroup(object):
     """
     A representative Alignment representing a group of alignments sharing the
@@ -180,7 +198,12 @@ class AlignmentGroup(object):
 
     # TODO: making subregions for all alignments takes a LONG TIME (5X shorter if you skip this).
     def sub_region(self, qstart: int, qend: int, type: str):
-        alignments_copy = [a.sub_region(qstart, qend) for a in self.alignments]
+        alignments_copy = []
+        for a in self.alignments:
+            try:
+                alignments_copy.append(a.sub_region(qstart, qend))
+            except NotImplementedError as e:
+                pass
         for a in alignments_copy:
             a.type = type
         return self.__class__(
@@ -278,6 +301,28 @@ class AlignmentContainer(Sized):
                 fwd, fwd_keys, a, b
             )
         return found
+
+    def _create_pcr_product_alignment(self, template, fwd, rev, alignment_type):
+
+        if fwd:
+            start = fwd.query_region.a
+            if start not in template.ranges():
+                start = template.a
+        else:
+            start = template.query_region.a
+
+        if rev:
+            end = rev.query_region.b
+            if end + 1 not in template.ranges():
+                end = template.b
+        else:
+            end = template.b
+
+        sub_template = template.sub_region(start, end, alignment_type)
+
+        alignments = [x for x in [fwd, sub_template, rev] if x is not None]
+        new_group = OverlappingAlignment(alignments)
+        return new_group
 
     def expand_primer_pairs(
         self, alignment_groups: List[AlignmentGroup]

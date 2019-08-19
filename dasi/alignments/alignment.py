@@ -1,7 +1,6 @@
 from dasi.utils import Region
 from dasi.exceptions import AlignmentException
 from typing import List
-from uuid import uuid4
 
 ALIGNMENT_SLOTS = ["query_region", "subject_region", "type", "query_key", "subject_key", "grouping_tags"]
 
@@ -132,8 +131,8 @@ class AlignmentGroupBase(object):
         for a in alignments_copy:
             a.type = type
         return self.__class__(
-            query_region=self.query_region.sub(qstart, qend),
             alignments=alignments_copy,
+            group_type=type,
             name="subregion",
         )
 
@@ -146,8 +145,8 @@ class AlignmentGroup(AlignmentGroupBase):
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 
-    def __init__(self, alignments: List[Alignment], group_type: str):
-        super().__init__(alignments[0].query_region, alignments, group_type)
+    def __init__(self, alignments: List[Alignment], group_type: str, name=None):
+        super().__init__(alignments[0].query_region, alignments, group_type, name=name)
 
 
 class ComplexAlignmentGroup(AlignmentGroupBase):

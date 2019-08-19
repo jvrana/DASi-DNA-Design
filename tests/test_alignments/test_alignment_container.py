@@ -21,7 +21,7 @@ def random_seq(len):
 
 
 def random_record(len):
-    return SeqRecord(Seq(random_seq(len)), id=str(uuid4()))\
+    return SeqRecord(Seq(random_seq(len)), id=str(uuid4()))
 
 
 def random_span(context_len):
@@ -150,6 +150,19 @@ class TestExpandPrimers():
         alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
         assert len(alignments) == 6
 
+    def test_one_pair_two_templates2(self, container):
+        new_alignment_in_container(container, 1200, 2000, Constants.PCR_PRODUCT)
+        assert len(container) == 2
+
+        # add primers
+        new_alignment_in_container(container, 200, 230, Constants.PRIMER)
+        new_alignment_in_container(container, 1300, 1330, Constants.PRIMER, -1)
+        assert len(container) == 4
+
+        # expand and check
+        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        assert len(alignments) == 2
+
     @pytest.mark.parametrize(
         "x", [
             ([(200, 230), (220, 250)], [(750, 800), (800, 830)], 8),
@@ -214,6 +227,7 @@ class TestExpandPrimers():
         assert len(container) == 3
 
         alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        assert len(alignments) == 3
         types = set([a.type for a in alignments])
         assert types == set([Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
                             Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,

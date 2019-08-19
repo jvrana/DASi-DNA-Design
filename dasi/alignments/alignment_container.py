@@ -134,8 +134,8 @@ class AlignmentContainer(Sized):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
-        # fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
-        # rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
         pairs = []
 
         for g in self.logger.tqdm(
@@ -160,7 +160,6 @@ class AlignmentContainer(Sized):
                     except IndexError:
                         _rev_span = deepcopy(g.query_region)
                     for a, b in _rev_span.ranges():
-
                         _rev_bind += bisect_slice_between(
                             rev_bind, rkeys, a, b
                         )
@@ -173,7 +172,7 @@ class AlignmentContainer(Sized):
 
             # right primer
             for r in rev_bind:
-                pairs += self._create_pcr_product_alignment(g, None, r, Constants.PCR_PRODUCT_WITH_LEFT_PRIMER)
+                pairs += self._create_pcr_product_alignment(g, None, r, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER)
         return pairs
 
     def expand_overlaps(
@@ -210,13 +209,11 @@ class AlignmentContainer(Sized):
         )
         alignments = []
         for group_a in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
-            i = bisect_left(group_keys, group_a.query_region.a)
-            arr, keys = sort_with_keys(group_sort[i:], key=lambda x: x.query_region.a)
 
-            # get list of overlapping alignments
-            overlapping = bisect_slice_between(
-                arr, keys, group_a.query_region.a, group_a.query_region.b
-            )
+            overlapping = self.filter_alignments_by_span(
+                group_sort,
+                group_a.query_region,
+                key=lambda p: p.query_region.a)
 
             #
             for group_b in overlapping:

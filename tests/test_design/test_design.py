@@ -25,7 +25,7 @@ def test_num_groups_vs_endpoints(here, paths, query):
     assert len(containers) == 1
     container = containers[0]
     container.expand()
-    groups = container.alignment_groups
+    groups = container.groups()
     print(len(groups)**2)
 
     a_arr = set()

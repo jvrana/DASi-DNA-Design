@@ -1,9 +1,9 @@
 from dasi.utils import Region
 from dasi.exceptions import AlignmentException
 from typing import List
+from uuid import uuid4
 
-
-ALIGNMENT_SLOTS = ["query_region", "subject_region", "type", "query_key", "subject_key"]
+ALIGNMENT_SLOTS = ["query_region", "subject_region", "type", "query_key", "subject_key", "grouping_tags"]
 
 
 class Alignment(object):
@@ -39,6 +39,7 @@ class Alignment(object):
         self.type = type
         self.query_key = query_key
         self.subject_key = subject_key
+        self.grouping_tags = {}
 
     def validate(self):
         if not len(self.query_region) == len(self.subject_region):
@@ -98,55 +99,18 @@ class Alignment(object):
         return str(self)
 
 
-
-class OverlappingAlignment(Alignment):
-
-    __slots__ = ['query_key', 'alignments', 'query_region', 'subject_regions', 'subject_keys']
-
-    def __init__(self, alignments, type: str):
-        self.alignments = alignments
-        query_keys = list(set(a.query_key for a in self.alignments))
-        assert len(query_keys) == 1
-        self.query_key = query_keys[0]
-        self.query_region = self.alignments[0].query_region.new(self.alignments[0].query_region.a, self.alignments[-1].query_region.b)
-        self.subject_regions = [a.subject_region for a in self.alignments]
-        self.subject_keys = [a.subject_key for a in self.alignments]
-        self.type = type
-
-    def sub_region(self, *args, **kwargs):
-        raise NotImplementedError("Sub region is not implemented for {}".format(self.__class__.__name__))
-
-
-class PCRProductAlignment(OverlappingAlignment):
-
-
-    __slots__ = ['query_key', 'alignments', 'query_region', 'subject_regions', 'subject_keys', 'template', 'fwd', 'rev']
-
-    def __init__(self, template, fwd, rev, type: str):
-        self.template = template
-        self.fwd = fwd
-        self.rev = rev
-        alignment = [x for x in [fwd, template, rev] if x is not None]
-        super().__init__(alignment, type)
-        self.type = type
-
-
-class AlignmentGroup(object):
+class AlignmentGroupBase(object):
     """
-    A representative Alignment representing a group of alignments sharing the
-    same starting and ending position for a query sequence.
+    A representative Alignment representing a group of alignments.
     """
 
-    __slots__ = ["query_region", "alignments", "name"]
+    __slots__ = ["query_region", "alignments", "name", "type"]
 
-    def __init__(self, query_region: Region, alignments: List[Alignment], name=None):
+    def __init__(self, query_region: Region, alignments: List[Alignment], group_type: str, name=None):
         self.query_region = query_region
         self.alignments = alignments
         self.name = name
-
-    @property
-    def type(self):
-        return self.alignments[0].type
+        self.type = group_type
 
     @property
     def query_key(self):
@@ -164,11 +128,7 @@ class AlignmentGroup(object):
     def sub_region(self, qstart: int, qend: int, type: str):
         alignments_copy = []
         for a in self.alignments:
-            # TODO: how to handle this special case of sub_region for pcr products?
-            try:
-                alignments_copy.append(a.sub_region(qstart, qend))
-            except NotImplementedError as e:
-                pass
+            alignments_copy.append(a.sub_region(qstart, qend))
         for a in alignments_copy:
             a.type = type
         return self.__class__(
@@ -176,3 +136,25 @@ class AlignmentGroup(object):
             alignments=alignments_copy,
             name="subregion",
         )
+
+
+class AlignmentGroup(AlignmentGroupBase):
+    """
+    A representative Alignment representing a group of alignments sharing the
+    same starting and ending position for a query sequence.
+    """
+
+    __slots__ = ["query_region", "alignments", "name", "type"]
+
+    def __init__(self, alignments: List[Alignment], group_type: str):
+        super().__init__(alignments[0].query_region, alignments, group_type)
+
+
+class ComplexAlignmentGroup(AlignmentGroupBase):
+
+    __slots__ = ["query_region", "alignments", "name", "type"]
+
+    def __init__(self, alignments: List[Alignment], group_type: str):
+        query_region = alignments[0].query_region
+        query_region = query_region.new(alignments[0].query_region.a, alignments[-1].query_region.b)
+        super().__init__(query_region, alignments, group_type)

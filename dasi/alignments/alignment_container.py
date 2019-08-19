@@ -1,4 +1,4 @@
-from .alignment import Alignment, AlignmentGroup, PCRProductAlignment
+from .alignment import Alignment, AlignmentGroup, ComplexAlignmentGroup
 from dasi.log import logger
 from dasi.utils import Region, bisect_slice_between, sort_with_keys
 from dasi.constants import Constants
@@ -9,7 +9,7 @@ from Bio.SeqRecord import SeqRecord
 from bisect import bisect_left
 from copy import deepcopy
 from collections.abc import Sized
-
+from uuid import uuid4
 
 def blast_to_region(query_or_subject, seqdb):
     """
@@ -114,27 +114,12 @@ class AlignmentContainer(Sized):
         return found
 
     def _create_pcr_product_alignment(self, template_group: AlignmentGroup, fwd: Alignment, rev: Alignment, alignment_type: str):
-
-        if fwd:
-            start = fwd.query_region.a
-            if start not in template_group.query_region.ranges():
-                start = template_group.query_region.a
-        else:
-            start = template_group.query_region.a
-
-        if rev:
-            end = rev.query_region.b
-            if end + 1 not in template_group.query_region.ranges():
-                end = template_group.query_region.b
-        else:
-            end = template_group.query_region.b
-
-        subgroup = template_group.sub_region(start, end, alignment_type)
-        new_groups = []
-        for a in subgroup.alignments:
-            new_group = PCRProductAlignment(a, fwd, rev, alignment_type)
-            new_groups.append(new_group)
-        return new_groups
+        groups = []
+        for a in template_group.alignments:
+            alignments = [x for x in [fwd, a, rev] if x is not None]
+            self._new_grouping_tag(alignments, alignment_type)
+            groups.append(ComplexAlignmentGroup(alignments, alignment_type))
+        return groups
 
     def expand_primer_pairs(
         self, alignment_groups: List[AlignmentGroup]
@@ -151,7 +136,6 @@ class AlignmentContainer(Sized):
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
         # fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
         # rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
-
         pairs = []
 
         for g in self.logger.tqdm(
@@ -290,8 +274,31 @@ class AlignmentContainer(Sized):
             self.logger.info("Number of new alignments: {}".format(len(expanded)))
         self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
         self.logger.info(
-            "Number of total groups: {}".format(len(self.alignment_groups))
+            "Number of total groups: {}".format(len(self.groups()))
         )
+
+    @classmethod
+    def _new_grouping_tag(cls, alignments, type: str, key=None):
+        """
+        Make a new ordered grouping by type and a uuid.
+
+        :param alignments:
+        :type alignments:
+        :param type:
+        :type type:
+        :param key:
+        :type key:
+        :return:
+        :rtype:
+        """
+        if key is None:
+            key = str(uuid4())
+        group_key = (key, type)
+        for i, a in enumerate(alignments):
+            if key in a.grouping_tags:
+                raise AlignmentContainerException("Key '{}' already exists in grouping tag".format(key))
+            a.grouping_tags[group_key] = (i)
+
 
     # TODO: change 'start' and 'end' to left and right end for regions...
     # TODO: type increases computation time exponentially, we only need 'b' from group1 and 'a' from group2
@@ -301,7 +308,19 @@ class AlignmentContainer(Sized):
         return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
 
     @classmethod
-    def group(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
+    def complex_alignment_groups(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
+        key_to_alignments = {}
+        for a in alignments:
+            for (uuid, type), i in a.grouping_tags.items():
+                key_to_alignments.setdefault((uuid, type), list()).append((i, a))
+        complex_groups = []
+        for (uuid, type), alist in key_to_alignments:
+            sorted_alist = [x[-1] for x in sorted(alist)]
+            complex_groups.append(ComplexAlignmentGroup(sorted_alist, type))
+        return complex_groups
+
+    @classmethod
+    def redundent_alignment_groups(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
         """
         Return AlignmentGroups that have been grouped by alignment_hash
 
@@ -313,8 +332,14 @@ class AlignmentContainer(Sized):
             grouped.setdefault(cls._alignment_hash(a), list()).append(a)
         alignment_groups = []
         for group in grouped.values():
-            alignment_groups.append(AlignmentGroup(group[0].query_region, group))
+            alignment_groups.append(AlignmentGroup(group, group[0].type))
         return alignment_groups
+
+    def groups(self) -> List[AlignmentGroup]:
+        allgroups = []
+        allgroups += self.redundent_alignment_groups(self.alignments)
+        allgroups += self.complex_alignment_groups(self.alignments)
+        return allgroups
 
     @property
     def types(self) -> List[str]:
@@ -342,6 +367,7 @@ class AlignmentContainer(Sized):
         groups = self.get_groups_by_types(types)
         return list(flatten([g.alignments for g in groups]))
 
+    # TODO: change from property
     @property
     def groups_by_type(self) -> Dict[str, AlignmentGroup]:
         """
@@ -350,20 +376,9 @@ class AlignmentContainer(Sized):
         :return: dict
         """
         d = {}
-        for t in self.valid_types:
-            d[t] = []
-        for a in self.alignments:
-            d[a.type].append(a)
-        return {t: self.group(v) for t, v in d.items()}
-
-    @property
-    def alignment_groups(self):
-        """
-        Return all alignment groups
-
-        :return:
-        """
-        return self.group(self.alignments)
+        for g in self.groups():
+            d.setdefault(g.type, list()).append(g)
+        return d
 
     def __len__(self):
         return len(self.alignments)

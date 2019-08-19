@@ -103,7 +103,7 @@ def test_group():
 
     alignments = [a1, a2, a3]
 
-    groups = AlignmentContainer.group(alignments)
+    groups = AlignmentContainer.redundent_alignment_groups(alignments)
     assert len(groups) == 2
 
 

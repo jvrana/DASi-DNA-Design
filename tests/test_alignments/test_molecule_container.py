@@ -36,7 +36,7 @@ def test_produce_assembly_graph(blast_factory, here):
     container.expand()
 
     # group by query_regions
-    groups = container.alignment_groups
+    groups = container.groups()
 
     print("Number of types: {}".format(len(container.groups_by_type)))
     print("Number of groups: {}".format(len(groups)))

@@ -358,12 +358,39 @@ def test_tag_alignments(container):
     assert len(container.complex_alignment_groups(container.alignments)) == 2
 
 
-def test_alignments_by_types():
-    raise NotImplementedError
+def test_find_alignments(container):
+    container.alignments = [new_alignment_in_container(container, 1000, 2000, Constants.PCR_PRODUCT)]
+    a1 = container.alignments[0]
+    a2 = new_alignment_in_container(container, 1001, 2000, Constants.PCR_PRODUCT)
+    a3 = new_alignment_in_container(container, 1000, 2001, Constants.PCR_PRODUCT)
 
+    # left end
+    alignments = AlignmentContainer.filter_alignments_by_span(
+        container.alignments, Region(0, 1000, 10000),
+        key=lambda x: x.query_region.a)
+    assert alignments == [a1, a3]
 
-def test_types():
-    raise NotImplementedError
+    # no alignments
+    alignments = AlignmentContainer.filter_alignments_by_span(
+        container.alignments, Region(0, 999, 10000),
+        key=lambda x: x.query_region.a)
+    assert alignments == []
+
+    # no alignments
+    alignments = AlignmentContainer.filter_alignments_by_span(
+        container.alignments, Region(1500, 3000, 10000),
+        key=lambda x: x.query_region.a)
+    assert alignments == []
+
+    alignments = AlignmentContainer.filter_alignments_by_span(
+        container.alignments, Region(2000, 3000, 10000),
+        key=lambda x: x.query_region.b)
+    assert alignments == [a1, a2, a3]
+
+    alignments = AlignmentContainer.filter_alignments_by_span(
+        container.alignments, Region(2001, 3000, 10000),
+        key=lambda x: x.query_region.b)
+    assert alignments == [a3]
 
 
 def test_annotate_fragments():

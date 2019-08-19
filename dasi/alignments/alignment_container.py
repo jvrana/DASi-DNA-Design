@@ -220,7 +220,7 @@ class AlignmentContainer(Sized):
                 if group_b is not group_a:
                     left = group_a.sub_region(group_a.query_region.a, group_b.query_region.a, type)
                     overlap = group_a.sub_region(group_b.query_region.a, group_a.query_region.b, type)
-                    right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
+                    # right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
 
                     if len(left.query_region) > MIN_OVERLAP:
                         alignments += left.alignments
@@ -228,8 +228,8 @@ class AlignmentContainer(Sized):
                     if len(overlap.query_region) > MIN_OVERLAP:
                         alignments += overlap.alignments
 
-                    if len(right.query_region) > MIN_OVERLAP:
-                        alignments += right.alignments
+                    # if len(right.query_region) > MIN_OVERLAP:
+                    #     alignments += right.alignments
         return alignments
 
     # TODO: expand should just add more
@@ -259,7 +259,6 @@ class AlignmentContainer(Sized):
 
         if expand_primers:
             pairs = self.expand_primer_pairs(templates)
-            self.alignments += pairs
             self.logger.info("Number of pairs: {}".format(len(pairs)))
 
         if expand_overlaps:
@@ -304,6 +303,9 @@ class AlignmentContainer(Sized):
     @classmethod
     def complex_alignment_groups(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
         key_to_alignments = {}
+        for a in alignments:
+            if not isinstance(a, Alignment):
+                raise Exception
         for a in alignments:
             for (uuid, type), i in a.grouping_tags.items():
                 key_to_alignments.setdefault((uuid, type), list()).append((i, a))
@@ -370,8 +372,10 @@ class AlignmentContainer(Sized):
         :return: dict
         """
         d = {}
+        for t in self.valid_types:
+            d[t] = []
         for g in self.groups():
-            d.setdefault(g.type, list()).append(g)
+            d[g.type].append(g)
         return d
 
     def __len__(self):

@@ -14,6 +14,12 @@ from more_itertools import pairwise
 from pyblast.utils import Span, is_circular
 import pandas as pd
 
+penalty_config = {
+    'gapopen': 3,
+    'gapextend': 3,
+    'reward': 1,
+    'penalty': -5
+}
 
 class DesignBase(object):
 
@@ -53,6 +59,11 @@ class Design(DesignBase):
         self.add_queries(queries)
         self.add_fragments(fragments)
 
+        self.template_results = []
+        self.fragment_results = []
+        self.primer_results = []
+
+
     def add_primers(self, primers: List[SeqRecord]):
         self.logger.info("Adding primers")
         self.blast_factory.add_records(primers, self.PRIMERS)
@@ -85,17 +96,21 @@ class Design(DesignBase):
 
         # align templates
         blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
+        blast.update_config(penalty_config)
         blast.quick_blastn()
         results = blast.get_perfect()
+        self.template_results = results
 
         # align fragments
         if self.blast_factory.record_groups[self.FRAGMENTS]:
             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
+            fragment_blast.update_config(penalty_config)
             fragment_blast.quick_blastn()
             fragment_results = blast.get_perfect()
             fragment_results = self.filter_perfect_subject(fragment_results)
         else:
             fragment_results = []
+        self.fragment_results = fragment_results
 
         self.container_factory.seqdb.update(blast.seq_db.records)
         self.logger.info("Number of template matches: {}".format(len(results)))
@@ -104,6 +119,7 @@ class Design(DesignBase):
         # align primers
         if self.blast_factory.record_groups[self.PRIMERS]:
             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
+            primer_blast.update_config(penalty_config)
             primer_blast.quick_blastn_short()
             primer_results = primer_blast.get_perfect()
             primer_results = self.filter_perfect_subject(primer_results)
@@ -111,6 +127,7 @@ class Design(DesignBase):
             self.logger.info("Number of perfect primers: {}".format(len(primer_results)))
         else:
             primer_results = []
+        self.primer_results = primer_results
 
         self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
         self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
@@ -437,7 +454,9 @@ class LibraryDesign(Design):
         self.logger.info("=== Expanding shared library fragments ===")
 
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
+        blast.update_config(penalty_config)
         blast.quick_blastn()
+
         results = blast.get_perfect()
 
         self.logger.info("Found {} shared alignments between the queries".format(len(results)))

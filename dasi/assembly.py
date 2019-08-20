@@ -99,11 +99,9 @@ class AssemblyGraphBuilder(object):
                         )
                 else:
                     # # TODO: PRIORITY this step is extremely slow
-                    for g in groups:
-                        try:
-                            ab = g.query_region.sub(a, b)
-                        except:
-                            continue
+                    filtered_groups = bisect_slice_between(groups, group_keys, a, b)
+                    if filtered_groups:
+                        ab = filtered_groups[0].query_region.new(a, b)
                         cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
                         if cost < self.COST_THRESHOLD:
                                 self.G.add_edge(

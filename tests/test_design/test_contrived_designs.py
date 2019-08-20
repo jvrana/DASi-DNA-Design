@@ -1,3 +1,4 @@
+import pytest
 import random
 from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
@@ -10,6 +11,7 @@ from more_itertools import pairwise
 
 spancost = SpanCost()
 
+# TODO: contrived tests should perform as good or better than expected path
 
 def random_seq(len):
     bases = "AGTC"
@@ -35,10 +37,12 @@ def print_edge_cost(path, graph):
             print((n1, n2, edata['weight']))
         except:
             print((n1, n2, "MISSING EDGE"))
+            total += 10**6
 
     print("TOTAL: {}".format(total))
+    return total
 
-def check_design_result(design, expected_path):
+def check_design_result(design, expected_path, check_cost=True, check_path=True, path_func=None):
     design.compile()
     path_dict = design.optimize()
     paths = list(path_dict.values())[0]
@@ -50,13 +54,57 @@ def check_design_result(design, expected_path):
 
     print("=== BEST PATH COST ===")
     graph = list(design.graphs.values())[0]
-    print_edge_cost(best_path, graph)
+    cost1 = print_edge_cost(best_path, graph)
 
     print("=== EXPECTED PATH COST ===")
-    print_edge_cost(expected_path, graph)
+    cost2 = print_edge_cost(expected_path, graph)
 
-    assert best_path == expected_path
+    print("Num groups: {}".format(len(design.container_list()[0].groups())))
+
+    if check_cost:
+        assert cost1 <= cost2
+
+    if check_path:
+        if path_func:
+            p1 = [path_func(x) for x in best_path]
+            p2 = [path_func(x) for x in expected_path]
+        else:
+            p1 = best_path
+            p2 = expected_path
+        assert p1 == p2
     return design
+
+
+def test_blast_has_same_results():
+    goal = random_record(3000)
+    make_circular([goal])
+
+    r1 = random_record(100) + goal[1000:2000] + random_record(100)
+    p1 = goal[970:1030]
+    p2 = goal[1970:2030].reverse_complement()
+    r2 = goal[2000:] + goal[:1000]
+    p3 = goal[1970:2030]
+
+    make_linear([r1, p1, p2, r2, p3])
+
+    size_of_groups = []
+    for i in range(20):
+
+        design = Design(spancost)
+        design.logger.set_level("INFO")
+        design.add_materials(
+            primers=[p1, p2, p3],
+            templates=[r1, r2],
+            queries=[goal],
+            fragments=[]
+        )
+
+        design.compile()
+
+        for container in design.container_list():
+            size_of_groups.append(len(container.groups()))
+    assert len(size_of_groups) == 20
+    assert len(set(size_of_groups)) == 1
 
 
 def test_design_with_no_gaps():
@@ -87,7 +135,7 @@ def test_design_with_no_gaps():
         (3000, True, 'B', False),
     ]
 
-    check_design_result(design, expected_path)
+    check_design_result(design, expected_path, path_func=lambda x: (x[0], x[2]))
 
 
 def test_design_with_overlaps():
@@ -180,7 +228,7 @@ def test_design_with_overlaps_with_templates():
         (1000, True, 'B', True),
     ]
 
-    check_design_result(design, expected_path)
+    check_design_result(design, expected_path, check_path=False)
 
 
 def test_design_task_with_gaps():
@@ -210,6 +258,94 @@ def test_design_task_with_gaps():
         (2000, True, 'B', False),
         (2050, True, 'A', False),
         (3000, True, 'B', False),
+    ]
+
+    check_design_result(design, expected_path)
+
+
+# TODO: why are BLAST results so stochastic?
+@pytest.mark.parametrize('repeat', range(10))
+def test_design_with_overhang_primers(repeat):
+
+    goal = random_record(3000)
+    make_circular([goal])
+
+    r1 = random_record(100) + goal[1000:2000] + random_record(100)
+    p1 = goal[970:1030]
+    p2 = goal[1970:2030].reverse_complement()
+    r2 = goal[2000:] + goal[:1000]
+    p3 = goal[1970:2030]
+
+    make_linear([r1, p1, p2, r2, p3])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[p1, p2, p3],
+        templates=[r1, r2],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (970, False, 'A', True),
+        (2030, False, 'B', True),
+        (1970, False, 'A', True),
+        (1000, True, 'B', True),
+    ]
+
+    check_design_result(design, expected_path)
+
+
+
+def test_requires_synthesis():
+    goal = random_record(3000)
+    make_circular([goal])
+
+    r1 = goal[1000:2000]
+    r2 = goal[200:500]
+
+    make_linear([r1, r2])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[],
+        templates=[r1, r2],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (200, True, 'A', False),
+        (500, True, 'B', False),
+        (1000, True, 'A', False),
+        (2000, True, 'B', False),
+    ]
+
+    check_design_result(design, expected_path)
+
+
+def test_requires_synthesis_with_template_over_origin():
+    goal = random_record(3000)
+    make_circular([goal])
+
+    r1 = goal[1000:2000]
+    r2 = goal[2500:] + goal[:500]
+
+    make_linear([r1, r2])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[],
+        templates=[r1, r2],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (500, True, 'B', False),
+        (1000, True, 'A', False),
+        (2000, True, 'B', False),
+        (2500, True, 'A', False),
     ]
 
     check_design_result(design, expected_path)

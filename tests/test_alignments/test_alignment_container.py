@@ -1,4 +1,4 @@
-from dasi.alignments import Alignment, AlignmentContainer
+from dasi.alignments import Alignment, AlignmentContainer, AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.utils import Region
@@ -13,9 +13,9 @@ from copy import copy, deepcopy
 def random_seq(len):
     bases = "AGTC"
 
-    i = random.randint(0, 3)
     seq = ''
     for _ in range(len):
+        i = random.randint(0, 3)
         seq += bases[i]
     return seq
 
@@ -336,13 +336,13 @@ class TestExpandOverlaps():
 
         groups = container.get_groups_by_types(Constants.PCR_PRODUCT)
         alignments = container.expand_overlaps(groups)
-        assert len(alignments) == 3
+        assert len(alignments) == 2
 
         indices = []
         for a in alignments:
             indices.append((a.query_region.a, a.query_region.b))
         indices.sort()
-        assert indices == sorted([(x[0], x[2]), (x[2], x[1]), (x[1], x[3])])
+        assert indices == sorted([(x[0], x[2]), (x[2], x[1])])
 
 
 def test_tag_alignments(container):
@@ -366,30 +366,30 @@ def test_find_alignments(container):
 
     # left end
     alignments = AlignmentContainer.filter_alignments_by_span(
-        container.alignments, Region(0, 1000, 10000),
-        key=lambda x: x.query_region.a)
+        container.alignments, Region(0, 1001, 10000),
+        key=lambda x: x.query_region.a, end_inclusive=False)
     assert alignments == [a1, a3]
 
     # no alignments
     alignments = AlignmentContainer.filter_alignments_by_span(
         container.alignments, Region(0, 999, 10000),
-        key=lambda x: x.query_region.a)
+        key=lambda x: x.query_region.a, end_inclusive=False)
     assert alignments == []
 
     # no alignments
     alignments = AlignmentContainer.filter_alignments_by_span(
         container.alignments, Region(1500, 3000, 10000),
-        key=lambda x: x.query_region.a)
+        key=lambda x: x.query_region.a, end_inclusive=False)
     assert alignments == []
 
     alignments = AlignmentContainer.filter_alignments_by_span(
         container.alignments, Region(2000, 3000, 10000),
-        key=lambda x: x.query_region.b)
+        key=lambda x: x.query_region.b, end_inclusive=False)
     assert alignments == [a1, a2, a3]
 
     alignments = AlignmentContainer.filter_alignments_by_span(
         container.alignments, Region(2001, 3000, 10000),
-        key=lambda x: x.query_region.b)
+        key=lambda x: x.query_region.b, end_inclusive=False)
     assert alignments == [a3]
 
 

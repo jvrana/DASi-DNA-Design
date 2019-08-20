@@ -90,6 +90,17 @@ class Alignment(Sized):
             subject_key=self.subject_key,
         )
 
+    def copy(self, type=None):
+        if type is None:
+            type = self.type
+        return self.__class__(
+            self.query_region,
+            self.subject_region,
+            type,
+            self.query_key,
+            self.subject_region
+        )
+
     def __len__(self):
         return len(self.query_region)
 

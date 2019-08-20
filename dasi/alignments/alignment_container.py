@@ -98,16 +98,17 @@ class AlignmentContainer(Sized):
         annotated = []
         for a in alignments:
             if a.is_perfect_subject() and not a.subject_region.cyclic:
-                a.type = Constants.FRAGMENT
-                annotated.append(a)
+                annotated.append(a.copy(Constants.FRAGMENT))
         return annotated
 
     # TODO: test for this method
     @classmethod
-    def filter_alignments_by_span(cls, alignments, region, key=None):
+    def filter_alignments_by_span(cls, alignments, region, key=None, end_inclusive=True):
         fwd, fwd_keys = sort_with_keys(alignments, key=key)
         found = []
         for a, b in region.ranges():
+            if not end_inclusive:
+                b = b - 1
             found += bisect_slice_between(
                 fwd, fwd_keys, a, b
             )
@@ -213,7 +214,7 @@ class AlignmentContainer(Sized):
             overlapping = self.filter_alignments_by_span(
                 group_sort,
                 group_a.query_region,
-                key=lambda p: p.query_region.a)
+                key=lambda p: p.query_region.a, end_inclusive=False)
 
             #
             for group_b in overlapping:
@@ -251,6 +252,7 @@ class AlignmentContainer(Sized):
         annotated = self.annotate_fragments(
             self.get_alignments_by_types(Constants.PCR_PRODUCT)
         )
+        self.alignments += annotated
 
         self.logger.info("Number of perfect subjects: {}".format(len(annotated)))
         templates = self.get_groups_by_types(

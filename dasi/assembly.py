@@ -80,7 +80,7 @@ class AssemblyGraphBuilder(object):
         if groups:
             query = groups[0].query_region
             for (b, b_expand, bid), (a, a_expand, aid) in itertools.product(b_arr, a_arr):
-                if a != b:
+                if True:
                     ba = query.new(b, a)
                     ab = query.new(a, b)
 

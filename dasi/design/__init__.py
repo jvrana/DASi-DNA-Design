@@ -63,20 +63,22 @@ class Design(DesignBase):
         self.logger.info("Compiling assembly graph")
 
         blast = self.blast_factory("templates", "queries")
-        primer_blast = self.blast_factory("primers", "queries")
-
         blast.quick_blastn()
-        primer_blast.quick_blastn_short()
-
         results = blast.get_perfect()
-        primer_results = primer_blast.get_perfect()
+        self.container_factory.seqdb.update(blast.seq_db.records)
+
+        if self.blast_factory.record_groups['primers']:
+            primer_blast = self.blast_factory("primers", "queries")
+            primer_blast.quick_blastn_short()
+            primer_results = primer_blast.get_perfect()
+            self.container_factory.seqdb.update(primer_blast.seq_db.records)
+        else:
+            primer_results = []
 
         primer_results = [p for p in primer_results if perfect_subject(p["subject"])]
         self.logger.info("Number of perfect primers: {}".format(len(primer_results)))
         # primer_results = [p for p in primer_results if p['subject']['start'] == 1]
 
-        self.container_factory.seqdb.update(blast.seq_db.records)
-        self.container_factory.seqdb.update(primer_blast.seq_db.records)
         self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
@@ -88,7 +90,7 @@ class Design(DesignBase):
             container.expand(expand_overlaps=True, expand_primers=True)
 
             # group by query_regions
-            groups = container.alignment_groups
+            groups = container.groups()
 
             self.logger.info("Number of types: {}".format(len(container.groups_by_type)))
             self.logger.info("Number of groups: {}".format(len(groups)))

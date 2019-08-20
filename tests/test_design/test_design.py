@@ -5,6 +5,10 @@ import pytest
 from os.path import join
 from more_itertools import pairwise
 
+
+span_cost = SpanCost()
+
+
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb'
@@ -16,7 +20,7 @@ def test_num_groups_vs_endpoints(here, paths, query):
     query_path = join(here, 'data/test_data/genbank/designs', query)
     queries = make_circular(load_genbank_glob(query_path))
 
-    design = Design()
+    design = Design(span_cost)
 
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
@@ -36,9 +40,6 @@ def test_num_groups_vs_endpoints(here, paths, query):
         b_arr.add(g.query_region.b)
 
     print(len(a_arr) * len(b_arr))
-
-
-span_cost = SpanCost()
 
 
 def print_edge_cost(path, graph):

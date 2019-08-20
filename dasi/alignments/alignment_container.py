@@ -11,6 +11,7 @@ from copy import deepcopy
 from collections.abc import Sized
 from uuid import uuid4
 
+
 def blast_to_region(query_or_subject, seqdb):
     """
     Converts a blast data result to a Region. Blast
@@ -93,14 +94,6 @@ class AlignmentContainer(Sized):
             raise AlignmentContainerException("AlignmentContainer cannot contain more than one query. Contains the following"
                              "query keys: {}".format(keys))
 
-    def annotate_fragments(self, alignments) -> List[Alignment]:
-        self.logger.info("annotating fragments")
-        annotated = []
-        for a in alignments:
-            if a.is_perfect_subject() and not a.subject_region.cyclic:
-                annotated.append(a.copy(Constants.FRAGMENT))
-        return annotated
-
     # TODO: test for this method
     @classmethod
     def filter_alignments_by_span(cls, alignments, region, key=None, end_inclusive=True):
@@ -112,6 +105,15 @@ class AlignmentContainer(Sized):
             found += bisect_slice_between(
                 fwd, fwd_keys, a, b
             )
+        return found
+
+    def find_group_by_pos(self, a, b, groups=None):
+        if groups is None:
+            groups = self.groups()
+        found = []
+        for g in groups:
+            if g.query_region.a == a and g.query_region.b == b:
+                found.append(g)
         return found
 
     def _create_pcr_product_alignment(self, template_group: AlignmentGroup, fwd: Alignment, rev: Alignment, alignment_type: str):
@@ -234,6 +236,7 @@ class AlignmentContainer(Sized):
         return alignments
 
     # TODO: expand should just add more
+    # TODO: break apart long alignments
     def expand(self, expand_overlaps=True, expand_primers=True):
         """
         Expand the number of alignments in this container using overlaps or primers.
@@ -430,5 +433,3 @@ class AlignmentContainerFactory(object):
         for key, alignments in self.alignments.items():
             container_dict[key] = AlignmentContainer(self.seqdb, alignments=alignments)
         return container_dict
-
-

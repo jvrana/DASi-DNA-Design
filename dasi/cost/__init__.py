@@ -5,7 +5,7 @@ import pandas as pd
 from typing import Tuple, Any
 
 # TODO: backtrack options
-
+# TODO: ends that are extendable should also be retractable, meaning if there is a more optimal
 
 class JxnParams(object):
 

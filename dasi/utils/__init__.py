@@ -44,3 +44,13 @@ def partialclass(cls, *args, **kwds):
         __init__ = functools.partialmethod(cls.__init__, *args, **kwds)
 
     return PartialClass
+
+
+def sort_cycle(arr, key=None):
+    """Sort a cyclic array, maintaining order"""
+    if key is None:
+        arr_with_i = sorted([(x, i) for i, x in enumerate(arr)])
+    else:
+        arr_with_i = sorted([(key(x), i) for i, x in enumerate(arr)])
+    i = arr_with_i[0][1]
+    return arr[i:] + arr[:i]

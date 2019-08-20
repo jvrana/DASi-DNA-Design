@@ -3,7 +3,7 @@
 from dasi.alignments import Alignment, AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.assembly import AssemblyGraphBuilder
-from dasi.utils import perfect_subject
+from dasi.utils import perfect_subject, sort_cycle
 import networkx as nx
 from pyblast import BioBlastFactory
 from dasi.log import logger
@@ -20,6 +20,8 @@ class DesignBase(object):
     PRIMERS = "primers"
     TEMPLATES = "templates"
     QUERIES = "queries"
+    FRAGMENTS = "fragments"
+
 
     def __init__(self, span_cost=None):
         self.blast_factory = BioBlastFactory()
@@ -41,10 +43,15 @@ class Design(DesignBase):
         primers: List[SeqRecord],
         templates: List[SeqRecord],
         queries: List[SeqRecord],
+        fragments=None
     ):
+        if fragments is None:
+            fragments = []
         self.add_primers(primers)
-        self.add_templates(templates)
+        fragments = self.filter_linear_records(fragments)
+        self.add_templates(templates + fragments)
         self.add_queries(queries)
+        self.add_fragments(fragments)
 
     def add_primers(self, primers: List[SeqRecord]):
         self.logger.info("Adding primers")
@@ -58,27 +65,54 @@ class Design(DesignBase):
         self.logger.info("Adding queries")
         self.blast_factory.add_records(queries, self.QUERIES)
 
+    def add_fragments(self, fragments: List[SeqRecord]):
+        self.logger.info("Adding fragments")
+        self.blast_factory.add_records(fragments, self.FRAGMENTS)
 
+    @classmethod
+    def filter_linear_records(cls, records):
+        """Return only linear records"""
+        return [r for r in records if not is_circular(r)]
+
+    @classmethod
+    def filter_perfect_subject(cls, results):
+        """return only results whose subject is 100% aligned to query"""
+        return [r for r in results if perfect_subject(r["subject"])]
+
+    # TODO: do a single blast and sort results based on record keys
     def _blast(self):
         self.logger.info("Compiling assembly graph")
 
-        blast = self.blast_factory("templates", "queries")
+        # align templates
+        blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
         blast.quick_blastn()
         results = blast.get_perfect()
-        self.container_factory.seqdb.update(blast.seq_db.records)
 
-        if self.blast_factory.record_groups['primers']:
-            primer_blast = self.blast_factory("primers", "queries")
+        # align fragments
+        if self.blast_factory.record_groups[self.FRAGMENTS]:
+            fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
+            fragment_blast.quick_blastn()
+            fragment_results = blast.get_perfect()
+            fragment_results = self.filter_perfect_subject(fragment_results)
+        else:
+            fragment_results = []
+
+        self.container_factory.seqdb.update(blast.seq_db.records)
+        self.logger.info("Number of template matches: {}".format(len(results)))
+        self.logger.info("Number of perfect fragment matches: {}".format(len(fragment_results)))
+
+        # align primers
+        if self.blast_factory.record_groups[self.PRIMERS]:
+            primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
             primer_blast.quick_blastn_short()
             primer_results = primer_blast.get_perfect()
+            primer_results = self.filter_perfect_subject(primer_results)
             self.container_factory.seqdb.update(primer_blast.seq_db.records)
+            self.logger.info("Number of perfect primers: {}".format(len(primer_results)))
         else:
             primer_results = []
 
-        primer_results = [p for p in primer_results if perfect_subject(p["subject"])]
-        self.logger.info("Number of perfect primers: {}".format(len(primer_results)))
-        # primer_results = [p for p in primer_results if p['subject']['start'] == 1]
-
+        self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
         self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
@@ -162,6 +196,12 @@ class Design(DesignBase):
             'type': fragment_type,
         }
 
+    def path_to_edge_costs(self, path, graph):
+        arr = []
+        for n1, n2 in pairwise(path):
+            edata = graph[n1][n2]
+            arr.append((n1, n2, edata))
+        return arr
 
     def path_to_df(self, paths_dict):
         def find(a, b, alignments):
@@ -289,7 +329,7 @@ class Design(DesignBase):
             query_key_to_path[query_key] = paths
         return query_key_to_path
 
-    def _optimize_graph(self, graph):
+    def _optimize_graph(self, graph, n_paths=20):
 
         # shortest path matrix
         nodelist = list(graph.nodes())
@@ -307,25 +347,24 @@ class Design(DesignBase):
 
                 anode = nodelist[i]
                 bnode = nodelist[j]
-                if a != np.inf:
-                    paths.append((anode, bnode, a))
-                if b != np.inf:
-                    paths.append((bnode, anode, b))
                 if a != np.inf and b != np.inf:
                     cycles.append((anode, bnode, a, b, a + b))
+
 
         cycles = sorted(cycles, key=lambda c: c[-1])
 
         self.logger.info("Cycles: {}".format(len(cycles)))
         self.logger.info("Paths: {}".format(len(paths)))
 
-        # print cycles
         paths = []
-        for c in cycles[:20]:
+        for c in cycles:
+            if len(paths) >= n_paths:
+                break
             path1 = nx.shortest_path(graph, c[0], c[1], weight='weight')
             path2 = nx.shortest_path(graph, c[1], c[0], weight='weight')
-            path = path1 + path2[1:]
-            paths.append(path)
+            path = sort_cycle(path1[1:] + path2[1:])
+            if path not in paths:
+                paths.append(path)
         return paths
 
 

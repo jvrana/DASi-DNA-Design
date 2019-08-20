@@ -72,17 +72,18 @@ class AssemblyGraphBuilder(object):
 
         for g in groups:
             a, b, ab_data = self.alignment_to_internal_edge(g)
-            self.G.add_edge(a, b, **ab_data)
-            self.G.add_edge((a[0], a[1], a[2] + "_overhang"), b, **ab_data)
-            self.G.add_edge(a, (b[0], b[1], b[2] + "_overhang"), **ab_data)
-            a_arr.add(a)
-            b_arr.add(b)
+            for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
+                a_node = (a[0], a[1], a[2], a_overhang)
+                b_node = (b[0], b[1], b[2], b_overhang)
+                self.G.add_edge(a_node, b_node, **ab_data)
+                a_arr.add(a_node)
+                b_arr.add(b_node)
 
         ### EXTERNAL EDGES
         if groups:
             query = groups[0].query_region
-            for (b, b_expand, bid), (a, a_expand, aid) in itertools.product(b_arr, a_arr):
-                if True:
+            for (b, b_expand, bid, b_overhang), (a, a_expand, aid, a_overhang) in itertools.product(b_arr, a_arr):
+                if not (b_overhang or a_overhang):
                     ba = query.new(b, a)
                     # ab = query.new(a, b)
 
@@ -92,28 +93,34 @@ class AssemblyGraphBuilder(object):
                     cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))
                     if cost < self.COST_THRESHOLD:
                         self.G.add_edge(
-                            (b, b_expand, bid),
-                            (a, a_expand, aid),
+                            (b, b_expand, bid, b_overhang),
+                            (a, a_expand, aid, a_overhang),
                             weight=cost,
                             name='',
                             span_length=len(ba),
                             type=desc
                         )
+                else:
+                    # TODO: PRIORITY this step is extremely slow
+                    for g in groups:
+                        try:
+                            ab = g.query_region.sub(a, b)
+                            cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
+                            if cost < self.COST_THRESHOLD:
+                                self.G.add_edge(
+                                    (b, b_expand, bid, True),
+                                    (a, a_expand, aid, True),
+                                    weight=cost,
+                                    name='overlap',
+                                    span_length=-len(ab),
+                                    type=desc
+                                )
+                            break
+                        except IndexError:
+                            pass
 
-                    try:
-                        ab = query.sub(a, b)
-                        cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
-                        if cost < self.COST_THRESHOLD:
-                            self.G.add_edge(
-                                (b, b_expand, bid + "_overhang"),
-                                (a, a_expand, aid + "_overhang"),
-                                weight=cost,
-                                name='overlap',
-                                span_length=-len(ab),
-                                type=desc
-                            )
-                    except IndexError:
-                        pass
+
+
         else:
             self.logger.warn("There is nothing to assembly. There are no alignments.")
         return self.G

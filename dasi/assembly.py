@@ -2,8 +2,7 @@ from dasi.cost import SpanCost
 from dasi.log import logger
 from dasi.constants import Constants
 from dasi.alignments import AlignmentContainer
-from dasi.utils import sort_with_keys, bisect_slice_between
-from bisect import bisect_left
+from dasi.utils import sort_with_keys
 import itertools
 import networkx as nx
 
@@ -86,7 +85,6 @@ class AssemblyGraphBuilder(object):
             for (b, b_expand, bid, b_overhang), (a, a_expand, aid, a_overhang) in itertools.product(b_arr, a_arr):
                 if not (b_overhang or a_overhang):
                     ba = query.new(b, a)
-                    # ab = query.new(a, b)
 
                     # TODO: PRIORITY no way to determine overlaps from just end points
                     cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))

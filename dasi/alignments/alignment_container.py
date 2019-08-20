@@ -249,12 +249,7 @@ class AlignmentContainer(Sized):
         self.logger.info("Number of alignments: {}".format(len(self.alignments)))
 
         # TODO: what is annotate_fragments for?
-        annotated = self.annotate_fragments(
-            self.get_alignments_by_types(Constants.PCR_PRODUCT)
-        )
-        # self.alignments += annotated
 
-        self.logger.info("Number of perfect subjects: {}".format(len(annotated)))
         templates = self.get_groups_by_types(
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
         )

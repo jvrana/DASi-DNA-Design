@@ -45,3 +45,9 @@ def test_design_task_1():
     df1, df2 = design.design()
     print(df1)
     assert len(df1) == 6
+
+
+# 1. test overlapping fragments
+# 2. test overhang pcrs
+# 3. test gaps
+# 4. 

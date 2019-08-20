@@ -3,7 +3,7 @@ from dasi.cost import SpanCost
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 import pytest
 from os.path import join
-
+from more_itertools import pairwise
 
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
@@ -41,6 +41,19 @@ def test_num_groups_vs_endpoints(here, paths, query):
 span_cost = SpanCost()
 
 
+def print_edge_cost(path, graph):
+    total = 0
+    path = path[:] + path[:1]
+    for n1, n2 in pairwise(path):
+        try:
+            edata = graph[n1][n2]
+            total += edata['weight']
+            print((n1, n2, edata['weight']))
+        except:
+            print((n1, n2, "MISSING EDGE"))
+
+    print("TOTAL: {}".format(total))
+
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb',
@@ -61,9 +74,12 @@ def test_design(here, paths, query):
 
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) == 1
-
+    path_dict = design.optimize()
+    best_path = list(path_dict.values())[0][0]
     df = design.design()
     print(df)
+
+    print_edge_cost(best_path, list(design.graphs.values())[0])
 
 
 def test_multidesign(here, paths):

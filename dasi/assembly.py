@@ -2,7 +2,8 @@ from dasi.cost import SpanCost
 from dasi.log import logger
 from dasi.constants import Constants
 from dasi.alignments import AlignmentContainer
-from dasi.utils import sort_with_keys
+from dasi.utils import sort_with_keys, bisect_slice_between
+from bisect import bisect_left
 import itertools
 import networkx as nx
 
@@ -88,8 +89,6 @@ class AssemblyGraphBuilder(object):
                     # ab = query.new(a, b)
 
                     # TODO: PRIORITY no way to determine overlaps from just end points
-
-                    r = ba # sorted([(r1, len(r1)), (r2, len(r2))], key=lambda x: x[1])[0][0]
                     cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))
                     if cost < self.COST_THRESHOLD:
                         self.G.add_edge(
@@ -101,26 +100,19 @@ class AssemblyGraphBuilder(object):
                             type=desc
                         )
                 else:
-                    # TODO: PRIORITY this step is extremely slow
-                    for g in groups:
-                        try:
-                            ab = g.query_region.sub(a, b)
-                            cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
-                            if cost < self.COST_THRESHOLD:
-                                self.G.add_edge(
-                                    (b, b_expand, bid, True),
-                                    (a, a_expand, aid, True),
-                                    weight=cost,
-                                    name='overlap',
-                                    span_length=-len(ab),
-                                    type=desc
-                                )
-                            break
-                        except IndexError:
-                            pass
-
-
-
-        else:
-            self.logger.warn("There is nothing to assembly. There are no alignments.")
+                    pass
+                    # # TODO: PRIORITY this step is extremely slow
+                    # filtered_groups = bisect_slice_between(groups, group_keys, a, b)
+                    # if filtered_groups:
+                    #     ab = filtered_groups[0].query_region.new(a, b)
+                    #     cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
+                    #     if cost < self.COST_THRESHOLD:
+                    #             self.G.add_edge(
+                    #                 (b, b_expand, bid, True),
+                    #                 (a, a_expand, aid, True),
+                    #                 weight=cost,
+                    #                 name='overlap',
+                    #                 span_length=-len(ab),
+                    #                 type=desc
+                    #         )
         return self.G

@@ -10,7 +10,7 @@ from dasi.log import logger
 from typing import List
 from Bio.SeqRecord import SeqRecord
 import numpy as np
-from more_itertools import pairwise
+from more_itertools import pairwise, unique_everseen
 from pyblast.utils import Span, is_circular
 import pandas as pd
 
@@ -213,6 +213,7 @@ class Design(DesignBase):
         primers = []
 
         for qk, paths in paths_dict.items():
+            paths = paths + paths[:1]
             G = self.graphs[qk]
             alignments = self.container_factory.alignments[qk]
             record = self.container_factory.seqdb[qk]
@@ -362,7 +363,7 @@ class Design(DesignBase):
                 break
             path1 = nx.shortest_path(graph, c[0], c[1], weight='weight')
             path2 = nx.shortest_path(graph, c[1], c[0], weight='weight')
-            path = sort_cycle(path1[1:] + path2[1:])
+            path = sort_cycle(list(unique_everseen(path1 + path2)))
             if path not in paths:
                 paths.append(path)
         return paths

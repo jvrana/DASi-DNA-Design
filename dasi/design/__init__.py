@@ -368,6 +368,7 @@ class Design(DesignBase):
                     if a + b + c != np.inf:
                         x = ((n1, n2, n3), (a, b, c), a + b + c)
                         cycle_endpoints.append(x)
+        cycle_endpoints = sorted(cycle_endpoints, key=lambda x: x[-1])
         return cycle_endpoints
 
     def _cycle_endpoints_to_paths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], n_paths: int) -> List[List[Tuple]]:

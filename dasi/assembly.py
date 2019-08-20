@@ -73,6 +73,8 @@ class AssemblyGraphBuilder(object):
         for g in groups:
             a, b, ab_data = self.alignment_to_internal_edge(g)
             self.G.add_edge(a, b, **ab_data)
+            self.G.add_edge((a[0], a[1], a[2] + "_overhang"), b, **ab_data)
+            self.G.add_edge(a, (b[0], b[1], b[2] + "_overhang"), **ab_data)
             a_arr.add(a)
             b_arr.add(b)
 
@@ -82,21 +84,36 @@ class AssemblyGraphBuilder(object):
             for (b, b_expand, bid), (a, a_expand, aid) in itertools.product(b_arr, a_arr):
                 if True:
                     ba = query.new(b, a)
-                    ab = query.new(a, b)
+                    # ab = query.new(a, b)
 
                     # TODO: PRIORITY no way to determine overlaps from just end points
 
                     r = ba # sorted([(r1, len(r1)), (r2, len(r2))], key=lambda x: x[1])[0][0]
-                    cost, desc = self.span_cost.cost_and_desc(len(r), (b_expand, a_expand))
+                    cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))
                     if cost < self.COST_THRESHOLD:
                         self.G.add_edge(
                             (b, b_expand, bid),
                             (a, a_expand, aid),
                             weight=cost,
                             name='',
-                            span_length=len(r),
+                            span_length=len(ba),
                             type=desc
                         )
+
+                    try:
+                        ab = query.sub(a, b)
+                        cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
+                        if cost < self.COST_THRESHOLD:
+                            self.G.add_edge(
+                                (b, b_expand, bid + "_overhang"),
+                                (a, a_expand, aid + "_overhang"),
+                                weight=cost,
+                                name='overlap',
+                                span_length=-len(ab),
+                                type=desc
+                            )
+                    except IndexError:
+                        pass
         else:
             self.logger.warn("There is nothing to assembly. There are no alignments.")
         return self.G

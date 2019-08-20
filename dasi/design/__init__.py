@@ -3,14 +3,14 @@
 from dasi.alignments import Alignment, AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.assembly import AssemblyGraphBuilder
-from dasi.utils import perfect_subject, sort_cycle
+from dasi.utils import perfect_subject, multipoint_shortest_path
 import networkx as nx
 from pyblast import BioBlastFactory
 from dasi.log import logger
-from typing import List
+from typing import List, Tuple, Dict
 from Bio.SeqRecord import SeqRecord
 import numpy as np
-from more_itertools import pairwise, unique_everseen
+from more_itertools import pairwise
 from pyblast.utils import Span, is_circular
 import pandas as pd
 
@@ -317,11 +317,11 @@ class Design(DesignBase):
         df = self.path_to_df(path_dict)
         return df
 
-    def optimize(self, verbose=False):
+    def optimize(self, verbose=False, n_paths=20) -> Dict[str, List[List[Tuple]]]:
         query_key_to_path = {}
         for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             self.logger.info("Optimizing {}".format(query_key))
-            paths = self._optimize_graph(G)
+            paths = self._optimize_graph(G, n_paths=n_paths)
             if verbose:
                 for path in paths:
                     for n1, n2 in pairwise(path):
@@ -330,42 +330,67 @@ class Design(DesignBase):
             query_key_to_path[query_key] = paths
         return query_key_to_path
 
-    def _optimize_graph(self, graph, n_paths=20):
+    def _three_point_optimization(self, graph: nx.DiGraph) -> Tuple[Tuple, Tuple, float]:
+        """
+        Return minimum weight cycles from graph using a 3-point optimization.
 
-        # shortest path matrix
+        :param graph:
+        :return:
+        """
         nodelist = list(graph.nodes())
+        node_to_i = {v: i for i, v in enumerate(nodelist)}
         weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight='weight'))
-
-        # shortest cycles (estimated)
-        cycles = []
-        paths = []
-        for i in range(len(weight_matrix)):
-            for j in range(len(weight_matrix[0])):
-                a = weight_matrix[i, j]
-                b = weight_matrix[j, i]
+        cycle_endpoints = []
+        for i, n1 in enumerate(nodelist):
+            if n1[2] != 'A':
+                continue
+            for n2 in graph.successors(n1):
+                j = node_to_i[n2]
                 if i == j:
                     continue
+                a = weight_matrix[i, j]
+                if a == np.inf:
+                    continue
+                for k in range(len(weight_matrix[0])):
+                    if k == i or k == j:
+                        continue
+                    n3 = nodelist[k]
+                    if n3[2] != 'A':
+                        continue
+                    b = weight_matrix[j, k]
+                    if b == np.inf:
+                        continue
 
-                anode = nodelist[i]
-                bnode = nodelist[j]
-                if a != np.inf and b != np.inf:
-                    cycles.append((anode, bnode, a, b, a + b))
+                    c = weight_matrix[k, i]
+                    if c == np.inf:
+                        continue
 
+                    if a + b + c != np.inf:
+                        x = ((n1, n2, n3), (a, b, c), a + b + c)
+                        cycle_endpoints.append(x)
+        return cycle_endpoints
 
-        cycles = sorted(cycles, key=lambda c: c[-1])
+    def _cycle_endpoints_to_paths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], n_paths: int) -> List[List[Tuple]]:
+        """
+        Convert cycle enpoints to paths.
 
-        self.logger.info("Cycles: {}".format(len(cycles)))
-        self.logger.info("Paths: {}".format(len(paths)))
-
-        paths = []
-        for c in cycles:
-            if len(paths) >= n_paths:
+        :param graph:
+        :param cycle_endpoints:
+        :param n_paths:
+        :return:
+        """
+        unique_cyclic_paths = []
+        for c in cycle_endpoints:
+            if len(unique_cyclic_paths) >= n_paths:
                 break
-            path1 = nx.shortest_path(graph, c[0], c[1], weight='weight')
-            path2 = nx.shortest_path(graph, c[1], c[0], weight='weight')
-            path = sort_cycle(list(unique_everseen(path1 + path2)))
-            if path not in paths:
-                paths.append(path)
+            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=True)
+            if path not in unique_cyclic_paths:
+                unique_cyclic_paths.append(path)
+        return unique_cyclic_paths
+
+    def _optimize_graph(self, graph, n_paths=20):
+        cycle_endpoints = self._three_point_optimization(graph)
+        paths = self._cycle_endpoints_to_paths(graph, cycle_endpoints, n_paths)
         return paths
 
 

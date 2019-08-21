@@ -369,6 +369,7 @@ class Design(DesignBase):
             query_key_to_path[query_key] = paths
         return query_key_to_path
 
+     #
     def _three_point_optimization(self, graph: nx.DiGraph) -> Tuple[Tuple, Tuple, float]:
         """
         Return minimum weight cycles from graph using a 3-point optimization.
@@ -396,13 +397,28 @@ class Design(DesignBase):
 
                     n3 = nodelist[k]
 
+                    # must alternate between 'A', 'B', 'A' for 3-point optimization
+                    if n3[2] != 'A':
+                        continue
+
                     # avoid 'cheating' using an overhang
                     is_overhang = n3[3] or n1[3]
                     if k == i and is_overhang:
                         continue
 
-                    if n3[2] != 'A':
-                        continue
+                    # avoid placing 'k' inside of the 'A-B' segment
+                    if n1[0] < n2[0]:
+                        # does not span origin
+                        if n1[0] <= n3[0] <= n2[0]:
+                            continue
+                    else:
+                        # does span origin
+                        if n3[0] <= n2[0]:
+                            continue
+                        elif n3[0] >= n1[0]:
+                            continue
+
+
                     b = weight_matrix[j, k]
                     if b == np.inf:
                         continue

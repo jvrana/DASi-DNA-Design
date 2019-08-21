@@ -65,8 +65,6 @@ class AssemblyGraphBuilder(object):
             key=lambda g: g.query_region.a,
         )
 
-        # TODO: reduce number of times edge
-
         a_arr = set()
         b_arr = set()
 
@@ -98,7 +96,7 @@ class AssemblyGraphBuilder(object):
                             type=desc
                         )
                 else:
-                    # # TODO: PRIORITY this step is extremely slow
+                    # TODO: PRIORITY this step is extremely slow
                     filtered_groups = bisect_slice_between(groups, group_keys, a, b)
                     if filtered_groups:
                         ab = filtered_groups[0].query_region.new(a, b)

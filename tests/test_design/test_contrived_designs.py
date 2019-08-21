@@ -11,8 +11,6 @@ from more_itertools import pairwise
 
 spancost = SpanCost()
 
-# TODO: contrived tests should perform as good or better than expected path
-
 def random_seq(len):
     bases = "AGTC"
 
@@ -262,8 +260,6 @@ def test_design_task_with_gaps():
 
     check_design_result(design, expected_path)
 
-
-# TODO: why are BLAST results so stochastic?
 @pytest.mark.parametrize('repeat', range(10))
 def test_design_with_overhang_primers(repeat):
 
@@ -401,7 +397,7 @@ def test_single_fragment():
 
     check_design_result(design, expected_path)
 
-
+# TODO: PRIORITY, invalid edges are present for small fragments
 def test_fully_overlapped():
     goal = random_record(10000)
     make_circular([goal])

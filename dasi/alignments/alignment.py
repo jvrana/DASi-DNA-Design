@@ -138,7 +138,6 @@ class AlignmentGroupBase(object):
     def subject_keys(self):
         return [a.subject_key for a in self.alignments]
 
-    # TODO: making subregions for all alignments takes a LONG TIME (5X shorter if you skip this).
     def sub_region(self, qstart: int, qend: int, type: str):
         alignments_copy = []
         for a in self.alignments:

@@ -49,8 +49,6 @@ def blast_to_region(query_or_subject, seqdb):
     return region
 
 
-# TODO: This assumes a single query. Verify this.
-# TODO: need way to run blast from multiple databases on a single query
 class AlignmentContainer(Sized):
     """
     Container for a set of query-to-subject alignments for a single query.
@@ -94,7 +92,6 @@ class AlignmentContainer(Sized):
             raise AlignmentContainerException("AlignmentContainer cannot contain more than one query. Contains the following"
                              "query keys: {}".format(keys))
 
-    # TODO: test for this method
     @classmethod
     def filter_alignments_by_span(cls, alignments, region, key=None, end_inclusive=True):
         fwd, fwd_keys = sort_with_keys(alignments, key=key)
@@ -235,7 +232,6 @@ class AlignmentContainer(Sized):
                     #     alignments += right.alignments
         return alignments
 
-    # TODO: expand should just add more
     # TODO: break apart long alignments
     def expand(self, expand_overlaps=True, expand_primers=True):
         """
@@ -250,8 +246,6 @@ class AlignmentContainer(Sized):
         # We annotate any original PCR_PRODUCT with FRAGMENT if they are 'perfect_subjects'
         # This means they already exist as pre-made fragments
         self.logger.info("Number of alignments: {}".format(len(self.alignments)))
-
-        # TODO: what is annotate_fragments for?
 
         templates = self.get_groups_by_types(
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
@@ -293,8 +287,6 @@ class AlignmentContainer(Sized):
             a.grouping_tags[group_key] = (i)
 
 
-    # TODO: change 'start' and 'end' to left and right end for regions...
-    # TODO: type increases computation time exponentially, we only need 'b' from group1 and 'a' from group2
     @staticmethod
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""

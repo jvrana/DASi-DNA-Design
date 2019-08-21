@@ -49,7 +49,6 @@ class TestInit:
         with pytest.raises(IndexError):
             Span(10, 5, 100, False)
 
-    # TODO: handle wraps better
     def test_invalid_cyclic(self):
         print(Span(0, 10, 10, True))
         with pytest.raises(IndexError):

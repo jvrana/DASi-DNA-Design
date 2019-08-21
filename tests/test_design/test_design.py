@@ -55,7 +55,7 @@ def print_edge_cost(path, graph):
 
     print("TOTAL: {}".format(total))
 
-# TODO: plko-pef1
+
 @pytest.mark.parametrize('query', [
     "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb',

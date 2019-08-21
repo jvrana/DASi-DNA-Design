@@ -349,3 +349,30 @@ def test_requires_synthesis_with_template_over_origin():
     ]
 
     check_design_result(design, expected_path)
+
+
+def test_invalid_overhang():
+    goal = random_record(3000)
+    make_circular([goal])
+
+    r1 = goal[4177:4225]
+    r2 = goal[4188:4225]
+
+    make_linear([r1, r2])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[],
+        templates=[r1, r2],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (500, True, 'B', False),
+        (1000, True, 'A', False),
+        (2000, True, 'B', False),
+        (2500, True, 'A', False),
+    ]
+
+    check_design_result(design, expected_path)

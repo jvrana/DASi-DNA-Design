@@ -56,11 +56,11 @@ def print_edge_cost(path, graph):
     print("TOTAL: {}".format(total))
 
 @pytest.mark.parametrize('query', [
-    "pmodkan-ho-pact1-z4-er-vpr.gb",
+    # "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb',
-    'pins-01-hu6-sv40-nt1-optgrna.gb'
+    # 'pins-01-hu6-sv40-nt1-optgrna.gb'
 ])
-def test_design(here, paths, query):
+def test_real_design(here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 

@@ -4,6 +4,7 @@ from dasi.alignments import Alignment, AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.assembly import AssemblyGraphBuilder
 from dasi.utils import perfect_subject, multipoint_shortest_path
+from dasi.exceptions import DasiDesignException
 import networkx as nx
 from pyblast import BioBlastFactory
 from dasi.log import logger
@@ -14,7 +15,8 @@ from more_itertools import pairwise
 from pyblast.utils import Span, is_circular
 import pandas as pd
 
-penalty_config = {
+
+BLAST_PENALTY_CONFIG = {
     'gapopen': 3,
     'gapextend': 3,
     'reward': 1,
@@ -96,7 +98,7 @@ class Design(DesignBase):
 
         # align templates
         blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
-        blast.update_config(penalty_config)
+        blast.update_config(BLAST_PENALTY_CONFIG)
         blast.quick_blastn()
         results = blast.get_perfect()
         self.template_results = results
@@ -104,7 +106,7 @@ class Design(DesignBase):
         # align fragments
         if self.blast_factory.record_groups[self.FRAGMENTS]:
             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
-            fragment_blast.update_config(penalty_config)
+            fragment_blast.update_config(BLAST_PENALTY_CONFIG)
             fragment_blast.quick_blastn()
             fragment_results = blast.get_perfect()
             fragment_results = self.filter_perfect_subject(fragment_results)
@@ -119,7 +121,7 @@ class Design(DesignBase):
         # align primers
         if self.blast_factory.record_groups[self.PRIMERS]:
             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
-            primer_blast.update_config(penalty_config)
+            primer_blast.update_config(BLAST_PENALTY_CONFIG)
             primer_blast.quick_blastn_short()
             primer_results = primer_blast.get_perfect()
             primer_results = self.filter_perfect_subject(primer_results)
@@ -409,7 +411,24 @@ class Design(DesignBase):
     def _optimize_graph(self, graph, n_paths=20):
         cycle_endpoints = self._three_point_optimization(graph)
         paths = self._cycle_endpoints_to_paths(graph, cycle_endpoints, n_paths)
+        self._check_paths(paths)
         return paths
+
+    def _check_paths(self, paths):
+        invalid_paths = []
+        for path in paths:
+            lastseen = path[0][2]
+            for p in path[1:]:
+                if p[2] == lastseen:
+                    invalid_paths.append(path)
+                    break
+                lastseen = p[2]
+        if invalid_paths:
+            raise DasiDesignException("There are {} invalid paths:\n{}\n...{} more".format(
+                len(invalid_paths),
+                "\n".join([str(x) for x in invalid_paths[:5]]),
+                max(len(invalid_paths) - 5, 0)
+            ))
 
 
 class LibraryDesign(Design):
@@ -454,7 +473,7 @@ class LibraryDesign(Design):
         self.logger.info("=== Expanding shared library fragments ===")
 
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
-        blast.update_config(penalty_config)
+        blast.update_config(BLAST_PENALTY_CONFIG)
         blast.quick_blastn()
 
         results = blast.get_perfect()

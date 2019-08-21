@@ -23,18 +23,19 @@ def test_dump_for_visualization(here, paths, query):
     design.compile()
 
     with open(join(here, '..', 'static', 'data.json'), 'w') as f:
-        query_region = design.container.alignment_groups[0].query_region
-        data = {
-            "query": {"length": query_region.context_length, "name": query_region.name},
-            "subjects": []
-        }
+        for container in design.container_list():
+            query_region = container.alignment_groups[0].query_region
+            data = {
+                "query": {"length": query_region.context_length, "name": query_region.name},
+                "subjects": []
+            }
 
-        groups = sorted(design.container.alignment_groups, key=lambda g: (g.query_region.a, len(g.query_region)))
+            groups = sorted(container.groups(), key=lambda g: (g.query_region.a, len(g.query_region)))
 
-        for group in groups:
-            data['subjects'].append(
-                {"a": group.query_region.a,
-                 "b": group.query_region.b,
-                 "name": group.alignments[0].subject_region.name}
-            )
-        json.dump(data, f)
+            for group in groups:
+                data['subjects'].append(
+                    {"a": group.query_region.a,
+                     "b": group.query_region.b,
+                     "name": group.alignments[0].subject_region.name}
+                )
+            json.dump(data, f)

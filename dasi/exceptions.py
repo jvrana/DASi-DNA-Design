@@ -8,3 +8,7 @@ class AlignmentException(DASiException):
 
 class AlignmentContainerException(DASiException):
     pass
+
+
+class DasiDesignException(DASiException):
+    pass

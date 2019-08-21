@@ -392,6 +392,3 @@ def test_find_alignments(container):
         key=lambda x: x.query_region.b, end_inclusive=False)
     assert alignments == [a3]
 
-
-def test_annotate_fragments():
-    raise NotImplementedError

@@ -3,7 +3,7 @@ from .region import Region
 from .span import Span
 import functools
 from .async_wrapper import make_async
-from more_itertools import pairwise, unique_everseen
+from more_itertools import pairwise, unique_justseen
 from itertools import chain
 import networkx as nx
 from typing import List
@@ -75,13 +75,15 @@ def multipoint_shortest_path(graph: nx.DiGraph, nodes: List[str], weight_key: st
     """
     if cyclic_sort_key and not cyclic:
         raise ValueError("cyclic_sort_key was provided but 'cyclic' was False.")
-    paths = []
+    full_path = []
     if cyclic:
         nodes = nodes + nodes[:1]
     for n1, n2 in pairwise(nodes):
-        paths.append(nx.shortest_path(graph, n1, n2, weight=weight_key))
-    chained_path = list(unique_everseen(chain(*paths)))
+        path = nx.shortest_path(graph, n1, n2, weight=weight_key)
+        full_path += path[:-1]
+    if not cyclic:
+        full_path.append(nodes[-1])
     if cyclic:
-        return sort_cycle(chained_path, cyclic_sort_key)
+        return sort_cycle(full_path, cyclic_sort_key)
     else:
-        return chained_path
+        return full_path

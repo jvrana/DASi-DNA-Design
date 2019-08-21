@@ -34,10 +34,10 @@ def test_synthesis_cost(syncost):
     syncost.plot()
 
 
-def test_span_cost():
-    span_cost = SpanCost()
-    x = np.arange(-500, 3000)
-    y = span_cost.cost(x, (1, 1))
-
-    sns.lineplot(x=x, y=y)
-    plt.show()
+# def test_span_cost():
+#     span_cost = SpanCost()
+#     x = np.arange(-500, 3000)
+#     y = span_cost.cost(x, (1, 1))
+#
+#     sns.lineplot(x=x, y=y)
+#     plt.show()

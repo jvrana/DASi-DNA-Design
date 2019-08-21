@@ -377,9 +377,13 @@ class Design(DesignBase):
                 if a == np.inf:
                     continue
                 for k in range(len(weight_matrix[0])):
-                    if k == i or k == j:
+                    if k == j:
                         continue
+
                     n3 = nodelist[k]
+                    is_overhang = n3[3] or n1[3]
+                    if k == i and is_overhang:
+                        continue
                     if n3[2] != 'A':
                         continue
                     b = weight_matrix[j, k]

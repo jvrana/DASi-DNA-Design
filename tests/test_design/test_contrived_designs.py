@@ -298,7 +298,7 @@ def test_design_with_overhang_primers(repeat):
 
 
 def test_requires_synthesis():
-    goal = random_record(3000)
+    goal = random_record(4000)
     make_circular([goal])
 
     r1 = goal[1000:2000]
@@ -325,11 +325,11 @@ def test_requires_synthesis():
 
 
 def test_requires_synthesis_with_template_over_origin():
-    goal = random_record(3000)
+    goal = random_record(5000)
     make_circular([goal])
 
     r1 = goal[1000:2000]
-    r2 = goal[2500:] + goal[:500]
+    r2 = goal[4500:] + goal[:500]
 
     make_linear([r1, r2])
 
@@ -345,7 +345,7 @@ def test_requires_synthesis_with_template_over_origin():
         (500, True, 'B', False),
         (1000, True, 'A', False),
         (2000, True, 'B', False),
-        (2500, True, 'A', False),
+        (4500, True, 'A', False),
     ]
 
     check_design_result(design, expected_path)
@@ -373,6 +373,30 @@ def test_very_long_synthesizable_region():
         (1000, True, 'A', False),
         (2000, True, 'B', False),
         (2500, True, 'A', False),
+    ]
+
+    check_design_result(design, expected_path)
+
+
+def test_single_fragment():
+    goal = random_record(3000)
+    make_circular([goal])
+
+    r1 = goal[177:2255]
+
+    make_linear([r1])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[],
+        templates=[r1],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (177, True, 'A', False),
+        (2255, True, 'B', False),
     ]
 
     check_design_result(design, expected_path)

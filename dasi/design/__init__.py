@@ -1,6 +1,6 @@
 """Primer and synthesis design"""
 
-from dasi.alignments import Alignment, AlignmentContainerFactory
+from dasi.alignments import Alignment, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
 from dasi.constants import Constants
 from dasi.assembly import AssemblyGraphBuilder
 from dasi.utils import perfect_subject, multipoint_shortest_path
@@ -41,6 +41,16 @@ class DesignBase(object):
         self.graphs = {}
         self.span_cost = span_cost
         self.container_factory = AlignmentContainerFactory({})
+
+
+class DesignBacktrace(object):
+    """
+    Should take in a path, graph, container, seqdb to produce relevant information
+    """
+
+
+    def __init__(self):
+        pass
 
 
 class Design(DesignBase):
@@ -225,10 +235,6 @@ class Design(DesignBase):
         return arr
 
     def path_to_df(self, paths_dict):
-        def find(a, b, alignments):
-            for align in alignments:
-                if a == align.query_region.a and b == align.query_region.b:
-                    yield align
 
         fragments = []
         primers = []
@@ -236,39 +242,47 @@ class Design(DesignBase):
         for qk, paths in paths_dict.items():
             paths = paths + paths[:1]
             G = self.graphs[qk]
-            alignments = self.container_factory.alignments[qk]
+            container = self.container_factory.containers()[qk]
+
             record = self.container_factory.seqdb[qk]
             path = paths[0]
 
             for n1, n2 in pairwise(path):
                 edata = G[n1][n2]
                 cost = edata['weight']
-                if n1[-1] == 'A' and n2[-1] == 'B':
+                if n1[2] == 'A' and n2[2] == 'B':
                     A = n1[0]
                     B = n2[0]
-                    align = list(find(A, B, alignments))[0]
+                    group = container.find_groups_by_pos(A, B)[0]
 
-                    # TODO: this really needs fixing
-                    try:
-                        sk = align.subject_key
-                        subject_rec = self.container_factory.seqdb[sk]
+                    if isinstance(group, AlignmentGroup):
+                        align = group.alignments[0]
+                        subject_rec = self.container_factory.seqdb[align.subject_key]
                         subject_rec_name = subject_rec.name
                         subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
                         subject_region = (align.subject_region.a, align.subject_region.b)
-                    except:
-                        sk = align.subject_keys
-                        subject_rec_name = [self.container_factory.seqdb[sk] for sk in align.subject_keys]
-                        subject_seq = '?'
-                        subject_region = '?'
+                    elif isinstance(group, ComplexAlignmentGroup):
+                        names = []
+                        seqs = []
+                        regions = []
+
+                        for align in group.alignments:
+                            rec = self.container_factory.seqdb[align.subject_key]
+                            seqs.append(str(rec[align.subject_region.a:align.subject_region.b].seq))
+                            regions.append((align.subject_region.a, align.subject_region.b))
+                            names.append(rec.name)
+                        subject_rec_name = ', '.join(names)
+                        subject_seq = ', '.join(seqs)
+                        subject_region = regions[:]
 
                     fragments.append({
                         'query': qk,
                         'query_name': record.name,
-                        'query_region': (align.query_region.a, align.query_region.b),
-                        'subject': sk,
+                        'query_region': (group.query_region.a, group.query_region.b),
+                        'subject': '',
                         'subject_name': subject_rec_name,
                         'subject_region': subject_region,
-                        'fragment_length': len(align.query_region),
+                        'fragment_length': len(group.query_region),
                         'fragment_seq': subject_seq,
                         'cost': cost,
                         'type': edata['type']
@@ -381,9 +395,12 @@ class Design(DesignBase):
                         continue
 
                     n3 = nodelist[k]
+
+                    # avoid 'cheating' using an overhang
                     is_overhang = n3[3] or n1[3]
                     if k == i and is_overhang:
                         continue
+
                     if n3[2] != 'A':
                         continue
                     b = weight_matrix[j, k]

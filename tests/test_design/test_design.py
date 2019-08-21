@@ -4,7 +4,7 @@ from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_
 import pytest
 from os.path import join
 from more_itertools import pairwise
-
+import json
 
 span_cost = SpanCost()
 
@@ -55,10 +55,11 @@ def print_edge_cost(path, graph):
 
     print("TOTAL: {}".format(total))
 
+# TODO: plko-pef1
 @pytest.mark.parametrize('query', [
-    # "pmodkan-ho-pact1-z4-er-vpr.gb",
+    "pmodkan-ho-pact1-z4-er-vpr.gb",
     'plko-pef1a-frt-tdtomato-wpre.gb',
-    # 'pins-01-hu6-sv40-nt1-optgrna.gb'
+    'pins-01-hu6-sv40-nt1-optgrna.gb'
 ])
 def test_real_design(here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))
@@ -78,6 +79,8 @@ def test_real_design(here, paths, query):
     path_dict = design.optimize()
     best_path = list(path_dict.values())[0][0]
     df = design.design()
+    d = df[0].to_dict()
+    print(json.dumps(d, indent=2))
     print(df)
 
     print_edge_cost(best_path, list(design.graphs.values())[0])

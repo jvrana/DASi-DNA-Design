@@ -400,3 +400,30 @@ def test_single_fragment():
     ]
 
     check_design_result(design, expected_path)
+
+
+def test_fully_overlapped():
+    goal = random_record(10000)
+    make_circular([goal])
+
+    r1 = goal[4100:4300]
+    p1 = goal[4177:4177+30]
+    p2 = goal[4188:4188+30]
+    p3 = goal[4225-30:4225].reverse_complement()
+
+    make_linear([r1, p1, p2, p3])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[p1, p2, p3],
+        templates=[r1],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (4100, True, 'A', False),
+        (4300, True, 'B', False),
+    ]
+
+    check_design_result(design, expected_path)

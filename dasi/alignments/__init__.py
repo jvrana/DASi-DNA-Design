@@ -1,2 +1,2 @@
-from .alignment import Alignment, AlignmentGroup
+from .alignment import Alignment, AlignmentGroup, ComplexAlignmentGroup, AlignmentGroupBase
 from .alignment_container import AlignmentContainer, AlignmentContainerFactory

@@ -107,7 +107,7 @@ class AlignmentContainer(Sized):
             )
         return found
 
-    def find_group_by_pos(self, a, b, groups=None):
+    def find_groups_by_pos(self, a, b, groups=None):
         if groups is None:
             groups = self.groups()
         found = []

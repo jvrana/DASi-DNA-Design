@@ -23,6 +23,8 @@ BLAST_PENALTY_CONFIG = {
     'penalty': -5
 }
 
+
+
 class DesignBase(object):
 
     PRIMERS = "primers"
@@ -341,6 +343,10 @@ class Design(DesignBase):
         for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             self.logger.info("Optimizing {}".format(query_key))
             paths = self._optimize_graph(G, n_paths=n_paths)
+            if not paths:
+                query_rec = self.blast_factory.db.records[query_key]
+                self.logger.error("\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
+                                  " be better synthesized. Use a tool such as JBEI's BOOST.".format(query_rec.name, query_key))
             if verbose:
                 for path in paths:
                     for n1, n2 in pairwise(path):

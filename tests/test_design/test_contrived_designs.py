@@ -351,19 +351,19 @@ def test_requires_synthesis_with_template_over_origin():
     check_design_result(design, expected_path)
 
 
-def test_invalid_overhang():
-    goal = random_record(3000)
+def test_very_long_synthesizable_region():
+    goal = random_record(10000)
     make_circular([goal])
 
-    r1 = goal[4177:4225]
+    r1 = goal[4177:4255]
     r2 = goal[4188:4225]
 
-    make_linear([r1, r2])
+    make_linear([r1])
 
     design = Design(spancost)
     design.add_materials(
         primers=[],
-        templates=[r1, r2],
+        templates=[r1],
         queries=[goal],
         fragments=[]
     )

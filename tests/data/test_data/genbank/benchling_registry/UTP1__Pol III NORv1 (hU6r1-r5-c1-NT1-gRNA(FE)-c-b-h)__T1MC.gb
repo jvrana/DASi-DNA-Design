@@ -1,0 +1,111 @@
+LOCUS       UTP1__Pol_III_NORv1_(hU6 565 bp ds-DNA     linear       12-JUL-2019
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     misc_feature    365..383
+                     /label="NT1"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
+     misc_feature    541..565
+                     /label="T1MC"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     misc            283..302
+                     /label="r1(W5) gRNA target"
+                     /ApEinfo_revcolor=#75c6a9
+                     /ApEinfo_fwdcolor=#75c6a9
+     misc_feature    515..530
+                     /label="Handle"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc            309..328
+                     /label="r5(W17) gRNA target"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_feature    476..495
+                     /label="Csy4 site (20bp)"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     misc_feature    481..495
+                     /label="Minimal Hairpin"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    364..364
+                     /label="sgTet3g"
+                     /ApEinfo_revcolor=#800080
+                     /ApEinfo_fwdcolor=#800080
+     misc_feature    470..501
+                     /label="Insulated Csy4 1"
+                     /ApEinfo_revcolor=#9eafd2
+                     /ApEinfo_fwdcolor=#9eafd2
+     misc_feature    476..495
+                     /label="iCsy4i_v1"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    306..308
+                     /label="PAM"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    384..469
+                     /label="optimized gRNA handle (F+E)"
+                     /ApEinfo_revcolor=#b7e6d7
+                     /ApEinfo_fwdcolor=#b7e6d7
+     misc_feature    329..335
+                     /label="INS3"
+                     /ApEinfo_revcolor=#d6b295
+                     /ApEinfo_fwdcolor=#d6b295
+     misc_feature    509..514
+                     /label="barcode 2"
+                     /ApEinfo_revcolor=#75c6a9
+                     /ApEinfo_fwdcolor=#75c6a9
+     misc_feature    303..305
+                     /label="PAM"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     primer          212..231
+                     /label="LKO1_5_primer"
+                     /ApEinfo_revcolor=#b7e6d7
+                     /ApEinfo_fwdcolor=#b7e6d7
+     misc_feature    502..508
+                     /label="Barcode"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
+     misc_feature    329..363
+                     /label="iCsy4i_v1"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    336..355
+                     /label="Csy4 site (20bp)"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     misc_feature    341..355
+                     /label="Minimal Hairpin"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    356..363
+                     /label="INS4"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     promoter        26..282
+                     /label="hU6_promoter"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    531..540
+                     /label="u6 terminator?"
+                     /ApEinfo_revcolor=#d59687
+                     /ApEinfo_fwdcolor=#d59687
+     misc_feature    1..25
+                     /label="UTP1"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+ORIGIN
+        1 GCCGATACGA AGGTTTTCTC CAGCGAAGGT CGGGCAGGAA GAGGGCCTAT TTCCCATGAT
+       61 TCCTTCATAT TTGCATATAC GATACAAGGC TGTTAGAGAG ATAATTAGAA TTAATTTGAC
+      121 TGTAAACACA AAGATATTAG TACAAAATAC GTGACGTAGA AAGTAATAAT TTCTTGGGTA
+      181 GTTTGCAGTT TTAAAATTAT GTTTTAAAAT GGACTATCAT ATGCTTACCG TAACTTGAAA
+      241 GTATTTCGAT TTCTTGGCTT TATATATCTT GTGGAAAGGA CGGGAACGTG ATTGAATAAC
+      301 TTTGGCCTCG ACTCTGTCAA CTGACTTCCC CCGTCGTTCA CTGCCGTATA GGCAGCATCT
+      361 TTAGAATAGC TCAGAGGCCG AGGGTTTAAG AGCTATGCTG GAAACAGCAT AGCAAGTTTA
+      421 AATAAGGCTA GTCCGTTATC AACTTGAAAA AGTGGCACCG AGTCGGTGCA TTCCTGTTCA
+      481 CTGCCGTATA GGCAGCCCTT TATCTCCCAC GTGCGCTTTC TCCCTTCTCC TTTTTTCTAG
+      541 GCTTCAATAA AGGAGCGAGC ACCCG
+//

@@ -257,6 +257,7 @@ class Design(DesignBase):
 
                     if isinstance(group, AlignmentGroup):
                         align = group.alignments[0]
+                        subject = align.subject_key
                         subject_rec = self.container_factory.seqdb[align.subject_key]
                         subject_rec_name = subject_rec.name
                         subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
@@ -265,8 +266,9 @@ class Design(DesignBase):
                         names = []
                         seqs = []
                         regions = []
-
+                        subject = []
                         for align in group.alignments:
+                            subject.append(align.subject_key)
                             rec = self.container_factory.seqdb[align.subject_key]
                             seqs.append(str(rec[align.subject_region.a:align.subject_region.b].seq))
                             regions.append((align.subject_region.a, align.subject_region.b))
@@ -274,12 +276,13 @@ class Design(DesignBase):
                         subject_rec_name = ', '.join(names)
                         subject_seq = ', '.join(seqs)
                         subject_region = regions[:]
+                        subject = ','.join(subject)
 
                     fragments.append({
                         'query': qk,
                         'query_name': record.name,
                         'query_region': (group.query_region.a, group.query_region.b),
-                        'subject': '',
+                        'subject': subject,
                         'subject_name': subject_rec_name,
                         'subject_region': subject_region,
                         'fragment_length': len(group.query_region),

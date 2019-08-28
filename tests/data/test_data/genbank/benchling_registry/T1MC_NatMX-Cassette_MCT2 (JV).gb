@@ -1,0 +1,54 @@
+LOCUS       T1MC_NatMX-Cassette_MCT 1258 bp ds-DNA     linear       07-DEC-2018
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     misc_feature    26..70
+                     /label="LTR1 homolgy"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     promoter        71..420
+                     /label="TEF promoter"
+                     /ApEinfo_revcolor=#ff3e3e
+                     /ApEinfo_fwdcolor=#ff3e3e
+     misc_feature    996..999
+                     /label="scar"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     misc_feature    1000..1233
+                     /label="TEF terminator"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
+     misc_feature    423..995
+                     /label="nourseothricin resistance (nat)"
+                     /ApEinfo_revcolor=#b334ff
+                     /ApEinfo_fwdcolor=#b334ff
+     misc_feature    71..1233
+                     /label="NatMX_cassette"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     site            1234..1234
+                     /label="PP2"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+ORIGIN
+        1 GCTTCAATAA AGGAGCGAGC ACCCGGGCGC GCCAGATCTG TTTAGCTTGC CTCGTCCCCG
+       61 CCGGGTCACC cggccagcga catggaggcc cagaataccc tccttgacag tcttgacgtg
+      121 cgcagctcag gggcatgatg tgactgtcgc ccgtacattt agcccataca tccccatgta
+      181 taatcatttg catccataca ttttgatggc cgcacggcgc gaagcaaaaa ttacggctcc
+      241 tcgctgcaga cctgcgagca gggaaacgct cccctcacag acgcgttgaa ttgtccccac
+      301 gccgcgcccc tgtagagaaa tataaaaggt taggatttgc cactgaggtt cttctttcat
+      361 atacttcctt ttaaaatctt gctaggatac agttctcaca tcacatccga acataaacaa
+      421 ccatgggtac cactcttgac gacacggctt accggtaccg caccagtgtc ccgggggacg
+      481 ccgaggccat cgaggcactg gatgggtcct tcaccaccga caccgtcttc cgcgtcaccg
+      541 ccaccgggga cggcttcacc ctgcgggagg tgccggtgga cccgcccctg accaaggtgt
+      601 tccccgacga cgaatcggac gacgaatcgg acgccgggga ggacggcgac ccggactccc
+      661 ggacgttcgt cgcgtacggg gacgacggcg acctggcggg cttcgtggtc gtctcgtact
+      721 ccggctggaa ccgccggctg accgtcgagg acatcgaggt cgccccggag caccgggggc
+      781 acggggtcgg gcgcgcgttg atggggctcg cgacggagtt cgcccgcgag cggggcgccg
+      841 ggcacctctg gctggaggtc accaacgtca acgcaccggc gatccacgcg taccggcgga
+      901 tggggttcac cctctgcggc ctggacaccg ccctgtacga cggcaccgcc tcggacggcg
+      961 agcaggcgct ctacatgagc atgccctgcc cctaatcagt actgacaata aaaagattct
+     1021 tgttttcaag aacttgtcat ttgtatagtt tttttatatt gtagttgttc tattttaatc
+     1081 aaatgttagc gtgatttata ttttttttcg cctcgacatc atctgcccag atgcgaagtt
+     1141 aagtgcgcag aaagtaatat catgcgtcaa tcgtatgtga atgctggtcg ctatactgct
+     1201 gtcgattcga tactaacgcc gccatccagt gtccAGAAGC GAGGCGAATA AAGGTGGC
+//

@@ -1,0 +1,73 @@
+LOCUS       MCDT_delta2_DTBA_backbo 1916 bp ds-DNA     linear       27-FEB-2019
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     rep_origin      699..1318
+                     /label="pBR322_origin"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     misc_feature    1748..1916
+                     /label="AMP Overlap"
+                     /ApEinfo_revcolor=#2b2cff
+                     /ApEinfo_fwdcolor=#2b2cff
+     misc_feature    26..282
+                     /label="Delta2Homology(Tn5TransposonHomology)"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    308..1916
+                     /label="Amp and ori"
+                     /ApEinfo_revcolor=#004c4c
+                     /ApEinfo_fwdcolor=#004c4c
+     misc_feature    283..290
+                     /label="PmeI site"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     gene            1473..1916
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    26..38
+                     /label="gRNA target"
+                     /ApEinfo_revcolor=#c6c9d1
+                     /ApEinfo_fwdcolor=#c6c9d1
+     misc_feature    1..25
+                     /label="MCT2"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    283..307
+                     /label="DTBA"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+ORIGIN
+        1 CAGAAGCGAG GCGAATAAAG GTGGCAACTT CTAGTATATT CTGTATACCT AATATTATAG
+       61 CCTTTATCAA CAATGGAATC CCAACAATTA TCTCAACATT CACCCATTTC TCATGGTAGC
+      121 GCCTGTGCTT CGGTTACTTC TAAGGAAGTC CACACAAATC AAGATCCGTT AGACGTTTCA
+      181 GCTTCCAAAA CAGAAGAATG TGAGAAGGCT TCCACTAAGG CTAACTCTCA ACAGACAACA
+      241 ACACCTGCTT CATCAGCTGT TCCAGAGAAC CCCCATGAAT TCgtttaaac TGGCTGCTAC
+      301 CCACGCCcat ggtcatagct gtttcctgtg tgaaattgtt atccgctcac aattccacac
+      361 aacataggag ccggaagcat aaagtgtaaa gcctggggtg cctaatgagt gaggtaactc
+      421 acattaattg cgttgcgctc actgcccgct ttccagtcgg gaaacctgtc gtgccagctg
+      481 cattaatgaa tcggccaacg cgcggggaga ggcggtttgc gtattgggcg ctcttccgct
+      541 tcctcgctca ctgactcgct gcgctcggtc gttcggctgc ggcgagcggt atcagctcac
+      601 tcaaaggcgg taatacggtt atccacagaa tcaggggata acgcaggaaa gaacatgtga
+      661 gcaaaaggcc agcaaaaggc caggaaccgt aaaaaggccg cgttgctggc gtttttccat
+      721 aggctcggcc cccctgacga gcatcacaaa aatcgacgct caagtcagag gtggcgaaac
+      781 ccgacaggac tataaagata ccaggcgttc ccccctggaa gctccctcgt gcgctctcct
+      841 gttccgaccc tgccgcttac cggatacctg tccgcctttc tcccttcggg aagcgtggcg
+      901 ctttctcaat gctcacgctg taggtatctc agttcggtgt aggtcgttcg ctccaagctg
+      961 ggctgtgtgc acgaaccccc cgttcagccc gaccgctgcg ccttatccgg taactatcgt
+     1021 cttgagtcca acccggtaag acacgactta tcgccactgg cagcagccac tggtaacagg
+     1081 attagcagag cgaggtatgt aggcggtgct acagagttct tgaagtggtg gcctaactac
+     1141 ggctacacta gaaggacagt atttggtatc tgcgctctgc tgaagccagt taccttcgga
+     1201 aaaagagttg gtagctcttg atccggcaaa caaaccaccg ctggtagcgg tggttttttt
+     1261 gtttgcaagc agcagattac gcgcagaaaa aaaggatctc aagaagatcc tttgatcttt
+     1321 tctacggggt ctgacgctca gtggaacgaa aactcacgtt aagggatttt ggtcatgaga
+     1381 ttatcaaaaa ggatcttcac ctagatcctt ttaaattaaa aatgaagttt taaatcaatc
+     1441 taaagtatat atgagtaaac ttggtctgac agttaccaat gcttaatcag tgaggcacct
+     1501 atctcagcga tctgtctatt tcgttcatcc atagttgcct gactgcccgt cgtgtagata
+     1561 actacgatac gggagggctt accatctggc cccagtgctg caatgatacc gcgagaccca
+     1621 cgctcaccgg ctccagattt atcagcaata aaccagccag ccggaagggc cgagcgcaga
+     1681 agtggtcctg caactttatc cgcctccatc cagtctatta attgttgccg ggaagctaga
+     1741 gtaagtagtt cgccagttaa tagtttgcgc aacgttgttg ccattgctac aggcatcgtg
+     1801 gtgtcacgct cgtcgtttgg tatggcttca ttcagctccg gttcccaacg atcaaggcga
+     1861 gttacatgat cccccatgtt gtgaaaaaaa gcggttagct ccttcggtcc tccgat
+//

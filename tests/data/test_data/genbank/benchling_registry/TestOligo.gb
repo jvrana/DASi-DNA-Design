@@ -1,0 +1,6 @@
+LOCUS       TestOligo                 25 bp ds-DNA     linear       29-OCT-2018
+DEFINITION  .
+FEATURES             Location/Qualifiers
+ORIGIN
+        1 agtgctgatg ctatctgtag ctgac
+//

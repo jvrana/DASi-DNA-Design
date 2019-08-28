@@ -1,0 +1,45 @@
+LOCUS       AmpSplit-P1G1_(pcDNA3.1) 949 bp ds-DNA     linear       12-JUL-2019
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     primer_bind     905..924
+                     /label="pRS-marker"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
+     primer_bind     488..507
+                     /label="Amp-R"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     CDS             10..10
+                     /label="AmpR"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     promoter        726..830
+                     /label="AmpR promoter"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+     source          10..924
+                     /label="source"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     CDS             10..725
+                     /label="AmpR"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+ORIGIN
+        1 CCGCGAGATc cacgctcacc ggctccagat ttatcagcaa taaaccagcc agccggaagg
+       61 gccgagcgca gaagtggtcc tgcaacttta tccgcctcca tccagtctat taattgttgc
+      121 cgggaagcta gagtaagtag ttcgccagtt aatagtttgc gcaacgttgt tgccattgct
+      181 acaggcatcg tggtgtcacg ctcgtcgttt ggtatggctt cattcagctc cggttcccaa
+      241 cgatcaaggc gagttacatg atcccccatg ttgtgcaaaa aagcggttag ctccttcggt
+      301 cctccgatcg ttgtcagaag taagttggcc gcagtgttat cactcatggt tatggcagca
+      361 ctgcataatt ctcttactgt catgccatcc gtaagatgct tttctgtgac tggtgagtac
+      421 tcaaccaagt cattctgaga atagtgtatg cggcgaccga gttgctcttg cccggcgtca
+      481 atacgggata ataccgcgcc acatagcaga actttaaaag tgctcatcat tggaaaacgt
+      541 tcttcggggc gaaaactctc aaggatctta ccgctgttga gatccagttc gatgtaaccc
+      601 actcgtgcac ccaactgatc ttcagcatct tttactttca ccagcgtttc tgggtgagca
+      661 aaaacaggaa ggcaaaatgc cgcaaaaaag ggaataaggg cgacacggaa atgttgaata
+      721 ctcatactct tcctttttca atattattga agcatttatc agggttattg tctcatgagc
+      781 ggatacatat ttgaatgtat ttagaaaaat aaacaaatag gggttccgcg cacatttccc
+      841 cgaaaagtgc cacctgacgt cgacggatcg ggagatctcc cgatccccta tggtgcactc
+      901 tcagtacaat ctgctctgat gccgGGGACC GTCAACCCTG AACCACAAA
+//

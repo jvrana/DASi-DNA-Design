@@ -18,6 +18,7 @@ def here():
 PRIMERS = "primers"
 TEMPLATES = "templates"
 QUERIES = "queries"
+REGISTRY = "registry"
 
 
 @pytest.fixture(scope="module")
@@ -28,6 +29,7 @@ def paths(here):
         QUERIES: join(
             here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb"
         ),
+        REGISTRY: join(here, 'data/test_data/genbank/benchling_registry/*.gb')
     }
 
 

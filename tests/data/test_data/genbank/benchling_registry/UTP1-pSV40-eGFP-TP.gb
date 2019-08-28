@@ -1,0 +1,76 @@
+LOCUS       UTP1-pSV40-eGFP-TP      1110 bp ds-DNA     linear       12-JUL-2019
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     gibson assembly 1089..1110
+                     /label="tp"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    64..90
+                     /label="SV40 P1"
+                     /ApEinfo_revcolor=#730e8c
+                     /ApEinfo_fwdcolor=#730e8c
+     misc_feature    196..216
+                     /label="SP1 enhancer"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     promoter        49..49
+                     /label="SV40 promoter"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    1..25
+                     /label="UTP1"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    49..120
+                     /label="AP1 enhancer"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
+     misc_feature    318..318
+                     /label="Transcription start site +1"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     promoter        169..365
+                     /label="SV40 early promoter"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     misc_feature    403..422
+                     /label="GFP NT2"
+                     /ApEinfo_revcolor=#690f96
+                     /ApEinfo_fwdcolor=#690f96
+     misc_feature    375..1088
+                     /label="EGFP"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     misc_feature    49..365
+                     /label="SV40 promoter"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    278..284
+                     /label="TATA box"
+                     /ApEinfo_revcolor=#800080
+                     /ApEinfo_fwdcolor=#800080
+     misc_feature    301..320
+                     /label="SV40-GFP NT1"
+                     /ApEinfo_revcolor=#690f96
+                     /ApEinfo_fwdcolor=#690f96
+ORIGIN
+        1 GCCGATACGA AGGTTTTCTC CAGCGCCTGT GGAATGTGTG TCAGTTAGGG TGTGGAAAGT
+       61 CCCCAGGCTC CCCAGCAGGC AGAAGTATGC AAAGCATGCA TCTCAATTAG TCAGCAACCA
+      121 GGTGTGGAAA GTCCCCAGGC TCCCCAGCAG GCAGAAGTAT GCAAAGCATG CATCTCAATT
+      181 AGTCAGCAAC CATAGTCCCG CCCCTAACTC CGCCCATCCC GCCCCTAACT CCGCCCAGTT
+      241 CCGCCCATTC TCCGCCCCAT GGCTGACTAA TTTTTTTTAT TTATGCAGAG GCCGAGGCCG
+      301 CCTCGGCCTC TGAGCTATTC CAGAAGTAGT GAGGAGGCTT TTTTGGAGGC CTAGGCTTTT
+      361 GCAAAAAGCT CATGGTGAGC AAGGGCGAGG AGCTGTTCAC CGGGGTGGTG CCCATCCTGG
+      421 TCGAGCTGGA CGGCGACGTA AACGGCCACA AGTTCAGCGT GTCCGGCGAG GGCGAGGGCG
+      481 ATGCCACCTA CGGCAAGCTG ACCCTGAAGT TCATCTGCAC CACCGGCAAG CTGCCCGTGC
+      541 CCTGGCCCAC CCTCGTGACC ACCCTGACCT ACGGCGTGCA GTGCTTCAGC CGCTACCCCG
+      601 ACCACATGAA GCAGCACGAC TTCTTCAAGT CCGCCATGCC CGAAGGCTAC GTCCAGGAGC
+      661 GCACCATCTT CTTCAAGGAC GACGGCAACT ACAAGACCCG CGCCGAGGTG AAGTTCGAGG
+      721 GCGACACCCT GGTGAACCGC ATCGAGCTGA AGGGCATCGA CTTCAAGGAG GACGGCAACA
+      781 TCCTGGGGCA CAAGCTGGAG TACAACTACA ACAGCCACAA CGTCTATATC ATGGCCGACA
+      841 AGCAGAAGAA CGGCATCAAG GTGAACTTCA AGATCCGCCA CAACATCGAG GACGGCAGCG
+      901 TGCAGCTCGC CGACCACTAC CAGCAGAACA CCCCCATCGG CGACGGCCCC GTGCTGCTGC
+      961 CCGACAACCA CTACCTGAGC ACCCAGTCCG CCCTGAGCAA AGACCCCAAC GAGAAGCGCG
+     1021 ATCACATGGT CCTGCTGGAG TTCGTGACCG CCGCCGGGAT CACTCTCGGC ATGGACGAGC
+     1081 TGTACAAGTG ATACCGTCGA CCTCGAGTCA
+//

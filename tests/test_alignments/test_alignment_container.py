@@ -313,6 +313,25 @@ class TestExpandPrimers():
         assert len(groups) == 3
 
 
+    def test_expand_pair_over_origin(self, container):
+        container = deepcopy(container)
+        container.alignments = [new_alignment_in_container(container, 474, 25, Constants.PCR_PRODUCT)]
+
+        new_alignment_in_container(container, 900, 930, Constants.PRIMER)
+        new_alignment_in_container(container, 485, 500, Constants.PRIMER, -1)
+
+        container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+
+        groups = container.complex_alignment_groups(container.alignments)
+        for g in groups:
+            print(g)
+
+
+        assert len(groups) == 2
+
+        groups = container.find_groups_by_pos(900, 500)
+        assert not groups
+
 class TestExpandOverlaps():
 
     def overlap_container(self, container, x1, x2, x3, x4):

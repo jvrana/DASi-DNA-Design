@@ -85,6 +85,36 @@ def test_real_design(here, paths, query):
 
     print_edge_cost(best_path, list(design.graphs.values())[0])
 
+def test_real_design2(here, paths):
+    query = "goal1.gb"
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["registry"])
+
+    fragments = [f for f in templates if f.annotations.get('topology', None) == 'linear']
+    plasmids = [f for f in templates if f.annotations.get('topology', None) == 'circular']
+
+    query_path = join(here, 'data/test_data/genbank/designs', query)
+    queries = make_circular(load_genbank_glob(query_path))
+
+    design = Design(span_cost=span_cost)
+
+    design.add_fragments(fragments)
+    design.add_templates(fragments + plasmids)
+    design.add_primers(primers)
+    design.add_queries(queries)
+
+    design.compile()
+
+    assert len(design.graphs) == len(queries)
+    assert len(design.graphs) == 1
+    path_dict = design.optimize()
+    best_path = list(path_dict.values())[0][0]
+    df = design.design()
+    d = df[0].to_dict()
+    print(json.dumps(d, indent=2))
+    print(df)
+
+    print_edge_cost(best_path, list(design.graphs.values())[0])
 
 def test_multidesign(here, paths):
     """Expect more than one graph to be output if multiple queries are provided"""
@@ -104,3 +134,5 @@ def test_multidesign(here, paths):
     assert len(design.graphs) > 1
 
     design.optimize()
+
+

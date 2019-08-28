@@ -1,0 +1,71 @@
+LOCUS       ampR-Split_B-ARS314.A.0 2011 bp ds-DNA     linear       10-DEC-2018
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     misc_feature    1..972
+                     /label="Amp and ori"
+                     /ApEinfo_revcolor=#004c4c
+                     /ApEinfo_fwdcolor=#004c4c
+     misc            1987..2011
+                     /label="Tm: 60.2°C"
+                     /ApEinfo_revcolor=#f7a8d8
+                     /ApEinfo_fwdcolor=#f7a8d8
+     promoter        628..656
+                     /label="AmpR_promoter"
+                     /ApEinfo_revcolor=#ff3e3e
+                     /ApEinfo_fwdcolor=#ff3e3e
+     misc_feature    1987..2011
+                     /label="UTP1"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     gene            1..586
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     CDS             1..1
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc            973..997
+                     /label="Tm: 61.5°C"
+                     /ApEinfo_revcolor=#2559ed
+                     /ApEinfo_fwdcolor=#2559ed
+     misc            1..169
+                     /label="Tm: 77.2°C"
+                     /ApEinfo_revcolor=#109497
+                     /ApEinfo_fwdcolor=#109497
+ORIGIN
+        1 gttcgccagt taatagtttg cgcaacgttg ttgccattgc tacaggcatc gtggtgtcac
+       61 gctcgtcgtt tggtatggct tcattcagct ccggttccca acgatcaagg cgagttacat
+      121 gatcccccat gttgtgaaaa aaagcggtta gctccttcgg tcctccgatc gttgtcagaa
+      181 gtaagttggc cgcagtgtta tcactcatgg ttatggcagc actgcataat tctcttactg
+      241 tcatgccatc cgtaagatgc ttttctgtga ctggtgagta ctcaaccaag tcattctgag
+      301 aatagtgtat gcggcgaccg agttgctctt gcccggcgtc aatacgggat aataccgcgc
+      361 cacatagcag aactttaaaa gtgctcatca ttggaaaacg ttcttcgggg cgaaaactct
+      421 caaggatctt accgctgttg agatccagtt cgatgtaacc cactcgtgca cccaactgat
+      481 cttcagcatc ttttactttc accagcgttt ctgggtgagc aaaaacagga aggcaaaatg
+      541 ccgcaaaaaa gggaataagg gcgacacgga aatgttgaat actcatactc ttcctttttc
+      601 aatattattg aagcatttat cagggttatt gtctcatgag cggatacata tttgaatgta
+      661 tttagaaaaa taaacaaata ggggttccgc gcacatttcc ccgaaaagtg ccacctgacg
+      721 tctaagaaac cattattatc atgacattaa cctataaaaa taggcgtatc acgaggccct
+      781 ttcgtctcgc gcgtttcggt gatgacggtg aaaacctctg acacatgcag ctcccggaga
+      841 cggtcacagc ttgtctgtaa gcggatgccg ggagcagaca agcccgtcag ggcgcgtcag
+      901 cgggtgttgg cgggtgtcgg ggctggctta actatgcggc atcagagcag attgtactga
+      961 gagtgcacca taGTCGGCGG GACCAGGGAG TTTAAACTGA ATGTGTCTCT GATGTACCAG
+     1021 AAATAATTTC TCTTAAAGGA GGCAATGCTT GAATTTCAGG ATTGAAAGTT TCATTCAATC
+     1081 TTGTTACAAT GCCTTCCTTC TCCAAATCAT TAATCAAGTG GTCAAATCTT TCATAGAACT
+     1141 TAGCTTCCAT TCTTTTGTAG AAATCATCTA CTTTCAATTT CTCGTCGCTC AGGTTAGTTA
+     1201 CGAATGTATC ATAAGAACTG AAGAGCGTCT TTCCCTCGCT ACTCACAGAT GAGCTGCGTG
+     1261 ATTCAAAGAA TTTCTTACGT ATAAAATTCT TATTGAAAGA GGTGGTTTTC CCTTGAGGAG
+     1321 ATAACTCGTC TAACTCAATT GTTTCCTCGT TAATATTGTT CCCATCTATG GCCTTTTCGT
+     1381 CGGAGTCTCC CCTTTTGCTT CCTGAAGGTG TTTTAGAACC AAAGAGCTTA CGCTTGAGTT
+     1441 TATGTGTAAA TCTTCTTTTC GATGAAGATG GTTCTCCTGC AGCTATGTTG CTTTCTATAT
+     1501 CAGCGATTGG ACCTGGAGTC TGAGAGTCAG CGTCATCGTT TAAGTCACCG GTTGGCGTTT
+     1561 CTTGTTTCAA TTCATCTGTC TGTAATGTGT AGATCAAATT TTTCAATTCG TTATAATCTA
+     1621 GGTAATGATT CTGCCATTCA GGGACAGCGT TGTATTTGAG AAAGTGTGAG AATCTCATTT
+     1681 CGAGGCACAA TAATAGCCGC CTTTACCGTA GTTTTGCTGC ACCTTTATCT GAGAGCTGAC
+     1741 TGCTTTTTTG GTGTGAAACA CTGTTTTCTG GTAATAATTT TTCAATGCAT CGGATTACTT
+     1801 TTCCCACGTG CGAAATCATC AATTAATTAG ATTGAAAAAA GGGTAAGGGA AAATAAGAAA
+     1861 GAGGCGGTAG CCTAAAGATA CGGTAATTGA AACGTTTCCT ATGCACAATC TTAAACCTTT
+     1921 TTAGGTAATT GATTAAGTTG ACTGTAATAT CTGTAAAAGA TTACATCTAA TTTACGTCTG
+     1981 GTTTCTGCCG ATACGAAGGT TTTCTCCAGC G
+//

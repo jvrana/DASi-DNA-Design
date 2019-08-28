@@ -1,0 +1,40 @@
+LOCUS       P1G1-Kozak-SV40NLS-hCsy4 641 bp ds-DNA     linear       12-JUL-2019
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     misc_feature    26..31
+                     /label="Kozak"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    620..641
+                     /label="TP"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+     misc_feature    32..34
+                     /label="START"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    1..25
+                     /label="P1G1"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    59..619
+                     /label="Csy4"
+                     /ApEinfo_revcolor=#d59687
+                     /ApEinfo_fwdcolor=#d59687
+     misc_feature    35..58
+                     /label="SV40 NLS"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+ORIGIN
+        1 GGGACCGTCA ACCCTGAACC ACAAAGCCAC Catgggacca aagaaaaaac gtaaagTGGG
+       61 TGATCATTAT CTGGATATTC GGCTGAGGCC TGATCCAGAG TTCCCACCTG CGCAGCTGAT
+      121 GTCTGTCCTT TTTGGCAAAC TTCATCAGGC CCTGGTTGCC CAGGGCGGAG ATCGGATAGG
+      181 GGTAAGCTTT CCAGACCTCG ACGAAAGCCG GAGCCGCCTG GGAGAACGCC TGCGGATCCA
+      241 CGCTTCTGCC GACGATCTGA GAGCCTTGCT GGCAAGGCCA TGGCTTGAGG GGCTCCGGGA
+      301 TCACCTGCAG TTTGGCGAAC CCGCCGTTGT TCCCCACCCA ACCCCTTATC GGCAGGTGTC
+      361 TAGAGTGCAG GCCAAATCTA ATCCAGAACG GCTGCGACGG CGACTCATGC GGCGACATGA
+      421 TCTTAGCGAG GAAGAGGCCC GAAAAAGAAT CCCTGATACC GTGGCCCGCG CCCTTGACTT
+      481 GCCTTTTGTC ACACTGCGGT CCCAGAGTAC GGGGCAGCAT TTCAGACTTT TCATTCGACA
+      541 CGGGCCACTG CAAGTTACCG CCGAAGAAGG AGGCTTTACT TGTTATGGAC TCTCCAAGGG
+      601 AGGTTTCGTG CCCTGGTTTT GATACCGTCG ACCTCGAGTC A
+//

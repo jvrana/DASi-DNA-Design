@@ -1,0 +1,64 @@
+LOCUS       ampR-Split_B-TRP1.A.1   1834 bp ds-DNA     linear       10-DEC-2018
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     promoter        628..656
+                     /label="AmpR_promoter"
+                     /ApEinfo_revcolor=#ff3e3e
+                     /ApEinfo_fwdcolor=#ff3e3e
+     misc_feature    998..1810
+                     /label="TRP1.A.0 5'"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     gene            1..1
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    1..972
+                     /label="Amp and ori"
+                     /ApEinfo_revcolor=#004c4c
+                     /ApEinfo_fwdcolor=#004c4c
+     misc            973..997
+                     /label="Tm: 61.5°C"
+                     /ApEinfo_revcolor=#602be6
+                     /ApEinfo_fwdcolor=#602be6
+     CDS             1..586
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc            1..169
+                     /label="Tm: 77.2°C"
+                     /ApEinfo_revcolor=#d75846
+                     /ApEinfo_fwdcolor=#d75846
+ORIGIN
+        1 gttcgccagt taatagtttg cgcaacgttg ttgccattgc tacaggcatc gtggtgtcac
+       61 gctcgtcgtt tggtatggct tcattcagct ccggttccca acgatcaagg cgagttacat
+      121 gatcccccat gttgtgaaaa aaagcggtta gctccttcgg tcctccgatc gttgtcagaa
+      181 gtaagttggc cgcagtgtta tcactcatgg ttatggcagc actgcataat tctcttactg
+      241 tcatgccatc cgtaagatgc ttttctgtga ctggtgagta ctcaaccaag tcattctgag
+      301 aatagtgtat gcggcgaccg agttgctctt gcccggcgtc aatacgggat aataccgcgc
+      361 cacatagcag aactttaaaa gtgctcatca ttggaaaacg ttcttcgggg cgaaaactct
+      421 caaggatctt accgctgttg agatccagtt cgatgtaacc cactcgtgca cccaactgat
+      481 cttcagcatc ttttactttc accagcgttt ctgggtgagc aaaaacagga aggcaaaatg
+      541 ccgcaaaaaa gggaataagg gcgacacgga aatgttgaat actcatactc ttcctttttc
+      601 aatattattg aagcatttat cagggttatt gtctcatgag cggatacata tttgaatgta
+      661 tttagaaaaa taaacaaata ggggttccgc gcacatttcc ccgaaaagtg ccacctgacg
+      721 tctaagaaac cattattatc atgacattaa cctataaaaa taggcgtatc acgaggccct
+      781 ttcgtctcgc gcgtttcggt gatgacggtg aaaacctctg acacatgcag ctcccggaga
+      841 cggtcacagc ttgtctgtaa gcggatgccg ggagcagaca agcccgtcag ggcgcgtcag
+      901 cgggtgttgg cgggtgtcgg ggctggctta actatgcggc atcagagcag attgtactga
+      961 gagtgcacca taGTCGGCGG GACCAGGGAG TTTAAACAAC TTTTCAAACG GCAGCCCCGA
+     1021 TCTAAAAGAG CTGACAGGGA AATGGTCAGA AAAAGAAACG TGCACCCGCC CGTCTGGACG
+     1081 CGCCGCTCAC CCGCACGGCA GAGACCAATC AGTAAAAATC AACGGTTAAC GACATTACTA
+     1141 TATATATAAT ATAGGAAGCA TTTAATAGAA CAGCATCGTA ATATATGTGT ACTTTGCAGT
+     1201 TATGACGCCA GATGGCAGTA GTGGAAGATA TTCTTTATTG AAAAATAGCT TGTCACCTTA
+     1261 CGTACAATCT TGATCCGGAG CTTTTCTTTT TTTGCCGATT AAGAATTCGG TCGAAAAAAG
+     1321 AAAAGGAGAG GGCCAAGAGG GAGGGCATTG GTGACTATTG AGCACGTGAG TATACGTGAT
+     1381 TAAGCACACA AAGGCAGCTT GGAGTATGTC TGTTATTAAT TTCACAGGTA GTTCTGGTCC
+     1441 ATTGGTGAAA GTTTGCGGCT TGCAGAGCAC AGAGGCCGCA GAATGTGCTC TAGATTCCGA
+     1501 TGCTGACTTG CTGGGTATTA TATGTGTGCC CAATAGAAAG AGAACAATTG ACCCGGTTAT
+     1561 TGCAAGGAAA ATTTCAAGTC TTGTAAAAGC ATATAAAAAT AGTTCAGGCA CTCCGAAATA
+     1621 CTTGGTTGGC GTGTTTCGTA ATCAACCTAA GGAGGATGTT TTGGCTCTGG TCAATGATTA
+     1681 CGGCATTGAT ATCGTCCAAC TGCATGGAGA TGAGTCGTGG CAAGAATACC AAGAGTTCCT
+     1741 CGGTTTGCCA GTTATTAAAA GACTCGTATT TCCAAAAGAC TGCAACATAC TACTCAGTGC
+     1801 AGCTTCACAG CCGATACGAA GGTTTTCTCC AGCG
+//

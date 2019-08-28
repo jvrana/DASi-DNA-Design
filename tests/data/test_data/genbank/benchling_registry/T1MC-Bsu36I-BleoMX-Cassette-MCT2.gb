@@ -1,0 +1,51 @@
+LOCUS       T1MC-Bsu36I-BleoMX-Cass 1079 bp ds-DNA     linear       07-DEC-2018
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     terminator      821..1054
+                     /label="TEF terminator"
+                     /ApEinfo_revcolor=#b4abac
+                     /ApEinfo_fwdcolor=#b4abac
+     misc_feature    817..820
+                     /label="scar"
+                     /ApEinfo_revcolor=#75c6a9
+                     /ApEinfo_fwdcolor=#75c6a9
+     site            1055..1055
+                     /label="PP2"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     promoter        43..427
+                     /label="TEF promoter"
+                     /ApEinfo_revcolor=#75c6a9
+                     /ApEinfo_fwdcolor=#75c6a9
+     misc_feature    33..1054
+                     /label="BleoMX_cassette"
+                     /ApEinfo_revcolor=#b7e6d7
+                     /ApEinfo_fwdcolor=#b7e6d7
+     CDS             430..816
+                     /label="BLEOMX"
+                     /ApEinfo_revcolor=#d6b295
+                     /ApEinfo_fwdcolor=#d6b295
+     primer_bind     33..53
+                     /label="2037 (aquarium; Tm 64)"
+                     /ApEinfo_revcolor=#f8d3a9
+                     /ApEinfo_fwdcolor=#f8d3a9
+ORIGIN
+        1 GCTTCAATAA AGGAGCGAGC ACCCGCCTGA GGGGCGCGCC AGATCTGTTT AGCTTGCCTC
+       61 GTCCCCGCCG GGTCACCCGG CCAGCGACAT GGAGGCCCAG AATACCCTCC TTGACAGTCT
+      121 TGACGTGCGC AGCTCAGGGG CATGATGTGA CTGTCGCCCG TACATTTAGC CCATACATCC
+      181 CCATGTATAA TCATTTGCAT CCATACATTT TGATGGCCGC ACGGCGCGAA GCAAAAATTA
+      241 CGGCTCCTCG CTGCAGACCT GCGAGCAGGG AAACGCTCCC CTCACAGACG CGTTGAATTG
+      301 TCCCCACGCC GCGCCCCTGT AGAGAAATAT AAAAGGTTAG GATTTGCCAC TGAGGTTCTT
+      361 CTTTCATATA CTTCCTTTTA AAATCTTGCT AGGATACAGT TCTCACATCA CATCCGAACA
+      421 TAAACAACCa tgggtatgac cgaccaagcg acgcccaacc tgccatcacg agatttcgat
+      481 cccaccgccg ccttctatga aaggttgggc ttcggaatcg ttttccggga cgccggctgg
+      541 atgatcctcc agcgcgggga tctcatgctg gagttcttcg cccaccccgg gctcgatccc
+      601 ctcgcgagtt ggttcagctg ctgcctgagg ctggacgacc tcgcggagtt ctaccggcag
+      661 tgcaaatccg tcggcatcca ggaaaccagc agcggctatc cgcgcatcca tgcccccgaa
+      721 ctgcaggagt ggggaggcac gatggccgct ttggtcgacc cggacgggac gctcctgcgc
+      781 ctgatacaga acgaattgct tgcaggcatc tcatgaTCAG TACTGACAAT AAAAAGATTC
+      841 TTGTTTTCAA GAACTTGTCA TTTGTATAGT TTTTTTATAT TGTAGTTGTT CTATTTTAAT
+      901 CAAATGTTAG CGTGATTTAT ATTTTTTTTC GCCTCGACAT CATCTGCCCA GATGCGAAGT
+      961 TAAGTGCGCA GAAAGTAATA TCATGCGTCA ATCGTATGTG AATGCTGGTC GCTATACTGC
+     1021 TGTCGATTCG ATACTAACGC CGCCATCCAG TGTCCAGAAG CGAGGCGAAT AAAGGTGGC
+//

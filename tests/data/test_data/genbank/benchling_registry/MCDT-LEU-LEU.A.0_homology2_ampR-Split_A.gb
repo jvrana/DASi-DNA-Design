@@ -1,0 +1,71 @@
+LOCUS       MCDT-LEU-LEU.A.0_homolo 2015 bp ds-DNA     linear       10-DEC-2018
+DEFINITION  .
+FEATURES             Location/Qualifiers
+     promoter        628..656
+                     /label="AmpR_promoter"
+                     /ApEinfo_revcolor=#ff3e3e
+                     /ApEinfo_fwdcolor=#ff3e3e
+     misc            973..997
+                     /label="Tm: 61.5°C"
+                     /ApEinfo_revcolor=#814ba5
+                     /ApEinfo_fwdcolor=#814ba5
+     CDS             1..586
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     misc_feature    1..972
+                     /label="Amp and ori"
+                     /ApEinfo_revcolor=#004c4c
+                     /ApEinfo_fwdcolor=#004c4c
+     misc_feature    1991..2015
+                     /label="UTP1"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc            1..169
+                     /label="Tm: 77.2°C"
+                     /ApEinfo_revcolor=#8df8ea
+                     /ApEinfo_fwdcolor=#8df8ea
+     gene            1..1
+                     /label="Ampicillin"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc            1991..2015
+                     /label="Tm: 60.2°C"
+                     /ApEinfo_revcolor=#ee4ec1
+                     /ApEinfo_fwdcolor=#ee4ec1
+ORIGIN
+        1 gttcgccagt taatagtttg cgcaacgttg ttgccattgc tacaggcatc gtggtgtcac
+       61 gctcgtcgtt tggtatggct tcattcagct ccggttccca acgatcaagg cgagttacat
+      121 gatcccccat gttgtgaaaa aaagcggtta gctccttcgg tcctccgatc gttgtcagaa
+      181 gtaagttggc cgcagtgtta tcactcatgg ttatggcagc actgcataat tctcttactg
+      241 tcatgccatc cgtaagatgc ttttctgtga ctggtgagta ctcaaccaag tcattctgag
+      301 aatagtgtat gcggcgaccg agttgctctt gcccggcgtc aatacgggat aataccgcgc
+      361 cacatagcag aactttaaaa gtgctcatca ttggaaaacg ttcttcgggg cgaaaactct
+      421 caaggatctt accgctgttg agatccagtt cgatgtaacc cactcgtgca cccaactgat
+      481 cttcagcatc ttttactttc accagcgttt ctgggtgagc aaaaacagga aggcaaaatg
+      541 ccgcaaaaaa gggaataagg gcgacacgga aatgttgaat actcatactc ttcctttttc
+      601 aatattattg aagcatttat cagggttatt gtctcatgag cggatacata tttgaatgta
+      661 tttagaaaaa taaacaaata ggggttccgc gcacatttcc ccgaaaagtg ccacctgacg
+      721 tctaagaaac cattattatc atgacattaa cctataaaaa taggcgtatc acgaggccct
+      781 ttcgtctcgc gcgtttcggt gatgacggtg aaaacctctg acacatgcag ctcccggaga
+      841 cggtcacagc ttgtctgtaa gcggatgccg ggagcagaca agcccgtcag ggcgcgtcag
+      901 cgggtgttgg cgggtgtcgg ggctggctta actatgcggc atcagagcag attgtactga
+      961 gagtgcacca taGTCGGCGG GACCAGGGAG TTTAAACAGG ATTGATAATG TAATAGGATC
+     1021 AATGAATATT AACATATAAA ATGATGATAA TAATATTTAT AGAATTGTGT AGAATTGCAG
+     1081 ATTCCCTTTT ATGGATTCCT AAATCCTCGA GGAGAACTTC TAGTATATCT ACATACCTAA
+     1141 TATTATTGCC TTATTAAAAA TGGAATCCCA ACAATTACAT CAAAATCCAC ATTCTCTTCA
+     1201 AAATCAATTG TCCTGTACTT CCTTGTTCAT GTGTGTTCAA AAACGTTATA TTTATAGGAT
+     1261 AATTATACTC TATTTCTCAA CAAGTAATTG GTTGTTTGGC CGAGCGGTCT AAGGCGCCTG
+     1321 ATTCAAGAAA TATCTTGACC GCAGTTAACT GTGGGAATAC TCAGGTATCG TAAGATGCAA
+     1381 GAGTTCGAAT CTCTTAGCAA CCATTATTTT TTTCCTCAAC ATAACGAGAA CACACAGGGG
+     1441 CGCTATCGCA CAGAATCAAA TTCGATGACT GGAAATTTTT TGTTAATTTC AGAGGTCGCC
+     1501 TGACGCATAT ACCTTTTTCA ACTGAAAAAT TGGGAGAAAA AGGAAAGGTG AGAGCGCCGG
+     1561 AACCGGCTTT TCATATAGAA TAGAGAAGCG TTCATGACTA AATGCTTGCA TCACAATACT
+     1621 TGAAGTTGAC AATATTATTT AAGGACCTAT TGTTTTTTCC AATAGGTGGT TAGCAATCGT
+     1681 CTTACTTTCT AACTTTTCTT ACCTTTTACA TTTCAGCAAT ATATATATAT ATATTTCAAG
+     1741 GATATACCAT TCTAATGTCT GCCCCTAAGA AGATCGTCGT TTTGCCAGGT GACCACGTTG
+     1801 GTCAAGAAAT CACAGCCGAA GCCATTAAGG TTCTTAAAGC TATTTCTGAT GTTCGTTCCA
+     1861 ATGTCAAGTT CGATTTCGAA AATCATTTAA TTGGTGGTGC TGCTATCGAT GCTACAGGTG
+     1921 TTCCACTTCC AGATGAGGCG CTGGAAGCCT CCAAGAAGGC TGATGCCGTT TTGTTAGGTG
+     1981 CTGTGGGTGG GCCGATACGA AGGTTTTCTC CAGCG
+//

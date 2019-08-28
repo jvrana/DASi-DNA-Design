@@ -2,7 +2,7 @@
 
 from dasi.alignments import Alignment, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
 from dasi.constants import Constants
-from dasi.assembly import AssemblyGraphBuilder
+from .assembly import AssemblyGraphBuilder
 from dasi.utils import perfect_subject, multipoint_shortest_path
 from dasi.exceptions import DasiDesignException
 import networkx as nx
@@ -369,7 +369,6 @@ class Design(DesignBase):
             query_key_to_path[query_key] = paths
         return query_key_to_path
 
-     #
     def _three_point_optimization(self, graph: nx.DiGraph) -> Tuple[Tuple, Tuple, float]:
         """
         Return minimum weight cycles from graph using a 3-point optimization.
@@ -381,11 +380,11 @@ class Design(DesignBase):
         node_to_i = {v: i for i, v in enumerate(nodelist)}
         weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight='weight'))
         cycle_endpoints = []
-        for i, n1 in enumerate(nodelist):
-            if n1[2] != 'A':
+        for i, A in enumerate(nodelist):
+            if A[2] != 'A':
                 continue
-            for n2 in graph.successors(n1):
-                j = node_to_i[n2]
+            for B in graph.successors(A):
+                j = node_to_i[B]
                 if i == j:
                     continue
                 a = weight_matrix[i, j]
@@ -395,29 +394,28 @@ class Design(DesignBase):
                     if k == j:
                         continue
 
-                    n3 = nodelist[k]
+                    C = nodelist[k]
 
                     # must alternate between 'A', 'B', 'A' for 3-point optimization
-                    if n3[2] != 'A':
+                    if C[2] != 'A':
                         continue
 
                     # avoid 'cheating' using an overhang
-                    is_overhang = n3[3] or n1[3]
+                    is_overhang = C[3] or A[3]
                     if k == i and is_overhang:
                         continue
 
-                    # avoid placing 'k' inside of the 'A-B' segment
-                    if n1[0] < n2[0]:
-                        # does not span origin
-                        if n1[0] <= n3[0] <= n2[0]:
-                            continue
-                    else:
-                        # does span origin
-                        if n3[0] <= n2[0]:
-                            continue
-                        elif n3[0] >= n1[0]:
-                            continue
-
+                    # # avoid placing 'k' inside of the 'A-B' segment
+                    # if n1[0] < n2[0]:
+                    #     # does not span origin
+                    #     if n1[0] <= n3[0] <= n2[0]:
+                    #         continue
+                    # else:
+                    #     # does span origin
+                    #     if n3[0] <= n2[0]:
+                    #         continue
+                    #     elif n3[0] >= n1[0]:
+                    #         continue
 
                     b = weight_matrix[j, k]
                     if b == np.inf:
@@ -428,7 +426,7 @@ class Design(DesignBase):
                         continue
 
                     if a + b + c != np.inf:
-                        x = ((n1, n2, n3), (a, b, c), a + b + c)
+                        x = ((A, B, C), (a, b, c), a + b + c)
                         cycle_endpoints.append(x)
         cycle_endpoints = sorted(cycle_endpoints, key=lambda x: x[-1])
         return cycle_endpoints

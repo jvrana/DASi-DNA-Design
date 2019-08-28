@@ -260,7 +260,7 @@ def test_design_task_with_gaps():
 
     check_design_result(design, expected_path)
 
-@pytest.mark.parametrize('repeat', range(10))
+@pytest.mark.parametrize('repeat', range(3))
 def test_design_with_overhang_primers(repeat):
 
     goal = random_record(3000)
@@ -399,7 +399,7 @@ def test_single_fragment():
 
 # TODO: PRIORITY, invalid edges are present for small fragments
 def test_fully_overlapped():
-    goal = random_record(10000)
+    goal = random_record(5000)
     make_circular([goal])
 
     r1 = goal[4100:4300]

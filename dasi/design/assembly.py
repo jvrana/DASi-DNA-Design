@@ -109,5 +109,5 @@ class AssemblyGraphBuilder(object):
                                     name='overlap',
                                     span_length=-len(ab),
                                     type=desc
-                            )
+                                )
         return self.G

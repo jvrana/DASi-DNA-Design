@@ -159,6 +159,10 @@ class AlignmentContainer(Sized):
                         _rev_span = g.query_region.sub(f.query_region.a, g.query_region.b)
                     except IndexError:
                         _rev_span = deepcopy(g.query_region)
+
+                    # TODO: fix error here in pcr expansion
+                    if _rev_span.a == 1459 and _rev_span.b == 25:
+                        x = 1
                     for a, b in _rev_span.ranges():
                         _rev_bind += bisect_slice_between(
                             rev_bind, rkeys, a, b

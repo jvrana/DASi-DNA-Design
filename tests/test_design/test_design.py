@@ -115,6 +115,7 @@ def test_real_design2(here, paths):
     print(df)
 
     print_edge_cost(best_path, list(design.graphs.values())[0])
+    raise NotImplementedError("This test contains an error due to pcr expansion")
 
 def test_multidesign(here, paths):
     """Expect more than one graph to be output if multiple queries are provided"""

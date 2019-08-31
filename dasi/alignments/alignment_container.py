@@ -146,7 +146,7 @@ class AlignmentContainer(Sized):
             rev_bind_region = g.query_region[:-Constants.PRIMER_MIN_BIND]
             fwd_bind = self.filter_alignments_by_span(fwd, fwd_bind_region, key=lambda p: p.query_region.b)
             rev_bind = self.filter_alignments_by_span(rev, rev_bind_region, key=lambda p: p.query_region.a)
-            rkeys = [r.query_region.a for r in rev_bind]
+            rev_bind, rkeys = sort_with_keys(rev_bind, key=lambda p: p.query_region.a)
 
             # both primers
             for f in fwd_bind:
@@ -160,9 +160,6 @@ class AlignmentContainer(Sized):
                     except IndexError:
                         _rev_span = deepcopy(g.query_region)
 
-                    # TODO: fix error here in pcr expansion
-                    if _rev_span.a == 1459 and _rev_span.b == 25:
-                        x = 1
                     for a, b in _rev_span.ranges():
                         _rev_bind += bisect_slice_between(
                             rev_bind, rkeys, a, b

@@ -240,12 +240,12 @@ class Design(DesignBase):
         primers = []
 
         for qk, paths in paths_dict.items():
-            paths = paths + paths[:1]
+            paths = paths
             G = self.graphs[qk]
             container = self.container_factory.containers()[qk]
 
             record = self.container_factory.seqdb[qk]
-            path = paths[0]
+            path = paths[0] + paths[0][:1]
 
             for n1, n2 in pairwise(path):
                 edata = G[n1][n2]
@@ -404,20 +404,20 @@ class Design(DesignBase):
                         continue
 
                     # avoid 'cheating' using an overhang
-                    is_overhang = C[3] or A[3]
-                    if k == i and is_overhang:
-                        continue
+                    # is_overhang = C[3] or A[3]
+                    # if k == i and is_overhang:
+                    #     continue
 
                     # # avoid placing 'k' inside of the 'A-B' segment
-                    # if n1[0] < n2[0]:
+                    # if A[0] < B[0]:
                     #     # does not span origin
-                    #     if n1[0] <= n3[0] <= n2[0]:
+                    #     if A[0] <= C[0] and C[0] <= B[0]:
                     #         continue
                     # else:
                     #     # does span origin
-                    #     if n3[0] <= n2[0]:
+                    #     if C[0] <= B[0]:
                     #         continue
-                    #     elif n3[0] >= n1[0]:
+                    #     elif C[0] >= A[0]:
                     #         continue
 
                     b = weight_matrix[j, k]

@@ -524,11 +524,12 @@ description = ""
 name = "pyblastbio"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "0.2.15"
+version = "0.3.1"
 
 [package.dependencies]
 biopython = ">=1.73,<2.0"
 fire = ">=0.1.3,<0.2.0"
+loggable-jdv = ">=0.1.2,<0.2.0"
 networkx = ">=2.3,<3.0"
 termcolor = ">=1.1,<2.0"
 
@@ -807,7 +808,7 @@ python-versions = ">=2.7"
 version = "0.5.2"
 
 [metadata]
-content-hash = "febe21b6b05f821d81b4db5d1c5c9d9db44bb7078720eb36d610cfffee712903"
+content-hash = "937c0475ad21eff8b5d3878afc1a9483751a8e42d3dde2bee38ea0d96de07701"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -860,7 +861,7 @@ poetry-setup = ["18204efc69bc3a79d19c905142d986e76d9a9dd18f4480f336dc6a7aad6a43b
 pre-commit = ["21ce389ea3a480170804208baff8ceaac815ecf6b9bd6c6797de5584ad69cff8", "3b0e901f442b966444833f1924e9bf9a7c10c79741b21520f68bc87639220f5e"]
 py = ["64f65755aee5b381cea27766a3a147c3f15b9b6b9ac88676de66ba2ae36793fa", "dc639b046a6e2cff5bbe40194ad65936d6ba360b52b3c3fe1d08a82dd50b5e53"]
 py-cpuinfo = ["2cf6426f776625b21d1db8397d3297ef7acfa59018f02a8779123f3190f18500"]
-pyblastbio = ["a740fab7d5e395440543f6984d10baafdaffba8ac85c6b7a1a64f6b74ac571f3", "a9f198366c5875b15bda1fe281e470e5a17f3c8574f05676adacd65afc6fbd5f"]
+pyblastbio = ["ebf07aa233b0c7bdf032eed2a948208cef3501d7d21f31ddc239b1b3238da19f", "ec76087cf02db72233d1a46fbc5a3700508971fe2ec6f11fc2b1ae6b54c31bbc"]
 pycodestyle = ["95a2219d12372f05704562a14ec30bc76b05a5b297b21a5dfe3f6fac3491ae56", "e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c"]
 pygal = ["27abab93cbc31e21f3c6bdecc05bda6cd3570cbdbd8297b7caa6904051b50d72", "9204f05380b02a8a32f9bf99d310b51aa2a932cba5b369f7a4dc3705f0a4ce83"]
 pygaljs = ["bd778749bc387a71520dde99f36a75ea776b3dcde5f3b59b4bd079c5723b1eb8", "be757bc75f52b46669472f6cc7eac95935092495bef153b8810a46c0c59f88a1"]

@@ -11,6 +11,7 @@ from more_itertools import pairwise
 
 spancost = SpanCost()
 
+
 def random_seq(len):
     bases = "AGTC"
 
@@ -24,6 +25,7 @@ def random_seq(len):
 
 def random_record(len):
     return SeqRecord(Seq(random_seq(len)), id=str(uuid4()))
+
 
 def print_edge_cost(path, graph):
     total = 0
@@ -39,6 +41,7 @@ def print_edge_cost(path, graph):
 
     print("TOTAL: {}".format(total))
     return total
+
 
 def check_design_result(design, expected_path, check_cost=True, check_path=True, path_func=None):
     design.compile()

@@ -1,3 +1,14 @@
+"""Cost
+
+.. module:: cost
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+"""
+
 import seaborn as sns
 import pylab as plt
 import numpy as np
@@ -48,6 +59,8 @@ slicer = Slicer()
 
 
 class SynParams(object):
+    """Synthesis parameters"""
+
     gene_synthesis_cost = np.zeros((2250, 2))
     d = {
         (0, 1): {"base": 0.0, "time": 0},
@@ -73,12 +86,15 @@ class SynParams(object):
 
 
 class CostParams(object):
+    """Global cost parameters"""
 
     time = 50.0  # dollar cost of 24 hours
     material = 1.0  # multiply material cost by this amount
 
 
 class JunctionCost(object):
+    """Junction cost calculations."""
+
     def __init__(self):
         # the min and max spans to evaluate
         min_span = JxnParams.min_jxn_span
@@ -230,6 +246,8 @@ class JunctionCost(object):
 
 
 class SynthesisCost(object):
+    """Synthesis cost calculations"""
+
     def __init__(self, jxn_cost: JunctionCost):
         self.jxn_cost = jxn_cost
         self.cost_dict = None
@@ -340,6 +358,7 @@ class SynthesisCost(object):
 
 
 class SpanCost(object):
+    """Span cost calculations"""
 
     JUNCTION_BY_PRIMERS = "JUNCTION_BY_PRIMERS"
     JUNCTION_BY_SYNTHESIS = "JUNCTION_BY_SYNTHESIS"

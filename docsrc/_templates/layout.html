@@ -1,0 +1,33 @@
+{% extends "!layout.html" %}
+{% block header %}
+    {% if pagename == 'index' %}
+        <div class="container">
+            <div class="jumbotron">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h1>Trident</h1>
+                    </div>
+                    <div class="col-md-7">
+                        <script id="asciicast-8cDFwMLfAqtJPqfWKgR8iZeS7"
+                                src="https://asciinema.org/a/8cDFwMLfAqtJPqfWKgR8iZeS7.js"
+                                data-speed="1" data-rows="7"
+                                data-loop="1" data-cols="120" data-t="10"
+                                async>
+                        </script>
+                    </div>
+                </div>
+                <p><a href="https://www.aquarium.bio/">Aquarium's</a> Python API for
+                    planning, executing, and analyzing scientific experiments.
+                </p>
+                <hr class="my-4">
+                <span>
+                  <a class="btn btn-primary btn-lg" href=basics/getting_started.html role="button">Get started with Trident</a>
+
+                  <a class="btn btn-info btn-lg pull-right" href="https://www.aquarium.bio/" role="button">Learn about Aquarium</a>
+              </span>
+
+            </div>
+        </div>
+        {{ super() }}
+    {% endif %}
+{% endblock %}

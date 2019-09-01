@@ -8,6 +8,8 @@ from dasi import Design
 from dasi.cost import SpanCost
 from itertools import zip_longest
 from more_itertools import pairwise
+import numpy as np
+
 
 spancost = SpanCost()
 
@@ -34,10 +36,10 @@ def print_edge_cost(path, graph):
         try:
             edata = graph[n1][n2]
             total += edata['weight']
-            print((n1, n2, edata['weight']))
+            print((n1, n2, edata))
         except:
             print((n1, n2, "MISSING EDGE"))
-            total += 10**6
+            total += np.inf
 
     print("TOTAL: {}".format(total))
     return total
@@ -47,6 +49,8 @@ def check_design_result(design, expected_path, check_cost=True, check_path=True,
     design.compile()
     path_dict = design.optimize()
     paths = list(path_dict.values())[0]
+    if not paths:
+        raise Exception("There are no paths.")
     best_path = paths[0]
 
     for x, y in zip_longest(best_path, expected_path):
@@ -62,6 +66,7 @@ def check_design_result(design, expected_path, check_cost=True, check_path=True,
 
     print("Num groups: {}".format(len(design.container_list()[0].groups())))
 
+    assert cost2 < np.inf
     if check_cost:
         assert cost1 <= cost2
 
@@ -73,6 +78,7 @@ def check_design_result(design, expected_path, check_cost=True, check_path=True,
             p1 = best_path
             p2 = expected_path
         assert p1 == p2
+
     return design
 
 
@@ -195,7 +201,7 @@ def test_design_with_overlaps():
         (1950, False, 'A', True),
         (3000, False, 'B', True),
         (3000 - 40, False, 'A', True),
-        (1000, False, 'B', True),
+        (4000, False, 'B', True),
     ]
 
     check_design_result(design, expected_path)
@@ -226,7 +232,7 @@ def test_design_with_overlaps_with_templates():
         (1950, True, 'A', True),
         (3000, True, 'B', True),
         (3000 - 40, True, 'A', True),
-        (1000, True, 'B', True),
+        (4000, True, 'B', True),
     ]
 
     check_design_result(design, expected_path, check_path=False)
@@ -289,7 +295,7 @@ def test_design_with_overhang_primers(repeat):
         (970, False, 'A', True),
         (2030, False, 'B', True),
         (1970, False, 'A', True),
-        (1000, True, 'B', True),
+        (4000, True, 'B', True),
     ]
 
     check_design_result(design, expected_path)

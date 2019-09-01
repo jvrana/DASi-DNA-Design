@@ -1,10 +1,23 @@
+"""Utilities
+
+.. module:: design
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    async_wrapper
+    region
+    span
+"""
+
 import bisect
 from .region import Region
-from .span import Span
 import functools
 from .async_wrapper import make_async
-from more_itertools import pairwise, unique_justseen
-from itertools import chain
+from more_itertools import pairwise
 import networkx as nx
 from typing import List
 

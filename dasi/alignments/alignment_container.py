@@ -1,3 +1,7 @@
+"""
+Alignment container
+"""
+
 from .alignment import Alignment, AlignmentGroup, ComplexAlignmentGroup
 from dasi.log import logger
 from dasi.utils import Region, bisect_slice_between, sort_with_keys
@@ -52,6 +56,14 @@ def blast_to_region(query_or_subject, seqdb):
 class AlignmentContainer(Sized):
     """
     Container for a set of query-to-subject alignments for a single query.
+
+    Instance Attributes/Properties:
+        alignments  list of alignments for the container
+                    List[Alignment]
+        seqdb       key to SeqRecord dictionary
+                    Dict[str, SeqRecord]
+        logger      the instance's logger
+                    Loggable
 
     This class contains:
         1. Methods grouping alignments together according to those
@@ -392,7 +404,7 @@ class AlignmentContainerFactory(object):
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
-        self.alignments = {}
+        self.alignments = {}  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
         self.logger = logger(self)
         self.seqdb = seqdb
 

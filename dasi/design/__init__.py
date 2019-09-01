@@ -1,9 +1,20 @@
-"""Primer and synthesis design"""
+"""Primer and synthesis design
+
+.. module:: design
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    assembly
+"""
 
 from dasi.alignments import Alignment, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
 from dasi.constants import Constants
 from .assembly import AssemblyGraphBuilder
-from dasi.utils import perfect_subject, multipoint_shortest_path
+from dasi.utils import perfect_subject, multipoint_shortest_path, sort_with_keys
 from dasi.exceptions import DasiDesignException
 import networkx as nx
 from pyblast import BioBlastFactory
@@ -14,7 +25,7 @@ import numpy as np
 from more_itertools import pairwise
 from pyblast.utils import Span, is_circular
 import pandas as pd
-
+import bisect
 
 BLAST_PENALTY_CONFIG = {
     'gapopen': 3,
@@ -24,33 +35,36 @@ BLAST_PENALTY_CONFIG = {
 }
 
 
-
 class DesignBase(object):
-
     PRIMERS = "primers"
     TEMPLATES = "templates"
     QUERIES = "queries"
     FRAGMENTS = "fragments"
 
-
-    def __init__(self, span_cost=None):
+    def __init__(self, span_cost=None, seqdb=None):
         self.blast_factory = BioBlastFactory()
         self.logger = logger(self)
 
         # graph by query_key
+        if seqdb is None:
+            seqdb = {}
+        self._seqdb = seqdb
         self.graphs = {}
         self.span_cost = span_cost
-        self.container_factory = AlignmentContainerFactory({})
+        self.container_factory = AlignmentContainerFactory(self.seqdb)
+
+    @property
+    def seqdb(self):
+        return self._seqdb
 
 
-class DesignBacktrace(object):
+class DesignResult(object):
     """
     Should take in a path, graph, container, seqdb to produce relevant information
     """
 
-
-    def __init__(self):
-        pass
+    def __init__(self, nodes):
+        self.nodes = nodes
 
 
 class Design(DesignBase):
@@ -59,11 +73,11 @@ class Design(DesignBase):
     """
 
     def add_materials(
-        self,
-        primers: List[SeqRecord],
-        templates: List[SeqRecord],
-        queries: List[SeqRecord],
-        fragments=None
+            self,
+            primers: List[SeqRecord],
+            templates: List[SeqRecord],
+            queries: List[SeqRecord],
+            fragments=None
     ):
         if fragments is None:
             fragments = []
@@ -76,7 +90,6 @@ class Design(DesignBase):
         self.template_results = []
         self.fragment_results = []
         self.primer_results = []
-
 
     def add_primers(self, primers: List[SeqRecord]):
         self.logger.info("Adding primers")
@@ -147,11 +160,16 @@ class Design(DesignBase):
         self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
+    @property
+    def containers(self):
+        return self.container_factory.containers()
+
     def container_list(self):
         return list(self.container_factory.containers().values())
 
     def assemble_graphs(self):
-        for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), "INFO", desc='compiling all containers'):
+        for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), "INFO",
+                                                     desc='compiling all containers'):
             container.expand(expand_overlaps=True, expand_primers=True)
 
             # group by query_regions
@@ -176,19 +194,19 @@ class Design(DesignBase):
         self.assemble_graphs()
 
     # def plot_matrix(self, matrix):
-        ## plot matrix
-        # import pylab as plt
-        # import seaborn as sns
-        # import numpy as np
-        #
-        # plot_matrix = matrix.copy()
-        # plot_matrix[plot_matrix == np.inf] = 10000
-        # plot_matrix = np.nan_to_num(plot_matrix)
-        #
-        # fig = plt.figure(figsize=(24, 20))
-        # ax = fig.gca()
-        # step = 1
-        # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
+    ## plot matrix
+    # import pylab as plt
+    # import seaborn as sns
+    # import numpy as np
+    #
+    # plot_matrix = matrix.copy()
+    # plot_matrix[plot_matrix == np.inf] = 10000
+    # plot_matrix = np.nan_to_num(plot_matrix)
+    #
+    # fig = plt.figure(figsize=(24, 20))
+    # ax = fig.gca()
+    # step = 1
+    # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
     @staticmethod
     def _find_iter_alignment(a, b, alignments):
@@ -355,88 +373,60 @@ class Design(DesignBase):
         df = self.path_to_df(path_dict)
         return df
 
-    def optimize(self, verbose=False, n_paths=20) -> Dict[str, List[List[Tuple]]]:
+    # TODO: n_paths to class attribute
+    def optimize(self, n_paths=20) -> Dict[str, List[List[Tuple]]]:
+        """Finds the optimal paths for each query in the design."""
         query_key_to_path = {}
         for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
+            container = self.containers[query_key]
+            query = container.seqdb[query_key]
+            cyclic = is_circular(query)
             self.logger.info("Optimizing {}".format(query_key))
-            paths = self._optimize_graph(G, n_paths=n_paths)
+            paths = self._collect_optimized_paths(G, len(query), cyclic, n_paths=n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
                 self.logger.error("\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
-                                  " be better synthesized. Use a tool such as JBEI's BOOST.".format(query_rec.name, query_key))
-            if verbose:
-                for path in paths:
-                    for n1, n2 in pairwise(path):
-                        edata = G[n1][n2]
-                        print('{} > {} Weight={} name={} span={} type={}'.format(n1, n2, edata['weight'], edata['name']))
+                                  " be better synthesized. Use a tool such as JBEI's BOOST.".format(query_rec.name,
+                                                                                                    query_key))
             query_key_to_path[query_key] = paths
         return query_key_to_path
 
-    def _three_point_optimization(self, graph: nx.DiGraph) -> Tuple[Tuple, Tuple, float]:
+    def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
         """
-        Return minimum weight cycles from graph using a 3-point optimization.
+        Use the floyd warshall algorithm to compute the shortest path endpoints.
 
-        :param graph:
+        :param graph: the networkx graph
+        :param length: the size of the query sequence
         :return:
         """
-        nodelist = list(graph.nodes())
+        nodelist, nkeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
         node_to_i = {v: i for i, v in enumerate(nodelist)}
         weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight='weight'))
         cycle_endpoints = []
-        for i, A in enumerate(nodelist):
-            if A[2] != 'A':
-                continue
-            for B in graph.successors(A):
-                j = node_to_i[B]
-                if i == j:
-                    continue
+
+        def bisect_iterator(nodelist, nkeys):
+            for i, A in enumerate(nodelist):
+                _j = bisect.bisect_left(nkeys, A[0] + length)
+                for B in nodelist[_j:]:
+                    j = node_to_i[B]
+                    yield i, j, A, B
+
+        pair_iterator = bisect_iterator(nodelist, nkeys)
+        for i, j, A, B in pair_iterator:
+            if B[2] == 'B' and A[2] == 'A':
                 a = weight_matrix[i, j]
-                if a == np.inf:
-                    continue
-                for k in range(len(weight_matrix[0])):
-                    if k == j:
-                        continue
+                b = weight_matrix[j, i]
+                if a != np.inf and b != np.inf:
+                    x = ((A, B), (a, b), a + b)
+                    cycle_endpoints.append(x)
 
-                    C = nodelist[k]
-
-                    # must alternate between 'A', 'B', 'A' for 3-point optimization
-                    if C[2] != 'A':
-                        continue
-
-                    # avoid 'cheating' using an overhang
-                    # is_overhang = C[3] or A[3]
-                    # if k == i and is_overhang:
-                    #     continue
-
-                    # # avoid placing 'k' inside of the 'A-B' segment
-                    # if A[0] < B[0]:
-                    #     # does not span origin
-                    #     if A[0] <= C[0] and C[0] <= B[0]:
-                    #         continue
-                    # else:
-                    #     # does span origin
-                    #     if C[0] <= B[0]:
-                    #         continue
-                    #     elif C[0] >= A[0]:
-                    #         continue
-
-                    b = weight_matrix[j, k]
-                    if b == np.inf:
-                        continue
-
-                    c = weight_matrix[k, i]
-                    if c == np.inf:
-                        continue
-
-                    if a + b + c != np.inf:
-                        x = ((A, B, C), (a, b, c), a + b + c)
-                        cycle_endpoints.append(x)
-        cycle_endpoints = sorted(cycle_endpoints, key=lambda x: x[-1])
+        cycle_endpoints = sorted(cycle_endpoints, key=lambda x: (x[-1], x[0]))
         return cycle_endpoints
 
-    def _cycle_endpoints_to_paths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], n_paths: int) -> List[List[Tuple]]:
+    def _nodes_to_fullpaths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], cyclic: bool, n_paths=None) -> \
+            List[List[Tuple]]:
         """
-        Convert cycle enpoints to paths.
+        Recover full paths from  cycle endpoints.
 
         :param graph:
         :param cycle_endpoints:
@@ -445,20 +435,37 @@ class Design(DesignBase):
         """
         unique_cyclic_paths = []
         for c in cycle_endpoints:
-            if len(unique_cyclic_paths) >= n_paths:
+            if n_paths is not None and len(unique_cyclic_paths) >= n_paths:
                 break
-            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=True)
+            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=cyclic)
             if path not in unique_cyclic_paths:
                 unique_cyclic_paths.append(path)
         return unique_cyclic_paths
 
-    def _optimize_graph(self, graph, n_paths=20):
-        cycle_endpoints = self._three_point_optimization(graph)
-        paths = self._cycle_endpoints_to_paths(graph, cycle_endpoints, n_paths)
+    def _collect_optimized_paths(self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=20):
+        """
+        Collect minimum cycles or linear paths from a graph.
+
+        :param graph: the networkx graph representing the assembly graph
+        :param length: length of the query
+        :param cyclic: whether to search for a cyclic assembly
+        :param n_paths: maximum number of paths to return
+        :return:
+        """
+        if cyclic:
+            nodes = self._collect_cycle_endpoints(graph, length=length)
+        else:
+            raise NotImplementedError("Linear assemblies are not yet implemented.")
+        paths = self._nodes_to_fullpaths(graph, nodes, cyclic=cyclic, n_paths=n_paths)
         self._check_paths(paths)
         return paths
 
     def _check_paths(self, paths):
+        """
+        Validates a path to check for duplicate nodes.
+        :param paths:
+        :return:
+        """
         invalid_paths = []
         for path in paths:
             lastseen = path[0][2]
@@ -507,7 +514,6 @@ class LibraryDesign(Design):
             if qk == sk:
                 yield (qk, align.query_region.a, align.query_region.b)
 
-
     def _share_query_blast(self):
         """
         Find and use shared fragments across queries.
@@ -535,8 +541,6 @@ class LibraryDesign(Design):
             new_shared_fragments = container.expand_overlaps(original_shared_fragments,
                                                              Constants.SHARED_FRAGMENT)
 
-
-
             self.logger.info("{}: Expanded {} shared from original {} shared fragments".format(
                 query_key,
                 len(new_shared_fragments),
@@ -549,8 +553,8 @@ class LibraryDesign(Design):
             # TODO: shared fragment has to be contained wholly in another fragment
             new_alignments = container.expand_overlaps(container.get_groups_by_types(
                 [Constants.FRAGMENT,
-                Constants.PCR_PRODUCT,
-                Constants.SHARED_FRAGMENT]
+                 Constants.PCR_PRODUCT,
+                 Constants.SHARED_FRAGMENT]
             ), Constants.PCR_PRODUCT)
             self.logger.info("{}: Expanded {} using {} and found {} new alignments.".format(
                 query_key,
@@ -569,7 +573,6 @@ class LibraryDesign(Design):
                 "PRODUCTS_WITH_PRIMERS",
                 Constants.SHARED_FRAGMENT
             ))
-
 
         repeats = []
         for query_key, container in self.container_factory.containers().items():

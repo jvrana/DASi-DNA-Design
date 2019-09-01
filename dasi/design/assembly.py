@@ -5,6 +5,11 @@ from dasi.alignments import AlignmentContainer
 from dasi.utils import sort_with_keys, bisect_slice_between
 import itertools
 import networkx as nx
+from collections import namedtuple
+
+from more_itertools import partition, unique_everseen
+
+AssemblyNode = namedtuple('AssemblyNode', 'index expandable type overhang')
 
 
 class AssemblyGraphBuilder(object):
@@ -23,7 +28,10 @@ class AssemblyGraphBuilder(object):
         self.G = None
         self.logger = logger(self)
 
-    def alignment_to_internal_edge(self, align):
+    def add_edge(self, n1, n2, weight, name, span, type):
+        self.G.add_edge(n1, n2, weight=weight, name=name, span=span, type=type)
+
+    def internal_edge_data(self, align):
         q = align.query_region
         a_expand, b_expand = True, True
         if align.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
@@ -31,6 +39,7 @@ class AssemblyGraphBuilder(object):
         if align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
             a_expand = False
 
+        # TODO: internal edge cost?
         ### INTERNAL EDGE
         if align.type == Constants.FRAGMENT:
             internal_cost = 0
@@ -41,12 +50,68 @@ class AssemblyGraphBuilder(object):
         elif align.type == Constants.PCR_PRODUCT:
             internal_cost = 30 + 30 + 30
 
-        return (q.a, a_expand, 'A'), (q.b, b_expand, 'B'), dict(
-                    weight=internal_cost,
-                    name='',
-                    span_length=len(align.query_region),
-                    type=align.type
-                )
+        a = q.a
+        if q.b < q.a and q.cyclic:
+            # is cyclic
+            b = q.b + q.context_length
+            lengths = [0]
+        else:
+            # is linear
+            lengths = [0, q.context_length]
+            b = q.b
+
+        nodes = []
+        for length in lengths:
+            node = (a + length, a_expand, 'A'), (b + length, b_expand, 'B'), dict(
+                            weight=internal_cost,
+                            name='',
+                            span=len(align.query_region),
+                            type=align.type
+            )
+            nodes.append(node)
+        return nodes
+
+    def add_internal_edges(self, groups):
+        for g in groups:
+            for a, b, ab_data in self.internal_edge_data(g):
+                for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
+                    a_node = (a[0], a[1], a[2], a_overhang)
+                    b_node = (b[0], b[1], b[2], b_overhang)
+                    self.G.add_edge(a_node, b_node, **ab_data)
+
+    def add_external_edges(self, groups, group_keys):
+        if not groups:
+            return
+        query_region = groups[0].query_region
+        a_nodes, b_nodes = partition(lambda x: x[2] == 'B', self.G.nodes())
+        for (b, b_expand, bid, b_overhang), (a, a_expand, aid, a_overhang) in itertools.product(b_nodes, a_nodes):
+            if not (b_overhang or a_overhang):
+                ba = query_region.new(b, a)
+
+                # TODO: PRIORITY no way to determine overlaps from just end points
+                cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))
+                if cost < self.COST_THRESHOLD:
+                    n1 = (b, b_expand, bid, b_overhang)
+                    n2 = (a, a_expand, aid, a_overhang)
+                    self.add_edge(
+                        n1, n2,
+                        weight=cost,
+                        name='',
+                        span=len(ba),
+                        type=desc
+                    )
+            else:
+                # TODO: PRIORITY this step is extremely slow
+                filtered_groups = bisect_slice_between(groups, group_keys, a, b)
+                if filtered_groups:
+                    ab = filtered_groups[0].query_region.new(a, b)
+                    cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
+
+                    n1 = AssemblyNode(b, b_expand, bid, True)
+                    n2 = AssemblyNode(a, a_expand, aid, True)
+
+                    if cost < self.COST_THRESHOLD:
+                        self.add_edge(n1, n2, weight=cost, name='overlap', span=-len(ab), type=desc)
 
     def build_assembly_graph(self):
 
@@ -65,49 +130,6 @@ class AssemblyGraphBuilder(object):
             key=lambda g: g.query_region.a,
         )
 
-        a_arr = set()
-        b_arr = set()
-
-        for g in groups:
-            a, b, ab_data = self.alignment_to_internal_edge(g)
-            for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
-                a_node = (a[0], a[1], a[2], a_overhang)
-                b_node = (b[0], b[1], b[2], b_overhang)
-                self.G.add_edge(a_node, b_node, **ab_data)
-                a_arr.add(a_node)
-                b_arr.add(b_node)
-
-        ### EXTERNAL EDGES
-        if groups:
-            query = groups[0].query_region
-            for (b, b_expand, bid, b_overhang), (a, a_expand, aid, a_overhang) in itertools.product(b_arr, a_arr):
-                if not (b_overhang or a_overhang):
-                    ba = query.new(b, a)
-
-                    # TODO: PRIORITY no way to determine overlaps from just end points
-                    cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))
-                    if cost < self.COST_THRESHOLD:
-                        self.G.add_edge(
-                            (b, b_expand, bid, b_overhang),
-                            (a, a_expand, aid, a_overhang),
-                            weight=cost,
-                            name='',
-                            span_length=len(ba),
-                            type=desc
-                        )
-                else:
-                    # TODO: PRIORITY this step is extremely slow
-                    filtered_groups = bisect_slice_between(groups, group_keys, a, b)
-                    if filtered_groups:
-                        ab = filtered_groups[0].query_region.new(a, b)
-                        cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
-                        if cost < self.COST_THRESHOLD:
-                                self.G.add_edge(
-                                    (b, b_expand, bid, True),
-                                    (a, a_expand, aid, True),
-                                    weight=cost,
-                                    name='overlap',
-                                    span_length=-len(ab),
-                                    type=desc
-                                )
+        self.add_internal_edges(groups)
+        self.add_external_edges(groups, group_keys)
         return self.G

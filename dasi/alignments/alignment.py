@@ -1,3 +1,7 @@
+"""
+Alignments
+"""
+
 from dasi.utils import Region
 from dasi.exceptions import AlignmentException
 from typing import List

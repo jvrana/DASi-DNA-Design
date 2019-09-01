@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design &#8212; dasi 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+    
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Trident</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Trident <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;Primer and synthesis design
+
+.. module:: design
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    assembly
+&quot;&quot;&quot;
+
+from dasi.alignments import Alignment, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
+from dasi.constants import Constants
+from .assembly import AssemblyGraphBuilder
+from dasi.utils import perfect_subject, multipoint_shortest_path, sort_with_keys
+from dasi.exceptions import DasiDesignException
+import networkx as nx
+from pyblast import BioBlastFactory
+from dasi.log import logger
+from typing import List, Tuple, Dict
+from Bio.SeqRecord import SeqRecord
+import numpy as np
+from more_itertools import pairwise
+from pyblast.utils import Span, is_circular
+import pandas as pd
+import bisect
+
+BLAST_PENALTY_CONFIG = {
+    &#39;gapopen&#39;: 3,
+    &#39;gapextend&#39;: 3,
+    &#39;reward&#39;: 1,
+    &#39;penalty&#39;: -5
+}
+
+
+class DesignBase(object):
+    PRIMERS = &quot;primers&quot;
+    TEMPLATES = &quot;templates&quot;
+    QUERIES = &quot;queries&quot;
+    FRAGMENTS = &quot;fragments&quot;
+
+    def __init__(self, span_cost=None):
+        self.blast_factory = BioBlastFactory()
+        self.logger = logger(self)
+
+        # graph by query_key
+        self.graphs = {}
+        self.span_cost = span_cost
+        self.container_factory = AlignmentContainerFactory({})
+
+
+<div class="viewcode-block" id="DesignBacktrace"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.DesignBacktrace">[docs]</a>class DesignBacktrace(object):
+    &quot;&quot;&quot;
+    Should take in a path, graph, container, seqdb to produce relevant information
+    &quot;&quot;&quot;
+
+    def __init__(self):
+        pass</div>
+
+
+<div class="viewcode-block" id="Design"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design">[docs]</a>class Design(DesignBase):
+    &quot;&quot;&quot;
+    Design class that returns optimal assemblies from a set of materials.
+    &quot;&quot;&quot;
+
+    def add_materials(
+            self,
+            primers: List[SeqRecord],
+            templates: List[SeqRecord],
+            queries: List[SeqRecord],
+            fragments=None
+    ):
+        if fragments is None:
+            fragments = []
+        self.add_primers(primers)
+        fragments = self.filter_linear_records(fragments)
+        self.add_templates(templates + fragments)
+        self.add_queries(queries)
+        self.add_fragments(fragments)
+
+        self.template_results = []
+        self.fragment_results = []
+        self.primer_results = []
+
+    def add_primers(self, primers: List[SeqRecord]):
+        self.logger.info(&quot;Adding primers&quot;)
+        self.blast_factory.add_records(primers, self.PRIMERS)
+
+    def add_templates(self, templates: List[SeqRecord]):
+        self.logger.info(&quot;Adding templates&quot;)
+        self.blast_factory.add_records(templates, self.TEMPLATES)
+
+    def add_queries(self, queries: List[SeqRecord]):
+        self.logger.info(&quot;Adding queries&quot;)
+        self.blast_factory.add_records(queries, self.QUERIES)
+
+    def add_fragments(self, fragments: List[SeqRecord]):
+        self.logger.info(&quot;Adding fragments&quot;)
+        self.blast_factory.add_records(fragments, self.FRAGMENTS)
+
+<div class="viewcode-block" id="Design.filter_linear_records"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design.filter_linear_records">[docs]</a>    @classmethod
+    def filter_linear_records(cls, records):
+        &quot;&quot;&quot;Return only linear records&quot;&quot;&quot;
+        return [r for r in records if not is_circular(r)]</div>
+
+<div class="viewcode-block" id="Design.filter_perfect_subject"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design.filter_perfect_subject">[docs]</a>    @classmethod
+    def filter_perfect_subject(cls, results):
+        &quot;&quot;&quot;return only results whose subject is 100% aligned to query&quot;&quot;&quot;
+        return [r for r in results if perfect_subject(r[&quot;subject&quot;])]</div>
+
+    # TODO: do a single blast and sort results based on record keys
+    def _blast(self):
+        self.logger.info(&quot;Compiling assembly graph&quot;)
+
+        # align templates
+        blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
+        blast.update_config(BLAST_PENALTY_CONFIG)
+        blast.quick_blastn()
+        results = blast.get_perfect()
+        self.template_results = results
+
+        # align fragments
+        if self.blast_factory.record_groups[self.FRAGMENTS]:
+            fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
+            fragment_blast.update_config(BLAST_PENALTY_CONFIG)
+            fragment_blast.quick_blastn()
+            fragment_results = blast.get_perfect()
+            fragment_results = self.filter_perfect_subject(fragment_results)
+        else:
+            fragment_results = []
+        self.fragment_results = fragment_results
+
+        self.container_factory.seqdb.update(blast.seq_db.records)
+        self.logger.info(&quot;Number of template matches: {}&quot;.format(len(results)))
+        self.logger.info(&quot;Number of perfect fragment matches: {}&quot;.format(len(fragment_results)))
+
+        # align primers
+        if self.blast_factory.record_groups[self.PRIMERS]:
+            primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
+            primer_blast.update_config(BLAST_PENALTY_CONFIG)
+            primer_blast.quick_blastn_short()
+            primer_results = primer_blast.get_perfect()
+            primer_results = self.filter_perfect_subject(primer_results)
+            self.container_factory.seqdb.update(primer_blast.seq_db.records)
+            self.logger.info(&quot;Number of perfect primers: {}&quot;.format(len(primer_results)))
+        else:
+            primer_results = []
+        self.primer_results = primer_results
+
+        self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
+        self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+        self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
+
+    @property
+    def containers(self):
+        return self.container_factory.containers()
+
+    def container_list(self):
+        return list(self.container_factory.containers().values())
+
+    def assemble_graphs(self):
+        for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), &quot;INFO&quot;,
+                                                     desc=&#39;compiling all containers&#39;):
+            container.expand(expand_overlaps=True, expand_primers=True)
+
+            # group by query_regions
+            groups = container.groups()
+
+            self.logger.info(&quot;Number of types: {}&quot;.format(len(container.groups_by_type)))
+            self.logger.info(&quot;Number of groups: {}&quot;.format(len(groups)))
+
+            # build assembly graph
+            graph_builder = AssemblyGraphBuilder(container, span_cost=self.span_cost)
+            G = graph_builder.build_assembly_graph()
+
+            self.logger.info(&quot;=== Assembly Graph ===&quot;)
+            self.logger.info(nx.info(G))
+            assert G.number_of_edges()
+            self.graphs[query_key] = G
+
+<div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design.compile">[docs]</a>    def compile(self):
+        &quot;&quot;&quot;Compile materials to assembly graph&quot;&quot;&quot;
+        self.graphs = {}
+        self._blast()
+        self.assemble_graphs()</div>
+
+    # def plot_matrix(self, matrix):
+    ## plot matrix
+    # import pylab as plt
+    # import seaborn as sns
+    # import numpy as np
+    #
+    # plot_matrix = matrix.copy()
+    # plot_matrix[plot_matrix == np.inf] = 10000
+    # plot_matrix = np.nan_to_num(plot_matrix)
+    #
+    # fig = plt.figure(figsize=(24, 20))
+    # ax = fig.gca()
+    # step = 1
+    # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
+
+    @staticmethod
+    def _find_iter_alignment(a, b, alignments):
+        for align in alignments:
+            if a == align.query_region.a and b == align.query_region.b:
+                yield align
+
+    def _fragment(self, query_key, a, b, fragment_type, cost):
+
+        def sub_record(record, span):
+            ranges = span.ranges()
+            sub = record[ranges[0][0]:ranges[0][1]]
+            for r in ranges[1:]:
+                sub += record[r[0]:r[1]]
+            sub.annotations = record.annotations
+            return sub
+
+        alignments = self.container_factory.alignments[query_key]
+        align = list(self._find_iter_alignment(a, b, alignments))[0]
+        subject_key = align.subject_key
+        subject_rec = self.container_factory.seqdb[subject_key]
+        query_rec = self.container_factory.seqdb[query_key]
+
+        subject_seq = sub_record(subject_rec, align.subject_region)
+
+        fragment_info = {
+            &#39;query_id&#39;: query_key,
+            &#39;query_name&#39;: query_rec.name,
+            &#39;query_region&#39;: (align.query_region.a, align.query_region.b),
+            &#39;subject_id&#39;: subject_key,
+            &#39;subject_name&#39;: subject_rec.name,
+            &#39;subject_region&#39;: (align.subject_region.a, align.subject_region.b),
+            &#39;fragment_length&#39;: len(align.subject_region),
+            &#39;fragment_seq&#39;: subject_seq,
+            &#39;cost&#39;: cost,
+            &#39;type&#39;: fragment_type,
+        }
+
+    def path_to_edge_costs(self, path, graph):
+        arr = []
+        for n1, n2 in pairwise(path):
+            edata = graph[n1][n2]
+            arr.append((n1, n2, edata))
+        return arr
+
+    def path_to_df(self, paths_dict):
+
+        fragments = []
+        primers = []
+
+        for qk, paths in paths_dict.items():
+            paths = paths
+            G = self.graphs[qk]
+            container = self.container_factory.containers()[qk]
+
+            record = self.container_factory.seqdb[qk]
+            path = paths[0] + paths[0][:1]
+
+            for n1, n2 in pairwise(path):
+                edata = G[n1][n2]
+                cost = edata[&#39;weight&#39;]
+                if n1[2] == &#39;A&#39; and n2[2] == &#39;B&#39;:
+                    A = n1[0]
+                    B = n2[0]
+                    group = container.find_groups_by_pos(A, B)[0]
+
+                    if isinstance(group, AlignmentGroup):
+                        align = group.alignments[0]
+                        subject = align.subject_key
+                        subject_rec = self.container_factory.seqdb[align.subject_key]
+                        subject_rec_name = subject_rec.name
+                        subject_seq = str(subject_rec[align.subject_region.a:align.subject_region.b].seq)
+                        subject_region = (align.subject_region.a, align.subject_region.b)
+                    elif isinstance(group, ComplexAlignmentGroup):
+                        names = []
+                        seqs = []
+                        regions = []
+                        subject = []
+                        for align in group.alignments:
+                            subject.append(align.subject_key)
+                            rec = self.container_factory.seqdb[align.subject_key]
+                            seqs.append(str(rec[align.subject_region.a:align.subject_region.b].seq))
+                            regions.append((align.subject_region.a, align.subject_region.b))
+                            names.append(rec.name)
+                        subject_rec_name = &#39;, &#39;.join(names)
+                        subject_seq = &#39;, &#39;.join(seqs)
+                        subject_region = regions[:]
+                        subject = &#39;,&#39;.join(subject)
+
+                    fragments.append({
+                        &#39;query&#39;: qk,
+                        &#39;query_name&#39;: record.name,
+                        &#39;query_region&#39;: (group.query_region.a, group.query_region.b),
+                        &#39;subject&#39;: subject,
+                        &#39;subject_name&#39;: subject_rec_name,
+                        &#39;subject_region&#39;: subject_region,
+                        &#39;fragment_length&#39;: len(group.query_region),
+                        &#39;fragment_seq&#39;: subject_seq,
+                        &#39;cost&#39;: cost,
+                        &#39;type&#39;: edata[&#39;type&#39;]
+                    })
+
+                    # TODO: design overhangs (how long?)
+                    # if n1[1]:
+                    #     primers.append({
+                    #         &#39;query&#39;: qk,
+                    #         &#39;query_name&#39;: record.name,
+                    #         &#39;query_region&#39;: (align.query_region.a, align.query_region.b),
+                    #         &#39;subject&#39;: sk,
+                    #         &#39;subject_name&#39;: subject_rec.name,
+                    #         &#39;subject_region&#39;: (align.subject_region.a, align.subject_region.a + 20),
+                    #         &#39;anneal_seq&#39;: str(subject_rec[align.subject_region.a:align.subject_region.a + 20].seq),
+                    #         &#39;overhang_seq&#39;: &#39;?&#39;,
+                    #         &#39;cost&#39;: &#39;?&#39;,
+                    #         &#39;type&#39;: &#39;PRIMER&#39;
+                    #     })
+                    # if n2[1]:
+                    #     primers.append({
+                    #         &#39;query&#39;: qk,
+                    #         &#39;query_name&#39;: record.name,
+                    #         &#39;query_region&#39;: (align.query_region.a, align.query_region.b),
+                    #         &#39;subject&#39;: sk,
+                    #         &#39;subject_name&#39;: subject_rec.name,
+                    #         &#39;subject_region&#39;: (align.subject_region.b - 20, align.subject_region.b),
+                    #         &#39;fragment_length&#39;: 0,
+                    #         &#39;anneal_seq&#39;: str(subject_rec[align.subject_region.b-20:align.subject_region.b].reverse_complement().seq),
+                    #         &#39;overhang_seq&#39;: &#39;?&#39;,
+                    #         &#39;cost&#39;: &#39;?&#39;,
+                    #         &#39;type&#39;: &#39;PRIMER&#39;
+                    #     })
+
+                else:
+                    B = n1[0]
+                    A = n2[0]
+                    span = Span(B, A, len(record), cyclic=is_circular(record), allow_wrap=True)
+
+                    # TODO: extending the gene synthesis
+                    if not n1[1]:
+                        span.b = span.b - 20
+                    if not n2[1]:
+                        span.a = span.a + 20
+
+                    ranges = span.ranges()
+                    frag_seq = record[ranges[0][0]:ranges[0][1]]
+                    for r in ranges[1:]:
+                        frag_seq += record[r[0]:r[1]]
+
+                    fragments.append({
+                        &#39;query&#39;: qk,
+                        &#39;query_name&#39;: record.name,
+                        &#39;query_region&#39;: (B, A),
+                        &#39;subject&#39;: None,
+                        &#39;subject_name&#39;: &#39;SYNTHESIS&#39;,
+                        &#39;subject_region&#39;: None,
+                        &#39;fragment_length&#39;: len(span),
+                        &#39;fragment_seq&#39;: str(frag_seq.seq),
+                        &#39;cost&#39;: cost,
+                        &#39;type&#39;: edata[&#39;type&#39;]
+                    })
+        return pd.DataFrame(fragments), pd.DataFrame(primers)
+
+    def design(self):
+        path_dict = self.optimize()
+        df = self.path_to_df(path_dict)
+        return df
+
+    def optimize(self, verbose=False, n_paths=20) -&gt; Dict[str, List[List[Tuple]]]:
+        query_key_to_path = {}
+        for query_key, G in self.logger.tqdm(self.graphs.items(), &quot;INFO&quot;, desc=&#39;optimizing graphs&#39;):
+            query = self.containers[query_key].seqdb[query_key]
+            cyclic = is_circular(query)
+            self.logger.info(&quot;Optimizing {}&quot;.format(query_key))
+            paths = self._collect_optimized_paths(G, len(query), cyclic, n_paths=n_paths)
+            if not paths:
+                query_rec = self.blast_factory.db.records[query_key]
+                self.logger.error(&quot;\n\tThere were no solutions found for design &#39;{}&#39; ({}).\n\tThis sequence may&quot;
+                                  &quot; be better synthesized. Use a tool such as JBEI&#39;s BOOST.&quot;.format(query_rec.name,
+                                                                                                    query_key))
+            if verbose:
+                for path in paths:
+                    for n1, n2 in pairwise(path):
+                        edata = G[n1][n2]
+                        print(
+                            &#39;{} &gt; {} Weight={} name={} span={} type={}&#39;.format(n1, n2, edata[&#39;weight&#39;], edata[&#39;name&#39;]))
+            query_key_to_path[query_key] = paths
+        return query_key_to_path
+
+    def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
+        nodelist, nkeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
+        node_to_i = {v: i for i, v in enumerate(nodelist)}
+        weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight=&#39;weight&#39;))
+        cycle_endpoints = []
+
+        def bisect_iterator(nodelist, nkeys):
+            for i, A in enumerate(nodelist):
+                _j = bisect.bisect_left(nkeys, A[0] + length)
+                for B in nodelist[_j:]:
+                    j = node_to_i[B]
+                    yield i, j, A, B
+
+        pair_iterator = bisect_iterator(nodelist, nkeys)
+        for i, j, A, B in pair_iterator:
+            if B[2] == &#39;B&#39; and A[2] == &#39;A&#39;:
+                a = weight_matrix[i, j]
+                b = weight_matrix[j, i]
+                if a != np.inf and b != np.inf:
+                    x = ((A, B), (a, b), a + b)
+                    cycle_endpoints.append(x)
+
+        cycle_endpoints = sorted(cycle_endpoints, key=lambda x: (x[-1], x[0]))
+        return cycle_endpoints
+
+<div class="viewcode-block" id="Design._three_point_optimization"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design._three_point_optimization">[docs]</a>    def _three_point_optimization(self, graph: nx.DiGraph) -&gt; Tuple[Tuple, Tuple, float]:
+        &quot;&quot;&quot;
+        Return minimum weight cycles from graph using a 3-point optimization.
+
+        :param graph:
+        :return:
+        &quot;&quot;&quot;
+        nodelist = sorted(list(graph.nodes()), key=lambda x: x[0])
+        node_to_i = {v: i for i, v in enumerate(nodelist)}
+        weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight=&#39;weight&#39;))
+        cycle_endpoints = []
+        for i, A in enumerate(nodelist):
+            if A[2] != &#39;A&#39;:
+                continue
+            for B in graph.successors(A):
+                j = node_to_i[B]
+                if i == j:
+                    continue
+                a = weight_matrix[i, j]
+                if a == np.inf:
+                    continue
+                for k in range(j):
+                    if k == j:
+                        continue
+
+                    C = nodelist[k]
+
+                    # must alternate between &#39;A&#39;, &#39;B&#39;, &#39;A&#39; for 3-point optimization
+                    if C[2] != &#39;B&#39;:
+                        continue
+
+                    # avoid &#39;cheating&#39; using an overhang
+                    # is_overhang = C[3] or A[3]
+                    # if k == i and is_overhang:
+                    #     continue
+
+                    # # avoid placing &#39;k&#39; inside of the &#39;A-B&#39; segment
+                    # if A[0] &lt;= B[0]:
+                    #     # does not span origin
+                    #     if A[0] &lt;= C[0] and C[0] &lt;= B[0]:
+                    #         continue
+
+                    # else:
+                    #     if C[0] &gt;= A[0] or C[0] &lt;= B[0]:
+                    #         continue
+
+                    b = weight_matrix[j, k]
+                    if b == np.inf:
+                        continue
+
+                    c = weight_matrix[k, i]
+                    if c == np.inf:
+                        continue
+
+                    if a + b + c != np.inf:
+                        x = ((A, B, C), (a, b, c), a + b + c)
+                        cycle_endpoints.append(x)
+        cycle_endpoints = sorted(cycle_endpoints, key=lambda x: x[-1])
+        return cycle_endpoints</div>
+
+<div class="viewcode-block" id="Design._nodes_to_fullpaths"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design._nodes_to_fullpaths">[docs]</a>    def _nodes_to_fullpaths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], cyclic: bool, n_paths=None) -&gt; \
+            List[List[Tuple]]:
+        &quot;&quot;&quot;
+        Recover full paths from  cycle endpoints.
+
+        :param graph:
+        :param cycle_endpoints:
+        :param n_paths:
+        :return:
+        &quot;&quot;&quot;
+        unique_cyclic_paths = []
+        for c in cycle_endpoints:
+            if n_paths is not None and len(unique_cyclic_paths) &gt;= n_paths:
+                break
+            path = multipoint_shortest_path(graph, c[0], weight_key=&#39;weight&#39;, cyclic=cyclic)
+            if path not in unique_cyclic_paths:
+                unique_cyclic_paths.append(path)
+        return unique_cyclic_paths</div>
+
+    def _collect_optimized_paths(self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=20):
+        if cyclic:
+            nodes = self._collect_cycle_endpoints(graph, length=length)
+        else:
+            raise NotImplementedError(&quot;Linear assemblies are not yet implemented.&quot;)
+        paths = self._nodes_to_fullpaths(graph, nodes, cyclic=cyclic, n_paths=n_paths)
+        self._check_paths(paths)
+        return paths
+
+    def _check_paths(self, paths):
+        invalid_paths = []
+        for path in paths:
+            lastseen = path[0][2]
+            for p in path[1:]:
+                if p[2] == lastseen:
+                    invalid_paths.append(path)
+                    break
+                lastseen = p[2]
+        if invalid_paths:
+            raise DasiDesignException(&quot;There are {} invalid paths:\n{}\n...{} more&quot;.format(
+                len(invalid_paths),
+                &quot;\n&quot;.join([str(x) for x in invalid_paths[:5]]),
+                max(len(invalid_paths) - 5, 0)
+            ))</div>
+
+
+<div class="viewcode-block" id="LibraryDesign"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign">[docs]</a>class LibraryDesign(Design):
+    &quot;&quot;&quot;
+    Design class for producing assemblies for libraries.
+    &quot;&quot;&quot;
+
+    def __init__(self, span_cost=None):
+        super().__init__(span_cost)
+        self.shared_alignments = []
+        self._edges = []
+
+    # @staticmethod
+    # def _get_repeats_from_results(results):
+    #     repeats = []
+    #     for r in results:
+    #         qk = r[&#39;query&#39;][&#39;origin_key&#39;]
+    #         sk = r[&#39;subject&#39;][&#39;origin_key&#39;]
+    #         if qk == sk:
+    #             repeats.append((qk, r[&#39;query&#39;][&#39;start&#39;], r[&#39;query&#39;][&#39;end&#39;]))
+    #     return repeats
+
+<div class="viewcode-block" id="LibraryDesign._get_iter_repeats"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign._get_iter_repeats">[docs]</a>    def _get_iter_repeats(self, alignments: List[Alignment]):
+        &quot;&quot;&quot;
+        Return repeat regions of alignments
+        :param alignments:
+        :return:
+        &quot;&quot;&quot;
+        for align in alignments:
+            qk = align.query_key
+            sk = align.subject_key
+            if qk == sk:
+                yield (qk, align.query_region.a, align.query_region.b)</div>
+
+<div class="viewcode-block" id="LibraryDesign._share_query_blast"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign._share_query_blast">[docs]</a>    def _share_query_blast(self):
+        &quot;&quot;&quot;
+        Find and use shared fragments across queries.
+
+        :return:
+        &quot;&quot;&quot;
+        self.logger.info(&quot;=== Expanding shared library fragments ===&quot;)
+
+        blast = self.blast_factory(self.QUERIES, self.QUERIES)
+        blast.update_config(BLAST_PENALTY_CONFIG)
+        blast.quick_blastn()
+
+        results = blast.get_perfect()
+
+        self.logger.info(&quot;Found {} shared alignments between the queries&quot;.format(len(results)))
+        self.shared_alignments = results
+
+        self.container_factory.seqdb.update(blast.seq_db.records)
+        self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
+
+        # TODO: expand the normal fragments with the shared fragments
+        for query_key, container in self.container_factory.containers().items():
+            # expand the share fragments using their own endpoints
+            original_shared_fragments = container.get_groups_by_types(Constants.SHARED_FRAGMENT)
+            new_shared_fragments = container.expand_overlaps(original_shared_fragments,
+                                                             Constants.SHARED_FRAGMENT)
+
+            self.logger.info(&quot;{}: Expanded {} shared from original {} shared fragments&quot;.format(
+                query_key,
+                len(new_shared_fragments),
+                len(original_shared_fragments)
+            ))
+
+            # expand the existing fragments with endpoints from the share alignments
+
+            # TODO: what if there is no template for shared fragment?
+            # TODO: shared fragment has to be contained wholly in another fragment
+            new_alignments = container.expand_overlaps(container.get_groups_by_types(
+                [Constants.FRAGMENT,
+                 Constants.PCR_PRODUCT,
+                 Constants.SHARED_FRAGMENT]
+            ), Constants.PCR_PRODUCT)
+            self.logger.info(&quot;{}: Expanded {} using {} and found {} new alignments.&quot;.format(
+                query_key,
+                Constants.PCR_PRODUCT,
+                Constants.SHARED_FRAGMENT,
+                len(new_alignments)
+            ))
+            # grab the pcr products and expand primer pairs (again)
+            templates = container.get_groups_by_types(
+                Constants.PCR_PRODUCT
+            )
+            new_primer_pairs = container.expand_primer_pairs(templates)
+            self.logger.info(&quot;{}: Expanded {} {} using {}&quot;.format(
+                query_key,
+                len(new_primer_pairs),
+                &quot;PRODUCTS_WITH_PRIMERS&quot;,
+                Constants.SHARED_FRAGMENT
+            ))
+
+        repeats = []
+        for query_key, container in self.container_factory.containers().items():
+            # get all shared fragments
+            alignments = container.get_alignments_by_types(Constants.SHARED_FRAGMENT)
+            self.logger.info(&quot;{} shared fragments for {}&quot;.format(len(alignments), query_key))
+            # add to list of possible repeats
+            repeats += list(self._get_iter_repeats(alignments))
+        self.repeats = repeats</div>
+
+<div class="viewcode-block" id="LibraryDesign.compile_library"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign.compile_library">[docs]</a>    def compile_library(self):
+        &quot;&quot;&quot;Compile the materials list into assembly graphs.&quot;&quot;&quot;
+        self.graphs = {}
+        self._blast()
+        self._share_query_blast()
+        self.assemble_graphs()</div>
+
+<div class="viewcode-block" id="LibraryDesign.optimize_library"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign.optimize_library">[docs]</a>    def optimize_library(self):
+        &quot;&quot;&quot;Optimize the assembly graph for library assembly.&quot;&quot;&quot;
+        raise NotImplementedError</div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

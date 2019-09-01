@@ -29,7 +29,7 @@ class AssemblyGraphBuilder(object):
         self.logger = logger(self)
 
     def add_edge(self, n1, n2, weight, name, span, type):
-        self.G.add_edge(n1, n2, weight=weight, name=name, span=span, type=type)
+        self.G.add_edge(AssemblyNode(*n1), AssemblyNode(*n2), weight=weight, name=name, span=span, type=type)
 
     def internal_edge_data(self, align):
         q = align.query_region
@@ -77,13 +77,13 @@ class AssemblyGraphBuilder(object):
                 for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
                     a_node = (a[0], a[1], a[2], a_overhang)
                     b_node = (b[0], b[1], b[2], b_overhang)
-                    self.G.add_edge(a_node, b_node, **ab_data)
+                    self.add_edge(a_node, b_node, **ab_data)
 
     def add_external_edges(self, groups, group_keys):
         if not groups:
             return
         query_region = groups[0].query_region
-        a_nodes, b_nodes = partition(lambda x: x[2] == 'B', self.G.nodes())
+        a_nodes, b_nodes = partition(lambda x: x.type == 'B', self.G.nodes())
         for (b, b_expand, bid, b_overhang), (a, a_expand, aid, a_overhang) in itertools.product(b_nodes, a_nodes):
             if not (b_overhang or a_overhang):
                 ba = query_region.new(b, a)
@@ -107,8 +107,8 @@ class AssemblyGraphBuilder(object):
                     ab = filtered_groups[0].query_region.new(a, b)
                     cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
 
-                    n1 = AssemblyNode(b, b_expand, bid, True)
-                    n2 = AssemblyNode(a, a_expand, aid, True)
+                    n1 = (b, b_expand, bid, True)
+                    n2 = (a, a_expand, aid, True)
 
                     if cost < self.COST_THRESHOLD:
                         self.add_edge(n1, n2, weight=cost, name='overlap', span=-len(ab), type=desc)

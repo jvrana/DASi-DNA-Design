@@ -29,7 +29,8 @@ class AssemblyGraphBuilder(object):
         self.logger = logger(self)
 
     def add_edge(self, n1, n2, weight, name, span, type):
-        self.G.add_edge(AssemblyNode(*n1), AssemblyNode(*n2), weight=weight, name=name, span=span, type=type)
+
+        self.G.add_edge(AssemblyNode(*list(n1)[:-1], False), AssemblyNode(*list(n2)[:-1], False), weight=weight, name=name, span=span, type=type)
 
     def internal_edge_data(self, align):
         q = align.query_region

@@ -48,18 +48,18 @@ def print_edge_cost(path, graph):
 def check_design_result(design, expected_path, check_cost=True, check_path=True, path_func=None):
     design.compile()
     path_dict = design.optimize()
-    paths = list(path_dict.values())[0]
-    if not paths:
-        raise Exception("There are no paths.")
-    best_path = paths[0]
+    solutions = list(path_dict.values())[0]
+    if not solutions:
+        raise Exception("There are no solution.")
+    best_solution = solutions[0]
 
-    for x, y in zip_longest(best_path, expected_path):
+    for x, y in zip_longest(best_solution.nodes, expected_path):
         z = x == y
         print("{} {} {}".format(z, x, y))
 
     print("=== BEST PATH COST ===")
     graph = list(design.graphs.values())[0]
-    cost1 = print_edge_cost(best_path, graph)
+    cost1 = print_edge_cost(best_solution.nodes, graph)
 
     print("=== EXPECTED PATH COST ===")
     cost2 = print_edge_cost(expected_path, graph)
@@ -72,10 +72,10 @@ def check_design_result(design, expected_path, check_cost=True, check_path=True,
 
     if check_path:
         if path_func:
-            p1 = [path_func(x) for x in best_path]
+            p1 = [path_func(x) for x in best_solution.nodes]
             p2 = [path_func(x) for x in expected_path]
         else:
-            p1 = best_path
+            p1 = best_solution.nodes
             p2 = expected_path
         assert p1 == p2
 

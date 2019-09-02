@@ -15,6 +15,7 @@ Submodules
 
 import bisect
 from .region import Region
+from .span import Span
 import functools
 from .async_wrapper import make_async
 from more_itertools import pairwise

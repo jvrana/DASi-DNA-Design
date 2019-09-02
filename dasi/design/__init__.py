@@ -11,7 +11,7 @@ Submodules
     assembly
 """
 
-from dasi.alignments import Alignment, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
+from dasi.alignments import Alignment, AlignmentContainer, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
 from dasi.constants import Constants
 from .assembly import AssemblyGraphBuilder
 from dasi.utils import perfect_subject, multipoint_shortest_path, sort_with_keys
@@ -26,6 +26,9 @@ from more_itertools import pairwise
 from pyblast.utils import Span, is_circular
 import pandas as pd
 import bisect
+from dasi.design.assembly import AssemblyNode
+from collections.abc import Iterable
+
 
 BLAST_PENALTY_CONFIG = {
     'gapopen': 3,
@@ -58,13 +61,47 @@ class DesignBase(object):
         return self._seqdb
 
 
-class DesignResult(object):
+class DesignResult(Iterable):
     """
     Should take in a path, graph, container, seqdb to produce relevant information
     """
 
-    def __init__(self, nodes):
+    def __init__(self, nodes: List[AssemblyNode], container, graph, query_key, query):
+        self.container = container
+        self.graph = graph
+        self.query_key = query_key
+        self.query = query
         self.nodes = nodes
+
+    @property
+    def cyclic(self):
+        return is_circular(self.query)
+
+    def __iter__(self):
+        nodes = list(self.nodes)
+        if self.cyclic:
+            nodes = nodes + nodes[:1]
+        for n1, n2 in pairwise(nodes):
+            info = {}
+            edata = dict(self.graph[n1][n2])
+            groups = self.container.find_groups_by_pos(n1.index, n2.index)
+            info.update(edata)
+            info.update({
+                'groups': groups
+            })
+            yield info
+
+    def total_cost(self):
+        total = 0
+        for info in self:
+            total += info['weight']
+        return total
+
+    def to_df(self):
+        raise NotImplementedError("not implemented")
+
+    def __getitem__(self, item):
+        return list(self)[item]
 
 
 class Design(DesignBase):
@@ -166,6 +203,9 @@ class Design(DesignBase):
 
     def container_list(self):
         return list(self.container_factory.containers().values())
+
+    def query_keys(self):
+        return list(self.container_factory.containers())
 
     def assemble_graphs(self):
         for query_key, container in self.logger.tqdm(self.container_factory.containers().items(), "INFO",
@@ -368,32 +408,29 @@ class Design(DesignBase):
                     })
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
-    def design(self):
-        path_dict = self.optimize()
-        df = self.path_to_df(path_dict)
-        return df
-
     # TODO: n_paths to class attribute
-    def optimize(self, n_paths=20) -> Dict[str, List[List[Tuple]]]:
+    def optimize(self, n_paths=20) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
         query_key_to_path = {}
-        for query_key, G in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
+        for query_key, graph in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             container = self.containers[query_key]
             query = container.seqdb[query_key]
             cyclic = is_circular(query)
             self.logger.info("Optimizing {}".format(query_key))
-            paths = self._collect_optimized_paths(G, len(query), cyclic, n_paths=n_paths)
+            paths = self._collect_optimized_paths(graph, len(query), cyclic, n_paths=n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
                 self.logger.error("\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
                                   " be better synthesized. Use a tool such as JBEI's BOOST.".format(query_rec.name,
                                                                                                     query_key))
-            query_key_to_path[query_key] = paths
+            query_key_to_path[query_key] = [
+                DesignResult(path, container, graph, query_key, query) for path in paths
+            ]
         return query_key_to_path
 
     def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
         """
-        Use the floyd warshall algorithm to compute the shortest path endpoints.
+        Use the floyd-warshall algorithm to compute the shortest path endpoints.
 
         :param graph: the networkx graph
         :param length: the size of the query sequence
@@ -406,14 +443,14 @@ class Design(DesignBase):
 
         def bisect_iterator(nodelist, nkeys):
             for i, A in enumerate(nodelist):
-                _j = bisect.bisect_left(nkeys, A[0] + length)
+                _j = bisect.bisect_left(nkeys, A.index + length)
                 for B in nodelist[_j:]:
                     j = node_to_i[B]
                     yield i, j, A, B
 
         pair_iterator = bisect_iterator(nodelist, nkeys)
         for i, j, A, B in pair_iterator:
-            if B[2] == 'B' and A[2] == 'A':
+            if B.type == 'B' and A.type == 'A':
                 a = weight_matrix[i, j]
                 b = weight_matrix[j, i]
                 if a != np.inf and b != np.inf:

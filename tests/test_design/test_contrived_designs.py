@@ -9,7 +9,7 @@ from dasi.cost import SpanCost
 from itertools import zip_longest
 from more_itertools import pairwise
 import numpy as np
-
+from typing import Tuple, List
 
 spancost = SpanCost()
 
@@ -45,41 +45,59 @@ def print_edge_cost(path, graph):
     return total
 
 
-def check_design_result(design, expected_path, check_cost=True, check_path=True, path_func=None):
+def check_design_result(design, expected_path: List[Tuple], check_cost=True, check_path=True, path_func=None):
+
+    # compile the design
     design.compile()
-    path_dict = design.optimize()
-    solutions = list(path_dict.values())[0]
-    if not solutions:
+
+    # get the results
+    results = list(design.optimize().values())
+    result = results[0]
+    assemblies = result.assemblies
+
+    if not assemblies:
         raise Exception("There are no solution.")
-    best_solution = solutions[0]
 
-    for x, y in zip_longest(best_solution.nodes, expected_path):
-        z = x == y
-        print("{} {} {}".format(z, x, y))
+    best_solution = assemblies[0]
+    expected_solution = result._new(expected_path)
 
-    print("=== BEST PATH COST ===")
-    graph = list(design.graphs.values())[0]
-    cost1 = print_edge_cost(best_solution.nodes, graph)
+    dist, explain = best_solution.edit_distance(expected_solution, explain=True)
 
-    print("=== EXPECTED PATH COST ===")
-    cost2 = print_edge_cost(expected_path, graph)
-
-    print("Num groups: {}".format(len(design.container_list()[0].groups())))
-
-    assert cost2 < np.inf
-    if check_cost:
-        assert cost1 <= cost2
+    best_solution.print_diff(expected_solution)
 
     if check_path:
-        if path_func:
-            p1 = [path_func(x) for x in best_solution.nodes]
-            p2 = [path_func(x) for x in expected_path]
-        else:
-            p1 = best_solution.nodes
-            p2 = expected_path
-        assert p1 == p2
+        assert dist == 0
 
-    return design
+    if check_cost:
+        assert best_solution.cost() <= expected_solution.cost()
+
+    # # print of the paths for comparison
+    # print("=== BEST PATH COST ===")
+    # cost1 = best_solution.total_cost()
+    # graph = list(design.graphs.values())[0]
+    # best_solution.print()
+    #
+    # print("=== EXPECTED PATH COST ===")
+    # cost2 = print_edge_cost(expected_path, graph)
+    #
+    # print("Num groups: {}".format(len(design.container_list()[0].groups())))
+    #
+    # # ensure the expected path is less than inf
+    # assert cost2 < np.inf
+    # if check_cost:
+    #     assert cost1 <= cost2
+    #
+    # # check to see if the path is exactly equal to the expected path
+    # if check_path:
+    #     if path_func:
+    #         p1 = [path_func(x) for x in best_path]
+    #         p2 = [path_func(x) for x in expected_path]
+    #     else:
+    #         p1 = best_path
+    #         p2 = expected_path
+    #     assert p1 == p2
+    #
+    # return design
 
 
 def test_blast_has_same_results():
@@ -199,9 +217,9 @@ def test_design_with_overlaps():
         (950, False, 'A', True),
         (2000, False, 'B', True),
         (1950, False, 'A', True),
-        (3000, False, 'B', True),
+        (0, False, 'B', True),
         (3000 - 40, False, 'A', True),
-        (4000, False, 'B', True),
+        (1000, False, 'B', True),
     ]
 
     check_design_result(design, expected_path)
@@ -232,7 +250,7 @@ def test_design_with_overlaps_with_templates():
         (1950, True, 'A', True),
         (3000, True, 'B', True),
         (3000 - 40, True, 'A', True),
-        (4000, True, 'B', True),
+        (1000, True, 'B', True),
     ]
 
     check_design_result(design, expected_path, check_path=False)
@@ -295,7 +313,7 @@ def test_design_with_overhang_primers(repeat):
         (970, False, 'A', True),
         (2030, False, 'B', True),
         (1970, False, 'A', True),
-        (4000, True, 'B', True),
+        (1000, True, 'B', True),
     ]
 
     check_design_result(design, expected_path)
@@ -406,15 +424,14 @@ def test_single_fragment():
 
     check_design_result(design, expected_path)
 
-# TODO: PRIORITY, invalid edges are present for small fragments
 def test_fully_overlapped():
-    goal = random_record(5000)
+    goal = random_record(2000)
     make_circular([goal])
 
-    r1 = goal[4100:4300]
-    p1 = goal[4177:4177+30]
-    p2 = goal[4188:4188+30]
-    p3 = goal[4225-30:4225].reverse_complement()
+    r1 = goal[1100:1300]
+    p1 = goal[1177:1177+30]
+    p2 = goal[1188:1188+30]
+    p3 = goal[1225-30:1225].reverse_complement()
 
     make_linear([r1, p1, p2, p3])
 
@@ -427,8 +444,8 @@ def test_fully_overlapped():
     )
 
     expected_path = [
-        (4100, True, 'A', False),
-        (4300, True, 'B', False),
+        (1177, False, 'A', False),
+        (1225, False, 'B', False),
     ]
 
     check_design_result(design, expected_path)

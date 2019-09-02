@@ -408,7 +408,7 @@ class AlignmentContainerFactory(object):
         self.logger = logger(self)
         self.seqdb = seqdb
 
-    def load_blast_json(self, data: dict, type: str):
+    def load_blast_json(self, data: List[Dict], type: str):
         """
         Create alignments from a formatted BLAST JSON result.
 

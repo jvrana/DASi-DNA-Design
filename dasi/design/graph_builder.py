@@ -6,8 +6,10 @@ from dasi.utils import sort_with_keys, bisect_slice_between
 import itertools
 import networkx as nx
 from collections import namedtuple
+from dasi.exceptions import DASiException
+from more_itertools import partition
+from typing import Iterable
 
-from more_itertools import partition, unique_everseen
 
 AssemblyNode = namedtuple('AssemblyNode', 'index expandable type overhang')
 
@@ -29,8 +31,23 @@ class AssemblyGraphBuilder(object):
         self.logger = logger(self)
 
     def add_edge(self, n1, n2, weight, name, span, type):
+        n1 = AssemblyNode(*n1)
+        n2 = AssemblyNode(*n2)
+        self.G.add_edge(n1, n2, weight=weight, name=name, span=span, type=type)
 
-        self.G.add_edge(AssemblyNode(*list(n1)[:-1], False), AssemblyNode(*list(n2)[:-1], False), weight=weight, name=name, span=span, type=type)
+    @staticmethod
+    def internal_edge_cost(align):
+        if align.type == Constants.FRAGMENT:
+            internal_cost = 0
+        elif align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
+            internal_cost = 30 + 30
+        elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
+            internal_cost = 30
+        elif align.type == Constants.PCR_PRODUCT:
+            internal_cost = 30 + 30 + 30
+        else:
+            raise DASiException("Could not determine cost of {}".format(align))
+        return internal_cost
 
     def internal_edge_data(self, align):
         q = align.query_region
@@ -40,16 +57,7 @@ class AssemblyGraphBuilder(object):
         if align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
             a_expand = False
 
-        # TODO: internal edge cost?
-        ### INTERNAL EDGE
-        if align.type == Constants.FRAGMENT:
-            internal_cost = 0
-        elif align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
-            internal_cost = 30 + 30
-        elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
-            internal_cost = 30
-        elif align.type == Constants.PCR_PRODUCT:
-            internal_cost = 30 + 30 + 30
+        internal_cost = self.internal_edge_cost(align)
 
         a = q.a
         if q.b < q.a and q.cyclic:
@@ -80,39 +88,42 @@ class AssemblyGraphBuilder(object):
                     b_node = (b[0], b[1], b[2], b_overhang)
                     self.add_edge(a_node, b_node, **ab_data)
 
-    def add_external_edges(self, groups, group_keys):
+    def add_external_edges(self, groups, group_keys, nodes: Iterable[AssemblyNode]):
         if not groups:
             return
         query_region = groups[0].query_region
-        a_nodes, b_nodes = partition(lambda x: x.type == 'B', self.G.nodes())
-        for (b, b_expand, bid, b_overhang), (a, a_expand, aid, a_overhang) in itertools.product(b_nodes, a_nodes):
-            if not (b_overhang or a_overhang):
-                ba = query_region.new(b, a)
+        a_nodes, b_nodes = partition(lambda x: x.type == 'B', nodes)
+        for bnode, anode in itertools.product(b_nodes, a_nodes):
+            if bnode.index == anode.index:
+                bnode = AssemblyNode(*list(bnode)[:-1] + [False])
+                anode = AssemblyNode(*list(anode)[:-1] + [False])
+            if (bnode.overhang and anode.overhang):
+                self.add_overlap_edge(anode, bnode, group_keys, groups)
+            elif not (bnode.overhang or anode.overhang):
+                self.add_gap_edge(anode, bnode, query_region)
 
-                # TODO: PRIORITY no way to determine overlaps from just end points
-                cost, desc = self.span_cost.cost_and_desc(len(ba), (b_expand, a_expand))
-                if cost < self.COST_THRESHOLD:
-                    n1 = (b, b_expand, bid, b_overhang)
-                    n2 = (a, a_expand, aid, a_overhang)
-                    self.add_edge(
-                        n1, n2,
-                        weight=cost,
-                        name='',
-                        span=len(ba),
-                        type=desc
-                    )
-            else:
-                # TODO: PRIORITY this step is extremely slow
-                filtered_groups = bisect_slice_between(groups, group_keys, a, b)
-                if filtered_groups:
-                    ab = filtered_groups[0].query_region.new(a, b)
-                    cost, desc = self.span_cost.cost_and_desc(-len(ab), (b_expand, a_expand))
+    def add_overlap_edge(self, anode, bnode, group_keys, groups):
+        # TODO: PRIORITY this step is extremely slow
+        filtered_groups = bisect_slice_between(groups, group_keys, anode.index, bnode.index)
+        if filtered_groups:
+            ab = filtered_groups[0].query_region.new(anode.index, bnode.index)
+            cost, desc = self.span_cost.cost_and_desc(-len(ab), (bnode.expandable, anode.expandable))
 
-                    n1 = (b, b_expand, bid, True)
-                    n2 = (a, a_expand, aid, True)
+            if cost < self.COST_THRESHOLD:
+                self.add_edge(bnode, anode, weight=cost, name='overlap', span=-len(ab), type=desc)
 
-                    if cost < self.COST_THRESHOLD:
-                        self.add_edge(n1, n2, weight=cost, name='overlap', span=-len(ab), type=desc)
+    def add_gap_edge(self, anode, bnode, query_region):
+        ba = query_region.new(bnode.index, anode.index)
+        # TODO: PRIORITY no way to determine overlaps from just end points
+        cost, desc = self.span_cost.cost_and_desc(len(ba), (bnode.expandable, anode.expandable))
+        if cost < self.COST_THRESHOLD:
+            self.add_edge(
+                bnode, anode,
+                weight=cost,
+                name='',
+                span=len(ba),
+                type=desc
+            )
 
     def build_assembly_graph(self):
 
@@ -132,5 +143,6 @@ class AssemblyGraphBuilder(object):
         )
 
         self.add_internal_edges(groups)
-        self.add_external_edges(groups, group_keys)
+        self.add_external_edges(groups, group_keys, self.G.nodes())
+        nx.freeze(self.G)
         return self.G

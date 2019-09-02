@@ -10,11 +10,12 @@ Submodules
 
     assembly
 """
-
-from dasi.alignments import Alignment, AlignmentContainer, AlignmentContainerFactory, AlignmentGroup, ComplexAlignmentGroup
+from __future__ import annotations
+from dasi.alignments import Alignment, AlignmentContainerFactory, AlignmentContainer, AlignmentGroup, \
+    ComplexAlignmentGroup
 from dasi.constants import Constants
-from .assembly import AssemblyGraphBuilder
-from dasi.utils import perfect_subject, multipoint_shortest_path, sort_with_keys
+from .graph_builder import AssemblyGraphBuilder
+from dasi.utils import perfect_subject, multipoint_shortest_path, sort_with_keys, sort_cycle
 from dasi.exceptions import DasiDesignException
 import networkx as nx
 from pyblast import BioBlastFactory
@@ -26,8 +27,10 @@ from more_itertools import pairwise
 from pyblast.utils import Span, is_circular
 import pandas as pd
 import bisect
-from dasi.design.assembly import AssemblyNode
+from dasi.design.graph_builder import AssemblyNode
 from collections.abc import Iterable
+from itertools import zip_longest
+from copy import deepcopy
 
 
 BLAST_PENALTY_CONFIG = {
@@ -38,7 +41,146 @@ BLAST_PENALTY_CONFIG = {
 }
 
 
-class DesignBase(object):
+class DesignResult(Iterable):
+
+    def __init__(self, container, graph, query_key):
+        self.container = container
+        self.graph = graph
+        self.query_key = query_key
+        self.query = self.container.seqdb[query_key]
+        self._assemblies = []
+        self._costs = []
+
+    @property
+    def assemblies(self):
+        return tuple(self._assemblies)
+
+    def _new(self, path: List[AssemblyNode]):
+        return Assembly(
+            path,
+            self.container,
+            self.graph,
+            self.query_key,
+            self.query
+        )
+
+    def add_assembly(self, path: List[AssemblyNode]):
+        assembly = self._new(path)
+        cost = assembly.cost()
+        self._assemblies.insert(bisect.bisect_left(self._costs, cost), assembly)
+        self._costs.append(cost)
+
+    def add_assemblies(self, paths: List[List[AssemblyNode]]):
+        for path in paths:
+            self.add_assembly(path)
+
+    def __iter__(self):
+        for assembly in self.assemblies:
+            yield assembly
+
+    def __getitem__(self, item):
+        return list(self)[item]
+
+
+class Assembly(Iterable):
+    """
+    Should take in a path, graph, container, seqdb to produce relevant information
+    """
+
+    def __init__(self, nodes: List[AssemblyNode], container: AlignmentContainer, full_assembly_graph: nx.DiGraph, query_key: str, query: SeqRecord):
+        self.container = container
+        self.query_key = query_key
+        self.query = query
+        self.graph = self._subgraph(full_assembly_graph, nodes)
+        nx.freeze(self.graph)
+
+    def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
+        def _resolve(node: AssemblyNode, query_region) -> Tuple[int, dict]:
+            new_node = AssemblyNode(query_region.t(node.index), *list(node)[1:])
+            return new_node, {}
+
+        SG = nx.OrderedDiGraph()
+        nodes = [AssemblyNode(*n) for n in nodes]
+        example_query_region = self.container.alignments[0].query_region
+
+        resolved_nodes = [_resolve(node, example_query_region) for node in nodes]
+        resolved_nodes = sort_cycle(resolved_nodes, key=lambda n: n[0])
+        SG.add_nodes_from(resolved_nodes)
+
+        if self.cyclic:
+            pair_iter = pairwise(nodes + nodes[:1])
+        else:
+            pair_iter = pairwise(nodes)
+
+        for n1, n2 in pair_iter:
+            edata = deepcopy(graph.get_edge_data(n1, n2))
+            if edata is None:
+                edata = {
+                    'weight': np.inf,
+                    'missing': True
+                }
+            query_region = self.container.alignments[0].query_region.new(n1.index, n2.index, allow_wrap=True)
+            groups = self.container.find_groups_by_pos(query_region.a, query_region.b)
+            edata['groups'] = groups
+            edata['query_region'] = query_region
+            SG.add_edge(_resolve(n1, query_region)[0], _resolve(n2, query_region)[0], **edata)
+        return SG
+
+    @property
+    def cyclic(self):
+        return is_circular(self.query)
+
+    def cost(self):
+        total = 0
+        for _, _, edata in self.edges():
+            total += edata['weight']
+        return total
+
+    def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
+        return self.graph.edges(data=data)
+
+    def nodes(self, data=True) -> Iterable[Tuple[AssemblyNode, Dict]]:
+        return self.graph.nodes(data=data)
+
+    def edit_distance(self, other: Assembly, explain=False) -> Tuple[int, List[Tuple[int, str]]]:
+        differences = []
+        for i, (n1, n2) in enumerate(zip_longest(self.nodes(data=False), other.nodes(data=False))):
+            if n1 is None or n2 is None:
+                differences.append((i, "{} != {}".format(n1, n2)))
+                continue
+            if n1.index != n2.index:
+                differences.append((i, "Index: {} != {}".format(n1.index, n2.index)))
+            if n1.expandable != n2.expandable:
+                differences.append((i, "Expandable: {} != {}".format(n1.expandable, n2.expandable)))
+            if n1.type != n2.type:
+                differences.append((i, "Type: {} != {}".format(n1.type, n2.type)))
+            if n1.overhang != n2.overhang:
+                differences.append((i, "Overhang: {} != {}".format(n1.overhang, n2.overhang)))
+        dist = len(differences)
+        if explain:
+            return dist, differences
+        return dist
+
+    def print_diff(self, other: Assembly):
+        for i, (n1, n2) in enumerate(zip_longest(self.nodes(data=False), other.nodes(data=False))):
+            if n1 != n2:
+                desc = False
+            else:
+                desc = True
+            print("{} {} {}".format(desc, n1, n2))
+
+    def __eq__(self, other: Assembly) -> bool:
+        return self.edit_distance(other) == 0
+
+    def __iter__(self):
+        for n in self.nodes(data=False):
+            yield n
+
+class Design(object):
+    """
+    Design class that returns optimal assemblies from a set of materials.
+    """
+
     PRIMERS = "primers"
     TEMPLATES = "templates"
     QUERIES = "queries"
@@ -52,62 +194,14 @@ class DesignBase(object):
         if seqdb is None:
             seqdb = {}
         self._seqdb = seqdb
-        self.graphs = {}
         self.span_cost = span_cost
+        self.graphs = {}
+        self.results = {}
         self.container_factory = AlignmentContainerFactory(self.seqdb)
 
     @property
     def seqdb(self):
         return self._seqdb
-
-
-class DesignResult(Iterable):
-    """
-    Should take in a path, graph, container, seqdb to produce relevant information
-    """
-
-    def __init__(self, nodes: List[AssemblyNode], container, graph, query_key, query):
-        self.container = container
-        self.graph = graph
-        self.query_key = query_key
-        self.query = query
-        self.nodes = nodes
-
-    @property
-    def cyclic(self):
-        return is_circular(self.query)
-
-    def __iter__(self):
-        nodes = list(self.nodes)
-        if self.cyclic:
-            nodes = nodes + nodes[:1]
-        for n1, n2 in pairwise(nodes):
-            info = {}
-            edata = dict(self.graph[n1][n2])
-            groups = self.container.find_groups_by_pos(n1.index, n2.index)
-            info.update(edata)
-            info.update({
-                'groups': groups
-            })
-            yield info
-
-    def total_cost(self):
-        total = 0
-        for info in self:
-            total += info['weight']
-        return total
-
-    def to_df(self):
-        raise NotImplementedError("not implemented")
-
-    def __getitem__(self, item):
-        return list(self)[item]
-
-
-class Design(DesignBase):
-    """
-    Design class that returns optimal assemblies from a set of materials.
-    """
 
     def add_materials(
             self,
@@ -229,7 +323,7 @@ class Design(DesignBase):
 
     def compile(self):
         """Compile materials to assembly graph"""
-        self.graphs = {}
+        self.results = {}
         self._blast()
         self.assemble_graphs()
 
@@ -411,10 +505,13 @@ class Design(DesignBase):
     # TODO: n_paths to class attribute
     def optimize(self, n_paths=20) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
-        query_key_to_path = {}
+        results = {}
         for query_key, graph in self.logger.tqdm(self.graphs.items(), "INFO", desc='optimizing graphs'):
             container = self.containers[query_key]
             query = container.seqdb[query_key]
+            result = DesignResult(container=container, query_key=query_key, graph=graph)
+            results[query_key] = result
+
             cyclic = is_circular(query)
             self.logger.info("Optimizing {}".format(query_key))
             paths = self._collect_optimized_paths(graph, len(query), cyclic, n_paths=n_paths)
@@ -423,10 +520,8 @@ class Design(DesignBase):
                 self.logger.error("\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
                                   " be better synthesized. Use a tool such as JBEI's BOOST.".format(query_rec.name,
                                                                                                     query_key))
-            query_key_to_path[query_key] = [
-                DesignResult(path, container, graph, query_key, query) for path in paths
-            ]
-        return query_key_to_path
+            result.add_assemblies(paths)
+        return results
 
     def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
         """
@@ -460,7 +555,8 @@ class Design(DesignBase):
         cycle_endpoints = sorted(cycle_endpoints, key=lambda x: (x[-1], x[0]))
         return cycle_endpoints
 
-    def _nodes_to_fullpaths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], cyclic: bool, n_paths=None) -> \
+    def _nodes_to_fullpaths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], cyclic: bool,
+                            n_paths=None) -> \
             List[List[Tuple]]:
         """
         Recover full paths from  cycle endpoints.

@@ -6,7 +6,6 @@ from uuid import uuid4
 from pyblast.utils import make_linear, make_circular
 from dasi import Design
 from dasi.cost import SpanCost
-from itertools import zip_longest
 from more_itertools import pairwise
 import numpy as np
 from typing import Tuple, List
@@ -65,39 +64,16 @@ def check_design_result(design, expected_path: List[Tuple], check_cost=True, che
 
     best_solution.print_diff(expected_solution)
 
+    df = best_solution.to_df()
+    print(df)
+    print("Best: {}".format(best_solution.cost()))
+    print("Expected: {}".format(expected_solution.cost()))
+
     if check_path:
         assert dist == 0
 
     if check_cost:
         assert best_solution.cost() <= expected_solution.cost()
-
-    # # print of the paths for comparison
-    # print("=== BEST PATH COST ===")
-    # cost1 = best_solution.total_cost()
-    # graph = list(design.graphs.values())[0]
-    # best_solution.print()
-    #
-    # print("=== EXPECTED PATH COST ===")
-    # cost2 = print_edge_cost(expected_path, graph)
-    #
-    # print("Num groups: {}".format(len(design.container_list()[0].groups())))
-    #
-    # # ensure the expected path is less than inf
-    # assert cost2 < np.inf
-    # if check_cost:
-    #     assert cost1 <= cost2
-    #
-    # # check to see if the path is exactly equal to the expected path
-    # if check_path:
-    #     if path_func:
-    #         p1 = [path_func(x) for x in best_path]
-    #         p2 = [path_func(x) for x in expected_path]
-    #     else:
-    #         p1 = best_path
-    #         p2 = expected_path
-    #     assert p1 == p2
-    #
-    # return design
 
 
 def test_blast_has_same_results():
@@ -138,7 +114,7 @@ def test_design_with_no_gaps():
     goal = random_record(3000)
     make_circular([goal])
 
-    r1 = goal[:1000]
+    r1 = SeqRecord(Seq('NNNNNN')) + goal[:1000] + SeqRecord(Seq('NNNNNN'))
     r2 = goal[1000:2000]
     r3 = goal[2000:]
     make_linear([r1, r2, r3])
@@ -286,6 +262,7 @@ def test_design_task_with_gaps():
     ]
 
     check_design_result(design, expected_path)
+
 
 @pytest.mark.parametrize('repeat', range(3))
 def test_design_with_overhang_primers(repeat):
@@ -446,6 +423,40 @@ def test_fully_overlapped():
     expected_path = [
         (1177, False, 'A', False),
         (1225, False, 'B', False),
+    ]
+
+    check_design_result(design, expected_path)
+
+
+def test_case():
+    """
+    This is a test case which has previously failed to find a solution.
+
+    The case is that there are just two small fragments with a small <10bp gap.
+    The solution should be to PCR amplify both fragment and synthesize the
+    rest of the plasmid.
+    """
+    goal = random_record(2000)
+    make_circular([goal])
+
+    r1 = goal[1188:1230]
+    r2 = goal[1238:1282]
+
+    make_linear([r1, r2])
+
+    design = Design(spancost)
+    design.add_materials(
+        primers=[],
+        templates=[r1, r2],
+        queries=[goal],
+        fragments=[]
+    )
+
+    expected_path = [
+        (1188, True, 'A', False),
+        (1230, True, 'B', False),
+        (1238, True, 'A', False),
+        (1282, True, 'B', False),
     ]
 
     check_design_result(design, expected_path)

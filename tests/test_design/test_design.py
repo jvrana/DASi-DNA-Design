@@ -76,14 +76,14 @@ def test_real_design(here, paths, query):
 
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) == 1
-    path_dict = design.optimize()
-    best_path = list(path_dict.values())[0][0]
-    df = design.design()
-    d = df[0].to_dict()
-    print(json.dumps(d, indent=2))
-    print(df)
 
-    print_edge_cost(best_path, list(design.graphs.values())[0])
+    results = design.optimize()
+
+    for query_key, result in results.items():
+        assembly = result.assemblies[0]
+        df = assembly.to_df()
+        print(df)
+
 
 def test_real_design2(here, paths):
     query = "goal1.gb"
@@ -107,15 +107,14 @@ def test_real_design2(here, paths):
 
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) == 1
-    path_dict = design.optimize()
-    best_path = list(path_dict.values())[0][0]
-    df = design.design()
-    d = df[0].to_dict()
-    print(json.dumps(d, indent=2))
-    print(df)
 
-    print_edge_cost(best_path, list(design.graphs.values())[0])
-    raise NotImplementedError("This test contains an error due to pcr expansion")
+    results = design.optimize()
+
+    for query_key, result in results.items():
+        assembly = result.assemblies[0]
+        df = assembly.to_df()
+        print(df)
+
 
 def test_multidesign(here, paths):
     """Expect more than one graph to be output if multiple queries are provided"""

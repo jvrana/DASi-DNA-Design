@@ -107,17 +107,16 @@ class Assembly(Iterable):
         resolved_nodes = sort_cycle(resolved_nodes, key=lambda n: n[0])
         SG.add_nodes_from(resolved_nodes)
 
-        if self.cyclic:
-            pair_iter = pairwise(nodes + nodes[:1])
-        else:
-            pair_iter = pairwise(nodes)
+        pair_iter = pairwise(nodes)
 
         for n1, n2 in pair_iter:
             edata = deepcopy(graph.get_edge_data(n1, n2))
             if edata is None:
                 edata = {
                     'weight': np.inf,
-                    'missing': True
+                    'type': 'missing',
+                    'span': np.inf,
+                    'name': 'missing'
                 }
             query_region = self.container.alignments[0].query_region.new(n1.index, n2.index, allow_wrap=True)
             groups = self.container.find_groups_by_pos(query_region.a, query_region.b)
@@ -169,12 +168,47 @@ class Assembly(Iterable):
                 desc = True
             print("{} {} {}".format(desc, n1, n2))
 
+    def to_df(self):
+        rows = []
+        for n1, n2, edata in self.edges():
+            groups = edata['groups']
+            if groups:
+                group = groups[0]
+                if isinstance(group, ComplexAlignmentGroup):
+                    alignments = group.alignments
+                else:
+                    alignments = group.alignments[:1]
+            else:
+                alignments = []
+            subject_keys = [a.subject_key for a in alignments]
+            subject_names = [self.container.seqdb[key].name for key in subject_keys]
+            subject_starts = [a.subject_region.a for a in alignments]
+            subject_ends = [a.subject_region.b for a in alignments]
+
+            rows.append({
+                'query_start': edata['query_region'].a,
+                'query_end': edata['query_region'].b,
+                'subject_names': subject_names,
+                'subject keys': subject_keys,
+                'subject_start': subject_starts,
+                'subject_ends': subject_ends,
+                'subject_ends': subject_ends,
+                'weight': edata['weight'],
+                'span': edata['span'],
+                'type': edata['type'],
+                'name': edata['name']
+            })
+
+        df = pd.DataFrame(rows)
+        return df
+
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0
 
     def __iter__(self):
         for n in self.nodes(data=False):
             yield n
+
 
 class Design(object):
     """
@@ -328,7 +362,7 @@ class Design(object):
         self.assemble_graphs()
 
     # def plot_matrix(self, matrix):
-    ## plot matrix
+    # plot matrix
     # import pylab as plt
     # import seaborn as sns
     # import numpy as np
@@ -523,6 +557,7 @@ class Design(object):
             result.add_assemblies(paths)
         return results
 
+
     def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
         """
         Use the floyd-warshall algorithm to compute the shortest path endpoints.
@@ -534,26 +569,32 @@ class Design(object):
         nodelist, nkeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
         node_to_i = {v: i for i, v in enumerate(nodelist)}
         weight_matrix = np.array(nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight='weight'))
-        cycle_endpoints = []
+        endpoints = []
 
         def bisect_iterator(nodelist, nkeys):
-            for i, A in enumerate(nodelist):
+            _i = bisect.bisect_right(nkeys, length)
+            for i, A in enumerate(nodelist[:_i]):
                 _j = bisect.bisect_left(nkeys, A.index + length)
                 for B in nodelist[_j:]:
-                    j = node_to_i[B]
-                    yield i, j, A, B
+                    if B.type == 'B':
+                        j = node_to_i[B]
+                        yield i, j, A, B
 
         pair_iterator = bisect_iterator(nodelist, nkeys)
         for i, j, A, B in pair_iterator:
-            if B.type == 'B' and A.type == 'A':
-                a = weight_matrix[i, j]
-                b = weight_matrix[j, i]
-                if a != np.inf and b != np.inf:
-                    x = ((A, B), (a, b), a + b)
-                    cycle_endpoints.append(x)
 
-        cycle_endpoints = sorted(cycle_endpoints, key=lambda x: (x[-1], x[0]))
-        return cycle_endpoints
+            # if cyclic
+            # C = AssemblyNode(A.index + length, *list(A[1:]))
+            # k = node_to_i[C]
+
+            a = weight_matrix[i, j]
+            b = weight_matrix[j, i]
+            if a != np.inf:
+                x = ((A, B), (a, b), a)
+                endpoints.append(x)
+
+        endpoints = sorted(endpoints, key=lambda x: (x[-1], x[0]))
+        return endpoints
 
     def _nodes_to_fullpaths(self, graph: nx.DiGraph, cycle_endpoints: Tuple[Tuple, Tuple, float], cyclic: bool,
                             n_paths=None) -> \
@@ -570,7 +611,7 @@ class Design(object):
         for c in cycle_endpoints:
             if n_paths is not None and len(unique_cyclic_paths) >= n_paths:
                 break
-            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=cyclic)
+            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=False)
             if path not in unique_cyclic_paths:
                 unique_cyclic_paths.append(path)
         return unique_cyclic_paths

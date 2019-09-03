@@ -10,6 +10,19 @@ warnings.simplefilter('ignore', BiopythonParserWarning)
 logger.set_level("INFO")
 
 
+import pandas as pd
+import numpy as np
+
+desired_width=320
+
+pd.set_option('display.width', desired_width)
+
+# np.set_printoption(linewidth=desired_width)
+
+pd.set_option('display.max_columns',10)
+
+
+
 @pytest.fixture(scope="module")
 def here():
     return dirname(abspath(__file__))

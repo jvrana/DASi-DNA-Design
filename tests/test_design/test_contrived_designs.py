@@ -423,6 +423,8 @@ def test_fully_overlapped():
     expected_path = [
         (1177, False, 'A', False),
         (1225, False, 'B', False),
+        (1225-30, False, 'A', False),
+        (1188, False, 'B', False)
     ]
 
     check_design_result(design, expected_path)

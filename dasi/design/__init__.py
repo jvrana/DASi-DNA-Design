@@ -82,7 +82,6 @@ class DesignResult(Iterable):
         return list(self)[item]
 
 
-
 class Assembly(Iterable):
     """
     Should take in a path, graph, container, seqdb to produce relevant information

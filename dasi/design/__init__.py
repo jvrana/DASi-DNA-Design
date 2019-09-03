@@ -82,6 +82,7 @@ class DesignResult(Iterable):
         return list(self)[item]
 
 
+
 class Assembly(Iterable):
     """
     Should take in a path, graph, container, seqdb to produce relevant information
@@ -107,17 +108,16 @@ class Assembly(Iterable):
         resolved_nodes = sort_cycle(resolved_nodes, key=lambda n: n[0])
         SG.add_nodes_from(resolved_nodes)
 
-        if self.cyclic:
-            pair_iter = pairwise(nodes + nodes[:1])
-        else:
-            pair_iter = pairwise(nodes)
+        pair_iter = pairwise(nodes)
 
         for n1, n2 in pair_iter:
             edata = deepcopy(graph.get_edge_data(n1, n2))
             if edata is None:
                 edata = {
                     'weight': np.inf,
-                    'missing': True
+                    'type': 'missing',
+                    'span': np.inf,
+                    'name': 'missing'
                 }
             query_region = self.container.alignments[0].query_region.new(n1.index, n2.index, allow_wrap=True)
             groups = self.container.find_groups_by_pos(query_region.a, query_region.b)
@@ -168,6 +168,40 @@ class Assembly(Iterable):
             else:
                 desc = True
             print("{} {} {}".format(desc, n1, n2))
+
+    def to_df(self):
+        rows = []
+        for n1, n2, edata in self.edges():
+            groups = edata['groups']
+            if groups:
+                group = groups[0]
+                if isinstance(group, ComplexAlignmentGroup):
+                    alignments = group.alignments
+                else:
+                    alignments = group.alignments[:1]
+            else:
+                alignments = []
+            subject_keys = [a.subject_key for a in alignments]
+            subject_names = [self.container.seqdb[key].name for key in subject_keys]
+            subject_starts = [a.subject_region.a for a in alignments]
+            subject_ends = [a.subject_region.b for a in alignments]
+
+            rows.append({
+                'query_start': edata['query_region'].a,
+                'query_end': edata['query_region'].b,
+                'subject_names': subject_names,
+                'subject keys': subject_keys,
+                'subject_start': subject_starts,
+                'subject_ends': subject_ends,
+                'subject_ends': subject_ends,
+                'weight': edata['weight'],
+                'span': edata['span'],
+                'type': edata['type'],
+                'name': edata['name']
+            })
+
+        df = pd.DataFrame(rows)
+        return df
 
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0

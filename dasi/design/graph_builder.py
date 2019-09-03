@@ -116,20 +116,21 @@ class AssemblyGraphBuilder(object):
         if not groups:
             return
         query_region = groups[0].query_region
+        length = query_region.context_length
         a_nodes, b_nodes = partition(lambda x: x.type == 'B', nodes)
 
         a_nodes = sorted(a_nodes, key=lambda x: x.index)
         b_nodes = sorted(b_nodes, key=lambda x: x.index)
 
-        a_nodes_gap, a_nodes_overhang = partition(lambda x: x.overhang, a_nodes)
-        b_nodes_gap, b_nodes_overhang = partition(lambda x: x.overhang, b_nodes)
+        a_nodes_gap, a_nodes_overhang = [list(x) for x in partition(lambda x: x.overhang, a_nodes)]
+        b_nodes_gap, b_nodes_overhang = [list(x) for x in partition(lambda x: x.overhang, b_nodes)]
 
         def make_overlap_iterator(anodes, bnodes):
-            bnodes, bkeys = sort_with_keys(bnodes, lambda x: x.index)
-            for anode in anodes:
-                i = bisect.bisect_left(bkeys, anode.index)
-                for bnode in bnodes[i:]:
-                    yield anode, bnode
+            anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
+            for bnode in bnodes:
+                i = bisect.bisect_left(akeys, bnode.index)
+                for anode in anodes[:i]:
+                    yield bnode, anode
 
         def make_gap_itererator(anodes, bnodes):
             anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
@@ -138,29 +139,57 @@ class AssemblyGraphBuilder(object):
                 for anode in anodes[i:]:
                     yield bnode, anode
 
-        overlap_iter = list(make_overlap_iterator(a_nodes_overhang, b_nodes_overhang))
-        gap_iter = list(make_gap_itererator(a_nodes, b_nodes))
+        def make_origin_iterator(anodes, bnodes):
+            anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
+            bnodes, bkeys = sort_with_keys(bnodes, lambda x: x.index)
 
-        for anode, bnode in overlap_iter:
-            self.add_overlap_edge(anode, bnode, group_keys, groups)
+            i = bisect.bisect_left(akeys, length)
+            j = bisect.bisect_right(bkeys, length)
+
+            for bnode in bnodes[j:]:
+                for anode in anodes[:i]:
+                    yield bnode, anode
+
+        overlap_iter = list(make_overlap_iterator(a_nodes_overhang, b_nodes_overhang))
+        gap_iter = list(make_gap_itererator(a_nodes_gap, b_nodes_gap))
+        gap_origin_iter = list(make_origin_iterator(a_nodes_gap, b_nodes_gap))
+        overlap_origin_iter = list(make_origin_iterator(a_nodes_overhang, b_nodes_overhang))
+
+        for bnode, anode in overlap_iter:
+            self.add_overlap_edge(bnode, anode, query_region, group_keys, groups)
         for bnode, anode in gap_iter:
             self.add_gap_edge(bnode, anode, query_region)
 
-    def add_overlap_edge(self, bnode, anode, group_keys, groups):
+        for bnode, anode in gap_origin_iter:
+            self.add_gap_edge(bnode, anode, query_region, origin=True)
+        for bnode, anode in overlap_origin_iter:
+            self.add_overlap_edge(bnode, anode, query_region, group_keys, groups, origin=True)
+
+    def add_overlap_edge(self, bnode, anode, query_region, group_keys, groups, origin=False):
         # TODO: PRIORITY this step is extremely slow
-        filtered_groups = bisect_slice_between(groups, group_keys, anode.index, bnode.index)
+        q = query_region.new(anode.index, bnode.index, allow_wrap=True)
+        if not origin:
+            filtered_groups = bisect_slice_between(groups, group_keys, q.a, q.b)
+        else:
+            i = bisect.bisect_left(group_keys, q.a)
+            j = bisect.bisect_right(group_keys, q.b)
+            filtered_groups = groups[i:] + groups[:j]
         if filtered_groups:
-            # ab = filtered_groups[0].query_region.new(anode.index, bnode.index)
-            span = anode.index - bnode.index
+            if not origin:
+                span = anode.index - bnode.index
+            else:
+                span = -len(q)
             if span <= 0:
                 cost, desc = self.span_cost.cost_and_desc(span, (bnode.expandable, anode.expandable))
                 if cost < self.COST_THRESHOLD:
                     self.add_edge(bnode, anode, weight=cost, name='overlap', span=span, type=desc)
 
-    def add_gap_edge(self, bnode, anode, query_region):
-        # ba = query_region.new(bnode.index, anode.index)
+    def add_gap_edge(self, bnode, anode, query_region, origin=False):
         # TODO: PRIORITY no way to determine overlaps from just end points
-        span = anode.index - bnode.index
+        if not origin:
+            span = anode.index - bnode.index
+        else:
+            span = len(query_region.new(bnode.index, anode.index))
         if span >= 0:
             cost, desc = self.span_cost.cost_and_desc(span, (bnode.expandable, anode.expandable))
             if cost < self.COST_THRESHOLD:

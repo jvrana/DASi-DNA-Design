@@ -62,10 +62,15 @@ def check_design_result(design, expected_path: List[Tuple], check_cost=True, che
 
     dist, explain = best_solution.edit_distance(expected_solution, explain=True)
 
+    print("=== DIFF ===")
     best_solution.print_diff(expected_solution)
 
-    df = best_solution.to_df()
-    print(df)
+    print("=== BEST ===")
+    print(best_solution.to_df())
+
+    print("=== EXPECTED ===")
+    print(expected_solution.to_df())
+
     print("Best: {}".format(best_solution.cost()))
     print("Expected: {}".format(expected_solution.cost()))
 
@@ -74,6 +79,7 @@ def check_design_result(design, expected_path: List[Tuple], check_cost=True, che
 
     if check_cost:
         assert best_solution.cost() <= expected_solution.cost()
+        assert expected_solution.cost() != np.inf
 
 
 def test_blast_has_same_results():
@@ -176,7 +182,7 @@ def test_design_with_overlaps():
     goal = random_record(3000)
     make_circular([goal])
 
-    r1 = goal[-40:] + goal[:1000]
+    r1 = goal[-40:] + goal[:1001]
     r2 = goal[950:2000]
     r3 = goal[1950:]
     make_linear([r1, r2, r3])
@@ -193,9 +199,9 @@ def test_design_with_overlaps():
         (950, False, 'A', True),
         (2000, False, 'B', True),
         (1950, False, 'A', True),
-        (0, False, 'B', True),
+        (3000, False, 'B', True),
         (3000 - 40, False, 'A', True),
-        (1000, False, 'B', True),
+        (1001, False, 'B', True),
     ]
 
     check_design_result(design, expected_path)
@@ -290,7 +296,7 @@ def test_design_with_overhang_primers(repeat):
         (970, False, 'A', True),
         (2030, False, 'B', True),
         (1970, False, 'A', True),
-        (1000, True, 'B', True),
+        (4000, True, 'B', True),
     ]
 
     check_design_result(design, expected_path)

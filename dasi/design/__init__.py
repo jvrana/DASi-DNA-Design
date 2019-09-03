@@ -91,7 +91,9 @@ class Assembly(Iterable):
         self.container = container
         self.query_key = query_key
         self.query = query
-        self.graph = self._subgraph(full_assembly_graph, nodes)
+        self._nodes = nodes
+        self._full_graph = full_assembly_graph
+        self.graph = self._subgraph(self._full_graph, nodes)
         nx.freeze(self.graph)
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
@@ -104,10 +106,14 @@ class Assembly(Iterable):
         example_query_region = self.container.alignments[0].query_region
 
         resolved_nodes = [_resolve(node, example_query_region) for node in nodes]
-        resolved_nodes = sort_cycle(resolved_nodes, key=lambda n: n[0])
+        # if self.cyclic:
+        #     resolved_nodes = sort_cycle(resolved_nodes, key=lambda n: (n[0].index, n[0].type))
         SG.add_nodes_from(resolved_nodes)
 
-        pair_iter = pairwise(nodes)
+        if self.cyclic:
+            pair_iter = list(pairwise(nodes + nodes[:1]))
+        else:
+            pair_iter = list(pairwise(nodes))
 
         for n1, n2 in pair_iter:
             edata = deepcopy(graph.get_edge_data(n1, n2))
@@ -118,6 +124,8 @@ class Assembly(Iterable):
                     'span': np.inf,
                     'name': 'missing'
                 }
+
+            # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(n1.index, n2.index, allow_wrap=True)
             groups = self.container.find_groups_by_pos(query_region.a, query_region.b)
             edata['groups'] = groups
@@ -583,14 +591,11 @@ class Design(object):
         pair_iterator = bisect_iterator(nodelist, nkeys)
         for i, j, A, B in pair_iterator:
 
-            # if cyclic
-            # C = AssemblyNode(A.index + length, *list(A[1:]))
-            # k = node_to_i[C]
-
+            # TODO: must include final edge
             a = weight_matrix[i, j]
             b = weight_matrix[j, i]
-            if a != np.inf:
-                x = ((A, B), (a, b), a)
+            if a != np.inf and b != np.inf:
+                x = ((A, B), (a, b), a + b)
                 endpoints.append(x)
 
         endpoints = sorted(endpoints, key=lambda x: (x[-1], x[0]))
@@ -611,7 +616,7 @@ class Design(object):
         for c in cycle_endpoints:
             if n_paths is not None and len(unique_cyclic_paths) >= n_paths:
                 break
-            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=False)
+            path = multipoint_shortest_path(graph, c[0], weight_key='weight', cyclic=cyclic)
             if path not in unique_cyclic_paths:
                 unique_cyclic_paths.append(path)
         return unique_cyclic_paths

@@ -59,25 +59,33 @@ class AssemblyGraphBuilder(object):
 
         internal_cost = self.internal_edge_cost(align)
 
-        a = q.a
-        if q.b < q.a and q.cyclic:
-            # is cyclic
-            b = q.b + q.context_length
-            lengths = [0]
+        pairs = []
+        if q.cyclic:
+            if q.b < q.a:
+                pairs = [
+                    (q.a, q.b + q.context_length)
+                ]
+            else:
+                pairs = [
+                    (q.a, q.b),
+                    (q.a + q.context_length, q.b + q.context_length)
+                ]
         else:
-            # is linear
-            lengths = [0, q.context_length]
-            b = q.b
+            pairs = [
+                (q.a, q.b)
+            ]
 
         nodes = []
-        for length in lengths:
-            node = (a + length, a_expand, 'A'), (b + length, b_expand, 'B'), dict(
-                            weight=internal_cost,
-                            name='',
-                            span=len(align.query_region),
-                            type=align.type
+        for a, b in pairs:
+            anode = (a, a_expand, 'A')
+            bnode = (b, b_expand, 'B')
+            edata = dict(
+                weight=internal_cost,
+                name='',
+                span=len(align.query_region),
+                type=align.type
             )
-            nodes.append(node)
+            nodes.append((anode, bnode, edata))
         return nodes
 
     def add_internal_edges(self, groups):

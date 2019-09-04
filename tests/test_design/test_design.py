@@ -87,6 +87,24 @@ def test_real_design(here, paths, query):
         assert len(result.query) == sum(assembly.to_df()["span"])
 
 
+@pytest.mark.parametrize(
+    "query",
+    [
+        "pmodkan-ho-pact1-z4-er-vpr.gb",
+    ]
+)
+def test_profile_compile(here, paths, query):
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["templates"])
+
+    query_path = join(here, "data/test_data/genbank/designs", query)
+    queries = make_circular(load_genbank_glob(query_path))
+
+    design = Design(span_cost=span_cost)
+
+    design.add_materials(primers=primers, templates=templates, queries=queries)
+    design.compile()
+
 def test_real_design2(here, paths):
     query = "goal1.gb"
     primers = make_linear(load_fasta_glob(paths["primers"]))

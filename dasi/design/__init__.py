@@ -97,6 +97,7 @@ class Assembly(Iterable):
         query: SeqRecord,
     ):
         self.container = container
+        self.groups = container.groups()
         self.query_key = query_key
         self.query = query
         self._nodes = tuple(nodes)
@@ -139,7 +140,7 @@ class Assembly(Iterable):
             query_region = self.container.alignments[0].query_region.new(
                 n1.index, n2.index, allow_wrap=True
             )
-            groups = self.container.find_groups_by_pos(query_region.a, query_region.b)
+            groups = self.container.find_groups_by_pos(query_region.a, query_region.b, groups=self.groups)
             edata["groups"] = groups
             edata["query_region"] = query_region
             SG.add_edge(
@@ -609,7 +610,7 @@ class Design(object):
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
     # TODO: n_paths to class attribute
-    def optimize(self, n_paths=20) -> Dict[str, List[List[AssemblyNode]]]:
+    def optimize(self, n_paths=3) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
         results = {}
         for query_key, graph in self.logger.tqdm(

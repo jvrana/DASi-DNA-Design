@@ -18,6 +18,7 @@ from typing import Tuple, Any
 # TODO: backtrack options
 # TODO: ends that are extendable should also be retractable, meaning if there is a more optimal
 
+
 class JxnParams(object):
 
     # jxn_efficiency[30:40] = 0.9" means for 30 <= bp < 40, junction efficiency is 90%
@@ -176,7 +177,9 @@ class JunctionCost(object):
 
         # TODO: meanings behind the args...
         # there are '200' choices for primer lengths
-        self.ext_dict = {k: a.flatten()[argmin_and_unravel(v)] for k, v in self.cost_dict.items()}
+        self.ext_dict = {
+            k: a.flatten()[argmin_and_unravel(v)] for k, v in self.cost_dict.items()
+        }
 
     def plot(self):
         df = pd.DataFrame()
@@ -270,7 +273,9 @@ class SynthesisCost(object):
             SynParams.synthesis_left_span_range[1],
             SynParams.synthesis_step_size,
         ).reshape(-1, 1)[:, np.newaxis]
-        left_cost, left_ext_choice = self.jxn_cost.cost_and_desc(left_span, ext=(left_ext, 0))
+        left_cost, left_ext_choice = self.jxn_cost.cost_and_desc(
+            left_span, ext=(left_ext, 0)
+        )
         right_span = span - sizes - left_span
 
         # sanity check
@@ -284,7 +289,9 @@ class SynthesisCost(object):
         # span[50] == 500
         assert right_span[10, 100, 50] == -100
 
-        right_cost, right_ext_choice = self.jxn_cost.cost_and_desc(right_span, ext=(0, right_ext))
+        right_cost, right_ext_choice = self.jxn_cost.cost_and_desc(
+            right_span, ext=(0, right_ext)
+        )
         gene_cost = SynParams.gene_costs[sizes]
         gene_time = SynParams.gene_times[sizes]
 
@@ -370,18 +377,15 @@ class SpanCost(object):
         self.argmin_cost_dict = {}
 
         # TODO make sure this matches with the np.stack below
-        self.arg_desc = np.array([
-                self.JUNCTION_BY_PRIMERS,
-                self.JUNCTION_BY_SYNTHESIS
-            ])
+        self.arg_desc = np.array([self.JUNCTION_BY_PRIMERS, self.JUNCTION_BY_SYNTHESIS])
         x = [
             self.junction_cost.span.min(),
             self.junction_cost.span.max(),
             self.synthesis_cost.span.min(),
-            self.synthesis_cost.span.max()
+            self.synthesis_cost.span.max(),
         ]
         self._span = (min(x), max(x))
-        self._span_range = np.arange(min(x), max(x)+1)
+        self._span_range = np.arange(min(x), max(x) + 1)
 
         # TODO: here return whether we are synthesizing or using primers
         for ext in [(0, 0), (0, 1), (1, 0), (1, 1)]:

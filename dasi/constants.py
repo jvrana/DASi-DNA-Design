@@ -1,4 +1,3 @@
-
 class Constants(object):
     FRAGMENT = (
         "PRE-MADE DNA FRAGMENT"
@@ -33,4 +32,3 @@ class Constants(object):
     MIN_OVERLAP = 20
     MAX_HOMOLOGY = 100
     INF = 10.0 ** 6
-

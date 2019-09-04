@@ -93,7 +93,9 @@ def asyncfunc(fxn, arg_list, kwargs=None, chunk_size=1, progress_bar=True, desc=
     return results
 
 
-def make_async(chunk_size, progress_bar=True, as_classmethod=False, data_pos=0, return_type=list):
+def make_async(
+    chunk_size, progress_bar=True, as_classmethod=False, data_pos=0, return_type=list
+):
     """
     Wrapper to make a function run asynchrounously.
 

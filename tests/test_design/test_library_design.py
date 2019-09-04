@@ -10,7 +10,7 @@ def test_library_design(paths, here):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
-    query_path = join(here, 'data/test_data/genbank/designs/*.gb')
+    query_path = join(here, "data/test_data/genbank/designs/*.gb")
     queries = make_circular(load_genbank_glob(query_path))
 
     design = LibraryDesign(span_cost=span_cost)

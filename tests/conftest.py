@@ -5,7 +5,8 @@ from pyblast import BioBlastFactory
 from dasi.log import logger
 import warnings
 from Bio import BiopythonParserWarning
-warnings.simplefilter('ignore', BiopythonParserWarning)
+
+warnings.simplefilter("ignore", BiopythonParserWarning)
 
 logger.set_level("INFO")
 
@@ -13,14 +14,13 @@ logger.set_level("INFO")
 import pandas as pd
 import numpy as np
 
-desired_width=320
+desired_width = 320
 
-pd.set_option('display.width', desired_width)
+pd.set_option("display.width", desired_width)
 
 # np.set_printoption(linewidth=desired_width)
 
-pd.set_option('display.max_columns',10)
-
+pd.set_option("display.max_columns", 10)
 
 
 @pytest.fixture(scope="module")
@@ -42,7 +42,7 @@ def paths(here):
         QUERIES: join(
             here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb"
         ),
-        REGISTRY: join(here, 'data/test_data/genbank/benchling_registry/*.gb')
+        REGISTRY: join(here, "data/test_data/genbank/benchling_registry/*.gb"),
     }
 
 

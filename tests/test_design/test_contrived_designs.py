@@ -12,12 +12,14 @@ from typing import Tuple, List
 
 spancost = SpanCost()
 
+# TODO: tests with reverse_complement
+# TODO: test total span == query
+# TODO: test linear fragments
+
 
 def random_seq(len):
     bases = "AGTC"
-
-
-    seq = ''
+    seq = ""
     for _ in range(len):
         i = random.randint(0, 3)
         seq += bases[i]
@@ -34,7 +36,7 @@ def print_edge_cost(path, graph):
     for n1, n2 in pairwise(path):
         try:
             edata = graph[n1][n2]
-            total += edata['weight']
+            total += edata["weight"]
             print((n1, n2, edata))
         except:
             print((n1, n2, "MISSING EDGE"))
@@ -44,7 +46,9 @@ def print_edge_cost(path, graph):
     return total
 
 
-def check_design_result(design, expected_path: List[Tuple], check_cost=True, check_path=True, path_func=None):
+def check_design_result(
+    design, expected_path: List[Tuple], check_cost=True, check_path=True, path_func=None
+):
 
     # compile the design
     design.compile()
@@ -100,10 +104,7 @@ def test_blast_has_same_results():
         design = Design(spancost)
         design.logger.set_level("INFO")
         design.add_materials(
-            primers=[p1, p2, p3],
-            templates=[r1, r2],
-            queries=[goal],
-            fragments=[]
+            primers=[p1, p2, p3], templates=[r1, r2], queries=[goal], fragments=[]
         )
 
         design.compile()
@@ -120,26 +121,23 @@ def test_design_with_no_gaps():
     goal = random_record(3000)
     make_circular([goal])
 
-    r1 = SeqRecord(Seq('NNNNNN')) + goal[:1000] + SeqRecord(Seq('NNNNNN'))
+    r1 = SeqRecord(Seq("NNNNNN")) + goal[:1000] + SeqRecord(Seq("NNNNNN"))
     r2 = goal[1000:2000]
     r3 = goal[2000:]
     make_linear([r1, r2, r3])
 
     design = Design(spancost)
     design.add_materials(
-        primers=[],
-        templates=[r1, r2, r3],
-        queries=[goal],
-        fragments=[],
+        primers=[], templates=[r1, r2, r3], queries=[goal], fragments=[]
     )
 
     expected_path = [
-        (0, True, 'A', False),
-        (1000, True, 'B', False),
-        (1000, True, 'A', False),
-        (2000, True, 'B', False),
-        (2000, True, 'A', False),
-        (3000, True, 'B', False),
+        (0, True, "A", False),
+        (1000, True, "B", False),
+        (1000, True, "A", False),
+        (2000, True, "B", False),
+        (2000, True, "A", False),
+        (3000, True, "B", False),
     ]
 
     check_design_result(design, expected_path, path_func=lambda x: (x[0], x[2]))
@@ -158,19 +156,16 @@ def test_design_with_overlaps():
 
     design = Design(spancost)
     design.add_materials(
-        primers=[],
-        fragments=[r1, r2, r3],
-        queries=[goal],
-        templates=[]
+        primers=[], fragments=[r1, r2, r3], queries=[goal], templates=[]
     )
 
     expected_path = [
-        (950, False, 'A', True),
-        (2000, False, 'B', True),
-        (1950, False, 'A', True),
-        (3000, False, 'B', True),
-        (3000 - 40, False, 'A', True),
-        (1000, False, 'B', True),
+        (950, False, "A", True),
+        (2000, False, "B", True),
+        (1950, False, "A", True),
+        (3000, False, "B", True),
+        (3000 - 40, False, "A", True),
+        (1000, False, "B", True),
     ]
 
     check_design_result(design, expected_path)
@@ -189,19 +184,16 @@ def test_design_with_overlaps():
 
     design = Design(spancost)
     design.add_materials(
-        primers=[],
-        fragments=[r1, r2, r3],
-        queries=[goal],
-        templates=[]
+        primers=[], fragments=[r1, r2, r3], queries=[goal], templates=[]
     )
 
     expected_path = [
-        (950, False, 'A', True),
-        (2000, False, 'B', True),
-        (1950, False, 'A', True),
-        (3000, False, 'B', True),
-        (3000 - 40, False, 'A', True),
-        (1001, False, 'B', True),
+        (950, False, "A", True),
+        (2000, False, "B", True),
+        (1950, False, "A", True),
+        (3000, False, "B", True),
+        (3000 - 40, False, "A", True),
+        (1001, False, "B", True),
     ]
 
     check_design_result(design, expected_path)
@@ -220,19 +212,16 @@ def test_design_with_overlaps_with_templates():
 
     design = Design(spancost)
     design.add_materials(
-        primers=[],
-        fragments=[],
-        queries=[goal],
-        templates=[r1, r2, r3]
+        primers=[], fragments=[], queries=[goal], templates=[r1, r2, r3]
     )
 
     expected_path = [
-        (950, True, 'A', True),
-        (2000, True, 'B', True),
-        (1950, True, 'A', True),
-        (3000, True, 'B', True),
-        (3000 - 40, True, 'A', True),
-        (1000, True, 'B', True),
+        (950, True, "A", True),
+        (2000, True, "B", True),
+        (1950, True, "A", True),
+        (3000, True, "B", True),
+        (3000 - 40, True, "A", True),
+        (1000, True, "B", True),
     ]
 
     check_design_result(design, expected_path, check_path=False)
@@ -252,25 +241,22 @@ def test_design_task_with_gaps():
 
     design = Design(spancost)
     design.add_materials(
-        primers=[],
-        templates=[r1, r2, r3],
-        queries=[goal],
-        fragments=[]
+        primers=[], templates=[r1, r2, r3], queries=[goal], fragments=[]
     )
 
     expected_path = [
-        (0, True, 'A', False),
-        (950, True, 'B', False),
-        (1000, True, 'A', False),
-        (2000, True, 'B', False),
-        (2050, True, 'A', False),
-        (3000, True, 'B', False),
+        (0, True, "A", False),
+        (950, True, "B", False),
+        (1000, True, "A", False),
+        (2000, True, "B", False),
+        (2050, True, "A", False),
+        (3000, True, "B", False),
     ]
 
     check_design_result(design, expected_path)
 
 
-@pytest.mark.parametrize('repeat', range(3))
+@pytest.mark.parametrize("repeat", range(3))
 def test_design_with_overhang_primers(repeat):
 
     goal = random_record(3000)
@@ -286,21 +272,17 @@ def test_design_with_overhang_primers(repeat):
 
     design = Design(spancost)
     design.add_materials(
-        primers=[p1, p2, p3],
-        templates=[r1, r2],
-        queries=[goal],
-        fragments=[]
+        primers=[p1, p2, p3], templates=[r1, r2], queries=[goal], fragments=[]
     )
 
     expected_path = [
-        (970, False, 'A', True),
-        (2030, False, 'B', True),
-        (1970, False, 'A', True),
-        (4000, True, 'B', True),
+        (970, False, "A", True),
+        (2030, False, "B", True),
+        (1970, False, "A", True),
+        (4000, True, "B", True),
     ]
 
     check_design_result(design, expected_path)
-
 
 
 def test_requires_synthesis():
@@ -313,18 +295,13 @@ def test_requires_synthesis():
     make_linear([r1, r2])
 
     design = Design(spancost)
-    design.add_materials(
-        primers=[],
-        templates=[r1, r2],
-        queries=[goal],
-        fragments=[]
-    )
+    design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
-        (200, True, 'A', False),
-        (500, True, 'B', False),
-        (1000, True, 'A', False),
-        (2000, True, 'B', False),
+        (200, True, "A", False),
+        (500, True, "B", False),
+        (1000, True, "A", False),
+        (2000, True, "B", False),
     ]
 
     check_design_result(design, expected_path)
@@ -340,18 +317,13 @@ def test_requires_synthesis_with_template_over_origin():
     make_linear([r1, r2])
 
     design = Design(spancost)
-    design.add_materials(
-        primers=[],
-        templates=[r1, r2],
-        queries=[goal],
-        fragments=[]
-    )
+    design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
-        (500, True, 'B', False),
-        (1000, True, 'A', False),
-        (2000, True, 'B', False),
-        (4500, True, 'A', False),
+        (500, True, "B", False),
+        (1000, True, "A", False),
+        (2000, True, "B", False),
+        (4500, True, "A", False),
     ]
 
     check_design_result(design, expected_path)
@@ -367,18 +339,13 @@ def test_very_long_synthesizable_region():
     make_linear([r1])
 
     design = Design(spancost)
-    design.add_materials(
-        primers=[],
-        templates=[r1],
-        queries=[goal],
-        fragments=[]
-    )
+    design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
 
     expected_path = [
-        (500, True, 'B', False),
-        (1000, True, 'A', False),
-        (2000, True, 'B', False),
-        (2500, True, 'A', False),
+        (500, True, "B", False),
+        (1000, True, "A", False),
+        (2000, True, "B", False),
+        (2500, True, "A", False),
     ]
 
     check_design_result(design, expected_path)
@@ -393,43 +360,30 @@ def test_single_fragment():
     make_linear([r1])
 
     design = Design(spancost)
-    design.add_materials(
-        primers=[],
-        templates=[r1],
-        queries=[goal],
-        fragments=[]
-    )
+    design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
 
-    expected_path = [
-        (177, True, 'A', False),
-        (2255, True, 'B', False),
-    ]
+    expected_path = [(177, True, "A", False), (2255, True, "B", False)]
 
     check_design_result(design, expected_path)
+
 
 def test_fully_overlapped():
     goal = random_record(2000)
     make_circular([goal])
 
     r1 = goal[1100:1300]
-    p1 = goal[1177:1177+30]
-    p2 = goal[1188:1188+30]
-    p3 = goal[1225-30:1225].reverse_complement()
+    p1 = goal[1177 : 1177 + 30]
+    p2 = goal[1188 : 1188 + 30]
+    p3 = goal[1225 - 30 : 1225].reverse_complement()
 
     make_linear([r1, p1, p2, p3])
 
     design = Design(spancost)
     design.add_materials(
-        primers=[p1, p2, p3],
-        templates=[r1],
-        queries=[goal],
-        fragments=[]
+        primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [
-        (1177, False, 'A', False),
-        (1225, False, 'B', False),
-    ]
+    expected_path = [(1177, False, "A", False), (1225, False, "B", False)]
 
     check_design_result(design, expected_path)
 
@@ -451,18 +405,13 @@ def test_case():
     make_linear([r1, r2])
 
     design = Design(spancost)
-    design.add_materials(
-        primers=[],
-        templates=[r1, r2],
-        queries=[goal],
-        fragments=[]
-    )
+    design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
-        (1188, True, 'A', False),
-        (1230, True, 'B', False),
-        (1238, True, 'A', False),
-        (1282, True, 'B', False),
+        (1188, True, "A", False),
+        (1230, True, "B", False),
+        (1238, True, "A", False),
+        (1282, True, "B", False),
     ]
 
     check_design_result(design, expected_path)

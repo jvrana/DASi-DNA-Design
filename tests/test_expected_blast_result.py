@@ -1,4 +1,10 @@
-from pyblast.utils import make_linear, make_circular, load_fasta_glob, load_genbank_glob, reverse_complement
+from pyblast.utils import (
+    make_linear,
+    make_circular,
+    load_fasta_glob,
+    load_genbank_glob,
+    reverse_complement,
+)
 from pyblast import BioBlastFactory
 from pyblast import __version__
 
@@ -24,5 +30,5 @@ def test(paths):
     blast = factory(TEMPLATES, QUERIES)
 
     results = blast.quick_blastn()
-    assert results[0]['subject']['strand'] == -1
-    assert results[0]['subject']['start'] == len(templates[0])
+    assert results[0]["subject"]["strand"] == -1
+    assert results[0]["subject"]["start"] == len(templates[0])

@@ -11,7 +11,7 @@ from more_itertools import partition
 from typing import Iterable
 import bisect
 
-AssemblyNode = namedtuple('AssemblyNode', 'index expandable type overhang')
+AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
 
 
 class AssemblyGraphBuilder(object):
@@ -42,7 +42,10 @@ class AssemblyGraphBuilder(object):
     def internal_edge_cost(align):
         if align.type == Constants.FRAGMENT:
             internal_cost = 0
-        elif align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER]:
+        elif align.type in [
+            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        ]:
             internal_cost = 30 + 30
         elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
             internal_cost = 30
@@ -55,9 +58,17 @@ class AssemblyGraphBuilder(object):
     def internal_edge_data(self, align):
         q = align.query_region
         a_expand, b_expand = True, True
-        if align.type in [Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+        if align.type in [
+            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+            Constants.FRAGMENT,
+            Constants.PCR_PRODUCT_WITH_PRIMERS,
+        ]:
             b_expand = False
-        if align.type in [Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, Constants.FRAGMENT, Constants.PCR_PRODUCT_WITH_PRIMERS]:
+        if align.type in [
+            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+            Constants.FRAGMENT,
+            Constants.PCR_PRODUCT_WITH_PRIMERS,
+        ]:
             a_expand = False
 
         internal_cost = self.internal_edge_cost(align)
@@ -65,15 +76,9 @@ class AssemblyGraphBuilder(object):
         if q.cyclic:
             # cyclic
             if q.b < q.a:
-                pairs = [
-                    (q.a, q.b + q.context_length),
-                    (q.a + q.context_length, q.b)
-                ]
+                pairs = [(q.a, q.b + q.context_length), (q.a + q.context_length, q.b)]
             else:
-                pairs = [
-                    (q.a, q.b),
-                    (q.a + q.context_length, q.b + q.context_length)
-                ]
+                pairs = [(q.a, q.b), (q.a + q.context_length, q.b + q.context_length)]
         else:
             # linear
             pairs = [(q.a, q.b)]
@@ -82,16 +87,20 @@ class AssemblyGraphBuilder(object):
         edges = []
         for a, b in pairs:
             if a is not None:
-                anode = (a, a_expand, 'A')
+                anode = (a, a_expand, "A")
                 nodes.append(anode)
                 if b is not None:
-                    bnode = (b, b_expand, 'B')
+                    bnode = (b, b_expand, "B")
                     nodes.append(bnode)
-                    edge = anode, bnode, dict(
-                                    weight=internal_cost,
-                                    name='',
-                                    span=len(align.query_region),
-                                    type=align.type
+                    edge = (
+                        anode,
+                        bnode,
+                        dict(
+                            weight=internal_cost,
+                            name="",
+                            span=len(align.query_region),
+                            type=align.type,
+                        ),
                     )
                     edges.append(edge)
         return nodes, edges
@@ -117,13 +126,17 @@ class AssemblyGraphBuilder(object):
             return
         query_region = groups[0].query_region
         length = query_region.context_length
-        a_nodes, b_nodes = partition(lambda x: x.type == 'B', nodes)
+        a_nodes, b_nodes = partition(lambda x: x.type == "B", nodes)
 
         a_nodes = sorted(a_nodes, key=lambda x: x.index)
         b_nodes = sorted(b_nodes, key=lambda x: x.index)
 
-        a_nodes_gap, a_nodes_overhang = [list(x) for x in partition(lambda x: x.overhang, a_nodes)]
-        b_nodes_gap, b_nodes_overhang = [list(x) for x in partition(lambda x: x.overhang, b_nodes)]
+        a_nodes_gap, a_nodes_overhang = [
+            list(x) for x in partition(lambda x: x.overhang, a_nodes)
+        ]
+        b_nodes_gap, b_nodes_overhang = [
+            list(x) for x in partition(lambda x: x.overhang, b_nodes)
+        ]
 
         def make_overlap_iterator(anodes, bnodes):
             anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
@@ -153,7 +166,9 @@ class AssemblyGraphBuilder(object):
         overlap_iter = list(make_overlap_iterator(a_nodes_overhang, b_nodes_overhang))
         gap_iter = list(make_gap_itererator(a_nodes_gap, b_nodes_gap))
         gap_origin_iter = list(make_origin_iterator(a_nodes_gap, b_nodes_gap))
-        overlap_origin_iter = list(make_origin_iterator(a_nodes_overhang, b_nodes_overhang))
+        overlap_origin_iter = list(
+            make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
+        )
 
         for bnode, anode in overlap_iter:
             self.add_overlap_edge(bnode, anode, query_region, group_keys, groups)
@@ -163,9 +178,13 @@ class AssemblyGraphBuilder(object):
         for bnode, anode in gap_origin_iter:
             self.add_gap_edge(bnode, anode, query_region, origin=True)
         for bnode, anode in overlap_origin_iter:
-            self.add_overlap_edge(bnode, anode, query_region, group_keys, groups, origin=True)
+            self.add_overlap_edge(
+                bnode, anode, query_region, group_keys, groups, origin=True
+            )
 
-    def add_overlap_edge(self, bnode, anode, query_region, group_keys, groups, origin=False):
+    def add_overlap_edge(
+        self, bnode, anode, query_region, group_keys, groups, origin=False
+    ):
         # TODO: PRIORITY this step is extremely slow
         q = query_region.new(anode.index, bnode.index, allow_wrap=True)
         if not origin:
@@ -180,9 +199,13 @@ class AssemblyGraphBuilder(object):
             else:
                 span = -len(q)
             if span <= 0:
-                cost, desc = self.span_cost.cost_and_desc(span, (bnode.expandable, anode.expandable))
+                cost, desc = self.span_cost.cost_and_desc(
+                    span, (bnode.expandable, anode.expandable)
+                )
                 if cost < self.COST_THRESHOLD:
-                    self.add_edge(bnode, anode, weight=cost, name='overlap', span=span, type=desc)
+                    self.add_edge(
+                        bnode, anode, weight=cost, name="overlap", span=span, type=desc
+                    )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
         # TODO: PRIORITY no way to determine overlaps from just end points
@@ -191,15 +214,11 @@ class AssemblyGraphBuilder(object):
         else:
             span = len(query_region.new(bnode.index, anode.index))
         if span >= 0:
-            cost, desc = self.span_cost.cost_and_desc(span, (bnode.expandable, anode.expandable))
+            cost, desc = self.span_cost.cost_and_desc(
+                span, (bnode.expandable, anode.expandable)
+            )
             if cost < self.COST_THRESHOLD:
-                self.add_edge(
-                    bnode, anode,
-                    weight=cost,
-                    name='',
-                    span=span,
-                    type=desc
-                )
+                self.add_edge(bnode, anode, weight=cost, name="", span=span, type=desc)
 
     def build_assembly_graph(self):
 
@@ -222,5 +241,13 @@ class AssemblyGraphBuilder(object):
         self.add_external_edges(groups, group_keys, self.G.nodes())
         nx.freeze(self.G)
         for n1, n2, edata in self.G.edges(data=True):
-           print('{} -> {}: {} {} {}'.format(tuple(n1), tuple(n2), int(edata['weight']), edata['span'], edata['type']))
+            print(
+                "{} -> {}: {} {} {}".format(
+                    tuple(n1),
+                    tuple(n2),
+                    int(edata["weight"]),
+                    edata["span"],
+                    edata["type"],
+                )
+            )
         return self.G

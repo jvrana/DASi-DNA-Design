@@ -247,7 +247,6 @@ class AlignmentContainer(Sized):
                 end_inclusive=False,
             )
 
-            #
             for group_b in overlapping:
                 if group_b is not group_a:
                     left = group_a.sub_region(
@@ -408,6 +407,14 @@ class AlignmentContainer(Sized):
         for g in self.groups():
             d[g.type].append(g)
         return d
+
+    def freeze(self):
+        """Freeze the container, disallowing further modifications to alignments"""
+        self._alignments = tuple(self._alignments)
+
+    def unfreeze(self):
+        """Unfreeze the container, allowing modifications to alignments"""
+        self._alignments = list(self._alignments)
 
     def __len__(self):
         return len(self.alignments)

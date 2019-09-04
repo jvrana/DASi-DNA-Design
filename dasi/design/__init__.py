@@ -387,6 +387,7 @@ class Design(object):
             desc="compiling all containers",
         ):
             container.expand(expand_overlaps=True, expand_primers=True)
+            container.freeze()
 
             # group by query_regions
             groups = container.groups()

@@ -242,14 +242,4 @@ class AssemblyGraphBuilder(object):
         self.add_internal_edges(groups)
         self.add_external_edges(groups, group_keys, self.G.nodes())
         nx.freeze(self.G)
-        for n1, n2, edata in self.G.edges(data=True):
-            print(
-                "{} -> {}: {} {} {}".format(
-                    tuple(n1),
-                    tuple(n2),
-                    int(edata["weight"]),
-                    edata["span"],
-                    edata["type"],
-                )
-            )
         return self.G

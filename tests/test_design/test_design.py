@@ -82,8 +82,9 @@ def test_real_design(here, paths, query):
 
     for query_key, result in results.items():
         assembly = result.assemblies[0]
-        df = assembly.to_df()
-        print(df)
+        assembly.print()
+
+        assert len(result.query) == sum(assembly.to_df()['span'])
 
 
 def test_real_design2(here, paths):
@@ -117,8 +118,10 @@ def test_real_design2(here, paths):
 
     for query_key, result in results.items():
         assembly = result.assemblies[0]
-        df = assembly.to_df()
-        print(df)
+
+        assert len(result.query) == sum(assembly.to_df()['span'])
+
+        assembly.print()
 
 
 def test_multidesign(here, paths):

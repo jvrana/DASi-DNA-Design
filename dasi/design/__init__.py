@@ -190,6 +190,14 @@ class Assembly(Iterable):
             return dist, differences
         return dist
 
+    def print(self):
+        print("query_name: {}".format(self.query.name))
+        print("query_key: {}".format(self.query_key))
+        print("Cost: {}".format(self.cost()))
+        df = self.to_df()
+        print(df)
+
+
     def print_diff(self, other: Assembly):
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))

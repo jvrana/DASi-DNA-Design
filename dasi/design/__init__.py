@@ -197,7 +197,6 @@ class Assembly(Iterable):
         df = self.to_df()
         print(df)
 
-
     def print_diff(self, other: Assembly):
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))
@@ -211,7 +210,7 @@ class Assembly(Iterable):
     def to_df(self):
         rows = []
         for n1, n2, edata in self.edges():
-            groups = edata['groups']
+            groups = edata["groups"]
             if groups:
                 group = groups[0]
                 if isinstance(group, ComplexAlignmentGroup):

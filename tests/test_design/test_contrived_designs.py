@@ -73,16 +73,22 @@ def fix_path(path, graph, length):
                 if _edata:
                     edata_arr.append((_n1, _n2, _edata))
 
-            edata_arr = sorted(edata_arr, key=lambda x: x[2]['weight'])
+            edata_arr = sorted(edata_arr, key=lambda x: x[2]["weight"])
 
             if edata_arr:
                 return edata_arr[0][0], edata_arr[0][1]
 
+
 class NoSolution(Exception):
     pass
 
+
 def check_design_result(
-    design, expected_path: List[Tuple], check_cost=False, check_path=True, path_func=None
+    design,
+    expected_path: List[Tuple],
+    check_cost=False,
+    check_path=True,
+    path_func=None,
 ):
 
     # compile the design
@@ -121,16 +127,19 @@ def check_design_result(
 
     if check_path:
         # check DataFrame
-        cols = ['query_start', 'query_end']
+        cols = ["query_start", "query_end"]
         assert df1[[*cols]].equals(df2[[*cols]])
 
         # check edges
-        for e1, e2 in zip(best_solution.edges(data=False), expected_solution.edges(data=False)):
+        for e1, e2 in zip(
+            best_solution.edges(data=False), expected_solution.edges(data=False)
+        ):
             assert e1 == e2, "{} != {}".format(e1, e2)
 
     if check_cost:
         assert best_solution.cost() <= expected_solution.cost()
         assert expected_solution.cost() != np.inf
+
 
 def test_blast_has_same_results():
     goal = random_record(3000)
@@ -409,10 +418,7 @@ def test_single_fragment():
     design = Design(spancost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
 
-    expected_path = [
-        (177, True, "A", False),
-        (2255, True, "B", False)
-    ]
+    expected_path = [(177, True, "A", False), (2255, True, "B", False)]
 
     check_design_result(design, expected_path)
 
@@ -457,9 +463,6 @@ def test_case():
     design = Design(spancost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
-    expected_path = [
-        (1238, True, "A", False),
-        (1282, True, "B", False),
-    ]
+    expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
 
     check_design_result(design, expected_path)

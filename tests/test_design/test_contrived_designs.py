@@ -88,7 +88,6 @@ def check_design_result(
     expected_path: List[Tuple],
     check_cost=False,
     check_path=True,
-    path_func=None,
 ):
 
     # compile the design
@@ -195,7 +194,7 @@ def test_design_with_no_gaps():
         (3000, True, "B", False),
     ]
 
-    check_design_result(design, expected_path, path_func=lambda x: (x[0], x[2]))
+    check_design_result(design, expected_path)
 
 
 def test_design_with_overlaps():

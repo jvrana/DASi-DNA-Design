@@ -156,8 +156,8 @@ class AssemblyGraphBuilder(object):
             anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
             bnodes, bkeys = sort_with_keys(bnodes, lambda x: x.index)
 
-            i = bisect.bisect_left(akeys, length)
-            j = bisect.bisect_right(bkeys, length)
+            i = bisect.bisect_right(akeys, length)
+            j = bisect.bisect_left(bkeys, length)
 
             for bnode in bnodes[j:]:
                 for anode in anodes[:i]:
@@ -187,6 +187,8 @@ class AssemblyGraphBuilder(object):
     ):
         # TODO: PRIORITY this step is extremely slow
         q = query_region.new(anode.index, bnode.index, allow_wrap=True)
+        if len(q) == 0:
+            return
         if not origin:
             filtered_groups = bisect_slice_between(groups, group_keys, q.a, q.b)
         else:

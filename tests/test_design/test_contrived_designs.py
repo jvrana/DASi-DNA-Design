@@ -9,6 +9,7 @@ from dasi.cost import SpanCost
 from more_itertools import pairwise
 import numpy as np
 from typing import Tuple, List
+import itertools
 
 spancost = SpanCost()
 
@@ -46,8 +47,42 @@ def print_edge_cost(path, graph):
     return total
 
 
+def change_index(n, i):
+    return (i, n[1], n[2], n[3])
+
+
+def fix_path(path, graph, length):
+    for n1, n2 in pairwise(path):
+        edata = graph.get_edge_data(n1, n2)
+        if edata is None:
+            n1_arr = []
+            n2_arr = []
+            edata_arr = []
+            if n1.index <= length:
+                n1_arr.append(change_index(n1, n1.index - length))
+            if n1.index >= length:
+                n1_arr.append(change_index(n1, n1.index - length))
+
+            if n2.index <= length:
+                n2_arr.append(change_index(n2, n2.index - length))
+            if n2.index >= length:
+                n2_arr.append(change_index(n2, n2.index - length))
+
+            for _n1, _n2 in itertools.product(n1_arr, n2_arr):
+                _edata = graph.get_edge_data(_n1, _n2)
+                if _edata:
+                    edata_arr.append((_n1, _n2, _edata))
+
+            edata_arr = sorted(edata_arr, key=lambda x: x[2]['weight'])
+
+            if edata_arr:
+                return edata_arr[0][0], edata_arr[0][1]
+
+class NoSolution(Exception):
+    pass
+
 def check_design_result(
-    design, expected_path: List[Tuple], check_cost=True, check_path=True, path_func=None
+    design, expected_path: List[Tuple], check_cost=False, check_path=True, path_func=None
 ):
 
     # compile the design
@@ -59,27 +94,39 @@ def check_design_result(
     assemblies = result.assemblies
 
     if not assemblies:
-        raise Exception("There are no solution.")
+        raise NoSolution("There are no solution.")
 
     best_solution = assemblies[0]
     expected_solution = result._new(expected_path)
 
     dist, explain = best_solution.edit_distance(expected_solution, explain=True)
 
+    print("Best nodes")
+    for n in best_solution._nodes:
+        print(n)
+
     print("=== DIFF ===")
     best_solution.print_diff(expected_solution)
 
     print("=== BEST ===")
-    print(best_solution.to_df())
+    df1 = best_solution.to_df()
+    print(df1)
 
     print("=== EXPECTED ===")
-    print(expected_solution.to_df())
+    df2 = expected_solution.to_df()
+    print(df2)
 
     print("Best: {}".format(best_solution.cost()))
     print("Expected: {}".format(expected_solution.cost()))
 
     if check_path:
-        assert dist == 0
+        # check DataFrame
+        cols = ['query_start', 'query_end']
+        assert df1[[*cols]].equals(df2[[*cols]])
+
+        # check edges
+        for e1, e2 in zip(best_solution.edges(data=False), expected_solution.edges(data=False)):
+            assert e1 == e2, "{} != {}".format(e1, e2)
 
     if check_cost:
         assert best_solution.cost() <= expected_solution.cost()
@@ -171,7 +218,7 @@ def test_design_with_overlaps():
     check_design_result(design, expected_path)
 
 
-def test_design_with_overlaps():
+def test_design_with_overlaps2():
     """Fragments with overlaps"""
 
     goal = random_record(3000)
@@ -193,7 +240,7 @@ def test_design_with_overlaps():
         (1950, False, "A", True),
         (3000, False, "B", True),
         (3000 - 40, False, "A", True),
-        (1001, False, "B", True),
+        (4001, False, "B", True),
     ]
 
     check_design_result(design, expected_path)
@@ -221,7 +268,7 @@ def test_design_with_overlaps_with_templates():
         (1950, True, "A", True),
         (3000, True, "B", True),
         (3000 - 40, True, "A", True),
-        (1000, True, "B", True),
+        (4000, True, "B", True),
     ]
 
     check_design_result(design, expected_path, check_path=False)
@@ -348,7 +395,8 @@ def test_very_long_synthesizable_region():
         (2500, True, "A", False),
     ]
 
-    check_design_result(design, expected_path)
+    with pytest.raises(NoSolution):
+        check_design_result(design, expected_path)
 
 
 def test_single_fragment():
@@ -362,7 +410,10 @@ def test_single_fragment():
     design = Design(spancost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
 
-    expected_path = [(177, True, "A", False), (2255, True, "B", False)]
+    expected_path = [
+        (177, True, "A", False),
+        (2255, True, "B", False)
+    ]
 
     check_design_result(design, expected_path)
 
@@ -408,8 +459,6 @@ def test_case():
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
-        (1188, True, "A", False),
-        (1230, True, "B", False),
         (1238, True, "A", False),
         (1282, True, "B", False),
     ]

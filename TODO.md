@@ -29,3 +29,7 @@ and simply choose the smallest cost.
 **Hierarchical optimization**
 
 How do you optimize a plasmid AND then potentially use that as a template for the next plasmid?
+
+## Bug Fixes
+
+1. `check_design` method in testing needs to be updated, since its returning np.inf.

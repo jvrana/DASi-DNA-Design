@@ -610,7 +610,7 @@ class Design(object):
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
     # TODO: n_paths to class attribute
-    def optimize(self, n_paths=3) -> Dict[str, List[List[AssemblyNode]]]:
+    def optimize(self, n_paths=20) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
         results = {}
         for query_key, graph in self.logger.tqdm(

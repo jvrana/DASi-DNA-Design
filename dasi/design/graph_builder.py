@@ -163,12 +163,10 @@ class AssemblyGraphBuilder(object):
                 for anode in anodes[:i]:
                     yield bnode, anode
 
-        overlap_iter = list(make_overlap_iterator(a_nodes_overhang, b_nodes_overhang))
-        gap_iter = list(make_gap_itererator(a_nodes_gap, b_nodes_gap))
-        gap_origin_iter = list(make_origin_iterator(a_nodes_gap, b_nodes_gap))
-        overlap_origin_iter = list(
-            make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
-        )
+        overlap_iter = make_overlap_iterator(a_nodes_overhang, b_nodes_overhang)
+        gap_iter = make_gap_itererator(a_nodes_gap, b_nodes_gap)
+        gap_origin_iter = make_origin_iterator(a_nodes_gap, b_nodes_gap)
+        overlap_origin_iter = make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
 
         for bnode, anode in overlap_iter:
             self.add_overlap_edge(bnode, anode, query_region, group_keys, groups)

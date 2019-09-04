@@ -4,20 +4,18 @@ from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_
 import pytest
 from os.path import join
 from more_itertools import pairwise
-import json
 
 span_cost = SpanCost()
 
 
-@pytest.mark.parametrize('query', [
-    "pmodkan-ho-pact1-z4-er-vpr.gb",
-    'plko-pef1a-frt-tdtomato-wpre.gb'
-])
+@pytest.mark.parametrize(
+    "query", ["pmodkan-ho-pact1-z4-er-vpr.gb", "plko-pef1a-frt-tdtomato-wpre.gb"]
+)
 def test_num_groups_vs_endpoints(here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
-    query_path = join(here, 'data/test_data/genbank/designs', query)
+    query_path = join(here, "data/test_data/genbank/designs", query)
     queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost)
@@ -30,7 +28,7 @@ def test_num_groups_vs_endpoints(here, paths, query):
     container = containers[0]
     container.expand()
     groups = container.groups()
-    print(len(groups)**2)
+    print(len(groups) ** 2)
 
     a_arr = set()
     b_arr = set()
@@ -48,24 +46,27 @@ def print_edge_cost(path, graph):
     for n1, n2 in pairwise(path):
         try:
             edata = graph[n1][n2]
-            total += edata['weight']
-            print((n1, n2, edata['weight']))
+            total += edata["weight"]
+            print((n1, n2, edata["weight"]))
         except:
             print((n1, n2, "MISSING EDGE"))
 
     print("TOTAL: {}".format(total))
 
 
-@pytest.mark.parametrize('query', [
-    "pmodkan-ho-pact1-z4-er-vpr.gb",
-    'plko-pef1a-frt-tdtomato-wpre.gb',
-    'pins-01-hu6-sv40-nt1-optgrna.gb'
-])
+@pytest.mark.parametrize(
+    "query",
+    [
+        "pmodkan-ho-pact1-z4-er-vpr.gb",
+        "plko-pef1a-frt-tdtomato-wpre.gb",
+        "pins-01-hu6-sv40-nt1-optgrna.gb",
+    ],
+)
 def test_real_design(here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
-    query_path = join(here, 'data/test_data/genbank/designs', query)
+    query_path = join(here, "data/test_data/genbank/designs", query)
     queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost=span_cost)
@@ -76,24 +77,29 @@ def test_real_design(here, paths, query):
 
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) == 1
-    path_dict = design.optimize()
-    best_path = list(path_dict.values())[0][0]
-    df = design.design()
-    d = df[0].to_dict()
-    print(json.dumps(d, indent=2))
-    print(df)
 
-    print_edge_cost(best_path, list(design.graphs.values())[0])
+    results = design.optimize()
+
+    for query_key, result in results.items():
+        assembly = result.assemblies[0]
+        assembly.print()
+
+        assert len(result.query) == sum(assembly.to_df()['span'])
+
 
 def test_real_design2(here, paths):
     query = "goal1.gb"
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["registry"])
 
-    fragments = [f for f in templates if f.annotations.get('topology', None) == 'linear']
-    plasmids = [f for f in templates if f.annotations.get('topology', None) == 'circular']
+    fragments = [
+        f for f in templates if f.annotations.get("topology", None) == "linear"
+    ]
+    plasmids = [
+        f for f in templates if f.annotations.get("topology", None) == "circular"
+    ]
 
-    query_path = join(here, 'data/test_data/genbank/designs', query)
+    query_path = join(here, "data/test_data/genbank/designs", query)
     queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost=span_cost)
@@ -107,22 +113,23 @@ def test_real_design2(here, paths):
 
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) == 1
-    path_dict = design.optimize()
-    best_path = list(path_dict.values())[0][0]
-    df = design.design()
-    d = df[0].to_dict()
-    print(json.dumps(d, indent=2))
-    print(df)
 
-    print_edge_cost(best_path, list(design.graphs.values())[0])
-    raise NotImplementedError("This test contains an error due to pcr expansion")
+    results = design.optimize()
+
+    for query_key, result in results.items():
+        assembly = result.assemblies[0]
+
+        assert len(result.query) == sum(assembly.to_df()['span'])
+
+        assembly.print()
+
 
 def test_multidesign(here, paths):
     """Expect more than one graph to be output if multiple queries are provided"""
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
-    query_path = join(here, 'data/test_data/genbank/designs/*.gb')
+    query_path = join(here, "data/test_data/genbank/designs/*.gb")
     queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost=span_cost)
@@ -135,5 +142,3 @@ def test_multidesign(here, paths):
     assert len(design.graphs) > 1
 
     design.optimize()
-
-

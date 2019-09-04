@@ -13,7 +13,7 @@ from copy import copy, deepcopy
 def random_seq(len):
     bases = "AGTC"
 
-    seq = ''
+    seq = ""
     for _ in range(len):
         i = random.randint(0, 3)
         seq += bases[i]
@@ -37,7 +37,9 @@ def random_span_with_len(context_len, l):
     return Region(start, end, context_len, direction=1, cyclic=True)
 
 
-def random_alignment(type, query_key=None, subject_key=None, span_len=None, context_len=10000):
+def random_alignment(
+    type, query_key=None, subject_key=None, span_len=None, context_len=10000
+):
     if query_key is None:
         query_key = str(uuid4())
     if subject_key is None:
@@ -49,16 +51,24 @@ def random_alignment(type, query_key=None, subject_key=None, span_len=None, cont
     return Alignment(query_region, subject_region, type, query_key, subject_key)
 
 
-def random_container(num_records, num_alignments, type, context_len=10000, span_len=None):
+def random_container(
+    num_records, num_alignments, type, context_len=10000, span_len=None
+):
     records = [random_record(context_len) for _ in range(num_records)]
     seqdb = {}
     alignments = []
     for r in records:
         seqdb[r.id] = r
     for _ in range(num_alignments):
-        j = random.randint(1, len(records)-1)
+        j = random.randint(1, len(records) - 1)
 
-        align = random_alignment(type, records[0].id, records[j].id, context_len=context_len, span_len=span_len)
+        align = random_alignment(
+            type,
+            records[0].id,
+            records[j].id,
+            context_len=context_len,
+            span_len=span_len,
+        )
         alignments.append(align)
     return AlignmentContainer(seqdb, alignments=alignments)
 
@@ -72,15 +82,20 @@ def new_alignment_in_container(container, a, b, type, direction=1):
     new_subject_region = subject_region.new(a, b, allow_wrap=True)
 
     new_subject_region.direction = direction
-    alignment = Alignment(new_query_region, new_subject_region, type, query_key, str(uuid4()))
+    alignment = Alignment(
+        new_query_region, new_subject_region, type, query_key, str(uuid4())
+    )
     container.alignments.append(alignment)
     return alignment
 
 
 test_container = random_container(100, 1, Constants.PCR_PRODUCT)
-test_container.alignments = [new_alignment_in_container(test_container, 100, 1000, Constants.PCR_PRODUCT)]
+test_container.alignments = [
+    new_alignment_in_container(test_container, 100, 1000, Constants.PCR_PRODUCT)
+]
 
-@pytest.fixture(scope='function')
+
+@pytest.fixture(scope="function")
 def container():
     return deepcopy(test_container)
 
@@ -93,7 +108,9 @@ def test_init():
 def test_init_raise_error_with_different_queries():
     container = random_container(100, 300, Constants.PCR_PRODUCT)
     with pytest.raises(AlignmentContainerException):
-        container.alignments = container.alignments + [random_alignment(Constants.PCR_PRODUCT)]
+        container.alignments = container.alignments + [
+            random_alignment(Constants.PCR_PRODUCT)
+        ]
 
 
 def test_group():
@@ -123,9 +140,8 @@ def test_group_by_types():
     assert len(container.get_groups_by_types(Constants.FRAGMENT)[0].alignments) == 2
 
 
-class TestExpandPrimers():
-
-    @pytest.mark.parametrize('x', [(75, 90, 1), (2000, 2030, -1)])
+class TestExpandPrimers:
+    @pytest.mark.parametrize("x", [(75, 90, 1), (2000, 2030, -1)])
     def test_no_expand(self, container, x):
         assert len(container) == 1
 
@@ -134,7 +150,9 @@ class TestExpandPrimers():
         assert len(container) == 2
 
         # expand and check
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 0
 
     def test_one_pair_two_templates(self, container):
@@ -147,7 +165,9 @@ class TestExpandPrimers():
         assert len(container) == 4
 
         # expand and check
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 6
 
     def test_one_pair_two_templates2(self, container):
@@ -160,24 +180,27 @@ class TestExpandPrimers():
         assert len(container) == 4
 
         # expand and check
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 2
 
     @pytest.mark.parametrize(
-        "x", [
+        "x",
+        [
             ([(200, 230), (220, 250)], [(750, 800), (800, 830)], 8),
             ([(200, 230), (220, 250)], [(800, 830)], 5),
             ([(200, 230)], [(220, 250), (800, 830)], 5),
             ([(200, 230), (220, 250)], [], 2),
-            ([], [(220, 250), (800, 830)], 2)
+            ([], [(220, 250), (800, 830)], 2),
         ],
         ids=[
             "two_fwd_two_rev",
             "two_fwd_one_rev",
             "one_fwd_two_rev",
             "two_fwd",
-            "two_rev"
-        ]
+            "two_rev",
+        ],
     )
     def test_num_alignments_from_pairs(self, x, container):
         # add primers
@@ -188,50 +211,73 @@ class TestExpandPrimers():
             new_alignment_in_container(container, rev[0], rev[1], Constants.PRIMER, -1)
 
         # expand and check
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == x[2]
 
-    @pytest.mark.parametrize("x", [
-        (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND, 3),
-        (Constants.PRIMER_MIN_BIND-1, Constants.PRIMER_MIN_BIND, 1),
-        (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND-1, 1),
-        (Constants.PRIMER_MIN_BIND-1, Constants.PRIMER_MIN_BIND-1, 0),
+    @pytest.mark.parametrize(
+        "x",
+        [
+            (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND, 3),
+            (Constants.PRIMER_MIN_BIND - 1, Constants.PRIMER_MIN_BIND, 1),
+            (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND - 1, 1),
+            (Constants.PRIMER_MIN_BIND - 1, Constants.PRIMER_MIN_BIND - 1, 0),
         ],
         ids=[
             "both primers valid",
             "right primer valid",
             "left primer valid",
-            "neither primer valid"
-        ]
+            "neither primer valid",
+        ],
     )
     def test_expand_one_pair(self, x, container):
         left_primer_len, right_primer_len, expected_num_alignments = x
         assert len(container) == 1
 
         # add primers
-        new_alignment_in_container(container, 100, 100+left_primer_len, Constants.PRIMER)
-        new_alignment_in_container(container, 1000-right_primer_len, 1000, Constants.PRIMER, direction=-1)
+        new_alignment_in_container(
+            container, 100, 100 + left_primer_len, Constants.PRIMER
+        )
+        new_alignment_in_container(
+            container, 1000 - right_primer_len, 1000, Constants.PRIMER, direction=-1
+        )
         assert len(container) == 3
 
         # expand and check
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == expected_num_alignments
 
     def test_position_of_pairs(self, container):
-        left_primer_len, right_primer_len = (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND)
+        left_primer_len, right_primer_len = (
+            Constants.PRIMER_MIN_BIND,
+            Constants.PRIMER_MIN_BIND,
+        )
         assert len(container) == 1
 
         # add primers
-        new_alignment_in_container(container, 110, 110+left_primer_len, Constants.PRIMER)
-        new_alignment_in_container(container, 900-right_primer_len, 900, Constants.PRIMER, direction=-1)
+        new_alignment_in_container(
+            container, 110, 110 + left_primer_len, Constants.PRIMER
+        )
+        new_alignment_in_container(
+            container, 900 - right_primer_len, 900, Constants.PRIMER, direction=-1
+        )
         assert len(container) == 3
 
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 3
         types = set([a.type for a in alignments])
-        assert types == set([Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-                            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
-                            Constants.PCR_PRODUCT_WITH_PRIMERS])
+        assert types == set(
+            [
+                Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+                Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+                Constants.PCR_PRODUCT_WITH_PRIMERS,
+            ]
+        )
         for a in alignments:
             if a.type == Constants.PCR_PRODUCT_WITH_LEFT_PRIMER:
                 a.query_region.a == 110
@@ -252,17 +298,23 @@ class TestExpandPrimers():
         assert len(container) == 3
 
         # expand and check
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 1
 
     def test_expand_over_origin(self, container):
         container = random_container(2, 1, Constants.PCR_PRODUCT)
-        container.alignments = [new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)]
+        container.alignments = [
+            new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)
+        ]
 
         new_alignment_in_container(container, 9500, 9530, Constants.PRIMER, 1)
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, -1)
 
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
 
         indices = []
         for a in alignments:
@@ -274,12 +326,16 @@ class TestExpandPrimers():
 
     def test_expand_over_origin2(self, container):
         container = random_container(2, 1, Constants.PCR_PRODUCT)
-        container.alignments = [new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)]
+        container.alignments = [
+            new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)
+        ]
 
         new_alignment_in_container(container, 9500, 9530, Constants.PRIMER, -1)
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, 1)
 
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 2
 
         indices = []
@@ -291,10 +347,14 @@ class TestExpandPrimers():
         assert indices == [(800, 1000), (9000, 9530)]
 
     def test_overhang_on_primer(self, container):
-        new_alignment_in_container(container, 1000-Constants.PRIMER_MIN_BIND, 1100, Constants.PRIMER, -1)
+        new_alignment_in_container(
+            container, 1000 - Constants.PRIMER_MIN_BIND, 1100, Constants.PRIMER, -1
+        )
         assert len(container) == 2
 
-        alignments = container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
         assert len(alignments) == 1
         assert alignments[0].query_region.a == 100
         assert alignments[0].query_region.b == 1100
@@ -307,47 +367,48 @@ class TestExpandPrimers():
         groups = container.complex_alignment_groups(container.alignments)
         assert len(groups) == 0
 
-        container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
 
         groups = container.complex_alignment_groups(container.alignments)
         assert len(groups) == 3
 
-
     def test_expand_pair_over_origin(self, container):
         container = deepcopy(container)
-        container.alignments = [new_alignment_in_container(container, 474, 25, Constants.PCR_PRODUCT)]
+        container.alignments = [
+            new_alignment_in_container(container, 474, 25, Constants.PCR_PRODUCT)
+        ]
 
         new_alignment_in_container(container, 900, 930, Constants.PRIMER)
         new_alignment_in_container(container, 485, 500, Constants.PRIMER, -1)
 
-        container.expand_primer_pairs(container.get_groups_by_types(Constants.PCR_PRODUCT))
+        container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
 
         groups = container.complex_alignment_groups(container.alignments)
         for g in groups:
             print(g)
-
 
         assert len(groups) == 2
 
         groups = container.find_groups_by_pos(900, 500)
         assert not groups
 
-class TestExpandOverlaps():
 
+class TestExpandOverlaps:
     def overlap_container(self, container, x1, x2, x3, x4):
-        container.alignments = [new_alignment_in_container(container, x1, x2, Constants.PCR_PRODUCT)]
+        container.alignments = [
+            new_alignment_in_container(container, x1, x2, Constants.PCR_PRODUCT)
+        ]
         new_alignment_in_container(container, x3, x4, Constants.PCR_PRODUCT)
         return deepcopy(container)
 
-    @pytest.mark.parametrize('x', [
-            (100, 1000, 500, 2000),
-            (200, 800, 700, 1000),
-            (9000, 1000, 500, 2000)
-        ],
-        ids=[
-            'basic_1',
-            'basic_2',
-            'over_origin_1']
+    @pytest.mark.parametrize(
+        "x",
+        [(100, 1000, 500, 2000), (200, 800, 700, 1000), (9000, 1000, 500, 2000)],
+        ids=["basic_1", "basic_2", "over_origin_1"],
     )
     def test_expand_overlaps(self, container, x):
         container = self.overlap_container(container, *x)
@@ -378,36 +439,52 @@ def test_tag_alignments(container):
 
 
 def test_find_alignments(container):
-    container.alignments = [new_alignment_in_container(container, 1000, 2000, Constants.PCR_PRODUCT)]
+    container.alignments = [
+        new_alignment_in_container(container, 1000, 2000, Constants.PCR_PRODUCT)
+    ]
     a1 = container.alignments[0]
     a2 = new_alignment_in_container(container, 1001, 2000, Constants.PCR_PRODUCT)
     a3 = new_alignment_in_container(container, 1000, 2001, Constants.PCR_PRODUCT)
 
     # left end
     alignments = AlignmentContainer.filter_alignments_by_span(
-        container.alignments, Region(0, 1001, 10000),
-        key=lambda x: x.query_region.a, end_inclusive=False)
+        container.alignments,
+        Region(0, 1001, 10000),
+        key=lambda x: x.query_region.a,
+        end_inclusive=False,
+    )
     assert alignments == [a1, a3]
 
     # no alignments
     alignments = AlignmentContainer.filter_alignments_by_span(
-        container.alignments, Region(0, 999, 10000),
-        key=lambda x: x.query_region.a, end_inclusive=False)
+        container.alignments,
+        Region(0, 999, 10000),
+        key=lambda x: x.query_region.a,
+        end_inclusive=False,
+    )
     assert alignments == []
 
     # no alignments
     alignments = AlignmentContainer.filter_alignments_by_span(
-        container.alignments, Region(1500, 3000, 10000),
-        key=lambda x: x.query_region.a, end_inclusive=False)
+        container.alignments,
+        Region(1500, 3000, 10000),
+        key=lambda x: x.query_region.a,
+        end_inclusive=False,
+    )
     assert alignments == []
 
     alignments = AlignmentContainer.filter_alignments_by_span(
-        container.alignments, Region(2000, 3000, 10000),
-        key=lambda x: x.query_region.b, end_inclusive=False)
+        container.alignments,
+        Region(2000, 3000, 10000),
+        key=lambda x: x.query_region.b,
+        end_inclusive=False,
+    )
     assert alignments == [a1, a2, a3]
 
     alignments = AlignmentContainer.filter_alignments_by_span(
-        container.alignments, Region(2001, 3000, 10000),
-        key=lambda x: x.query_region.b, end_inclusive=False)
+        container.alignments,
+        Region(2001, 3000, 10000),
+        key=lambda x: x.query_region.b,
+        end_inclusive=False,
+    )
     assert alignments == [a3]
-

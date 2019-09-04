@@ -7,7 +7,14 @@ from dasi.exceptions import AlignmentException
 from typing import List
 from collections.abc import Sized
 
-ALIGNMENT_SLOTS = ["query_region", "subject_region", "type", "query_key", "subject_key", "grouping_tags"]
+ALIGNMENT_SLOTS = [
+    "query_region",
+    "subject_region",
+    "type",
+    "query_key",
+    "subject_key",
+    "grouping_tags",
+]
 
 
 class Alignment(Sized):
@@ -102,7 +109,7 @@ class Alignment(Sized):
             self.subject_region,
             type,
             self.query_key,
-            self.subject_region
+            self.subject_region,
         )
 
     def __len__(self):
@@ -124,7 +131,13 @@ class AlignmentGroupBase(object):
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 
-    def __init__(self, query_region: Region, alignments: List[Alignment], group_type: str, name=None):
+    def __init__(
+        self,
+        query_region: Region,
+        alignments: List[Alignment],
+        group_type: str,
+        name=None,
+    ):
         self.query_region = query_region
         self.alignments = alignments
         self.name = name
@@ -149,9 +162,7 @@ class AlignmentGroupBase(object):
         for a in alignments_copy:
             a.type = type
         return self.__class__(
-            alignments=alignments_copy,
-            group_type=type,
-            name="subregion",
+            alignments=alignments_copy, group_type=type, name="subregion"
         )
 
 
@@ -173,5 +184,7 @@ class ComplexAlignmentGroup(AlignmentGroupBase):
 
     def __init__(self, alignments: List[Alignment], group_type: str):
         query_region = alignments[0].query_region
-        query_region = query_region.new(alignments[0].query_region.a, alignments[-1].query_region.b)
+        query_region = query_region.new(
+            alignments[0].query_region.a, alignments[-1].query_region.b
+        )
         super().__init__(query_region, alignments, group_type)

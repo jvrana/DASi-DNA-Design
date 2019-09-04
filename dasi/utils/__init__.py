@@ -75,7 +75,13 @@ def sort_cycle(arr, key=None):
     return arr[i:] + arr[:i]
 
 
-def multipoint_shortest_path(graph: nx.DiGraph, nodes: List[str], weight_key: str, cyclic=False, cyclic_sort_key=None):
+def multipoint_shortest_path(
+    graph: nx.DiGraph,
+    nodes: List[str],
+    weight_key: str,
+    cyclic=False,
+    cyclic_sort_key=None,
+):
     """
     Return shortest path through nodes. If cyclic, will return the cycle sorted with the
     'lowest' node at index 0. Self cycles are not supported

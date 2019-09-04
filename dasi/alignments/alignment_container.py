@@ -38,7 +38,7 @@ def blast_to_region(query_or_subject, seqdb):
     l = len(record)
     # if data['circular'] and e > l and data['length'] == 2 * l:
     #     e -= l
-    if data['strand'] == -1:
+    if data["strand"] == -1:
         s, e = e, s
     region = Region(
         s - 1,
@@ -78,7 +78,7 @@ class AlignmentContainer(Sized):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-        Constants.SHARED_FRAGMENT
+        Constants.SHARED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -101,19 +101,21 @@ class AlignmentContainer(Sized):
     def _check_single_query_key(alignments):
         keys = set(a.query_key for a in alignments)
         if len(keys) > 1:
-            raise AlignmentContainerException("AlignmentContainer cannot contain more than one query. Contains the following"
-                             "query keys: {}".format(keys))
+            raise AlignmentContainerException(
+                "AlignmentContainer cannot contain more than one query. Contains the following"
+                "query keys: {}".format(keys)
+            )
 
     @classmethod
-    def filter_alignments_by_span(cls, alignments, region, key=None, end_inclusive=True):
+    def filter_alignments_by_span(
+        cls, alignments, region, key=None, end_inclusive=True
+    ):
         fwd, fwd_keys = sort_with_keys(alignments, key=key)
         found = []
         for a, b in region.ranges():
             if not end_inclusive:
                 b = b - 1
-            found += bisect_slice_between(
-                fwd, fwd_keys, a, b
-            )
+            found += bisect_slice_between(fwd, fwd_keys, a, b)
         return found
 
     def find_groups_by_pos(self, a, b, groups=None):
@@ -125,7 +127,13 @@ class AlignmentContainer(Sized):
                 found.append(g)
         return found
 
-    def _create_pcr_product_alignment(self, template_group: AlignmentGroup, fwd: Alignment, rev: Alignment, alignment_type: str):
+    def _create_pcr_product_alignment(
+        self,
+        template_group: AlignmentGroup,
+        fwd: Alignment,
+        rev: Alignment,
+        alignment_type: str,
+    ):
         groups = []
         for a in template_group.alignments:
             alignments = [x for x in [fwd, a, rev] if x is not None]
@@ -154,10 +162,14 @@ class AlignmentContainer(Sized):
             alignment_groups, "INFO", desc="Expanding primer pair"
         ):
             query_ranges = g.query_region.ranges()
-            fwd_bind_region = g.query_region[Constants.PRIMER_MIN_BIND:]
-            rev_bind_region = g.query_region[:-Constants.PRIMER_MIN_BIND]
-            fwd_bind = self.filter_alignments_by_span(fwd, fwd_bind_region, key=lambda p: p.query_region.b)
-            rev_bind = self.filter_alignments_by_span(rev, rev_bind_region, key=lambda p: p.query_region.a)
+            fwd_bind_region = g.query_region[Constants.PRIMER_MIN_BIND :]
+            rev_bind_region = g.query_region[: -Constants.PRIMER_MIN_BIND]
+            fwd_bind = self.filter_alignments_by_span(
+                fwd, fwd_bind_region, key=lambda p: p.query_region.b
+            )
+            rev_bind = self.filter_alignments_by_span(
+                rev, rev_bind_region, key=lambda p: p.query_region.a
+            )
             rev_bind, rkeys = sort_with_keys(rev_bind, key=lambda p: p.query_region.a)
 
             # both primers
@@ -168,29 +180,34 @@ class AlignmentContainer(Sized):
                     _rev_bind = rev_bind[i:]
                 else:
                     try:
-                        _rev_span = g.query_region.sub(f.query_region.a, g.query_region.b)
+                        _rev_span = g.query_region.sub(
+                            f.query_region.a, g.query_region.b
+                        )
                     except IndexError:
                         _rev_span = deepcopy(g.query_region)
 
                     for a, b in _rev_span.ranges():
-                        _rev_bind += bisect_slice_between(
-                            rev_bind, rkeys, a, b
-                        )
+                        _rev_bind += bisect_slice_between(rev_bind, rkeys, a, b)
                 for r in _rev_bind:
-                    pairs += self._create_pcr_product_alignment(g, f, r, Constants.PCR_PRODUCT_WITH_PRIMERS)
+                    pairs += self._create_pcr_product_alignment(
+                        g, f, r, Constants.PCR_PRODUCT_WITH_PRIMERS
+                    )
 
             # left primer
             for f in fwd_bind:
-                pairs += self._create_pcr_product_alignment(g, f, None, Constants.PCR_PRODUCT_WITH_LEFT_PRIMER)
+                pairs += self._create_pcr_product_alignment(
+                    g, f, None, Constants.PCR_PRODUCT_WITH_LEFT_PRIMER
+                )
 
             # right primer
             for r in rev_bind:
-                pairs += self._create_pcr_product_alignment(g, None, r, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER)
+                pairs += self._create_pcr_product_alignment(
+                    g, None, r, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
+                )
         return pairs
 
     def expand_overlaps(
-        self, alignment_groups: List[AlignmentGroup],
-            type=Constants.PCR_PRODUCT
+        self, alignment_groups: List[AlignmentGroup], type=Constants.PCR_PRODUCT
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -226,13 +243,19 @@ class AlignmentContainer(Sized):
             overlapping = self.filter_alignments_by_span(
                 group_sort,
                 group_a.query_region,
-                key=lambda p: p.query_region.a, end_inclusive=False)
+                key=lambda p: p.query_region.a,
+                end_inclusive=False,
+            )
 
             #
             for group_b in overlapping:
                 if group_b is not group_a:
-                    left = group_a.sub_region(group_a.query_region.a, group_b.query_region.a, type)
-                    overlap = group_a.sub_region(group_b.query_region.a, group_a.query_region.b, type)
+                    left = group_a.sub_region(
+                        group_a.query_region.a, group_b.query_region.a, type
+                    )
+                    overlap = group_a.sub_region(
+                        group_b.query_region.a, group_a.query_region.b, type
+                    )
                     # right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
 
                     if len(left.query_region) > MIN_OVERLAP:
@@ -273,9 +296,7 @@ class AlignmentContainer(Sized):
             self.alignments += expanded
             self.logger.info("Number of new alignments: {}".format(len(expanded)))
         self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
-        self.logger.info(
-            "Number of total groups: {}".format(len(self.groups()))
-        )
+        self.logger.info("Number of total groups: {}".format(len(self.groups())))
 
     @classmethod
     def _new_grouping_tag(cls, alignments, type: str, key=None):
@@ -296,9 +317,10 @@ class AlignmentContainer(Sized):
         group_key = (key, type)
         for i, a in enumerate(alignments):
             if key in a.grouping_tags:
-                raise AlignmentContainerException("Key '{}' already exists in grouping tag".format(key))
-            a.grouping_tags[group_key] = (i)
-
+                raise AlignmentContainerException(
+                    "Key '{}' already exists in grouping tag".format(key)
+                )
+            a.grouping_tags[group_key] = i
 
     @staticmethod
     def _alignment_hash(a):
@@ -306,7 +328,9 @@ class AlignmentContainer(Sized):
         return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
 
     @classmethod
-    def complex_alignment_groups(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
+    def complex_alignment_groups(
+        cls, alignments: List[Alignment]
+    ) -> List[AlignmentGroup]:
         key_to_alignments = {}
         for a in alignments:
             if not isinstance(a, Alignment):
@@ -321,7 +345,9 @@ class AlignmentContainer(Sized):
         return complex_groups
 
     @classmethod
-    def redundent_alignment_groups(cls, alignments: List[Alignment]) -> List[AlignmentGroup]:
+    def redundent_alignment_groups(
+        cls, alignments: List[Alignment]
+    ) -> List[AlignmentGroup]:
         """
         Return AlignmentGroups that have been grouped by alignment_hash
 
@@ -393,6 +419,7 @@ class AlignmentContainerFactory(object):
 
     AlignmentContainers can be retrieved in a dict grouped by their query via `.containers()`
     """
+
     valid_types = (
         Constants.PCR_PRODUCT,
         Constants.PRIMER,
@@ -400,11 +427,13 @@ class AlignmentContainerFactory(object):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-        Constants.SHARED_FRAGMENT
+        Constants.SHARED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
-        self.alignments = {}  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
+        self.alignments = (
+            {}
+        )  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
         self.logger = logger(self)
         self.seqdb = seqdb
 
@@ -416,7 +445,11 @@ class AlignmentContainerFactory(object):
         :param type: the type of alignment to initialize
         :return: None
         """
-        self.logger.info("Loading blast json ({} entries) to fragment type \"{}\"".format(len(data), type))
+        self.logger.info(
+            'Loading blast json ({} entries) to fragment type "{}"'.format(
+                len(data), type
+            )
+        )
         assert type in self.valid_types
         for d in data:
             query_region = blast_to_region(d["query"], self.seqdb)

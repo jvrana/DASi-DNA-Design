@@ -9,7 +9,7 @@ def test_sort_cycle():
 
 
 def test_sort_cycle2():
-    a = 'justin'
-    b = 'injust'
-    s = '{} is {}'.format(a, sort_cycle(b))
-    assert s == 'justin is injust'
+    a = "justin"
+    b = "injust"
+    s = "{} is {}".format(a, sort_cycle(b))
+    assert s == "justin is injust"

@@ -678,4 +678,8 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
+# ignore all pickle files
 */**/*.pkl
+
+# ignore output test csvs
+*/**/*__test__.csv

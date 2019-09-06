@@ -87,7 +87,7 @@ def test_real_design(here, paths, query):
         assembly.print()
 
         df = assembly.to_df()
-        filename = "{}__{}.csv".format(
+        filename = "{}__{}__test__.csv".format(
             assembly.query_key,
             assembly.query.name
         )

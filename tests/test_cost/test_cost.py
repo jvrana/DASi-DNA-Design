@@ -34,8 +34,9 @@ def test_synthesis_cost(syncost):
     syncost.plot()
 
 
-# def test_span_cost():
-#     span_cost = SpanCost()
+def test_span_cost():
+    span_cost = SpanCost()
+    span_cost.plot()
 #     x = np.arange(-500, 3000)
 #     y = span_cost.cost(x, (1, 1))
 #

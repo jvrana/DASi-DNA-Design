@@ -37,10 +37,12 @@ class JxnParams(object):
 
     min_jxn_span = -300  # the minimum spanning junction we evaluate
     min_anneal = 16  # the minimum annealing of each primer
+
+    # cols (min bp, max bp, base_cost, cost per bp, time
     primers = np.array(
         [
-            [16.0, 60.0, 0.0, 0.3, 1.5],
-            [45.0, 200.0, 0.0, 0.8, 2.5],
+            [16.0, 60.0, 0.0, 0.03, 1.5],
+            [45.0, 200.0, 0.0, 0.08, 2.5],
             [min_anneal, min_anneal + 1, 0.0, 0.0, 0.5],  # special case
         ]
     )
@@ -89,8 +91,13 @@ class SynParams(object):
 
     synthesis_span_range = (0, 3000)
     gene_sizes = np.arange(len(gene_synthesis_cost)).reshape(-1, 1)
+
+    # dims = (span, material cost)
     gene_costs = gene_synthesis_cost[:, 0].reshape(-1, 1)
+
+    # dims = (span, days)
     gene_times = gene_synthesis_cost[:, 1].reshape(-1, 1)
+
     synthesis_step_size = 10
     synthesis_left_span_range = (-500, 500)
 
@@ -121,13 +128,19 @@ class JunctionCost(object):
             p.append(np.broadcast_to(row[2:], (_a.shape[0], row[2:].shape[0])))
         a = np.concatenate(a).reshape(-1, 1)
         self.primer_lengths_array = a
+
+        # p cols = ('base cost', '$ / bp', 'time (days')
+        # p row = ('span',)
         p = np.concatenate(p)
 
         assert len(a) == len(p)
 
         # 2D materials cost matrix
+        # base + bp * cost_per_bp
         m = p[:, 1, np.newaxis] * a + p[:, 0, np.newaxis]
-        m = m + m.T
+
+        # TODO: WHY m + m.T???
+        # m = m + m.T
 
         # 2D time cost matrix
         t = p[:, 2, np.newaxis]
@@ -141,6 +154,7 @@ class JunctionCost(object):
         relative_span = self.span - (ext + ext.T)[:, :, np.newaxis]
         relative_span = relative_span.swapaxes(2, 0).swapaxes(1, 2)
 
+        # TODO: comment out these sanity checks in production
         # sanity checks
         # span=0, left_size = 200, right_size
         assert relative_span[0].shape == (ext.shape[0], ext.shape[0])
@@ -157,6 +171,10 @@ class JunctionCost(object):
             np.clip(-relative_span, 0, len(JxnParams.jxn_efficiency) - 1)
         ]
         self.xyz_labels = ["span", "left_ext", "right_ext"]
+
+        # TODO: to return efficiency, we have to return the argmin instead
+        # TODO: really, we should maintain tuples here representing everything,
+        #       then use function to compute the cost
         self.cost_matrix = (m * CostParams.material + t * CostParams.time) * 1.0 / e
 
         self.slice_dict = {
@@ -165,6 +183,12 @@ class JunctionCost(object):
             (1, 0): slicer[:, :-1, -1:],
             (1, 1): slicer[:, :-1, :-1],
         }
+
+        """
+        cost_dict = {
+            (0, 0): material_costs * material(scalar) + time * time_cost(scalar) / efficiency
+        }
+        """
         self.cost_dict = {
             k: self.cost_matrix[self.slice_dict[k]] for k in self.slice_dict
         }
@@ -206,7 +230,7 @@ class JunctionCost(object):
         fig = plt.figure(figsize=(6, 5))
         ax = fig.gca()
         sns.lineplot(y="cost", x="span", hue="variable", data=df, ax=ax)
-        ax.set_title("cost vs spanning distance (bp)")
+        ax.set_title("cost vs spanning distance (bp) [{}]".format(self.__class__.__name__))
         plt.show()
 
     def plot_design_flexibility(self):
@@ -408,6 +432,23 @@ class SpanCost(object):
             darg = c.argmin(axis=0)
             self.argmin_cost_dict[ext] = darg
             self.min_cost_dict[ext] = d
+
+    def plot(self):
+        df = pd.DataFrame()
+        df["span"] = self._span_range
+        df["none"] = self.min_cost_dict[(0, 0)]
+        df["one"] = self.min_cost_dict[(1, 0)]
+        df["two"] = self.min_cost_dict[(1, 1)]
+        df = pd.melt(
+            df, id_vars=["span"], value_vars=["none", "one", "two"], value_name="cost"
+        )
+
+        print(df.columns)
+        fig = plt.figure(figsize=(6, 5))
+        ax = fig.gca()
+        sns.lineplot(y="cost", x="span", hue="variable", data=df, ax=ax)
+        ax.set_title("cost vs spanning distance (bp) [{}]".format(self.__class__.__name__))
+        plt.show()
 
     # TODO: minimize the the total cost, but then also return the material vs efficiency cost breakdown
     def cost(self, span: int, ext: Tuple[int, int]) -> float:

@@ -1,0 +1,5 @@
+,name,query_end,query_start,span,subject_ends,subject_keys,subject_names,subject_start,type,weight
+0,,1569,433,1136,"[61, 4272, 44]","['80718f2e-32db-49d1-a142-29c8e3bd9437', '11a8a102-9614-4dd5-a625-612139f0b372', '098903c9-df07-44ca-9d77-b2fdc7897d34']","['15043__T1M1-GGPos1-BsaI-ColE1Ori_fwd', 'FLP-in_template_[1-5512', '17246__j5_0394_(tir1-10c)_reverse']","[0, 2506, 0]",PCR_PRODUCT_WITH_PRIMERS,30.0
+1,overlap,1533,1569,-36,[],[],[],[],JUNCTION_BY_PRIMERS,27.77777777777778
+2,,25,1533,3271,"[36, 3372, 47]","['ed8f6daf-6dc9-4602-85b9-407d78398b0b', 'c813d17b-5876-48d4-9019-a7be03fc8157', '3e4254ee-66f7-4c96-86e4-877e44683d73']","['16934__j5_0381_(M468Ln)_forward', 'pINS-0A1-pEF1a-citrine-', '15047__cHS4-UTP1_rev']","[0, 0, 0]",PCR_PRODUCT_WITH_PRIMERS,30.0
+3,,433,25,408,[],[],[],[],JUNCTION_BY_SYNTHESIS,294.55555555555554

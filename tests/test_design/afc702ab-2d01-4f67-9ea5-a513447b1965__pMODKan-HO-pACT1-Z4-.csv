@@ -1,0 +1,7 @@
+,name,query_end,query_start,span,subject_ends,subject_keys,subject_names,subject_start,type,weight
+0,,5939,4227,1712,"[6544, 44]","['3d02a62d-ada0-4ab1-856f-ae8ef9f106d9', '476643b5-a8df-4742-ac8e-7137b7a7a3cf']","['hCas9-VPR', '16017__VPR-tp_rev']","[4851, 0]",PCR_PRODUCT_WITH_RIGHT_PRIMER,60.0
+1,,5947,5939,8,[],[],[],[],JUNCTION_BY_PRIMERS,101.33333333333333
+2,,8645,5947,2698,"[4219, 44]","['fe9bcd01-9064-49ca-9db0-81e422fdc649', '13c05fc8-9f7a-49bb-8032-313bf9d2ef5f']","['pMODKan-HO-pACT1-ZEV4', '17246__j5_0394_(tir1-10c)_reverse']","[4422, 0]",PCR_PRODUCT_WITH_RIGHT_PRIMER,60.0
+3,overlap,8609,8645,-36,[],[],[],[],JUNCTION_BY_PRIMERS,27.77777777777778
+4,,4219,8609,5018,"[36, 4219]","['5b98a0c3-bf27-4c23-bb67-981ac5b76bba', 'fe9bcd01-9064-49ca-9db0-81e422fdc649']","['16934__j5_0381_(M468Ln)_forward', 'pMODKan-HO-pACT1-ZEV4']","[0, 4422]",PCR_PRODUCT_WITH_LEFT_PRIMER,60.0
+5,,4227,4219,8,[],[],[],[],JUNCTION_BY_PRIMERS,106.66666666666666

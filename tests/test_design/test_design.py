@@ -86,6 +86,15 @@ def test_real_design(here, paths, query):
         assembly = result.assemblies[0]
         assembly.print()
 
+        df = assembly.to_df()
+        filename = "{}__{}.csv".format(
+            assembly.query_key,
+            assembly.query.name
+        )
+        df.to_csv(
+            filename
+        )
+
         assert len(result.query) == sum(assembly.to_df()["span"])
 
 

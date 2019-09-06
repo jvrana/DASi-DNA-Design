@@ -38,6 +38,9 @@ class AssemblyGraphBuilder(object):
         n2 = AssemblyNode(*n2)
         self.G.add_edge(n1, n2, weight=weight, name=name, span=span, type=type)
 
+    # TODO: internal cost should correlate with span_cost
+    # TODO: interanl cost should also have an efficiency associated with it (can you amplify it?). How fast can you compute this for all alignments?
+    # TODO: test internal and external edge costs for all cases.
     @staticmethod
     def internal_edge_cost(align):
         if align.type == Constants.FRAGMENT:

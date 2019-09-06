@@ -62,8 +62,11 @@ slicer = Slicer()
 class SynParams(object):
     """Synthesis parameters"""
 
-    gene_synthesis_cost = np.zeros((2250, 2))
-    d = {
+
+
+
+    # [start, end) to cost info for synthesis options
+    size_to_cost_dict = {
         (0, 1): {"base": 0.0, "time": 0},
         (1, 100): {"base": np.Inf, "time": np.Inf},
         (100, 500): {"base": 89.0, "time": 3.0},
@@ -75,7 +78,12 @@ class SynParams(object):
         (1750, 2000): {"base": 329.0, "time": 7.0},
         (2000, 2250): {"base": 399.0, "time": 7.0},
     }
-    for k, v in d.items():
+    max_size = np.array([[n, m] for n, m in size_to_cost_dict]).flatten().max()
+
+    # ndarray with span as rows and 'material' and 'time' as columns
+    gene_synthesis_cost = np.zeros((max_size, 2))
+    for k, v in size_to_cost_dict.items():
+        # fill in span to cost information
         gene_synthesis_cost[k[0] : k[1]] = np.array([v["base"], v["time"]])
 
     synthesis_span_range = (0, 3000)
@@ -89,16 +97,18 @@ class SynParams(object):
 class CostParams(object):
     """Global cost parameters"""
 
-    time = 50.0  # dollar cost of 24 hours
+    time = 50.0  # dollar cost of waiting 24 hours
     material = 1.0  # multiply material cost by this amount
 
 
 class JunctionCost(object):
-    """Junction cost calculations."""
+    """Class that computes the junction cost between two molecules."""
 
     def __init__(self):
-        # the min and max spans to evaluate
+        # the minimum valid span being evaluated
         min_span = JxnParams.min_jxn_span
+
+        # the maximum span being evaluated
         max_span = JxnParams.primers[:, 1].max() * 2 - min_span
         self.span = np.arange(min_span, max_span, dtype=np.int64)
 
@@ -398,6 +408,7 @@ class SpanCost(object):
             self.argmin_cost_dict[ext] = darg
             self.min_cost_dict[ext] = d
 
+    # TODO: minimize the the total cost, but then also return the material vs efficiency cost breakdown
     def cost(self, span: int, ext: Tuple[int, int]) -> float:
         """
         Return cost of span. Span may be a np.ndarray

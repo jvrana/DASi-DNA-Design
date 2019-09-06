@@ -18,6 +18,7 @@ from typing import Tuple, Any
 # TODO: backtrack options
 # TODO: ends that are extendable should also be retractable, meaning if there is a more optimal
 
+# TODO: tuning knobs for SpanCost?
 
 class JxnParams(object):
 

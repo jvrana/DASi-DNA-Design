@@ -39,8 +39,21 @@ class AssemblyGraphBuilder(object):
         self.G.add_edge(n1, n2, weight=weight, name=name, span=span, type=type)
 
     # TODO: internal cost should correlate with span_cost
-    # TODO: interanl cost should also have an efficiency associated with it (can you amplify it?). How fast can you compute this for all alignments?
+    # TODO: interanl cost should also have an efficiency associated with it (can you amplify it?).
+    #       How fast can you compute this for all alignments?
     # TODO: test internal and external edge costs for all cases.
+    # TODO: We are counting the primer material cost **twice**, once in the JxnCost and once here.
+    #       Really, the cost of the internal fragment is either its already available ($0) or
+    #       we have to PCR amplify. The material cost of PCR amplification is just the reagents and time
+    #       of setting up the reaction itself.
+    #       We should also account for the 'efficiency' of PCR amplification and include that in the edge
+    #       Perhaps multiple edges and taking the 'max' efficiency and 'min' material cost, recording
+    #       which alignment is being used for the calculations.
+    #       For the jxn cost, we need a way to optimize the JxnEfficiency by *efficiency* AND *material cost*
+    #       while heavily emphasizing the 'efficiency', since that has the most impact on overall assembly cost.
+    #       At the end, we will need to separate material and efficiency and use efficiency in the overall assembly
+    #       optimization.
+
     @staticmethod
     def internal_edge_cost(align):
         if align.type == Constants.FRAGMENT:

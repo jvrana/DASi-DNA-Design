@@ -34,6 +34,12 @@ def test_primer_cost_df(primer_cost):
 def test_syn_cost(syn_cost):
     syn_cost(100, (1,1))
 
+
+def test_syn_cost_df(syn_cost):
+    df = syn_cost.to_df()
+    x = df
+
+
 def test_syn_cost_retrieve_many_times(syn_cost):
     syn_cost(np.arange(1000), (1,1))
 

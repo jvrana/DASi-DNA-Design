@@ -8,7 +8,9 @@ import seaborn as sns
 from .cost_containers import PrimerJunction, GeneJunction, GapJunction
 from .utils import lexargmin, slicer, df_to_np_ranged
 from dasi.log import logger
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import ABC, abstractmethod
+from dasi.utils import NumpyDataFrame
+
 
 class Globals(object):
     time_cost = 50.
@@ -160,14 +162,14 @@ class PrimerCostBuilder(CostBuilder):
             s_mat = material_cost[slice_obj[1], slice_obj[2]]
 
             idx = lexargmin((s_eff, s_cost), axis=0)
-            self.cost_dict[slice_index] = PrimerJunction(
+            self.cost_dict[slice_index] = NumpyDataFrame(dict(
                 span=span[idx[0]],
                 cost=s_cost[idx],
                 efficiency=s_eff[idx],
                 material=s_mat[idx[1], idx[2]],
-                left_ext=np.squeeze(ext[idx[1]]),
-                right_ext=np.squeeze(ext[idx[2]])
-            )
+                left_ext=ext[idx[1]],
+                right_ext=ext[idx[2]]
+            ), apply=np.squeeze)
 
     def cost(self, bp, ext):
         jxn = self.cost_dict[ext]
@@ -270,25 +272,31 @@ class SynthesisCostBuilder(CostBuilder):
             idx = lexargmin((syn_eff, syn_total_cost,), axis=0)
 
         _gcosts = gene_costs[idx[1]]
-        return GapJunction(
-            span=np.squeeze(self.span)[idx[0]],
+        _span = np.squeeze(self.span)[idx[0]]
+
+        gene_df = NumpyDataFrame(dict(
+            span=_span,
+            cost=_gcosts,
+            material=_gcosts,
+            efficiency=np.ones(idx[0].shape[0])
+        ), apply=np.squeeze).prefix('gene_')
+
+        gap_df = NumpyDataFrame(dict(
             cost=syn_total_cost[idx],
             efficiency=syn_eff[idx],
             material=syn_material_cost[idx],
-            gene=GeneJunction(
-                span=np.squeeze(self.span)[idx[0]],
-                cost=_gcosts,
-                material=_gcosts,
-                efficiency=np.ones(idx[0].shape[0])
-            ),
-            lprimer=left_jxn[idx[2]],
-            rprimer=right_jxn[idx[2], idx[1], idx[0]],
-            lshift=left_span[idx[2]]
-        )
+            lshif=left_span[idx[2]]
+        ), apply=np.squeeze)
+
+        gap_df.update(left_jxn[idx[2]].apply(np.squeeze).prefix('lprimer_'))
+        gap_df.update(right_jxn[idx[2], idx[1], idx[0]].prefix('rprimer_'))
+        gap_df.update(gene_df.prefix('gene_'))
+
+        return gap_df
 
     @property
     def plot(self):
-        return partial(sns.lineplot, data=self.to_df(), x=('default', 'span'), y=('default', 'efficiency'), hue='condition')
+        return partial(sns.lineplot, data=self.to_df(), x='span', y='efficiency', hue='condition')
 
     # TODO: what if there is a gap in the span?
     def cost(self, bp, ext):

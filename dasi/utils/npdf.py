@@ -178,7 +178,7 @@ class NumpyDataFrame(Mapping):
         self._data = OrderedDict()
         self._data.update({k: v for k, v in data.items() if v is not None})
         if apply:
-            self.apply(apply)
+            self.apply(apply, inplace=True)
         self.validate()
 
     @property
@@ -224,7 +224,7 @@ class NumpyDataFrame(Mapping):
         collapsed = [self.data[c] for c in cols]
         return func(collapsed, *args, **kwargs)
 
-    def apply(self, func, *args, astype=None, preprocess=None, **kwargs):
+    def apply(self, func, *args, astype=None, preprocess=None, inplace=False, **kwargs):
         data = {}
         for k, v in self.data.items():
             try:
@@ -234,6 +234,11 @@ class NumpyDataFrame(Mapping):
                     data[k] = func(v, *args, **kwargs)
             except Exception as e:
                 raise NumpyDataFrameException("Could not apply '{}' because '{} {}'".format(func.__name__, type(e), e)) from e
+        if inplace:
+            if astype is not None and astype is not self.__class__:
+                raise NumpyDataFrameException("Cannot convert from {} to {} while inplace=True".format(self.__class__, astype))
+            self.data = data
+            return self
         if astype is None:
             astype = self.__class__
         return astype(data)

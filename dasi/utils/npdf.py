@@ -1,20 +1,21 @@
-# @title Cost Containers
-import pandas as pd
-import numpy as np
-from collections.abc import Mapping, Iterable
-from collections import OrderedDict
+"""NumpyDataFrame"""
 import pprint
+from collections import OrderedDict
+from collections.abc import Mapping, Iterable
+
+import numpy as np
+import pandas as pd
 
 
 class Null(object):
     """Not None."""
+
 
 class NumpyDataFrameException(Exception):
     pass
 
 
 class NumpyDataFrameIndexer(Mapping):
-
     def __init__(self, df):
         self.df = df
 
@@ -31,6 +32,9 @@ class NumpyDataFrameIndexer(Mapping):
                 return True
         return False
 
+    def __delitem__(self, key):
+        del self.df.data[key]
+
     def __setitem__(self, col, val):
         self.df.data[col] = val
         self.df.validate()
@@ -45,9 +49,11 @@ class NumpyDataFrameIndexer(Mapping):
 
 
 class NumpyDataFrame(Mapping):
-    """A named data frame that contains np.ndarrays as columns of arbitrary dimensions.
-    Similar concept as pandas, but maintains the underlying multidimensionality of the
-    underlying np.ndarrays.
+    """The NumpyDataFrame is a class halfway between pandas and numpy. It has named columns, indexing, slicing,
+    function applications, and mathematical operations. Unlike pandas however, it maintains the multi-dimensionality
+    of underlying data (as np.ndarray), allowing broadcasting and complex indexing.
+
+    Usage:
 
     **indexing and columns**
 
@@ -70,6 +76,18 @@ class NumpyDataFrame(Mapping):
       df.col['A']         # return df with only 'A'
       print(list(df.col)) # return the column names
       print(df.columns)   # also returns the column names
+
+    New columns can be added:
+
+    .. code-block::
+
+        df.col['A'] = np.arange(10)
+
+    Columns can be deleted:
+
+    .. code-block::
+
+        del df.col['B']
 
     Add prefix or suffix to column names:
 
@@ -196,8 +214,12 @@ class NumpyDataFrame(Mapping):
             keys_and_shapes = {}
             for k, v in self.data.items():
                 keys_and_shapes.setdefault(v.shape, list()).append(k)
-            raise NumpyDataFrameException("{} can only have one shape. Found the following shapes {}. If you want to sqeeze all"
-                            "of the data, set 'apply=np.squeeze'".format(self.__class__, keys_and_shapes))
+            raise NumpyDataFrameException(
+                "{} can only have one shape. Found the following shapes {}. If you want to sqeeze all"
+                "of the data, set 'apply=np.squeeze'".format(
+                    self.__class__, keys_and_shapes
+                )
+            )
 
     def prefix(self, s, cols=None, inplace=False):
         if cols is None:
@@ -233,10 +255,18 @@ class NumpyDataFrame(Mapping):
                 else:
                     data[k] = func(v, *args, **kwargs)
             except Exception as e:
-                raise NumpyDataFrameException("Could not apply '{}' because '{} {}'".format(func.__name__, type(e), e)) from e
+                raise NumpyDataFrameException(
+                    "Could not apply '{}' because '{} {}'".format(
+                        func.__name__, type(e), e
+                    )
+                ) from e
         if inplace:
             if astype is not None and astype is not self.__class__:
-                raise NumpyDataFrameException("Cannot convert from {} to {} while inplace=True".format(self.__class__, astype))
+                raise NumpyDataFrameException(
+                    "Cannot convert from {} to {} while inplace=True".format(
+                        self.__class__, astype
+                    )
+                )
             self.data = data
             return self
         if astype is None:
@@ -268,7 +298,11 @@ class NumpyDataFrame(Mapping):
         other_cols = set(tuple(sorted(o.columns)) for o in others)
         if len(other_cols) > 1:
             if _fill_value is Null:
-                raise NumpyDataFrameException("Cannot apply to group. Different columns found: {}".format(other_cols))
+                raise NumpyDataFrameException(
+                    "Cannot apply to group. Different columns found: {}".format(
+                        other_cols
+                    )
+                )
             else:
                 all_cols = []
                 for o in others:
@@ -379,7 +413,9 @@ class NumpyDataFrame(Mapping):
 
     def __str__(self):
         stacked = self.aggregate(np.stack, axis=1)
-        return "{}\ncols={}\n{}".format(self.__class__, self.columns, pprint.pformat(stacked))
+        return "{}\ncols={}\n{}".format(
+            self.__class__, self.columns, pprint.pformat(stacked)
+        )
 
     def __repr__(self):
         return str(self)

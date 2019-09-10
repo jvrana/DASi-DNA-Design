@@ -12,3 +12,6 @@ class AlignmentContainerException(DASiException):
 
 class DasiDesignException(DASiException):
     pass
+
+
+from dasi.utils.npdf import NumpyDataFrameException

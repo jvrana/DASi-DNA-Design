@@ -21,6 +21,7 @@ from .async_wrapper import make_async
 from more_itertools import pairwise
 import networkx as nx
 from typing import List
+from .npdf import NumpyDataFrame, NumpyDataFrameException
 
 
 def sort_with_keys(a, key):

@@ -1,19 +1,25 @@
-from dasi.cost import PrimerCostBuilder, SynthesisCostBuilder, PrimerParams, SynthesisParams
+from dasi.cost import (
+    PrimerCostBuilder,
+    SynthesisCostBuilder,
+    PrimerParams,
+    SynthesisParams,
+)
 import pytest
 import pylab as plt
 import numpy as np
 
-@pytest.fixture(scope='module')
+
+@pytest.fixture(scope="module")
 def primer_cost():
     return PrimerCostBuilder.from_params(PrimerParams)
 
-@pytest.fixture(scope='module')
+
+@pytest.fixture(scope="module")
 def syn_cost(primer_cost):
     return SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
 
 
 class TestPlotters(object):
-
     def test_plot_primer_cost(self, primer_cost):
         primer_cost.plot()
         plt.show()
@@ -24,7 +30,7 @@ class TestPlotters(object):
 
 
 def test_primer_cost(primer_cost):
-    primer_cost(100, (1,1))
+    primer_cost(100, (1, 1))
 
 
 def test_primer_cost_df(primer_cost):
@@ -32,16 +38,16 @@ def test_primer_cost_df(primer_cost):
 
 
 def test_syn_cost(syn_cost):
-    syn_cost(100, (1,1))
+    syn_cost(100, (1, 1))
 
 
 def test_syn_cost_df(syn_cost):
     df = syn_cost.to_df()
-    x = df
 
 
 def test_syn_cost_retrieve_many_times(syn_cost):
-    syn_cost(np.arange(1000), (1,1))
+    syn_cost(np.arange(1000), (1, 1))
+
 
 # @pytest.fixture(scope="module")
 # def jxncost():

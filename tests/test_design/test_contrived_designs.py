@@ -84,10 +84,7 @@ class NoSolution(Exception):
 
 
 def check_design_result(
-    design,
-    expected_path: List[Tuple],
-    check_cost=False,
-    check_path=True,
+    design, expected_path: List[Tuple], check_cost=False, check_path=True
 ):
 
     # compile the design

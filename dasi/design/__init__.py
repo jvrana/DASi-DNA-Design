@@ -140,7 +140,9 @@ class Assembly(Iterable):
             query_region = self.container.alignments[0].query_region.new(
                 n1.index, n2.index, allow_wrap=True
             )
-            groups = self.container.find_groups_by_pos(query_region.a, query_region.b, groups=self.groups)
+            groups = self.container.find_groups_by_pos(
+                query_region.a, query_region.b, groups=self.groups
+            )
             edata["groups"] = groups
             edata["query_region"] = query_region
             SG.add_edge(

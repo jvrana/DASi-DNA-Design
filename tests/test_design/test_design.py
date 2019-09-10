@@ -87,23 +87,13 @@ def test_real_design(here, paths, query):
         assembly.print()
 
         df = assembly.to_df()
-        filename = "{}__{}__test__.csv".format(
-            assembly.query_key,
-            assembly.query.name
-        )
-        df.to_csv(
-            filename
-        )
+        filename = "{}__{}__test__.csv".format(assembly.query_key, assembly.query.name)
+        df.to_csv(filename)
 
         assert len(result.query) == sum(assembly.to_df()["span"])
 
 
-@pytest.mark.parametrize(
-    "query",
-    [
-        "pmodkan-ho-pact1-z4-er-vpr.gb",
-    ]
-)
+@pytest.mark.parametrize("query", ["pmodkan-ho-pact1-z4-er-vpr.gb"])
 def test_profile_compile(here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
@@ -115,6 +105,7 @@ def test_profile_compile(here, paths, query):
 
     design.add_materials(primers=primers, templates=templates, queries=queries)
     design.compile()
+
 
 def test_real_design2(here, paths):
     query = "goal1.gb"

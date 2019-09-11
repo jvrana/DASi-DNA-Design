@@ -9,7 +9,7 @@ from os.path import join
 
 class TestBenchmarkCosts(object):
     def test_span_cost_constructor(self, benchmark):
-        benchmark.pedantic(SpanCost, rounds=1, iterations=1)
+        benchmark.pedantic(SpanCost.default, rounds=1, iterations=1)
 
 
 @pytest.mark.parametrize(

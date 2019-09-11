@@ -616,7 +616,7 @@ class Design(object):
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
     # TODO: n_paths to class attribute
-    def optimize(self, n_paths=20) -> Dict[str, List[List[AssemblyNode]]]:
+    def optimize(self, n_paths=5) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
         results = {}
         for query_key, graph in self.logger.tqdm(
@@ -728,7 +728,7 @@ class Design(object):
         return unique_cyclic_paths
 
     def _collect_optimized_paths(
-        self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=5
+        self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=None
     ):
         """
         Collect minimum cycles or linear paths from a graph.

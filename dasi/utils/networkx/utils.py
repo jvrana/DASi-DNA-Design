@@ -6,12 +6,7 @@ import networkx as nx
 def select_from_arrs(A, B, condition):
     """Returns an ndarray of same shape as A and B, selecting elements from
     either A or B according to the condition."""
-    A = np.asarray(A)
-    B = np.asarray(B)
-    condition = np.asarray(condition)
-    i = np.argwhere(np.dstack([condition, ~condition]))
-    m = np.dstack([A, B])
-    return m[i[:, 0], i[:, 1], i[:, 2]].reshape(A.shape)
+    return np.choose(~condition, (A, B))
 
 
 def replace_nan_with_inf(m):

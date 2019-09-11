@@ -190,8 +190,12 @@ def sympy_floyd_warshall(
         # update
         for key, M in matrix_dict.items():
             part = parts_dict[key]
-            # matrix_dict[key] = np.asmatrix(select_from_arrs(M, part, C < C_part))
-            matrix_dict[key] = np.asmatrix(np.choose(C > C_part, (M, part)))
+            c = C > C_part
+
+            # TODO: is this if np.any(c) correct?
+            if np.any(c):
+                matrix_dict[key] = np.asmatrix(np.choose(c, (M, part)))
+
 
     m_arr = [np.asarray(m) for m in matrix_dict.values()]
     C = replace_nan_with_inf(func(*m_arr))

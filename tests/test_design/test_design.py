@@ -142,6 +142,9 @@ def test_real_design2(here, paths, span_cost):
         assembly.print()
 
 
+def test_multiprocessing(here, paths, span_cost):
+    pass
+
 def test_multidesign(here, paths, span_cost):
     """Expect more than one graph to be output if multiple queries are provided"""
     primers = make_linear(load_fasta_glob(paths["primers"]))

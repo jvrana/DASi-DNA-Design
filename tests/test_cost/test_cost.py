@@ -19,6 +19,7 @@ def primer_cost():
 def syn_cost(primer_cost):
     return SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
 
+
 @pytest.fixture(scope="module")
 def span_cost(primer_cost, syn_cost):
     return SpanCost(syn_cost)
@@ -33,8 +34,7 @@ class TestPlotters(object):
         syn_cost.plot()
         plt.show()
 
-    def test_plot_span_cost(self, syn_cost):
-        span_cost = SpanCost(syn_cost, syn_cost.primer_cost)
+    def test_plot_span_cost(self, span_cost):
         span_cost.plot()
         plt.show()
 
@@ -70,3 +70,56 @@ class TestCall(object):
     ])
     def test_span_cost_df(self, span_cost, ext):
         span_cost(np.arange(-300, 1000), (0, 0))
+
+
+class TestEdgeCases(object):
+
+    @pytest.mark.parametrize('ext', [
+        (0, 0), (1, 0), (0, 1), (1, 1)
+    ])
+    def test_primer_extreme_left(self, primer_cost, ext):
+        df = primer_cost(-1000, ext)
+        print(df.col['cost'])
+        assert df.data['cost'][0] == np.inf
+
+    @pytest.mark.parametrize('ext', [
+        (0, 0), (1, 0), (0, 1), (1, 1)
+    ])
+    def test_primer_extreme_right(self, primer_cost, ext):
+        df = primer_cost(1000, ext)
+        print(df.col['cost'])
+        assert df.data['cost'][0] == np.inf
+
+    @pytest.mark.parametrize('ext', [
+        (0, 0), (1, 0), (0, 1), (1, 1)
+    ])
+    def test_syn_extreme_left(self, syn_cost, ext):
+        df = syn_cost(-1000, ext)
+        print(df.col['cost'])
+        assert df.data['cost'][0] == np.inf
+
+    @pytest.mark.parametrize('ext', [
+        (0, 0), (1, 0), (0, 1), (1, 1)
+    ])
+    def test_syn_extreme_right(self, syn_cost, ext):
+        df = syn_cost(5000, ext)
+        print(df.col['cost'])
+        assert df.data['cost'][0] == np.inf
+
+
+    @pytest.mark.parametrize('ext', [
+        (0, 0), (1, 0), (0, 1), (1, 1)
+    ])
+    def test_span_extreme_left(self, span_cost, ext):
+        df = span_cost.cost(-1000, ext)
+        print(df.col['cost'])
+        assert df.data['cost'][0] == np.inf
+
+    @pytest.mark.parametrize('ext', [
+        (0, 0), (1, 0), (0, 1), (1, 1)
+    ])
+    def test_span_extreme_right(self, span_cost, ext):
+        df = span_cost.cost(5000, ext)
+        print(df.col['cost'])
+        assert df.data['cost'][0] == np.inf
+

@@ -137,7 +137,7 @@ def check_design_result(
         assert expected_solution.cost() != np.inf
 
 
-def test_blast_has_same_results():
+def test_blast_has_same_results(span_cost):
     goal = random_record(3000)
     make_circular([goal])
 
@@ -152,7 +152,7 @@ def test_blast_has_same_results():
     size_of_groups = []
     for i in range(20):
 
-        design = Design(spancost)
+        design = Design(span_cost)
         design.logger.set_level("INFO")
         design.add_materials(
             primers=[p1, p2, p3], templates=[r1, r2], queries=[goal], fragments=[]
@@ -166,7 +166,7 @@ def test_blast_has_same_results():
     assert len(set(size_of_groups)) == 1
 
 
-def test_design_with_no_gaps():
+def test_design_with_no_gaps(span_cost):
     """Fragments with overlaps"""
 
     goal = random_record(3000)
@@ -177,7 +177,7 @@ def test_design_with_no_gaps():
     r3 = goal[2000:]
     make_linear([r1, r2, r3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[], templates=[r1, r2, r3], queries=[goal], fragments=[]
     )
@@ -194,7 +194,7 @@ def test_design_with_no_gaps():
     check_design_result(design, expected_path)
 
 
-def test_design_with_overlaps():
+def test_design_with_overlaps(span_cost):
     """Fragments with overlaps"""
 
     goal = random_record(3000)
@@ -205,7 +205,7 @@ def test_design_with_overlaps():
     r3 = goal[1950:]
     make_linear([r1, r2, r3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[], fragments=[r1, r2, r3], queries=[goal], templates=[]
     )
@@ -214,7 +214,7 @@ def test_design_with_overlaps():
         (950, False, "A", True),
         (2000, False, "B", True),
         (1950, False, "A", True),
-        (3000, False, "B", True),
+        (0, False, "B", True),
         (3000 - 40, False, "A", True),
         (1000, False, "B", True),
     ]
@@ -222,7 +222,7 @@ def test_design_with_overlaps():
     check_design_result(design, expected_path)
 
 
-def test_design_with_overlaps2():
+def test_design_with_overlaps2(span_cost):
     """Fragments with overlaps"""
 
     goal = random_record(3000)
@@ -233,7 +233,7 @@ def test_design_with_overlaps2():
     r3 = goal[1950:]
     make_linear([r1, r2, r3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[], fragments=[r1, r2, r3], queries=[goal], templates=[]
     )
@@ -242,7 +242,7 @@ def test_design_with_overlaps2():
         (950, False, "A", True),
         (2000, False, "B", True),
         (1950, False, "A", True),
-        (3000, False, "B", True),
+        (0, False, "B", True),
         (3000 - 40, False, "A", True),
         (4001, False, "B", True),
     ]
@@ -250,7 +250,7 @@ def test_design_with_overlaps2():
     check_design_result(design, expected_path)
 
 
-def test_design_with_overlaps_with_templates():
+def test_design_with_overlaps_with_templates(span_cost):
     """Fragments with overlaps"""
 
     goal = random_record(3000)
@@ -261,7 +261,7 @@ def test_design_with_overlaps_with_templates():
     r3 = goal[1950:]
     make_linear([r1, r2, r3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[], fragments=[], queries=[goal], templates=[r1, r2, r3]
     )
@@ -278,7 +278,7 @@ def test_design_with_overlaps_with_templates():
     check_design_result(design, expected_path, check_path=False)
 
 
-def test_design_task_with_gaps():
+def test_design_task_with_gaps(span_cost):
     """Fragments with overlaps"""
 
     goal = random_record(3000)
@@ -290,7 +290,7 @@ def test_design_task_with_gaps():
 
     make_linear([r1, r2, r3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[], templates=[r1, r2, r3], queries=[goal], fragments=[]
     )
@@ -308,7 +308,7 @@ def test_design_task_with_gaps():
 
 
 @pytest.mark.parametrize("repeat", range(3))
-def test_design_with_overhang_primers(repeat):
+def test_design_with_overhang_primers(repeat, span_cost):
 
     goal = random_record(3000)
     make_circular([goal])
@@ -321,7 +321,7 @@ def test_design_with_overhang_primers(repeat):
 
     make_linear([r1, p1, p2, r2, p3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[p1, p2, p3], templates=[r1, r2], queries=[goal], fragments=[]
     )
@@ -336,7 +336,7 @@ def test_design_with_overhang_primers(repeat):
     check_design_result(design, expected_path)
 
 
-def test_requires_synthesis():
+def test_requires_synthesis(span_cost):
     goal = random_record(4000)
     make_circular([goal])
 
@@ -345,12 +345,10 @@ def test_requires_synthesis():
 
     make_linear([r1, r2])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
-        (200, True, "A", False),
-        (500, True, "B", False),
         (1000, True, "A", False),
         (2000, True, "B", False),
     ]
@@ -358,7 +356,7 @@ def test_requires_synthesis():
     check_design_result(design, expected_path)
 
 
-def test_requires_synthesis_with_template_over_origin():
+def test_requires_synthesis_with_template_over_origin(span_cost):
     goal = random_record(5000)
     make_circular([goal])
 
@@ -367,7 +365,7 @@ def test_requires_synthesis_with_template_over_origin():
 
     make_linear([r1, r2])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
@@ -380,7 +378,7 @@ def test_requires_synthesis_with_template_over_origin():
     check_design_result(design, expected_path)
 
 
-def test_very_long_synthesizable_region():
+def test_very_long_synthesizable_region(span_cost):
     goal = random_record(10000)
     make_circular([goal])
 
@@ -389,7 +387,7 @@ def test_very_long_synthesizable_region():
 
     make_linear([r1])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
 
     expected_path = [
@@ -403,7 +401,7 @@ def test_very_long_synthesizable_region():
         check_design_result(design, expected_path)
 
 
-def test_single_fragment():
+def test_single_fragment(span_cost):
     goal = random_record(3000)
     make_circular([goal])
 
@@ -411,7 +409,7 @@ def test_single_fragment():
 
     make_linear([r1])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
 
     expected_path = [(177, True, "A", False), (2255, True, "B", False)]
@@ -419,7 +417,7 @@ def test_single_fragment():
     check_design_result(design, expected_path)
 
 
-def test_fully_overlapped():
+def test_fully_overlapped(span_cost):
     goal = random_record(2000)
     make_circular([goal])
 
@@ -430,17 +428,17 @@ def test_fully_overlapped():
 
     make_linear([r1, p1, p2, p3])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1177, False, "A", False), (1225, False, "B", False)]
+    expected_path = [(1100, False, "A", False), (1225, False, "B", False)]
 
     check_design_result(design, expected_path)
 
 
-def test_case():
+def test_case(span_cost):
     """
     This is a test case which has previously failed to find a solution.
 
@@ -456,7 +454,7 @@ def test_case():
 
     make_linear([r1, r2])
 
-    design = Design(spancost)
+    design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [(1238, True, "A", False), (1282, True, "B", False)]

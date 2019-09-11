@@ -45,9 +45,33 @@ class CostBuilder(ABC):
             sns.lineplot, data=self.to_df(), x="span", y="cost", hue="condition"
         )
 
-    @abstractmethod
-    def cost(self, bp, ext):
-        pass
+    # TODO: what if there is a gap in the span?
+    def cost(self, bp, ext, invalidate=False):
+        if isinstance(bp, int):
+            bp = np.array([bp])
+        _span = self.span.flatten()
+        index = np.array(bp - _span.min(), dtype=np.int64)
+
+
+        # clipped index
+        clipped = np.clip(index, 0, len(_span) - 1)
+
+        # get junction
+        jxn = self.cost_dict[ext][clipped]
+
+        if invalidate:
+            # invalidated indices
+            invalid_i1 = index < 0
+            invalid_i2 = index >= len(_span)
+
+            # invalidate extremes
+            for invalid in [invalid_i1, invalid_i2]:
+                jxn.data['cost'][invalid] = np.inf
+                jxn.data['efficiency'][invalid] = 0.
+
+        # add span
+        jxn.col['span'] = bp
+        return jxn
 
     def __call__(self, bp, ext):
         return self.cost(bp, ext)
@@ -136,16 +160,6 @@ class PrimerCostBuilder(CostBuilder):
                 ),
                 apply=np.squeeze,
             )
-
-    def cost(self, bp, ext):
-        jxn = self.cost_dict[ext]
-        if bp is None:
-            return jxn
-        i = bp - self.span.min()
-        i = np.clip(i, 0, len(jxn) - 1)
-        jxn = jxn[i]
-        jxn.col['span'] = bp
-        return jxn
 
 
 class SynthesisCostBuilder(CostBuilder):
@@ -258,21 +272,8 @@ class SynthesisCostBuilder(CostBuilder):
 
         return gap_df
 
-    @property
-    def plot(self):
-        return partial(
-            sns.lineplot, data=self.to_df(), x="span", y="cost", hue="condition"
-        )
-
-    # TODO: what if there is a gap in the span?
     def cost(self, bp, ext):
-        _span = self.span.flatten()
-        x = bp - _span.min()
-        i = np.array(x, dtype=np.int64)
-        i = np.clip(i, 0, len(_span) - 1)
-        jxn = self.cost_dict[ext][i]
-        jxn.col['span'] = bp
-        return jxn
+        return super().cost(bp, ext, invalidate=True)
 
     def __call__(self, bp, ext):
         return self.cost(bp, ext)
@@ -299,23 +300,23 @@ class SpanCost(CostBuilder):
         return cls(syn_cost)
 
     def compute(self):
+        def choose(a, i):
+                return np.choose(i, a)
+
         for s in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+            # numpy data frames for primer cost and syn cost over span
             df1 = self.primer_cost(self.span, s)
             df2 = self.syn_cost(self.span, s)
-            df3 = NumpyDataFrame.group_apply((df1, df2), np.stack, axis=1, _fill_value=np.nan)
-            cost = df3.data['cost']
-            x = np.arange(len(df3))
-            y = cost.argmin(axis=1)
-            df4 = df3[x, y]
+
+            # determine the indices of the min cost (0=primer, 1=syn)
+            c1 = df1.data['cost']
+            c2 = df2.data['cost']
+            c3 = np.stack((c1, c2), axis=1)
+            y = c3.argmin(axis=1)
+
+            # select between primer_cost and syn_cost based on the min cost
+            df4 = NumpyDataFrame.group_apply((df1, df2), choose, i=y, _fill_value=np.nan)
             self.cost_dict[s] = df4
 
     def cost(self, bp, ext):
-        if isinstance(bp, int):
-            bp = np.array([bp])
-        _span = self.span.flatten()
-        x = bp - _span.min()
-        i = np.array(x, dtype=np.int64)
-        i = np.clip(i, 0, len(_span) - 1)
-        jxn = self.cost_dict[ext][i]
-        jxn.col['span'] = bp
-        return jxn
+        return super().cost(bp, ext, invalidate=True)

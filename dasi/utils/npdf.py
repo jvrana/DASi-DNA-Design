@@ -5,7 +5,9 @@ from collections.abc import Mapping, Iterable
 
 import numpy as np
 import pandas as pd
-
+import msgpack
+import msgpack_numpy as m
+m.patch()
 
 class Null(object):
     """Not None."""
@@ -365,6 +367,24 @@ class NumpyDataFrame(Mapping):
 
     def copy(self):
         return self.apply(np.copy)
+
+    def dumps(self):
+        return msgpack.dumps(self.data)
+
+    def dump(self, f):
+        with open(f, 'wb') as f:
+            msgpack.dump(self.data, f)
+
+    def loads(self, s):
+        data = msgpack.loads(s)
+        data = {k.decode(): v for k, v in data.items()}
+        return NumpyDataFrame(data)
+
+    def load(self, f):
+        with open(f, 'rb') as f:
+            data = msgpack.load(f)
+            data = {k.decode(): v for k, v in data.items()}
+            return NumpyDataFrame(data)
 
     def __getitem__(self, key):
         new = self.__class__(self.data)

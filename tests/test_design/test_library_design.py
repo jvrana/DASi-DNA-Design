@@ -1,12 +1,9 @@
 from dasi.design import LibraryDesign
-from dasi.cost import SpanCost
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 from os.path import join
 
-span_cost = SpanCost()
 
-
-def test_library_design(paths, here):
+def test_library_design(paths, here, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 

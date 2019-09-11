@@ -680,6 +680,7 @@ MigrationBackup/
 
 # ignore all pickle files
 */**/*.pkl
+*/**/*.b
 
 # ignore output test csvs
 */**/*__test__.csv

@@ -5,8 +5,6 @@ import pytest
 from os.path import join
 from more_itertools import pairwise
 
-span_cost = SpanCost.default()
-
 
 @pytest.mark.parametrize(
     "query", ["pmodkan-ho-pact1-z4-er-vpr.gb", "plko-pef1a-frt-tdtomato-wpre.gb"]

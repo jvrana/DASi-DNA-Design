@@ -11,8 +11,6 @@ import numpy as np
 from typing import Tuple, List
 import itertools
 
-spancost = SpanCost.default()
-
 # TODO: tests with reverse_complement
 # TODO: test total span == query
 # TODO: test linear fragments
@@ -242,7 +240,7 @@ def test_design_with_overlaps2(span_cost):
         (950, False, "A", True),
         (2000, False, "B", True),
         (1950, False, "A", True),
-        (0, False, "B", True),
+        (3000, False, "B", True),
         (3000 - 40, False, "A", True),
         (4001, False, "B", True),
     ]
@@ -349,6 +347,8 @@ def test_requires_synthesis(span_cost):
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
+        (200, True, "A", False),
+        (500, True, "B", False),
         (1000, True, "A", False),
         (2000, True, "B", False),
     ]
@@ -357,11 +357,11 @@ def test_requires_synthesis(span_cost):
 
 
 def test_requires_synthesis_with_template_over_origin(span_cost):
-    goal = random_record(5000)
+    goal = random_record(3000)
     make_circular([goal])
 
     r1 = goal[1000:2000]
-    r2 = goal[4500:] + goal[:500]
+    r2 = goal[2500:] + goal[:500]
 
     make_linear([r1, r2])
 
@@ -372,7 +372,7 @@ def test_requires_synthesis_with_template_over_origin(span_cost):
         (500, True, "B", False),
         (1000, True, "A", False),
         (2000, True, "B", False),
-        (4500, True, "A", False),
+        (2500, True, "A", False),
     ]
 
     check_design_result(design, expected_path)
@@ -433,7 +433,7 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1100, False, "A", False), (1225, False, "B", False)]
+    expected_path = [(1100, True, "A", False), (1225, False, "B", False)]
 
     check_design_result(design, expected_path)
 

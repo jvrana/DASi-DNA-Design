@@ -1,7 +1,7 @@
 import pytest
-import dill
 from dasi.cost import SpanCost
 import os
+from dasi.log import logger
 
 here = os.path.abspath(os.path.dirname(__file__))
 do_save = True
@@ -9,14 +9,15 @@ do_save = True
 
 @pytest.fixture(scope='module')
 def span_cost():
-    path = os.path.join(here, 'span_cost.pkl')
+    path = os.path.join(here, 'span_cost.b')
     if do_save and os.path.isfile(path):
-        with open(path, 'rb') as f:
+        with logger.timeit("INFO", "loading bytes"):
             print("Loading file: {}".format(path))
-            span_cost = dill.load(f)
+            span_cost = SpanCost.load(path)
     else:
         span_cost = SpanCost.default()
         if do_save:
-            with open(path, 'wb') as f:
-                dill.dump(span_cost, f)
+            with logger.timeit("INFO", "saving bytes"):
+                print("Saving file: {}".format(path))
+                span_cost.dump(path)
     return span_cost

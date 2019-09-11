@@ -214,7 +214,7 @@ def test_design_with_overlaps(span_cost):
         (950, False, "A", True),
         (2000, False, "B", True),
         (1950, False, "A", True),
-        (0, False, "B", True),
+        (3000, False, "B", True),
         (3000 - 40, False, "A", True),
         (1000, False, "B", True),
     ]

@@ -9,7 +9,7 @@ from more_itertools import pairwise
 @pytest.mark.parametrize(
     "query", ["pmodkan-ho-pact1-z4-er-vpr.gb", "plko-pef1a-frt-tdtomato-wpre.gb"]
 )
-def test_num_groups_vs_endpoints(here, paths, query):
+def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
@@ -62,7 +62,7 @@ def print_edge_cost(path, graph):
         "pins-01-hu6-r5-optgrna.gb",
     ],
 )
-def test_real_design(here, paths, query):
+def test_real_design(here, paths, query, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
@@ -92,7 +92,7 @@ def test_real_design(here, paths, query):
 
 
 @pytest.mark.parametrize("query", ["pmodkan-ho-pact1-z4-er-vpr.gb"])
-def test_profile_compile(here, paths, query):
+def test_profile_compile(here, paths, query, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
@@ -105,7 +105,7 @@ def test_profile_compile(here, paths, query):
     design.compile()
 
 
-def test_real_design2(here, paths):
+def test_real_design2(here, paths, span_cost):
     query = "goal1.gb"
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["registry"])
@@ -142,7 +142,7 @@ def test_real_design2(here, paths):
         assembly.print()
 
 
-def test_multidesign(here, paths):
+def test_multidesign(here, paths, span_cost):
     """Expect more than one graph to be output if multiple queries are provided"""
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])

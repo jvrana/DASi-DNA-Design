@@ -9,6 +9,7 @@ do_save = True
 
 @pytest.fixture(scope='module')
 def span_cost():
+    """Saves the span cost as bytes; reloads when called."""
     path = os.path.join(here, 'span_cost.b')
     if do_save and os.path.isfile(path):
         with logger.timeit("INFO", "loading bytes"):

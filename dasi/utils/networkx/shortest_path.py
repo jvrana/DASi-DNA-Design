@@ -1,0 +1,171 @@
+import networkx as nx
+import numpy as np
+from heapq import heappush, heappop
+from itertools import count
+from sympy import sympify, lambdify
+from .exceptions import TerrariumNetworkxError
+
+
+def _weight_function(v, u, e, k):
+    if e is None:
+        return None
+    return e[k]
+
+
+def sympy_multisource_dijkstras(
+    G, sources, f, accumulators=None, init=None, target=None, cutoff=None
+):
+    if not sources:
+        raise ValueError("sources must not be empty")
+    if target in sources:
+        return (0, [target])
+    paths = {source: [source] for source in sources}  # dictionary of paths
+    dist = _multisource_dijkstra(
+        G,
+        sources,
+        f,
+        target=target,
+        accumulators=accumulators,
+        init=init,
+        paths=paths,
+        cutoff=cutoff,
+    )
+    if target is None:
+        return (dist, paths)
+    try:
+        return (dist[target], paths[target])
+    except KeyError:
+        raise nx.NetworkXNoPath("No path to {}.".format(target))
+
+
+def sympy_dijkstras(
+    G, source, f, target=None, accumulators=None, init=None, cutoff=None
+):
+    """
+    Computes the shortest path distance and path for a graph using an arbitrary function.
+
+    :param G:
+    :param source:
+    :param f:
+    :param target:
+    :param accumulators:
+    :param init:
+    :param cutoff:
+    :return:
+    """
+    dist, path = sympy_multisource_dijkstras(
+        G,
+        [source],
+        f,
+        target=target,
+        accumulators=accumulators,
+        init=init,
+        cutoff=cutoff,
+    )
+    return dist, path
+
+
+def _multisource_dijkstra(
+    G,
+    sources,
+    f,
+    target=None,
+    accumulators=None,
+    init=None,
+    cutoff=None,
+    paths=None,
+    pred=None,
+):
+    accumulators = accumulators or {}
+    init = init or {}
+
+    # successor dictionary
+    G_succ = G._succ if G.is_directed() else G._adj
+
+    # push/pop methods to use
+    push = heappush
+    pop = heappop
+
+    # node to shortest distance, breakdown
+    dist_parts = {}
+
+    # node to shortest distance
+    dist = {}
+
+    # node to shortest distance seen
+    seen = {}
+    c = count()
+    fringe = []
+
+    # lambda function
+    func = sympify(f)
+    symbols = list([s.name for s in func.free_symbols])
+    func = lambdify(symbols, func)
+
+    # initial/default values for each symbol
+    for sym in symbols:
+        if accumulators.get(sym, "sum") == "sum":
+            init.setdefault(sym, 0.0)
+        elif accumulators.get(sym, "product"):
+            init.setdefault(sym, 1.0)
+        else:
+            raise TerrariumNetworkxError("Accumulator '{}' not recognized".format(sym))
+    init = np.array([init[x] for x in symbols])
+
+    # accumulator functions to each for each symbol
+    # if 'product', return the accumulated product
+    # else return the accumulated sum (default)
+    accu_f = []
+    for sym in symbols:
+        if accumulators.get(sym, "sum") == "sum":
+            accu_f.append(lambda x: np.sum(x))
+        elif accumulators[sym] == "product":
+            accu_f.append(lambda x: np.prod(x))
+
+    # push the initial values for the sources
+    for source in sources:
+        if source not in G:
+            raise nx.NodeNotFound("Source {} is not in G".format(source))
+        seen[source] = func(*init)
+        push(fringe, (0, next(c), source, init))
+
+    # modified dijkstra's
+    while fringe:
+        (_, _, v, d) = pop(fringe)
+        # d np.array of values
+        if v in dist_parts:
+            continue  # already searched this node
+        dist_parts[v] = d
+        dist[v] = func(*d)
+        if v == target:
+            break
+        for u, e in G_succ[v].items():
+            # vu cost breakdown for  each symbol
+            costs = np.array([_weight_function(v, u, e, sym) for sym in symbols])
+
+            # vu_dist break down using accumulating function
+            x = np.stack([dist_parts[v], costs])
+            vu_dist_parts = []
+            for i, _x in enumerate(x.T):
+                vu_dist_parts.append(accu_f[i](_x))
+            vu_dist_parts = np.array(vu_dist_parts)
+            vu_dist = func(*vu_dist_parts)
+
+            if cutoff is not None:
+                if vu_dist > cutoff:
+                    continue
+            if u in dist_parts:
+                if vu_dist < dist[u]:
+                    raise ValueError("Contradictory paths found:", "negative weights?")
+            elif u not in seen or vu_dist < seen[u]:
+                seen[u] = func(*vu_dist_parts)
+                push(fringe, (vu_dist, next(c), u, vu_dist_parts))
+                if paths is not None:
+                    paths[u] = paths[v] + [u]
+                if pred is not None:
+                    pred[u] = v
+            elif vu_dist == seen[u]:
+                if pred is not None:
+                    pred[u].append(v)
+                    fringe = []
+    return dist

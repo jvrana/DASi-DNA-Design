@@ -23,7 +23,6 @@ import networkx as nx
 from typing import List
 from .npdf import NumpyDataFrame, NumpyDataFrameException
 
-
 def sort_with_keys(a, key):
     s = sorted(a, key=key)
     keys = [key(x) for x in s]
@@ -66,6 +65,7 @@ def partialclass(cls, *args, **kwds):
     return PartialClass
 
 
+# TODO: move to networkx utils
 def sort_cycle(arr, key=None):
     """Sort a cyclic array, maintaining order"""
     if key is None:
@@ -76,6 +76,7 @@ def sort_cycle(arr, key=None):
     return arr[i:] + arr[:i]
 
 
+# TODO: move to networkx utils
 def multipoint_shortest_path(
     graph: nx.DiGraph,
     nodes: List[str],

@@ -131,6 +131,7 @@ class Assembly(Iterable):
             edata = deepcopy(graph.get_edge_data(n1, n2))
             if edata is None:
                 edata = {
+                    "cost": np.inf,
                     "weight": np.inf,
                     "type": "missing",
                     "span": np.inf,
@@ -159,7 +160,9 @@ class Assembly(Iterable):
     def cost(self):
         total = 0
         for _, _, edata in self.edges():
-            total += edata["weight"]
+            if 'cost' not in edata:
+                x = 1
+            total += edata["cost"]
         return total
 
     def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
@@ -237,7 +240,7 @@ class Assembly(Iterable):
                     "subject_keys": subject_keys,
                     "subject_start": subject_starts,
                     "subject_ends": subject_ends,
-                    "weight": edata["weight"],
+                    "cost": edata["cost"],
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],

@@ -270,3 +270,11 @@ class TestDijkstras(object):
         )
         assert path_length == 200 * 4 / 0.75 ** 4
         assert path == [0, 5, 6, 7, 4]
+
+
+class TestBenchmarks(object):
+
+    def test_dijkstras(self, benchmark):
+        G, nodelist = complete_graph(200, create_using=nx.DiGraph)
+        benchmark(floyd_warshall_with_efficiency, G, nodelist=nodelist, weight='weight', efficiency='efficiency')
+

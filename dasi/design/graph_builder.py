@@ -10,6 +10,7 @@ from dasi.exceptions import DASiException
 from more_itertools import partition
 from typing import Iterable
 import bisect
+import numpy as np
 
 AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
 
@@ -214,6 +215,25 @@ class AssemblyGraphBuilder(object):
             self.add_overlap_edge(
                 bnode, anode, query_region, group_keys, groups, origin=True
             )
+        self._batch_add_edge_costs()
+
+    def _batch_add_edge_costs(self):
+        # add external_edge_costs
+        edge_dict = {}
+        for n1, n2, edata in self.G.edges(data=True):
+            if edata['cost'] is None:
+                condition = edata['condition']
+                edge_dict.setdefault(condition, []).append(((n1, n2), edata, edata['span']))
+        for condition, info in edge_dict.items():
+            edges, edata, spans = zip(*info)
+            npdf = self.span_cost.cost(np.array(spans), condition)
+
+            # update each edge
+            for e, d, edge in zip(edata, npdf, edges):
+                if d.data['cost'] > self.COST_THRESHOLD:
+                    self.G.remove_edge(*edge)
+                else:
+                    e.update(d.data)
 
     def _get_cost(self, bp, ext):
         data = self.span_cost(bp, ext).data
@@ -239,16 +259,22 @@ class AssemblyGraphBuilder(object):
                 span = -len(q)
             if span <= 0:
                 condition = (bnode.expandable, anode.expandable)
-                cost_dict = self._get_cost(span, condition)
-                if cost_dict["cost"] < self.COST_THRESHOLD:
+                # cost_dict = self._get_cost(span, condition)
+                if True:
+                # if cost_dict["cost"] < self.COST_THRESHOLD:
                     self.add_edge(
                         bnode,
                         anode,
-                        weight=cost_dict["cost"],
+                        # weight=cost_dict["cost"],
+                        weight=None,
+                        cost=None,
+                        material=None,
+                        time=None,
+                        efficiency=None,
                         name="overlap",
                         type="overlap",
                         condition=condition,
-                        **cost_dict
+                        span=span
                     )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
@@ -259,16 +285,21 @@ class AssemblyGraphBuilder(object):
             span = len(query_region.new(bnode.index, anode.index))
         if span >= 0:
             condition = (bnode.expandable, anode.expandable)
-            cost_dict = self._get_cost(span, condition)
-            if cost_dict["cost"] < self.COST_THRESHOLD:
+            # cost_dict = self._get_cost(span, condition)
+            if True:
+            # if cost_dict["cost"] < self.COST_THRESHOLD:
                 self.add_edge(
                     bnode,
                     anode,
-                    weight=cost_dict["cost"],
+                    weight=None,
+                    cost=None,
+                    material=None,
+                    time=None,
+                    efficiency=None,
                     name="gap",
                     type="gap",
                     condition=condition,
-                    **cost_dict
+                    span=span,
                 )
 
     def build_assembly_graph(self):
@@ -290,5 +321,6 @@ class AssemblyGraphBuilder(object):
 
         self.add_internal_edges(groups)
         self.add_external_edges(groups, group_keys, self.G.nodes())
+
         nx.freeze(self.G)
         return self.G

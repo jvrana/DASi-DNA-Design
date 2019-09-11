@@ -239,6 +239,7 @@ class Assembly(Iterable):
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],
+                    'efficiency': edata.get('efficiency', np.nan)
                 }
             )
 

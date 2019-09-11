@@ -1,82 +1,16 @@
+# @title cost
+
+from abc import ABC, abstractmethod
 from functools import partial
 
 import numpy as np
 import pandas as pd
-
-# plot
 import seaborn as sns
 
-from .cost_containers import PrimerJunction, GeneJunction, GapJunction
-from .utils import lexargmin, slicer, df_to_np_ranged
-from dasi.log import logger
-from abc import ABC, abstractmethod
 from dasi.utils import NumpyDataFrame
-
-
-class Globals(object):
-    time_cost = 50.0
-    material_modifier = 1.0
-
-
-class PrimerParams(object):
-    # @title Parameters
-    time_cost = Globals.time_cost  # @param {type:"number"}
-    material_modifier = Globals.material_modifier  # @param {type:"number"}
-    min_anneal = 16  # @param {type:"number"}
-    min_span = -300  # @param {type:"number"}
-
-    # efficiency table
-    eff_df = pd.DataFrame(
-        [
-            [0, 10, 0.0],
-            [10, 15, 0.3],
-            [15, 20, 0.6],
-            [20, 30, 0.8],
-            [30, 40, 0.9],
-            [40, 50, 0.8],
-            [50, 100, 0.75],
-            [100, 120, 0.5],
-            [120, 150, 0.3],
-            [150, 250, 0.1],
-            [250, 300, 0.0],
-        ],
-        columns=["min", "max", "efficiency"],
-    )
-
-    # primer cost table
-    primer_df = pd.DataFrame(
-        [
-            [
-                "Non-primer (special case)",
-                min_anneal,
-                min_anneal + 1,
-                0.0,
-                0.0,
-                0.0,
-            ],  # special case
-            ["IDTPrimer", 16.0, 60.0, 0.0, 0.15, 1.5],
-            ["IDTUltramer", 45.0, 200.0, 0.0, 0.40, 1.5],
-        ],
-        columns=["name", "min", "max", "base cost", "cost per bp", "time (days)"],
-    )
-
-    # synthesis cost table
-    synthesis_df = pd.DataFrame(
-        [
-            [0, 1, 0, 0],
-            [1, 100, np.inf, np.inf],
-            [100, 500, 89.0, 3.0],
-            [500, 750, 129.0, 3.0],
-            [750, 1000, 149.0, 4.0],
-            [1000, 1250, 209.0, 7.0],
-            [1250, 1500, 249.0, 7.0],
-            [1500, 1750, 289.0, 7.0],
-            [1750, 2000, 329.0, 7.0],
-            [2000, 2250, 399.0, 7.0],
-        ],
-        columns=["min", "max", "base", "time"],
-    )
-
+from .params import PrimerParams, SynthesisParams, Globals
+from .utils import lexargmin, slicer, df_to_np_ranged
+from .utils import slicer, df_to_np_ranged, lexargmin
 
 slice_dict = {
     (0, 0): slicer[:, :1, :1],
@@ -121,13 +55,13 @@ class CostBuilder(ABC):
 
 class PrimerCostBuilder(CostBuilder):
     def __init__(
-        self,
-        pdf: pd.DataFrame,
-        edf: pd.DataFrame,
-        min_anneal: int,
-        time_cost: float,
-        material_mod: float,
-        min_span: int,
+            self,
+            pdf: pd.DataFrame,
+            edf: pd.DataFrame,
+            min_anneal: int,
+            time_cost: float,
+            material_mod: float,
+            min_span: int,
     ):
         self.primer_df = pdf
         self.eff_df = edf
@@ -176,6 +110,7 @@ class PrimerCostBuilder(CostBuilder):
         # material cost
         m = p[:, 0, np.newaxis] * p[:, 2, np.newaxis] + p[:, 1, np.newaxis]
         t = p[:, 3, np.newaxis]
+        t = np.maximum(t, t.T)
         x = m * self.material_modifier + t * self.time_cost
         material_cost = x + x.T
 
@@ -197,6 +132,7 @@ class PrimerCostBuilder(CostBuilder):
                     material=s_mat[idx[1], idx[2]],
                     left_ext=ext[idx[1]],
                     right_ext=ext[idx[2]],
+                    time=t[idx[1], idx[2]]
                 ),
                 apply=np.squeeze,
             )
@@ -207,41 +143,20 @@ class PrimerCostBuilder(CostBuilder):
             return jxn
         i = bp - self.span.min()
         i = np.clip(i, 0, len(jxn) - 1)
-        return jxn[i]
-
-
-class SynthesisParams(object):
-    synthesis_df = pd.DataFrame(
-        [
-            [0, 1, 0, 0],
-            [1, 100, np.inf, np.inf],
-            [100, 500, 89.0, 3.0],
-            [500, 750, 129.0, 3.0],
-            [750, 1000, 149.0, 4.0],
-            [1000, 1250, 209.0, 7.0],
-            [1250, 1500, 249.0, 7.0],
-            [1500, 1750, 289.0, 7.0],
-            [1750, 2000, 329.0, 7.0],
-            [2000, 2250, 399.0, 7.0],
-        ],
-        columns=["min", "max", "base", "time"],
-    )
-
-    time_cost = Globals.time_cost
-    material_modifier = Globals.material_modifier
-    step_size = 10
-    left_span_range = (-300, 300)
+        jxn = jxn[i]
+        jxn.col['span'] = bp
+        return jxn
 
 
 class SynthesisCostBuilder(CostBuilder):
     def __init__(
-        self,
-        sdf: pd.DataFrame,
-        primer_cost: PrimerCostBuilder,
-        time_cost: float,
-        material_modifier: float,
-        step_size=10,
-        left_span_range=(-500, 500),
+            self,
+            sdf: pd.DataFrame,
+            primer_cost: PrimerCostBuilder,
+            time_cost: float,
+            material_modifier: float,
+            step_size=10,
+            left_span_range=(-500, 500),
     ):
         self.synthesis_df = sdf
         self.step_size = step_size
@@ -251,7 +166,7 @@ class SynthesisCostBuilder(CostBuilder):
         self.time_cost = time_cost
         self.cost_dict = {}
         self.span = None
-        self.logger = logger(self)
+        # self.logger = logger(self)
         self.compute()
 
     @classmethod
@@ -307,12 +222,11 @@ class SynthesisCostBuilder(CostBuilder):
         syn_eff = ext_eff * 1.0  # here place probability of success for gene synthesis
         # could even use sequence to compute this later???
         syn_material_cost = (
-            ext_material + gene_costs[np.newaxis, ...] * self.material_modifier
+                ext_material + gene_costs[np.newaxis, ...] * self.material_modifier
         )
         syn_time_cost = gene_times * self.time_cost
         syn_total_cost = (syn_material_cost + syn_time_cost[np.newaxis, ...]) / syn_eff
-        with self.logger.timeit("INFO", "lexargmin"):
-            idx = lexargmin((syn_eff, syn_total_cost), axis=0)
+        idx = lexargmin((syn_eff, syn_total_cost), axis=0)
 
         _gcosts = gene_costs[idx[1]]
         _span = np.squeeze(self.span)[idx[0]]
@@ -322,9 +236,10 @@ class SynthesisCostBuilder(CostBuilder):
                 cost=_gcosts,
                 material=_gcosts,
                 efficiency=np.ones(idx[0].shape[0]),
+                size=gene_sizes[idx[1]]
             ),
             apply=np.squeeze,
-        ).prefix("gene_")
+        )
 
         gap_df = NumpyDataFrame(
             dict(
@@ -352,16 +267,55 @@ class SynthesisCostBuilder(CostBuilder):
     # TODO: what if there is a gap in the span?
     def cost(self, bp, ext):
         _span = self.span.flatten()
-        bp = bp - _span.min()
-        #   i = np.array(bp / step_size, dtype=np.int64)
-        i = np.array(bp, dtype=np.int64)
+        x = bp - _span.min()
+        i = np.array(x, dtype=np.int64)
         i = np.clip(i, 0, len(_span) - 1)
-        jxn = self.cost_dict[ext]
-        return jxn[i]
+        jxn = self.cost_dict[ext][i]
+        jxn.col['span'] = bp
+        return jxn
 
     def __call__(self, bp, ext):
         return self.cost(bp, ext)
 
 
-class SpanCost:
-    pass
+class SpanCost(CostBuilder):
+
+    def __init__(self, syn_cost):
+        self.syn_cost = syn_cost
+        self.primer_cost = self.syn_cost.primer_cost
+        x = [syn_cost.span.min(), syn_cost.span.max(), self.primer_cost.span.min(), self.primer_cost.span.max()]
+        self.span = np.arange(min(x), max(x))
+        self.cost_dict = {}
+        self.compute()
+
+    @classmethod
+    def from_params(cls):
+        pass
+
+    @classmethod
+    def default(cls):
+        primer_cost = PrimerCostBuilder.from_params(PrimerParams)
+        syn_cost = SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
+        return cls(syn_cost)
+
+    def compute(self):
+        for s in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+            df1 = self.primer_cost(self.span, s)
+            df2 = self.syn_cost(self.span, s)
+            df3 = NumpyDataFrame.group_apply((df1, df2), np.stack, axis=1, _fill_value=np.nan)
+            cost = df3.data['cost']
+            x = np.arange(len(df3))
+            y = cost.argmin(axis=1)
+            df4 = df3[x, y]
+            self.cost_dict[s] = df4
+
+    def cost(self, bp, ext):
+        if isinstance(bp, int):
+            bp = np.array([bp])
+        _span = self.span.flatten()
+        x = bp - _span.min()
+        i = np.array(x, dtype=np.int64)
+        i = np.clip(i, 0, len(_span) - 1)
+        jxn = self.cost_dict[ext][i]
+        jxn.col['span'] = bp
+        return jxn

@@ -5,7 +5,7 @@ import pytest
 from os.path import join
 from more_itertools import pairwise
 
-span_cost = SpanCost()
+span_cost = SpanCost.default()
 
 
 @pytest.mark.parametrize(

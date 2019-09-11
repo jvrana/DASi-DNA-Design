@@ -287,7 +287,7 @@ class NumpyDataFrame(Mapping):
     def append(self, other):
         self.group_apply((other,), np.hstack)
 
-    def fill_missing(self, cols, value):
+    def fill_value(self, cols, value):
         for c in cols:
             if c not in self.col:
                 self.col[c] = np.array([value for _ in range(len(self))])
@@ -309,7 +309,7 @@ class NumpyDataFrame(Mapping):
                     all_cols += list(o.columns)
                 all_cols = sorted(list(set(all_cols)))
                 for o in others:
-                    o.fill_missing(all_cols, _fill_value)
+                    o.fill_value(all_cols, _fill_value)
         for o in others:
             for k, v in o.data.items():
                 d.setdefault(k, list()).append(v)

@@ -11,7 +11,7 @@ import numpy as np
 from typing import Tuple, List
 import itertools
 
-spancost = SpanCost()
+spancost = SpanCost.default()
 
 # TODO: tests with reverse_complement
 # TODO: test total span == query

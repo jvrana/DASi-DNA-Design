@@ -24,7 +24,7 @@ class AssemblyGraphBuilder(object):
     def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
         self.container = alignment_container
         if span_cost is None:
-            self.span_cost = SpanCost()
+            self.span_cost = SpanCost.default()
         else:
             self.span_cost = span_cost
         self.G = None
@@ -33,10 +33,10 @@ class AssemblyGraphBuilder(object):
     def add_node(self, node):
         self.G.add_node(AssemblyNode(*node))
 
-    def add_edge(self, n1, n2, weight, name, span, type):
+    def add_edge(self, n1, n2, weight, name, **kwargs):
         n1 = AssemblyNode(*n1)
         n2 = AssemblyNode(*n2)
-        self.G.add_edge(n1, n2, weight=weight, name=name, span=span, type=type)
+        self.G.add_edge(n1, n2, weight=weight, name=name, **kwargs)
 
     # TODO: internal cost should correlate with span_cost
     # TODO: interanl cost should also have an efficiency associated with it (can you amplify it?).
@@ -54,6 +54,7 @@ class AssemblyGraphBuilder(object):
     #       At the end, we will need to separate material and efficiency and use efficiency in the overall assembly
     #       optimization.
 
+    # TODO: make internal_cost, and efficiency a global parameter
     @staticmethod
     def internal_edge_cost(align):
         if align.type == Constants.FRAGMENT:
@@ -62,11 +63,11 @@ class AssemblyGraphBuilder(object):
             Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
             Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
         ]:
-            internal_cost = 30 + 30
+            internal_cost = 10.
         elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
-            internal_cost = 30
+            internal_cost = 10.
         elif align.type == Constants.PCR_PRODUCT:
-            internal_cost = 30 + 30 + 30
+            internal_cost = 10.
         else:
             raise DASiException("Could not determine cost of {}".format(align))
         return internal_cost
@@ -115,7 +116,9 @@ class AssemblyGraphBuilder(object):
                             weight=internal_cost,
                             name="",
                             span=len(align.query_region),
+                            condition=(a_expand, b_expand),
                             type=align.type,
+                            efficiency=0.95,
                         ),
                     )
                     edges.append(edge)
@@ -196,6 +199,11 @@ class AssemblyGraphBuilder(object):
                 bnode, anode, query_region, group_keys, groups, origin=True
             )
 
+
+    def _get_cost(self, bp, ext):
+        data = self.span_cost(bp, ext).data
+        return {k: v[0] for k, v in data.items()}
+
     def add_overlap_edge(
         self, bnode, anode, query_region, group_keys, groups, origin=False
     ):
@@ -215,12 +223,11 @@ class AssemblyGraphBuilder(object):
             else:
                 span = -len(q)
             if span <= 0:
-                cost, desc = self.span_cost.cost_and_desc(
-                    span, (bnode.expandable, anode.expandable)
-                )
-                if cost < self.COST_THRESHOLD:
+                condition = (bnode.expandable, anode.expandable)
+                cost_dict = self._get_cost(span, condition)
+                if cost_dict['cost'] < self.COST_THRESHOLD:
                     self.add_edge(
-                        bnode, anode, weight=cost, name="overlap", span=span, type=desc
+                        bnode, anode, weight=cost_dict['cost'], name="overlap", type='overlap', condition=condition, **cost_dict
                     )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
@@ -230,11 +237,10 @@ class AssemblyGraphBuilder(object):
         else:
             span = len(query_region.new(bnode.index, anode.index))
         if span >= 0:
-            cost, desc = self.span_cost.cost_and_desc(
-                span, (bnode.expandable, anode.expandable)
-            )
-            if cost < self.COST_THRESHOLD:
-                self.add_edge(bnode, anode, weight=cost, name="", span=span, type=desc)
+            condition = (bnode.expandable, anode.expandable)
+            cost_dict = self._get_cost(span, condition)
+            if cost_dict['cost'] < self.COST_THRESHOLD:
+                self.add_edge(bnode, anode, weight=cost_dict['cost'], name="gap", type='gap', condition=condition, **cost_dict)
 
     def build_assembly_graph(self):
 

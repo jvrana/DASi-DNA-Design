@@ -150,10 +150,10 @@ def sympy_floyd_warshall(
     I = np.identity(n)
     for key, matrix in matrix_dict.items():
         # set accumulators
-        if accumulators[key] == PRODUCT:
-            d = 1.0
-        elif accumulators[key] == SUM:
+        if accumulators.get(key, SUM) == SUM:
             d = 0.0
+        elif accumulators[key] == PRODUCT:
+            d = 1.0
         else:
             raise TerrariumNetworkxError(
                 "Accumulator key {} must either by '{}' or '{}' or a callable with two "

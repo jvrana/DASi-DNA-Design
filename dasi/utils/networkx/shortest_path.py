@@ -4,6 +4,9 @@ from heapq import heappush, heappop
 from itertools import count
 from sympy import sympify, lambdify
 from .exceptions import TerrariumNetworkxError
+from typing import List
+from more_itertools import pairwise
+from .utils import sort_cycle
 
 
 def _weight_function(v, u, e, k):
@@ -169,3 +172,74 @@ def _multisource_dijkstra(
                     pred[u].append(v)
                     fringe = []
     return dist
+
+
+# TODO: move to networkx utils
+def multipoint_shortest_path(
+    graph: nx.DiGraph,
+    nodes: List[str],
+    weight_key: str,
+    cyclic=False,
+    cyclic_sort_key=None,
+):
+    """
+    Return shortest path through nodes. If cyclic, will return the cycle sorted with the
+    'lowest' node at index 0. Self cycles are not supported
+
+    :param graph: the graph
+    :param nodes: list of nodes to find path
+    :param weight_key: weight key
+    :param cyclic: whether the path is cyclic
+    :param cyclic_sort_key: the key function to use to sort the cycle (if cyclic)
+    :return:
+    """
+    if cyclic_sort_key and not cyclic:
+        raise ValueError("cyclic_sort_key was provided but 'cyclic' was False.")
+    full_path = []
+    if cyclic:
+        nodes = nodes + nodes[:1]
+    for n1, n2 in pairwise(nodes):
+        path = nx.shortest_path(graph, n1, n2, weight=weight_key)
+        full_path += path[:-1]
+    if not cyclic:
+        full_path.append(nodes[-1])
+    if cyclic:
+        return sort_cycle(full_path, cyclic_sort_key)
+    else:
+        return full_path
+
+
+def sympy_multipoint_shortest_path(
+    graph: nx.DiGraph,
+    nodes: List[str],
+    f: str,
+    accumulators: dict,
+    init=None,
+    cutoff=None,
+    cyclic=False,
+    cyclic_sort_key=None,
+):
+    if cyclic_sort_key and not cyclic:
+        raise ValueError("cyclic_sort_key was provided but 'cyclic' was False.")
+    full_path = []
+    full_path_length = 0.
+    if cyclic:
+        nodes = nodes + nodes[:1]
+    for n1, n2 in pairwise(nodes):
+        path_length, path = sympy_dijkstras(
+            graph,
+            f=f,
+            source=n1,
+            target=n2,
+            accumulators=accumulators,
+            init=init,
+            cutoff=cutoff,
+        )
+        full_path_length += path_length
+        full_path += path[:-1]
+    if not cyclic:
+        full_path.append(nodes[-1])
+    if cyclic:
+        return full_path_length, sort_cycle(full_path, cyclic_sort_key)
+    else:
+        return full_path_length, full_path

@@ -3,12 +3,13 @@ from dasi.cost import (
     SynthesisCostBuilder,
     PrimerParams,
     SynthesisParams,
-    SpanCost
+    SpanCost,
 )
 import pytest
 import pylab as plt
 import numpy as np
 import os
+
 
 @pytest.fixture(scope="module")
 def primer_cost():
@@ -40,7 +41,6 @@ class TestPlotters(object):
 
 
 class TestDf(object):
-
     def test_primer_cost_df(self, primer_cost):
         primer_cost.to_df()
 
@@ -52,76 +52,55 @@ class TestDf(object):
 
 
 class TestCall(object):
-
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_primer_cost_df(self, primer_cost, ext):
         primer_cost(np.arange(-300, 1000), ext)
 
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_syn_cost_df(self, syn_cost, ext):
         syn_cost(np.arange(-300, 1000), (0, 0))
 
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_span_cost_df(self, span_cost, ext):
         span_cost(np.arange(-300, 1000), (0, 0))
 
 
 class TestEdgeCases(object):
-
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_primer_extreme_left(self, primer_cost, ext):
         df = primer_cost(-1000, ext)
-        print(df.col['cost'])
-        assert df.data['cost'][0] == np.inf
+        print(df.col["cost"])
+        assert df.data["cost"][0] == np.inf
 
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_primer_extreme_right(self, primer_cost, ext):
         df = primer_cost(1000, ext)
-        print(df.col['cost'])
-        assert df.data['cost'][0] == np.inf
+        print(df.col["cost"])
+        assert df.data["cost"][0] == np.inf
 
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_syn_extreme_left(self, syn_cost, ext):
         df = syn_cost(-1000, ext)
-        print(df.col['cost'])
-        assert df.data['cost'][0] == np.inf
+        print(df.col["cost"])
+        assert df.data["cost"][0] == np.inf
 
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_syn_extreme_right(self, syn_cost, ext):
         df = syn_cost(5000, ext)
-        print(df.col['cost'])
-        assert df.data['cost'][0] == np.inf
+        print(df.col["cost"])
+        assert df.data["cost"][0] == np.inf
 
-
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_span_extreme_left(self, span_cost, ext):
         df = span_cost.cost(-1000, ext)
-        print(df.col['cost'])
-        assert df.data['cost'][0] == np.inf
+        print(df.col["cost"])
+        assert df.data["cost"][0] == np.inf
 
-    @pytest.mark.parametrize('ext', [
-        (0, 0), (1, 0), (0, 1), (1, 1)
-    ])
+    @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_span_extreme_right(self, span_cost, ext):
         df = span_cost.cost(5000, ext)
-        print(df.col['cost'])
-        assert df.data['cost'][0] == np.inf
+        print(df.col["cost"])
+        assert df.data["cost"][0] == np.inf
 
 
 class TestSerialization(object):
@@ -137,9 +116,8 @@ class TestSerialization(object):
         assert len(span_cost2.to_df()) == len(span_cost.to_df())
 
     def test_dump_and_load(self, tmp_path, span_cost):
-        tmp_file = os.path.join(tmp_path, 'span_cost.b')
+        tmp_file = os.path.join(tmp_path, "span_cost.b")
         span_cost.dump(tmp_file)
         assert os.path.isfile(tmp_file)
         span_cost2 = SpanCost.load(tmp_file)
         assert len(span_cost2.to_df()) == len(span_cost.to_df())
-

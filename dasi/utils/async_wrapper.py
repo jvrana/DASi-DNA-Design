@@ -18,6 +18,7 @@ def with_index(fxn):
 
     return wrapped
 
+
 # TODO: this is not used...
 async def exec_async_fxn(
     fxn, arg_list, kwargs, chunk_size=1, desc="", progress_bar=True

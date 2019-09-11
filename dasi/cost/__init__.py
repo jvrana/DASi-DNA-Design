@@ -22,32 +22,29 @@ slice_dict = {
 
 
 def encoder(obj):
-  if isinstance(obj, NumpyDataFrame):
-    return {
-        '__numpydataframe__': True,
-        'data': obj.data
-    }
-  elif isinstance(obj, SpanCost):
-    return {
-        '__spancost__': True,
-        'cost_dict': {k: v for k, v in obj.cost_dict.items()},
-        'span': obj.span
-    }
-  return obj
+    if isinstance(obj, NumpyDataFrame):
+        return {"__numpydataframe__": True, "data": obj.data}
+    elif isinstance(obj, SpanCost):
+        return {
+            "__spancost__": True,
+            "cost_dict": {k: v for k, v in obj.cost_dict.items()},
+            "span": obj.span,
+        }
+    return obj
 
 
 def decoder(obj):
-  if b'__numpydataframe__' in obj:
-    data = obj[b'data']
-    data = {k.decode(): v for k,v in data.items()}
-    obj = NumpyDataFrame(data=data)
-  elif b'__spancost__' in obj:
-    cost_dict = {tuple(k): v for k, v in obj[b'cost_dict'].items()}
-    span = obj[b'span']
-    obj = SpanCost.__new__(SpanCost)
-    obj.cost_dict = cost_dict
-    obj.span = span
-  return obj
+    if b"__numpydataframe__" in obj:
+        data = obj[b"data"]
+        data = {k.decode(): v for k, v in data.items()}
+        obj = NumpyDataFrame(data=data)
+    elif b"__spancost__" in obj:
+        cost_dict = {tuple(k): v for k, v in obj[b"cost_dict"].items()}
+        span = obj[b"span"]
+        obj = SpanCost.__new__(SpanCost)
+        obj.cost_dict = cost_dict
+        obj.span = span
+    return obj
 
 
 class CostBuilder(ABC):
@@ -82,7 +79,6 @@ class CostBuilder(ABC):
         _span = self.span.flatten()
         index = np.array(bp - _span.min(), dtype=np.int64)
 
-
         # clipped index
         clipped = np.clip(index, 0, len(_span) - 1)
 
@@ -96,11 +92,11 @@ class CostBuilder(ABC):
 
             # invalidate extremes
             for invalid in [invalid_i1, invalid_i2]:
-                jxn.data['cost'][invalid] = np.inf
-                jxn.data['efficiency'][invalid] = 0.
+                jxn.data["cost"][invalid] = np.inf
+                jxn.data["efficiency"][invalid] = 0.0
 
         # add span
-        jxn.col['span'] = bp
+        jxn.col["span"] = bp
         return jxn
 
     def __call__(self, bp, ext):
@@ -109,13 +105,13 @@ class CostBuilder(ABC):
 
 class PrimerCostBuilder(CostBuilder):
     def __init__(
-            self,
-            pdf: pd.DataFrame,
-            edf: pd.DataFrame,
-            min_anneal: int,
-            time_cost: float,
-            material_mod: float,
-            min_span: int,
+        self,
+        pdf: pd.DataFrame,
+        edf: pd.DataFrame,
+        min_anneal: int,
+        time_cost: float,
+        material_mod: float,
+        min_span: int,
     ):
         self.primer_df = pdf
         self.eff_df = edf
@@ -186,7 +182,7 @@ class PrimerCostBuilder(CostBuilder):
                     material=s_mat[idx[1], idx[2]],
                     left_ext=ext[idx[1]],
                     right_ext=ext[idx[2]],
-                    time=t[idx[1], idx[2]]
+                    time=t[idx[1], idx[2]],
                 ),
                 apply=np.squeeze,
             )
@@ -194,13 +190,13 @@ class PrimerCostBuilder(CostBuilder):
 
 class SynthesisCostBuilder(CostBuilder):
     def __init__(
-            self,
-            sdf: pd.DataFrame,
-            primer_cost: PrimerCostBuilder,
-            time_cost: float,
-            material_modifier: float,
-            step_size=10,
-            left_span_range=(-500, 500),
+        self,
+        sdf: pd.DataFrame,
+        primer_cost: PrimerCostBuilder,
+        time_cost: float,
+        material_modifier: float,
+        step_size=10,
+        left_span_range=(-500, 500),
     ):
         self.synthesis_df = sdf
         self.step_size = step_size
@@ -266,7 +262,7 @@ class SynthesisCostBuilder(CostBuilder):
         syn_eff = ext_eff * 1.0  # here place probability of success for gene synthesis
         # could even use sequence to compute this later???
         syn_material_cost = (
-                ext_material + gene_costs[np.newaxis, ...] * self.material_modifier
+            ext_material + gene_costs[np.newaxis, ...] * self.material_modifier
         )
         syn_time_cost = gene_times * self.time_cost
         syn_total_cost = (syn_material_cost + syn_time_cost[np.newaxis, ...]) / syn_eff
@@ -280,7 +276,7 @@ class SynthesisCostBuilder(CostBuilder):
                 cost=_gcosts,
                 material=_gcosts,
                 efficiency=np.ones(idx[0].shape[0]),
-                size=gene_sizes[idx[1]]
+                size=gene_sizes[idx[1]],
             ),
             apply=np.squeeze,
         )
@@ -310,11 +306,15 @@ class SynthesisCostBuilder(CostBuilder):
 
 
 class SpanCost(CostBuilder):
-
     def __init__(self, syn_cost):
         self.syn_cost = syn_cost
         self.primer_cost = self.syn_cost.primer_cost
-        x = [syn_cost.span.min(), syn_cost.span.max(), self.primer_cost.span.min(), self.primer_cost.span.max()]
+        x = [
+            syn_cost.span.min(),
+            syn_cost.span.max(),
+            self.primer_cost.span.min(),
+            self.primer_cost.span.max(),
+        ]
         self.span = np.arange(min(x), max(x))
         self.cost_dict = {}
         self.compute()
@@ -331,7 +331,7 @@ class SpanCost(CostBuilder):
 
     def compute(self):
         def choose(a, i):
-                return np.choose(i, a)
+            return np.choose(i, a)
 
         for s in [(0, 0), (0, 1), (1, 0), (1, 1)]:
             # numpy data frames for primer cost and syn cost over span
@@ -339,13 +339,15 @@ class SpanCost(CostBuilder):
             df2 = self.syn_cost(self.span, s)
 
             # determine the indices of the min cost (0=primer, 1=syn)
-            c1 = df1.data['cost']
-            c2 = df2.data['cost']
+            c1 = df1.data["cost"]
+            c2 = df2.data["cost"]
             c3 = np.stack((c1, c2), axis=1)
             y = c3.argmin(axis=1)
 
             # select between primer_cost and syn_cost based on the min cost
-            df4 = NumpyDataFrame.group_apply((df1, df2), choose, i=y, _fill_value=np.nan)
+            df4 = NumpyDataFrame.group_apply(
+                (df1, df2), choose, i=y, _fill_value=np.nan
+            )
             self.cost_dict[s] = df4
 
     def cost(self, bp, ext):
@@ -359,11 +361,10 @@ class SpanCost(CostBuilder):
         return msgpack.unpackb(s, object_hook=decoder, raw=True, use_list=False)
 
     def dump(self, path):
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(self.dumpb())
 
     @classmethod
     def load(cls, path):
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             return cls.loadb(f.read())
-

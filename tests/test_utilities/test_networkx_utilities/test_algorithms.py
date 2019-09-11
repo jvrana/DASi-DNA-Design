@@ -1,6 +1,8 @@
 from dasi.utils.networkx import (
     floyd_warshall_with_efficiency,
-    sympy_floyd_warshall, sympy_dijkstras, sympy_multisource_dijkstras,
+    sympy_floyd_warshall,
+    sympy_dijkstras,
+    sympy_multisource_dijkstras,
     find_all_min_paths,
 )
 import networkx as nx
@@ -9,7 +11,9 @@ import random
 import pytest
 
 
-COMPARISON_THRESHOLD = 0.03  # within 3% due to floating point errors
+COMPARISON_THRESHOLD = (
+    0.03
+)  # within 3% due to floating point errors during accumulating of multiple floats
 
 
 def add_data(G, u, v, weight, eff, weight_key="weight", eff_key="eff"):
@@ -249,3 +253,20 @@ class TestDijkstras(object):
         assert path[3] == [0, 1, 2, 3]
         assert path[4] == [0, 5, 6, 7, 4]
         assert path[7] == [0, 5, 6, 7]
+
+    def test_simple_path_source_to_target(self):
+        G = nx.path_graph(4)
+        G.add_edge(0, 1, weight=100, eff=0.5)
+        G.add_edge(1, 2, weight=100, eff=0.5)
+        G.add_edge(2, 3, weight=100, eff=0.5)
+        G.add_edge(3, 4, weight=100, eff=0.5)
+        G.add_edge(0, 5, weight=200, eff=0.75)
+        G.add_edge(5, 6, weight=200, eff=0.75)
+        G.add_edge(6, 7, weight=200, eff=0.75)
+        G.add_edge(7, 4, weight=200, eff=0.75)
+
+        path_length, path = sympy_dijkstras(
+            G=G, source=0, target=4, f="weight / eff", accumulators={"eff": "product"}
+        )
+        assert path_length == 200 * 4 / 0.75 ** 4
+        assert path == [0, 5, 6, 7, 4]

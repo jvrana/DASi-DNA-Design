@@ -1,5 +1,5 @@
 import numpy as np
-from itertools import product
+from itertools import product, zip_longest
 import networkx as nx
 
 
@@ -122,3 +122,14 @@ def compare_path_rank_order(mat, path_dict, nodelist, verbose=False):
             true_shortest_index_pairs, matrix_shortest_index_pairs
         ):
             print("{}  {}".format(true_pair, mat_pair))
+
+
+# TODO: move to networkx utils
+def sort_cycle(arr, key=None):
+    """Sort a cyclic array, maintaining order"""
+    if key is None:
+        arr_with_i = sorted([(x, i) for i, x in enumerate(arr)])
+    else:
+        arr_with_i = sorted([(key(x), i) for i, x in enumerate(arr)])
+    i = arr_with_i[0][1]
+    return arr[i:] + arr[:i]

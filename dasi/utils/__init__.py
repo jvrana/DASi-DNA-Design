@@ -18,10 +18,10 @@ from .region import Region
 from .span import Span
 import functools
 from .async_wrapper import make_async
-from more_itertools import pairwise
-import networkx as nx
-from typing import List
 from .npdf import NumpyDataFrame, NumpyDataFrameException
+from .networkx.utils import sort_cycle
+from .networkx.shortest_path import multipoint_shortest_path
+
 
 def sort_with_keys(a, key):
     s = sorted(a, key=key)
@@ -63,49 +63,3 @@ def partialclass(cls, *args, **kwds):
         __init__ = functools.partialmethod(cls.__init__, *args, **kwds)
 
     return PartialClass
-
-
-# TODO: move to networkx utils
-def sort_cycle(arr, key=None):
-    """Sort a cyclic array, maintaining order"""
-    if key is None:
-        arr_with_i = sorted([(x, i) for i, x in enumerate(arr)])
-    else:
-        arr_with_i = sorted([(key(x), i) for i, x in enumerate(arr)])
-    i = arr_with_i[0][1]
-    return arr[i:] + arr[:i]
-
-
-# TODO: move to networkx utils
-def multipoint_shortest_path(
-    graph: nx.DiGraph,
-    nodes: List[str],
-    weight_key: str,
-    cyclic=False,
-    cyclic_sort_key=None,
-):
-    """
-    Return shortest path through nodes. If cyclic, will return the cycle sorted with the
-    'lowest' node at index 0. Self cycles are not supported
-
-    :param graph: the graph
-    :param nodes: list of nodes to find path
-    :param weight_key: weight key
-    :param cyclic: whether the path is cyclic
-    :param cyclic_sort_key: the key function to use to sort the cycle (if cyclic)
-    :return:
-    """
-    if cyclic_sort_key and not cyclic:
-        raise ValueError("cyclic_sort_key was provided but 'cyclic' was False.")
-    full_path = []
-    if cyclic:
-        nodes = nodes + nodes[:1]
-    for n1, n2 in pairwise(nodes):
-        path = nx.shortest_path(graph, n1, n2, weight=weight_key)
-        full_path += path[:-1]
-    if not cyclic:
-        full_path.append(nodes[-1])
-    if cyclic:
-        return sort_cycle(full_path, cyclic_sort_key)
-    else:
-        return full_path

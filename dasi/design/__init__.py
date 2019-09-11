@@ -11,6 +11,21 @@ Submodules
     assembly
 """
 from __future__ import annotations
+
+import bisect
+from collections.abc import Iterable
+from copy import deepcopy
+from itertools import zip_longest
+from typing import List, Tuple, Dict
+
+import networkx as nx
+import numpy as np
+import pandas as pd
+from Bio.SeqRecord import SeqRecord
+from more_itertools import pairwise
+from pyblast import BioBlastFactory
+from pyblast.utils import Span, is_circular
+
 from dasi.alignments import (
     Alignment,
     AlignmentContainerFactory,
@@ -19,32 +34,18 @@ from dasi.alignments import (
     ComplexAlignmentGroup,
 )
 from dasi.constants import Constants
-from .graph_builder import AssemblyGraphBuilder
+from dasi.design.graph_builder import AssemblyNode
+from dasi.exceptions import DasiDesignException
+from dasi.log import logger
 from dasi.utils import (
     perfect_subject,
-    multipoint_shortest_path,
     sort_with_keys,
     sort_cycle,
 )
-from dasi.exceptions import DasiDesignException
-import networkx as nx
-from pyblast import BioBlastFactory
-from dasi.log import logger
-from typing import List, Tuple, Dict
-from Bio.SeqRecord import SeqRecord
-import numpy as np
-from more_itertools import pairwise
-from pyblast.utils import Span, is_circular
-import pandas as pd
-import bisect
-from dasi.design.graph_builder import AssemblyNode
-from collections.abc import Iterable
-from itertools import zip_longest
-from copy import deepcopy
-
+from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
+from .graph_builder import AssemblyGraphBuilder
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
-
 
 class DesignResult(Iterable):
     def __init__(self, container, graph, query_key):
@@ -154,6 +155,7 @@ class Assembly(Iterable):
     def cyclic(self):
         return is_circular(self.query)
 
+    # TODO: this cost is no longer true...
     def cost(self):
         total = 0
         for _, _, edata in self.edges():
@@ -239,7 +241,7 @@ class Assembly(Iterable):
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],
-                    'efficiency': edata.get('efficiency', np.nan)
+                    "efficiency": edata.get("efficiency", np.nan),
                 }
             )
 
@@ -641,6 +643,35 @@ class Design(object):
             result.add_assemblies(paths)
         return results
 
+    # @staticmethod
+    # def _all_pairs_shortest_path(graph, nodelist):
+    #     return np.array(
+    #         nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight="weight")
+    #     )
+
+    @staticmethod
+    def _all_pairs_shortest_path(graph, nodelist):
+        return sympy_floyd_warshall(
+            graph,
+            "material / efficiency",
+            accumulators={"efficiency": "product"},
+            nodelist=nodelist,
+            dtype=np.float64,
+        )
+
+    # @staticmethod
+    # def _multinode_to_shortest_path(graph, nodes, cyclic):
+    #     return multipoint_shortest_path(
+    #         graph, nodes, weight_key="weight", cyclic=cyclic
+    #     )
+
+    @staticmethod
+    def _multinode_to_shortest_path(graph, nodes, cyclic):
+        path_length, path = sympy_multipoint_shortest_path(
+            graph, nodes, f="material / efficiency", accumulators={'efficiency': 'product'}, cyclic=cyclic
+        )
+        return path
+
     def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
         """
         Use the floyd-warshall algorithm to compute the shortest path endpoints.
@@ -651,9 +682,7 @@ class Design(object):
         """
         nodelist, nkeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
         node_to_i = {v: i for i, v in enumerate(nodelist)}
-        weight_matrix = np.array(
-            nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight="weight")
-        )
+        weight_matrix = self._all_pairs_shortest_path(graph, nodelist)
         endpoints = []
 
         def bisect_iterator(nodelist, nkeys):
@@ -679,11 +708,7 @@ class Design(object):
         return endpoints
 
     def _nodes_to_fullpaths(
-        self,
-        graph: nx.DiGraph,
-        cycle_endpoints: Tuple[Tuple, Tuple, float],
-        cyclic: bool,
-        n_paths=None,
+        self, graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
     ) -> List[List[Tuple]]:
         """
         Recover full paths from  cycle endpoints.
@@ -694,18 +719,16 @@ class Design(object):
         :return:
         """
         unique_cyclic_paths = []
-        for c in cycle_endpoints:
+        for nodes in cycle_endpoints:
             if n_paths is not None and len(unique_cyclic_paths) >= n_paths:
                 break
-            path = multipoint_shortest_path(
-                graph, c[0], weight_key="weight", cyclic=cyclic
-            )
+            path = self._multinode_to_shortest_path(graph, nodes, cyclic)
             if path not in unique_cyclic_paths:
                 unique_cyclic_paths.append(path)
         return unique_cyclic_paths
 
     def _collect_optimized_paths(
-        self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=20
+        self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=5
     ):
         """
         Collect minimum cycles or linear paths from a graph.
@@ -720,13 +743,16 @@ class Design(object):
             nodes = self._collect_cycle_endpoints(graph, length=length)
         else:
             raise NotImplementedError("Linear assemblies are not yet implemented.")
-        paths = self._nodes_to_fullpaths(graph, nodes, cyclic=cyclic, n_paths=n_paths)
+        paths = self._nodes_to_fullpaths(
+            graph, [n[0] for n in nodes], cyclic=cyclic, n_paths=n_paths
+        )
         self._check_paths(paths)
         return paths
 
     def _check_paths(self, paths):
         """
         Validates a path to check for duplicate nodes.
+
         :param paths:
         :return:
         """

@@ -7,7 +7,9 @@ import numpy as np
 import pandas as pd
 import msgpack
 import msgpack_numpy as m
+
 m.patch()
+
 
 class Null(object):
     """Not None."""
@@ -372,7 +374,7 @@ class NumpyDataFrame(Mapping):
         return msgpack.dumps(self.data)
 
     def dump(self, f):
-        with open(f, 'wb') as f:
+        with open(f, "wb") as f:
             msgpack.dump(self.data, f)
 
     def loads(self, s):
@@ -381,7 +383,7 @@ class NumpyDataFrame(Mapping):
         return NumpyDataFrame(data)
 
     def load(self, f):
-        with open(f, 'rb') as f:
+        with open(f, "rb") as f:
             data = msgpack.load(f)
             data = {k.decode(): v for k, v in data.items()}
             return NumpyDataFrame(data)

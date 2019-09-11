@@ -11,6 +11,7 @@ from dasi.utils import NumpyDataFrame
 from .params import PrimerParams, SynthesisParams, Globals
 from .utils import lexargmin, slicer, df_to_np_ranged
 from .utils import slicer, df_to_np_ranged, lexargmin
+import msgpack
 
 slice_dict = {
     (0, 0): slicer[:, :1, :1],
@@ -18,6 +19,35 @@ slice_dict = {
     (1, 0): slicer[:, 1:, :1],
     (1, 1): slicer[:, 1:, 1:],
 }
+
+
+def encoder(obj):
+  if isinstance(obj, NumpyDataFrame):
+    return {
+        '__numpydataframe__': True,
+        'data': obj.data
+    }
+  elif isinstance(obj, SpanCost):
+    return {
+        '__spancost__': True,
+        'cost_dict': {k: v for k, v in obj.cost_dict.items()},
+        'span': obj.span
+    }
+  return obj
+
+
+def decoder(obj):
+  if b'__numpydataframe__' in obj:
+    data = obj[b'data']
+    data = {k.decode(): v for k,v in data.items()}
+    obj = NumpyDataFrame(data=data)
+  elif b'__spancost__' in obj:
+    cost_dict = {tuple(k): v for k, v in obj[b'cost_dict'].items()}
+    span = obj[b'span']
+    obj = SpanCost.__new__(SpanCost)
+    obj.cost_dict = cost_dict
+    obj.span = span
+  return obj
 
 
 class CostBuilder(ABC):
@@ -320,3 +350,20 @@ class SpanCost(CostBuilder):
 
     def cost(self, bp, ext):
         return super().cost(bp, ext, invalidate=True)
+
+    def dumpb(self) -> bytes:
+        return msgpack.packb(self, default=encoder, use_bin_type=True)
+
+    @classmethod
+    def loadb(cls, s: bytes):
+        return msgpack.unpackb(s, object_hook=decoder, raw=True, use_list=False)
+
+    def dump(self, path):
+        with open(path, 'wb') as f:
+            f.write(self.dumpb())
+
+    @classmethod
+    def load(cls, path):
+        with open(path, 'rb') as f:
+            return cls.loadb(f.read())
+

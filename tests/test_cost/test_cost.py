@@ -8,7 +8,7 @@ from dasi.cost import (
 import pytest
 import pylab as plt
 import numpy as np
-
+import os
 
 @pytest.fixture(scope="module")
 def primer_cost():
@@ -122,4 +122,24 @@ class TestEdgeCases(object):
         df = span_cost.cost(5000, ext)
         print(df.col['cost'])
         assert df.data['cost'][0] == np.inf
+
+
+class TestSerialization(object):
+
+    here = os.path.abspath(os.path.dirname(__file__))
+
+    def test_dumpb(self, span_cost):
+        span_cost.dumpb()
+
+    def test_loadb(self, span_cost):
+        s = span_cost.dumpb()
+        span_cost2 = SpanCost.loadb(s)
+        assert len(span_cost2.to_df()) == len(span_cost.to_df())
+
+    def test_dump_and_load(self, tmp_path, span_cost):
+        tmp_file = os.path.join(tmp_path, 'span_cost.b')
+        span_cost.dump(tmp_file)
+        assert os.path.isfile(tmp_file)
+        span_cost2 = SpanCost.load(tmp_file)
+        assert len(span_cost2.to_df()) == len(span_cost.to_df())
 

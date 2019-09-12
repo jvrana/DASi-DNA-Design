@@ -141,9 +141,34 @@ def test_real_design2(here, paths, span_cost):
 
         assembly.print()
 
+def f(arg):
+    scost, primers, templates, queries, results = arg
+    design = Design(span_cost=scost)
+    design.add_materials(primers=primers, templates=templates, queries=queries)
+    design.compile()
+    results.append(design.optimize())
 
-def test_multiprocessing(here, paths, span_cost):
-    pass
+
+@pytest.mark.parametrize('ncores', [10])
+def test_multiprocessing(here, paths, span_cost, ncores):
+    """Test that demonstrates how multiprocessing can speed up designing multiple constructs."""
+    from multiprocessing import Pool
+
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["templates"])
+
+    query_path = join(here, "data/test_data/genbank/designs/*.gb")
+    queries = make_circular(load_genbank_glob(query_path))
+
+    args = [(span_cost, primers, templates, [query], []) for query in queries]
+    print("Number of queries: {}".format(len(queries)))
+    with Pool(processes=ncores) as pool:         # start 4 worker processes
+        results = pool.map(f, args)
+    print(args[0][-1])
+        # next(it)
+        # evaluate "f(10)" asynchronously in a single process
+        # print(result.get(timeout=20))        # prints "100" unless your computer is *very* slow
+
 
 def test_multidesign(here, paths, span_cost):
     """Expect more than one graph to be output if multiple queries are provided"""

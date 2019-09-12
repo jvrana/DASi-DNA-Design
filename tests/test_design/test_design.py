@@ -198,5 +198,5 @@ def test_pickle_design_result():
     container = AlignmentContainer({'none', None}, [])
     pickle.dumps(container)
     result = DesignResult(AlignmentContainer({'none': None}, []), nx.DiGraph, "none")
-
-    pickle.dumps(result)
+    s = pickle.dumps(result)
+    unpickled_result = pickle.loads(s)

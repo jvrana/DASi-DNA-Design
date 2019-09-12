@@ -5,8 +5,14 @@ import networkx as nx
 
 def select_from_arrs(A, B, condition):
     """Returns an ndarray of same shape as A and B, selecting elements from
-    either A or B according to the condition."""
-    return np.choose(~condition, (A, B))
+    either A or B according to the condition. Somehow, this is 2X faster than
+    whatever is implemented in np.choose."""
+    a = np.asarray(A).ravel()
+    b = np.asarray(B).ravel()
+    c = np.asarray(condition).ravel()
+    d = c * len(a) + np.arange(len(b))
+    e = np.hstack((a, b))
+    return e[d].reshape(A.shape)
 
 
 def replace_nan_with_inf(m):

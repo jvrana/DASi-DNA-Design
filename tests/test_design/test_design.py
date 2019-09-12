@@ -169,9 +169,7 @@ def test_multiprocessing(here, paths, span_cost, ncores):
     with Pool(processes=ncores) as pool:  # start 4 worker processes
         results = pool.map(f, args)
     print(results)
-    # next(it)
-    # evaluate "f(10)" asynchronously in a single process
-    # print(result.get(timeout=20))        # prints "100" unless your computer is *very* slow
+    assert results
 
 
 def test_multidesign(here, paths, span_cost):
@@ -193,6 +191,25 @@ def test_multidesign(here, paths, span_cost):
 
     design.optimize()
 
+
+def test_multiprocessing_multidesign(here, paths, span_cost):
+    """Expect more than one graph to be output if multiple queries are provided"""
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["templates"])
+
+    query_path = join(here, "data/test_data/genbank/designs/*.gb")
+    queries = make_circular(load_genbank_glob(query_path))
+
+    design = Design(span_cost=span_cost)
+    design.n_threads = 10
+    design.add_materials(primers=primers, templates=templates, queries=queries)
+
+    design.compile()
+
+    assert len(design.graphs) == len(queries)
+    assert len(design.graphs) > 1
+
+    design.optimize()
 
 def test_pickle_design_result():
     container = AlignmentContainer({'none', None}, [])

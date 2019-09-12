@@ -8,6 +8,7 @@ from dasi.design import AssemblyGraphBuilder
 from dasi.exceptions import DasiDesignException
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
+from multiprocessing import Pool
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material' and 'efficiency' for a given path
@@ -40,13 +41,6 @@ def _check_paths(paths):
                 max(len(invalid_paths) - 5, 0),
             )
         )
-
-
-def optimize_graph(graph, query_length, cyclic, n_paths):
-    """Optimize the graph associated with the specified query_key"""
-    # self.logger.info("Optimizing {}".format(query_key))
-    paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
-    return paths
 
 
 def _all_pairs_shortest_path(graph, nodelist):
@@ -111,7 +105,7 @@ def _nodes_to_fullpaths(
     graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
 ) -> List[List[Tuple]]:
     """
-    Recover full paths from  cycle endpoints.
+    Recover full paths from cycle endpoints.
 
     :param graph:
     :param cycle_endpoints:
@@ -151,6 +145,25 @@ def _collect_optimized_paths(
     return paths
 
 
+def optimize_graph(graph, query_length, cyclic, n_paths):
+    """Optimize the graph associated with the specified query_key"""
+    # self.logger.info("Optimizing {}".format(query_key))
+    paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
+    return paths
+
+
+def _multiprocessing_optimize_graph(args):
+    return optimize_graph(args[0], args[1], args[2], args[3])
+
+
+def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_cores):
+    args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
+
+    with Pool(processes=min(n_cores, len(graphs))) as pool:  # start 4 worker processes
+        graphs = pool.map(_multiprocessing_optimize_graph, args)
+    return graphs
+
+
 def assemble_graph(container, span_cost):
     """Build an assembly graph for a specified query."""
     container.expand(expand_overlaps=True, expand_primers=True)
@@ -169,5 +182,13 @@ def assemble_graph(container, span_cost):
     assert G.number_of_edges()
     return G
 
-def multiprocessing_assemble_graph(containers, span_cost):
-    pass
+
+def _multiprocessing_assemble_graph(arg):
+    return assemble_graph(arg[0], arg[1])
+
+
+def multiprocessing_assemble_graph(containers, span_cost, n_cores):
+    args = [(container, span_cost) for container in containers]
+    with Pool(processes=min(n_cores, len(containers))) as pool:  # start 4 worker processes
+        graphs = pool.map(_multiprocessing_assemble_graph, args)
+    return graphs

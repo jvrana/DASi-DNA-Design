@@ -357,7 +357,7 @@ def test_requires_synthesis(span_cost):
 
 
 def test_requires_synthesis_with_template_over_origin(span_cost):
-    goal = random_record(3000)
+    goal = random_record(3500)
     make_circular([goal])
 
     r1 = goal[1000:2000]
@@ -433,7 +433,12 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1100, True, "A", False), (1225, False, "B", False)]
+    expected_path = [
+        (1177, False, "A", False),
+        (1225, False, "B", True),
+        (1188, False, "A", True),
+        (1300, True, "B", False),
+    ]
 
     check_design_result(design, expected_path)
 
@@ -457,6 +462,11 @@ def test_case(span_cost):
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
-    expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
+    expected_path = [
+        (1188, True, "A", False),
+        (1230, True, "B", False),
+        (1238, True, "A", False),
+        (1282, True, "B", False),
+    ]
 
     check_design_result(design, expected_path)

@@ -37,8 +37,9 @@ from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
 from dasi.log import logger
 from dasi.utils import perfect_subject, sort_cycle
+from .design_algorithms import assemble_graph, optimize_graph, multiprocessing_assemble_graph, \
+    multiprocessing_optimize_graph
 from .graph_builder import AssemblyGraphBuilder
-from .design_algorithms import assemble_graph, optimize_graph
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 
@@ -86,12 +87,12 @@ class Assembly(Iterable):
     """
 
     def __init__(
-        self,
-        nodes: List[AssemblyNode],
-        container: AlignmentContainer,
-        full_assembly_graph: nx.DiGraph,
-        query_key: str,
-        query: SeqRecord,
+            self,
+            nodes: List[AssemblyNode],
+            container: AlignmentContainer,
+            full_assembly_graph: nx.DiGraph,
+            query_key: str,
+            query: SeqRecord,
     ):
         self.container = container
         self.groups = container.groups()
@@ -168,11 +169,11 @@ class Assembly(Iterable):
         return self.graph.nodes(data=data)
 
     def edit_distance(
-        self, other: Assembly, explain=False
+            self, other: Assembly, explain=False
     ) -> Tuple[int, List[Tuple[int, str]]]:
         differences = []
         for i, (n1, n2) in enumerate(
-            zip_longest(self.nodes(data=False), other.nodes(data=False))
+                zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
             if n1 is None or n2 is None:
                 differences.append((i, "{} != {}".format(n1, n2)))
@@ -203,7 +204,7 @@ class Assembly(Iterable):
 
     def print_diff(self, other: Assembly):
         for i, (n1, n2) in enumerate(
-            zip_longest(self.nodes(data=False), other.nodes(data=False))
+                zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
             if n1 != n2:
                 desc = False
@@ -264,8 +265,9 @@ class Design(object):
     TEMPLATES = "templates"
     QUERIES = "queries"
     FRAGMENTS = "fragments"
+    DEFAULT_N_THREADS = 1
 
-    def __init__(self, span_cost=None, seqdb=None):
+    def __init__(self, span_cost=None, seqdb=None, n_threads=None):
         self.blast_factory = BioBlastFactory()
         self.logger = logger(self)
 
@@ -277,17 +279,18 @@ class Design(object):
         self.graphs = {}
         self.results = {}
         self.container_factory = AlignmentContainerFactory(self.seqdb)
+        self.n_threads = n_threads or self.DEFAULT_N_THREADS
 
     @property
     def seqdb(self):
         return self._seqdb
 
     def add_materials(
-        self,
-        primers: List[SeqRecord],
-        templates: List[SeqRecord],
-        queries: List[SeqRecord],
-        fragments=None,
+            self,
+            primers: List[SeqRecord],
+            templates: List[SeqRecord],
+            queries: List[SeqRecord],
+            fragments=None,
     ):
         if fragments is None:
             fragments = []
@@ -392,20 +395,36 @@ class Design(object):
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
-    def assemble_graphs(self):
+    def assemble_graphs(self, n_cores=None):
+        n_cores = n_cores or self.n_threads
+        if n_cores > 1:
+            with self.logger.timeit("INFO",
+                                    "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
+                                                                                         n_cores)):
+                return self._assemble_graphs_with_threads(n_cores)
+        return self._assemble_graphs_without_threads()
+
+    def _assemble_graphs_without_threads(self):
         """Assemble all assembly graphs for all queries in this design."""
         for query_key, container in self.logger.tqdm(
-            self.container_factory.containers().items(),
-            "INFO",
-            desc="compiling all containers",
+                self.container_factory.containers().items(),
+                "INFO",
+                desc="assembling graphs (threads=1)",
         ):
             self.graphs[query_key] = assemble_graph(container, self.span_cost)
 
-    def compile(self):
+    def _assemble_graphs_with_threads(self, n_cores=None):
+        query_keys, containers = zip(*self.container_factory.containers().items())
+        graphs = multiprocessing_assemble_graph(containers, self.span_cost, n_cores=n_cores)
+        for qk, g in zip(query_keys, graphs):
+            self.graphs[qk] = g
+
+    def compile(self, n_cores=None):
         """Compile materials to assembly graph"""
         self.results = {}
-        self._blast()
-        self.assemble_graphs()
+        with self.logger.timeit("INFO", "running blast"):
+            self._blast()
+        self.assemble_graphs(n_cores=n_cores)
 
     # def plot_matrix(self, matrix):
     # plot matrix
@@ -427,36 +446,6 @@ class Design(object):
         for align in alignments:
             if a == align.query_region.a and b == align.query_region.b:
                 yield align
-
-    def _fragment(self, query_key, a, b, fragment_type, cost):
-        def sub_record(record, span):
-            ranges = span.ranges()
-            sub = record[ranges[0][0] : ranges[0][1]]
-            for r in ranges[1:]:
-                sub += record[r[0] : r[1]]
-            sub.annotations = record.annotations
-            return sub
-
-        alignments = self.container_factory.alignments[query_key]
-        align = list(self._find_iter_alignment(a, b, alignments))[0]
-        subject_key = align.subject_key
-        subject_rec = self.container_factory.seqdb[subject_key]
-        query_rec = self.container_factory.seqdb[query_key]
-
-        subject_seq = sub_record(subject_rec, align.subject_region)
-
-        fragment_info = {
-            "query_id": query_key,
-            "query_name": query_rec.name,
-            "query_region": (align.query_region.a, align.query_region.b),
-            "subject_id": subject_key,
-            "subject_name": subject_rec.name,
-            "subject_region": (align.subject_region.a, align.subject_region.b),
-            "fragment_length": len(align.subject_region),
-            "fragment_seq": subject_seq,
-            "cost": cost,
-            "type": fragment_type,
-        }
 
     def path_to_edge_costs(self, path, graph):
         arr = []
@@ -493,7 +482,7 @@ class Design(object):
                         subject_rec_name = subject_rec.name
                         subject_seq = str(
                             subject_rec[
-                                align.subject_region.a : align.subject_region.b
+                            align.subject_region.a: align.subject_region.b
                             ].seq
                         )
                         subject_region = (
@@ -511,7 +500,7 @@ class Design(object):
                             seqs.append(
                                 str(
                                     rec[
-                                        align.subject_region.a : align.subject_region.b
+                                    align.subject_region.a: align.subject_region.b
                                     ].seq
                                 )
                             )
@@ -585,9 +574,9 @@ class Design(object):
                         span.a = span.a + 20
 
                     ranges = span.ranges()
-                    frag_seq = record[ranges[0][0] : ranges[0][1]]
+                    frag_seq = record[ranges[0][0]: ranges[0][1]]
                     for r in ranges[1:]:
-                        frag_seq += record[r[0] : r[1]]
+                        frag_seq += record[r[0]: r[1]]
 
                     fragments.append(
                         {
@@ -605,18 +594,27 @@ class Design(object):
                     )
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
+    def optimize(self, n_paths=5, n_cores=None):
+        n_cores = n_cores or self.n_threads
+        if n_cores > 1:
+            with self.logger.timeit("INFO",
+                                    "optimizing graphs (n_graphs={}, threads={})".format(len(self.graphs), n_cores)):
+                return self._optimize_with_threads(n_paths, n_cores)
+        return self._optimize_without_threads(n_paths)
+
     # TODO: n_paths to class attribute
-    def optimize(self, n_paths=5) -> Dict[str, List[List[AssemblyNode]]]:
+    def _optimize_without_threads(self, n_paths=5) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
-        results = {}
-        for query_key, graph in self.logger.tqdm(
-            self.graphs.items(), "INFO", desc="optimizing graphs"
+        results_dict = {}
+        for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
+                "INFO",
+                self._collect_optimize_args(self.graphs),
+                desc="optimizing graphs (n_graphs={}, threads=1)".format(len(self.graphs))
         ):
             container = self.containers[query_key]
             query = container.seqdb[query_key]
             cyclic = is_circular(query)
-            result = DesignResult(container=container, query_key=query_key, graph=graph)
-            results[query_key] = result
+            results_dict[query_key] = result
             paths = optimize_graph(graph, len(query), cyclic, n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
@@ -627,7 +625,28 @@ class Design(object):
                     )
                 )
             result.add_assemblies(paths)
-        return results
+        return results_dict
+
+    def _optimize_with_threads(self, n_paths=5, n_cores=10):
+        results_dict = {}
+        query_keys, graphs, query_lengths, cyclics, results = zip(*list(self._collect_optimize_args(self.graphs)))
+
+        list_of_paths = multiprocessing_optimize_graph(graphs=graphs, query_lengths=query_lengths, cyclics=cyclics,
+                                                       n_paths=n_paths, n_cores=n_cores)
+        for qk, paths, result in zip(query_keys, list_of_paths, results):
+            result.add_assemblies(paths)
+            results_dict[qk] = result
+        return results_dict
+
+    def _collect_optimize_args(self, graphs):
+        for query_key, graph in self.logger.tqdm(
+                graphs.items(), "INFO", desc="optimizing graphs"
+        ):
+            container = self.containers[query_key]
+            query = container.seqdb[query_key]
+            cyclic = is_circular(query)
+            result = DesignResult(container=container, query_key=query_key, graph=graph)
+            yield query_key, graph, len(query), cyclic, result
 
     # TODO: make this a method outside of class scope for multithreading.
     #       In order to do this, all of the methods will need to be scoped

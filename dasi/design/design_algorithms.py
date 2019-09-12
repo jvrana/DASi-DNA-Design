@@ -4,7 +4,7 @@ from typing import List, Tuple
 import networkx as nx
 import numpy as np
 
-from dasi.design import AssemblyGraphBuilder
+from dasi.design.graph_builder import AssemblyGraphBuilder
 from dasi.exceptions import DasiDesignException
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path

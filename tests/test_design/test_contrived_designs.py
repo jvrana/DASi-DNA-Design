@@ -334,6 +334,16 @@ def test_design_with_overhang_primers(repeat, span_cost):
     check_design_result(design, expected_path)
 
 
+def test_amplify_fragment(span_cost):
+    goal = random_record(4000)
+    make_circular([goal])
+
+    f1 = goal[500:3000]
+    f2 = goal[1000:4000]
+    f3 = goal[:500]
+
+
+
 def test_requires_synthesis(span_cost):
     goal = random_record(4000)
     make_circular([goal])

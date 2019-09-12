@@ -25,7 +25,7 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
 from pyblast.utils import Span, is_circular
-
+from multiprocessing import Pool
 from dasi.alignments import (
     Alignment,
     AlignmentContainerFactory,
@@ -255,6 +255,29 @@ class Assembly(Iterable):
         for n in self.nodes(data=False):
             yield n
 
+def run_blast(args):
+    if args is None or args[0] is None:
+        return []
+    blast, func_str = args
+    func = getattr(blast, func_str)
+    func()
+    return blast.get_perfect()
+
+
+class FakePool(object):
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __enter__(self):
+        return FakePool()
+
+    def __exit__(self, a, b, c):
+        pass
+
+    def map(self, func, args):
+        return [func(arg) for arg in args]
+
 
 class Design(object):
     """
@@ -323,6 +346,7 @@ class Design(object):
         """Add fragment sequences to materials list"""
         self.logger.info("Adding fragments")
         self.blast_factory.add_records(fragments, self.FRAGMENTS)
+        # self.blast_factory.add_records(fragments, self.TEMPLATES)
 
     @classmethod
     def filter_linear_records(cls, records):
@@ -334,42 +358,74 @@ class Design(object):
         """return only results whose subject is 100% aligned to query"""
         return [r for r in results if perfect_subject(r["subject"])]
 
-    # TODO: do a single blast and sort results based on record keys
-    def _blast(self):
-        """Preform blast of materials against queries."""
-        self.logger.info("Compiling assembly graph")
+    # # TODO: do a single blast and sort results based on record keys
+    # def _blast(self):
+    #     """Preform blast of materials against queries."""
+    #     self.logger.info("Compiling assembly graph")
+    #
+    #     with Pool(processes=3) as pool:
+    #         template_blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
+    #         template_blast.update_config(BLAST_PENALTY_CONFIG)
+    #         self.container_factory.seqdb.update(template_blast.seq_db.records)
+    #
+    #         if self.blast_factory.record_groups[self.FRAGMENTS]:
+    #             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
+    #             fragment_blast.update_config(BLAST_PENALTY_CONFIG)
+    #             self.container_factory.seqdb.update(fragment_blast.seq_db.records)
+    #         else:
+    #             fragment_blast = None
+    #
+    #         if self.blast_factory.record_groups[self.PRIMERS]:
+    #             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
+    #             primer_blast.update_config(BLAST_PENALTY_CONFIG)
+    #             self.container_factory.seqdb.update(primer_blast.seq_db.records)
+    #         else:
+    #             primer_blast = None
+    #
+    #         template_results, fragment_results, primer_results = pool.map(run_blast, (
+    #             (template_blast, 'quick_blastn'),
+    #             (fragment_blast, 'quick_blastn'),
+    #             (primer_blast, 'quick_blastn_short')
+    #         ))
+    #
+    #         fragment_results = self.filter_perfect_subject(fragment_results)
+    #         primer_results = self.filter_perfect_subject(primer_results)
+    #
+    #         self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
+    #         self.container_factory.load_blast_json(template_results, Constants.PCR_PRODUCT)
+    #         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
+    # non-threaded blast
+    def _blast(self):
         # align templates
-        blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
-        blast.update_config(BLAST_PENALTY_CONFIG)
-        blast.quick_blastn()
-        results = blast.get_perfect()
-        self.template_results = results
+        template_blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
+        template_blast.update_config(BLAST_PENALTY_CONFIG)
+        template_blast.quick_blastn()
+        template_results = template_blast.get_perfect()
+        self.template_results = template_results
+        self.logger.info("Number of template matches: {}".format(len(template_results)))
+        self.container_factory.seqdb.update(template_blast.seq_db.records)
 
         # align fragments
         if self.blast_factory.record_groups[self.FRAGMENTS]:
             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
             fragment_blast.update_config(BLAST_PENALTY_CONFIG)
             fragment_blast.quick_blastn()
-            fragment_results = blast.get_perfect()
-            fragment_results = self.filter_perfect_subject(fragment_results)
+            fragment_results = self.filter_perfect_subject(fragment_blast.get_perfect())
+            self.container_factory.seqdb.update(fragment_blast.seq_db.records)
+            self.logger.info(
+                "Number of perfect fragment matches: {}".format(len(fragment_results))
+            )
         else:
             fragment_results = []
         self.fragment_results = fragment_results
-
-        self.container_factory.seqdb.update(blast.seq_db.records)
-        self.logger.info("Number of template matches: {}".format(len(results)))
-        self.logger.info(
-            "Number of perfect fragment matches: {}".format(len(fragment_results))
-        )
 
         # align primers
         if self.blast_factory.record_groups[self.PRIMERS]:
             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
             primer_blast.update_config(BLAST_PENALTY_CONFIG)
             primer_blast.quick_blastn_short()
-            primer_results = primer_blast.get_perfect()
-            primer_results = self.filter_perfect_subject(primer_results)
+            primer_results = self.filter_perfect_subject(primer_blast.get_perfect())
             self.container_factory.seqdb.update(primer_blast.seq_db.records)
             self.logger.info(
                 "Number of perfect primers: {}".format(len(primer_results))
@@ -379,7 +435,7 @@ class Design(object):
         self.primer_results = primer_results
 
         self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
-        self.container_factory.load_blast_json(results, Constants.PCR_PRODUCT)
+        self.container_factory.load_blast_json(template_results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
     @property
@@ -594,7 +650,7 @@ class Design(object):
                     )
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
-    def optimize(self, n_paths=5, n_cores=None):
+    def optimize(self, n_paths=3, n_cores=None):
         n_cores = n_cores or self.n_threads
         if n_cores > 1:
             with self.logger.timeit("INFO",
@@ -607,8 +663,8 @@ class Design(object):
         """Finds the optimal paths for each query in the design."""
         results_dict = {}
         for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
-                "INFO",
                 self._collect_optimize_args(self.graphs),
+                "INFO",
                 desc="optimizing graphs (n_graphs={}, threads=1)".format(len(self.graphs))
         ):
             container = self.containers[query_key]

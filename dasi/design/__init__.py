@@ -647,7 +647,9 @@ class Design(object):
             results[query_key] = self.optimize_graph(query_key, graph, container, n_paths)
         return results
 
-    # TODO: make this a method outside of class scope for multithreading
+    # TODO: make this a method outside of class scope for multithreading.
+    #       In order to do this, all of the methods will need to be scoped
+    #       outside of the class, probably in its own file as 'design_algorithms.py'
     def optimize_graph(self, query_key, graph, container, n_paths):
         """Optimize the graph associated with the specified query_key"""
         query = container.seqdb[query_key]

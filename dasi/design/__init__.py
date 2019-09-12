@@ -399,7 +399,7 @@ class Design(object):
             "INFO",
             desc="compiling all containers",
         ):
-            self.graphs[query_key] = assemble_graph(container)
+            self.graphs[query_key] = assemble_graph(container, self.span_cost)
 
     def compile(self):
         """Compile materials to assembly graph"""
@@ -613,9 +613,11 @@ class Design(object):
             self.graphs.items(), "INFO", desc="optimizing graphs"
         ):
             container = self.containers[query_key]
+            query = container.seqdb[query_key]
+            cyclic = is_circular(query)
             result = DesignResult(container=container, query_key=query_key, graph=graph)
             results[query_key] = result
-            paths = optimize_graph(query_key, graph, container, n_paths)
+            paths = optimize_graph(graph, len(query), cyclic, n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
                 self.logger.error(

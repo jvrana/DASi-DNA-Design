@@ -3,13 +3,14 @@ from typing import List, Tuple
 
 import networkx as nx
 import numpy as np
-from pyblast.utils import is_circular
 
 from dasi.design import AssemblyGraphBuilder
 from dasi.exceptions import DasiDesignException
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
 
+# definition of how to compute path length
+# c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material' and 'efficiency' for a given path
 path_length_config = {
     "f": "material / efficiency",
     "accumulators": {"efficiency": "product"},
@@ -41,12 +42,10 @@ def _check_paths(paths):
         )
 
 
-def optimize_graph(query_key, graph, container, n_paths):
+def optimize_graph(graph, query_length, cyclic, n_paths):
     """Optimize the graph associated with the specified query_key"""
-    query = container.seqdb[query_key]
-    cyclic = is_circular(query)
     # self.logger.info("Optimizing {}".format(query_key))
-    paths = _collect_optimized_paths(graph, len(query), cyclic, n_paths=n_paths)
+    paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
     return paths
 
 
@@ -169,3 +168,6 @@ def assemble_graph(container, span_cost):
     # self.logger.info(nx.info(G))
     assert G.number_of_edges()
     return G
+
+def multiprocessing_assemble_graph(containers, span_cost):
+    pass

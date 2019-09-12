@@ -1,9 +1,12 @@
-from dasi.design import Design
+from dasi.design import Design, DesignResult
+from dasi.alignments import AlignmentContainer
 from dasi.cost import SpanCost
 from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 import pytest
 from os.path import join
 from more_itertools import pairwise
+import networkx as nx
+import pickle
 
 
 @pytest.mark.parametrize(
@@ -147,7 +150,7 @@ def f(arg):
     design = Design(span_cost=scost)
     design.add_materials(primers=primers, templates=templates, queries=queries)
     design.compile()
-    results.append(design.optimize())
+    return design.optimize()
 
 
 @pytest.mark.parametrize("ncores", [10])
@@ -165,7 +168,7 @@ def test_multiprocessing(here, paths, span_cost, ncores):
     print("Number of queries: {}".format(len(queries)))
     with Pool(processes=ncores) as pool:  # start 4 worker processes
         results = pool.map(f, args)
-    print(args[0][-1])
+    print(results)
     # next(it)
     # evaluate "f(10)" asynchronously in a single process
     # print(result.get(timeout=20))        # prints "100" unless your computer is *very* slow
@@ -189,3 +192,11 @@ def test_multidesign(here, paths, span_cost):
     assert len(design.graphs) > 1
 
     design.optimize()
+
+
+def test_pickle_design_result():
+    container = AlignmentContainer({'none', None}, [])
+    pickle.dumps(container)
+    result = DesignResult(AlignmentContainer({'none': None}, []), nx.DiGraph, "none")
+
+    pickle.dumps(result)

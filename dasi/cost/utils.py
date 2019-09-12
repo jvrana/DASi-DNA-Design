@@ -74,18 +74,6 @@ def duplicates(b, axis=None):
     return np.unique(s[:-1][s[1:] == s[:-1]])
 
 
-# def lexargmin(a, axis=0):
-#     """Stable argmin of multiple arrays on one or multiple axes"""
-#     dims = a[0].shape
-#     if isinstance(axis, int):
-#         axis = (axis,)
-#     rem_dims = [d for i, d in enumerate(dims) if i not in axis]
-#
-#     x = [_a.reshape(*rem_dims, -1) for _a in a]
-#     indices = np.lexsort(x, axis=-1)
-#     return np.unravel_index(indices[:, :1], tuple([dims[_a] for _a in axis]))
-
-
 def lexargmin(a, axis):
     shape = a[0].shape
     reshaped = tuple([_a.reshape(shape[axis], -1) for _a in a])

@@ -20,6 +20,4 @@ def test_benchmark_diy(benchmark):
         c = a < b
         d = np.ma.masked_array(a, c)
 
-
-
     benchmark(func, A, B)

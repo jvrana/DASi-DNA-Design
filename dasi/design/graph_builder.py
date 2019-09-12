@@ -37,7 +37,17 @@ class AssemblyGraphBuilder(object):
         self.G.add_node(AssemblyNode(*node))
 
     def add_edge(
-            self, n1: AssemblyNode, n2: AssemblyNode, name, cost, material, time, efficiency, span, type, **kwargs
+        self,
+        n1: AssemblyNode,
+        n2: AssemblyNode,
+        name,
+        cost,
+        material,
+        time,
+        efficiency,
+        span,
+        type,
+        **kwargs
     ):
         self.G.add_edge(
             n1,
@@ -221,16 +231,18 @@ class AssemblyGraphBuilder(object):
         # add external_edge_costs
         edge_dict = {}
         for n1, n2, edata in self.G.edges(data=True):
-            if edata['cost'] is None:
-                condition = edata['condition']
-                edge_dict.setdefault(condition, []).append(((n1, n2), edata, edata['span']))
+            if edata["cost"] is None:
+                condition = edata["condition"]
+                edge_dict.setdefault(condition, []).append(
+                    ((n1, n2), edata, edata["span"])
+                )
         for condition, info in edge_dict.items():
             edges, edata, spans = zip(*info)
             npdf = self.span_cost.cost(np.array(spans), condition)
 
             # update each edge
             for e, d, edge in zip(edata, npdf, edges):
-                if d.data['cost'] > self.COST_THRESHOLD:
+                if d.data["cost"] > self.COST_THRESHOLD:
                     self.G.remove_edge(*edge)
                 else:
                     e.update(d.data)
@@ -240,7 +252,7 @@ class AssemblyGraphBuilder(object):
         return {k: v[0] for k, v in data.items()}
 
     def add_overlap_edge(
-            self, bnode, anode, query_region, group_keys, groups, origin=False
+        self, bnode, anode, query_region, group_keys, groups, origin=False
     ):
         # TODO: PRIORITY this step is extremely slow
         q = query_region.new(anode.index, bnode.index, allow_wrap=True)
@@ -271,7 +283,7 @@ class AssemblyGraphBuilder(object):
                     name="overlap",
                     type="overlap",
                     condition=condition,
-                    span=span
+                    span=span,
                 )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):

@@ -37,22 +37,11 @@ from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
 from dasi.log import logger
-from dasi.utils import (
-    perfect_subject,
-    sort_with_keys,
-    sort_cycle,
-)
+from dasi.utils import perfect_subject, sort_with_keys, sort_cycle
 from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
 from .graph_builder import AssemblyGraphBuilder
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
-
-path_length_config = {
-    'f': 'material / efficiency',
-    'accumulators': {
-        'efficiency': 'product'
-    }
-}
 
 
 class DesignResult(Iterable):
@@ -98,12 +87,12 @@ class Assembly(Iterable):
     """
 
     def __init__(
-            self,
-            nodes: List[AssemblyNode],
-            container: AlignmentContainer,
-            full_assembly_graph: nx.DiGraph,
-            query_key: str,
-            query: SeqRecord,
+        self,
+        nodes: List[AssemblyNode],
+        container: AlignmentContainer,
+        full_assembly_graph: nx.DiGraph,
+        query_key: str,
+        query: SeqRecord,
     ):
         self.container = container
         self.groups = container.groups()
@@ -168,7 +157,7 @@ class Assembly(Iterable):
     def cost(self):
         total = 0
         for _, _, edata in self.edges():
-            if 'cost' not in edata:
+            if "cost" not in edata:
                 x = 1
             total += edata["cost"]
         return total
@@ -180,11 +169,11 @@ class Assembly(Iterable):
         return self.graph.nodes(data=data)
 
     def edit_distance(
-            self, other: Assembly, explain=False
+        self, other: Assembly, explain=False
     ) -> Tuple[int, List[Tuple[int, str]]]:
         differences = []
         for i, (n1, n2) in enumerate(
-                zip_longest(self.nodes(data=False), other.nodes(data=False))
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
             if n1 is None or n2 is None:
                 differences.append((i, "{} != {}".format(n1, n2)))
@@ -215,7 +204,7 @@ class Assembly(Iterable):
 
     def print_diff(self, other: Assembly):
         for i, (n1, n2) in enumerate(
-                zip_longest(self.nodes(data=False), other.nodes(data=False))
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
             if n1 != n2:
                 desc = False
@@ -295,11 +284,11 @@ class Design(object):
         return self._seqdb
 
     def add_materials(
-            self,
-            primers: List[SeqRecord],
-            templates: List[SeqRecord],
-            queries: List[SeqRecord],
-            fragments=None,
+        self,
+        primers: List[SeqRecord],
+        templates: List[SeqRecord],
+        queries: List[SeqRecord],
+        fragments=None,
     ):
         if fragments is None:
             fragments = []
@@ -407,30 +396,11 @@ class Design(object):
     def assemble_graphs(self):
         """Assemble all assembly graphs for all queries in this design."""
         for query_key, container in self.logger.tqdm(
-                self.container_factory.containers().items(),
-                "INFO",
-                desc="compiling all containers",
+            self.container_factory.containers().items(),
+            "INFO",
+            desc="compiling all containers",
         ):
-            self.assemble_graph(container, query_key)
-
-    # TODO: make this a method outside of class for multiprocessing
-    def assemble_graph(self, container, query_key):
-        """Build an assembly graph for a specified query."""
-        container.expand(expand_overlaps=True, expand_primers=True)
-        container.freeze()
-        # group by query_regions
-        groups = container.groups()
-        self.logger.info(
-            "Number of types: {}".format(len(container.groups_by_type))
-        )
-        self.logger.info("Number of groups: {}".format(len(groups)))
-        # build assembly graph
-        graph_builder = AssemblyGraphBuilder(container, span_cost=self.span_cost)
-        G = graph_builder.build_assembly_graph()
-        self.logger.info("=== Assembly Graph ===")
-        self.logger.info(nx.info(G))
-        assert G.number_of_edges()
-        self.graphs[query_key] = G
+            self.graphs[query_key] = assemble_graph(container)
 
     def compile(self):
         """Compile materials to assembly graph"""
@@ -462,9 +432,9 @@ class Design(object):
     def _fragment(self, query_key, a, b, fragment_type, cost):
         def sub_record(record, span):
             ranges = span.ranges()
-            sub = record[ranges[0][0]: ranges[0][1]]
+            sub = record[ranges[0][0] : ranges[0][1]]
             for r in ranges[1:]:
-                sub += record[r[0]: r[1]]
+                sub += record[r[0] : r[1]]
             sub.annotations = record.annotations
             return sub
 
@@ -524,7 +494,7 @@ class Design(object):
                         subject_rec_name = subject_rec.name
                         subject_seq = str(
                             subject_rec[
-                            align.subject_region.a: align.subject_region.b
+                                align.subject_region.a : align.subject_region.b
                             ].seq
                         )
                         subject_region = (
@@ -542,7 +512,7 @@ class Design(object):
                             seqs.append(
                                 str(
                                     rec[
-                                    align.subject_region.a: align.subject_region.b
+                                        align.subject_region.a : align.subject_region.b
                                     ].seq
                                 )
                             )
@@ -616,9 +586,9 @@ class Design(object):
                         span.a = span.a + 20
 
                     ranges = span.ranges()
-                    frag_seq = record[ranges[0][0]: ranges[0][1]]
+                    frag_seq = record[ranges[0][0] : ranges[0][1]]
                     for r in ranges[1:]:
-                        frag_seq += record[r[0]: r[1]]
+                        frag_seq += record[r[0] : r[1]]
 
                     fragments.append(
                         {
@@ -641,166 +611,26 @@ class Design(object):
         """Finds the optimal paths for each query in the design."""
         results = {}
         for query_key, graph in self.logger.tqdm(
-                self.graphs.items(), "INFO", desc="optimizing graphs"
+            self.graphs.items(), "INFO", desc="optimizing graphs"
         ):
             container = self.containers[query_key]
-            results[query_key] = self.optimize_graph(query_key, graph, container, n_paths)
+            result = DesignResult(container=container, query_key=query_key, graph=graph)
+            results[query_key] = result
+            paths = optimize_graph(query_key, graph, container, n_paths)
+            if not paths:
+                query_rec = self.blast_factory.db.records[query_key]
+                self.logger.error(
+                    "\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
+                    " be better synthesized. Use a tool such as JBEI's BOOST.".format(
+                        query_rec.name, query_key
+                    )
+                )
+            result.add_assemblies(paths)
         return results
 
     # TODO: make this a method outside of class scope for multithreading.
     #       In order to do this, all of the methods will need to be scoped
     #       outside of the class, probably in its own file as 'design_algorithms.py'
-    def optimize_graph(self, query_key, graph, container, n_paths):
-        """Optimize the graph associated with the specified query_key"""
-        query = container.seqdb[query_key]
-        result = DesignResult(container=container, query_key=query_key, graph=graph)
-        cyclic = is_circular(query)
-        self.logger.info("Optimizing {}".format(query_key))
-        paths = self._collect_optimized_paths(
-            graph, len(query), cyclic, n_paths=n_paths
-        )
-        if not paths:
-            query_rec = self.blast_factory.db.records[query_key]
-            self.logger.error(
-                "\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
-                " be better synthesized. Use a tool such as JBEI's BOOST.".format(
-                    query_rec.name, query_key
-                )
-            )
-        result.add_assemblies(paths)
-        return result
-
-    # @staticmethod
-    # def _all_pairs_shortest_path(graph, nodelist):
-    #     return np.array(
-    #         nx.floyd_warshall_numpy(graph, nodelist=nodelist, weight="weight")
-    #     )
-
-    @staticmethod
-    def _all_pairs_shortest_path(graph, nodelist):
-        return sympy_floyd_warshall(
-            graph,
-            f=path_length_config['f'],
-            accumulators=path_length_config['accumulators'],
-            nodelist=nodelist,
-            dtype=np.float64,
-        )
-
-    # @staticmethod
-    # def _multinode_to_shortest_path(graph, nodes, cyclic):
-    #     return multipoint_shortest_path(
-    #         graph, nodes, weight_key="weight", cyclic=cyclic
-    #     )
-
-    @staticmethod
-    def _multinode_to_shortest_path(graph, nodes, cyclic):
-        """Estimate the shortest path that touches the specified nodes."""
-        path_length, path = sympy_multipoint_shortest_path(
-            graph, nodes, f=path_length_config['f'],
-            accumulators=path_length_config['accumulators'], cyclic=cyclic
-        )
-        return path
-
-    def _collect_cycle_endpoints(self, graph: nx.DiGraph, length: int):
-        """
-        Use the floyd-warshall algorithm to compute the shortest path endpoints.
-
-        :param graph: the networkx graph
-        :param length: the size of the query sequence
-        :return:
-        """
-        nodelist, nkeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
-        node_to_i = {v: i for i, v in enumerate(nodelist)}
-        weight_matrix = self._all_pairs_shortest_path(graph, nodelist)
-        endpoints = []
-
-        def bisect_iterator(nodelist, nkeys):
-            _i = bisect.bisect_right(nkeys, length)
-            for i, A in enumerate(nodelist[:_i]):
-                _j = bisect.bisect_left(nkeys, A.index + length)
-                for B in nodelist[_j:]:
-                    if B.type == "B":
-                        j = node_to_i[B]
-                        yield i, j, A, B
-
-        pair_iterator = bisect_iterator(nodelist, nkeys)
-        for i, j, A, B in pair_iterator:
-
-            # TODO: must include final edge
-            a = weight_matrix[i, j]
-            b = weight_matrix[j, i]
-            if a != np.inf and b != np.inf:
-                x = ((A, B), (a, b), a + b)
-                endpoints.append(x)
-
-        endpoints = sorted(endpoints, key=lambda x: (x[-1], x[0]))
-        return endpoints
-
-    def _nodes_to_fullpaths(
-            self, graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
-    ) -> List[List[Tuple]]:
-        """
-        Recover full paths from  cycle endpoints.
-
-        :param graph:
-        :param cycle_endpoints:
-        :param n_paths:
-        :return:
-        """
-        unique_cyclic_paths = []
-        for nodes in cycle_endpoints:
-            if n_paths is not None and len(unique_cyclic_paths) >= n_paths:
-                break
-            path = self._multinode_to_shortest_path(graph, nodes, cyclic)
-            if path not in unique_cyclic_paths:
-                unique_cyclic_paths.append(path)
-        return unique_cyclic_paths
-
-    def _collect_optimized_paths(
-            self, graph: nx.DiGraph, length: int, cyclic: bool, n_paths=None
-    ):
-        """
-        Collect minimum cycles or linear paths from a graph.
-
-        :param graph: the networkx graph representing the assembly graph
-        :param length: length of the query
-        :param cyclic: whether to search for a cyclic assembly
-        :param n_paths: maximum number of paths to return
-        :return:
-        """
-        if cyclic:
-            nodes = self._collect_cycle_endpoints(graph, length=length)
-        else:
-            raise NotImplementedError("Linear assemblies are not yet implemented.")
-        paths = self._nodes_to_fullpaths(
-            graph, [n[0] for n in nodes], cyclic=cyclic, n_paths=n_paths
-        )
-        self._check_paths(paths)
-        return paths
-
-    def _check_paths(self, paths):
-        """
-        Validates a path to check for duplicate nodes.
-
-        :param paths:
-        :return:
-        """
-        invalid_paths = []
-        for path in paths:
-            lastseen = path[0][2]
-            for p in path[1:]:
-                if p[2] == lastseen:
-                    invalid_paths.append(path)
-                    break
-                lastseen = p[2]
-        if invalid_paths:
-            raise DasiDesignException(
-                "There are {} invalid paths:\n{}\n...{} more".format(
-                    len(invalid_paths),
-                    "\n".join([str(x) for x in invalid_paths[:5]]),
-                    max(len(invalid_paths) - 5, 0),
-                )
-            )
 
 
 class LibraryDesign(Design):

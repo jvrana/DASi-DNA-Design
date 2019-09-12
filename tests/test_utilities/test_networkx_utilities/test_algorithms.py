@@ -273,8 +273,12 @@ class TestDijkstras(object):
 
 
 class TestBenchmarks(object):
-
     def test_dijkstras(self, benchmark):
         G, nodelist = complete_graph(200, create_using=nx.DiGraph)
-        benchmark(floyd_warshall_with_efficiency, G, nodelist=nodelist, weight='weight', efficiency='efficiency')
-
+        benchmark(
+            floyd_warshall_with_efficiency,
+            G,
+            nodelist=nodelist,
+            weight="weight",
+            efficiency="efficiency",
+        )

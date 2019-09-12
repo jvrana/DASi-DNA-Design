@@ -141,6 +141,7 @@ def test_real_design2(here, paths, span_cost):
 
         assembly.print()
 
+
 def f(arg):
     scost, primers, templates, queries, results = arg
     design = Design(span_cost=scost)
@@ -149,7 +150,7 @@ def f(arg):
     results.append(design.optimize())
 
 
-@pytest.mark.parametrize('ncores', [10])
+@pytest.mark.parametrize("ncores", [10])
 def test_multiprocessing(here, paths, span_cost, ncores):
     """Test that demonstrates how multiprocessing can speed up designing multiple constructs."""
     from multiprocessing import Pool
@@ -162,12 +163,12 @@ def test_multiprocessing(here, paths, span_cost, ncores):
 
     args = [(span_cost, primers, templates, [query], []) for query in queries]
     print("Number of queries: {}".format(len(queries)))
-    with Pool(processes=ncores) as pool:         # start 4 worker processes
+    with Pool(processes=ncores) as pool:  # start 4 worker processes
         results = pool.map(f, args)
     print(args[0][-1])
-        # next(it)
-        # evaluate "f(10)" asynchronously in a single process
-        # print(result.get(timeout=20))        # prints "100" unless your computer is *very* slow
+    # next(it)
+    # evaluate "f(10)" asynchronously in a single process
+    # print(result.get(timeout=20))        # prints "100" unless your computer is *very* slow
 
 
 def test_multidesign(here, paths, span_cost):

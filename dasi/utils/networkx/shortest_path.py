@@ -222,7 +222,7 @@ def sympy_multipoint_shortest_path(
     if cyclic_sort_key and not cyclic:
         raise ValueError("cyclic_sort_key was provided but 'cyclic' was False.")
     full_path = []
-    full_path_length = 0.
+    full_path_length = 0.0
     if cyclic:
         nodes = nodes + nodes[:1]
     for n1, n2 in pairwise(nodes):

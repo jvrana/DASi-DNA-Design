@@ -196,7 +196,6 @@ def sympy_floyd_warshall(
             if np.any(c):
                 matrix_dict[key] = np.asmatrix(np.choose(c, (M, part)))
 
-
     m_arr = [np.asarray(m) for m in matrix_dict.values()]
     C = replace_nan_with_inf(func(*m_arr))
     if return_all:

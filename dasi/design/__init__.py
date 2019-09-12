@@ -35,11 +35,10 @@ from dasi.alignments import (
 )
 from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
-from dasi.exceptions import DasiDesignException
 from dasi.log import logger
-from dasi.utils import perfect_subject, sort_with_keys, sort_cycle
-from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
+from dasi.utils import perfect_subject, sort_cycle
 from .graph_builder import AssemblyGraphBuilder
+from .design_algorithms import assemble_graph, optimize_graph
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 

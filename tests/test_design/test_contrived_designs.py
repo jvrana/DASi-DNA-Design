@@ -367,11 +367,11 @@ def test_requires_synthesis(span_cost):
 
 
 def test_requires_synthesis_with_template_over_origin(span_cost):
-    goal = random_record(3500)
+    goal = random_record(5000)
     make_circular([goal])
 
     r1 = goal[1000:2000]
-    r2 = goal[2500:] + goal[:500]
+    r2 = goal[3500:] + goal[:500]
 
     make_linear([r1, r2])
 
@@ -382,7 +382,7 @@ def test_requires_synthesis_with_template_over_origin(span_cost):
         (500, True, "B", False),
         (1000, True, "A", False),
         (2000, True, "B", False),
-        (2500, True, "A", False),
+        (3500, True, "A", False),
     ]
 
     check_design_result(design, expected_path)

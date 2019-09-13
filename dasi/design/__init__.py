@@ -138,10 +138,14 @@ class Assembly(Iterable):
                 edata = {
                     "cost": np.inf,
                     "weight": np.inf,
+                    "material": np.inf,
+                    "efficiency": 0.0,
                     "type": "missing",
                     "span": np.inf,
                     "name": "missing",
                 }
+            else:
+                assert 'internal_or_external' in edata
 
             # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(
@@ -163,12 +167,14 @@ class Assembly(Iterable):
 
     # TODO: this cost is no longer true...
     def cost(self):
-        total = 0
+        material = 0
+        efficiency = 1.
         for _, _, edata in self.edges():
-            if "cost" not in edata:
-                x = 1
-            total += edata["cost"]
-        return total
+            material += edata["material"]
+            efficiency *= edata['efficiency']
+        if efficiency == 0:
+            return np.inf
+        return material / efficiency
 
     def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
         return self.graph.edges(data=data)
@@ -223,6 +229,7 @@ class Assembly(Iterable):
     def to_df(self):
         rows = []
         for n1, n2, edata in self.edges():
+            print(edata)
             groups = edata["groups"]
             if groups:
                 group = groups[0]
@@ -246,6 +253,7 @@ class Assembly(Iterable):
                     "subject_start": subject_starts,
                     "subject_ends": subject_ends,
                     "cost": edata["cost"],
+                    "material": edata['material'],
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],
@@ -298,7 +306,7 @@ class Design(object):
     FRAGMENTS = "fragments"
     DEFAULT_N_JOBS = 1
 
-    def __init__(self, span_cost=None, seqdb=None, n_threads=None):
+    def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
         self.blast_factory = BioBlastFactory()
         self.logger = logger(self)
 
@@ -310,7 +318,7 @@ class Design(object):
         self.graphs = {}
         self.results = {}
         self.container_factory = AlignmentContainerFactory(self.seqdb)
-        self.n_threads = n_threads or self.DEFAULT_N_JOBS
+        self.n_jobs = n_jobs or self.DEFAULT_N_JOBS
 
     @property
     def seqdb(self):
@@ -460,12 +468,12 @@ class Design(object):
         return list(self.container_factory.containers())
 
     def assemble_graphs(self, n_jobs=None):
-        n_jobs = n_jobs or self.n_threads
+        n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
-            # with self.logger.timeit("INFO",
-            #                         "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
-            #                                                                              n_jobs)):
-            graphs = self._assemble_graphs_with_threads(n_jobs)
+            with self.logger.timeit("INFO",
+                                    "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
+                                                                                         n_jobs)):
+                graphs = self._assemble_graphs_with_threads(n_jobs)
             return graphs
         return self._assemble_graphs_without_threads()
 
@@ -662,7 +670,7 @@ class Design(object):
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
     def optimize(self, n_paths=3, n_jobs=None):
-        n_jobs = n_jobs or self.n_threads
+        n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
             with self.logger.timeit(
                 "INFO",
@@ -859,7 +867,7 @@ class LibraryDesign(Design):
 
     def compile_library(self, n_jobs=None):
         """Compile the materials list into assembly graphs."""
-        n_jobs = n_jobs or self.DEFAULT_N_THREADS
+        n_jobs = n_jobs or self.DEFAULT_N_JOBS
         self.graphs = {}
         self._blast()
         self._share_query_blast()

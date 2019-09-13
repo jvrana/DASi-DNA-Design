@@ -201,7 +201,7 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
     queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost=span_cost)
-    design.n_threads = 10
+    design.n_jobs = 10
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
     design.compile()
@@ -209,7 +209,18 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
     assert len(design.graphs) == len(queries)
     assert len(design.graphs) > 1
 
-    design.optimize()
+    results = design.optimize()
+
+    # assert
+    import numpy as np
+    for result in results.values():
+        for assembly in result.assemblies:
+            df = assembly.to_df()
+            for c in df.columns:
+                assert np.any(df[c].to_numpy().flatten())
+            # assert df['subject'].to_numpy().flatten()
+            # assert df['subject_ends'].to_numpy().flatten()
+            print(assembly.to_df())
 
 
 def test_pickle_design_result():

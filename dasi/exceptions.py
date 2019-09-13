@@ -1,17 +1,18 @@
+class DASiWarning(Warning):
+    """A generic dasi warning"""
+
+
 class DASiException(Exception):
-    pass
+    """A generic dasi exception"""
 
 
 class AlignmentException(DASiException):
-    pass
+    """An alignment exception"""
 
 
 class AlignmentContainerException(DASiException):
-    pass
+    """An alignment container exception"""
 
 
 class DasiDesignException(DASiException):
-    pass
-
-
-from dasi.utils.npdf import NumpyDataFrameException
+    """A design exception"""

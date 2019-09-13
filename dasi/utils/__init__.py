@@ -1,6 +1,6 @@
 """Utilities
 
-.. module:: design
+.. module:: dasi.utils
 
 Submodules
 ==========
@@ -8,6 +8,8 @@ Submodules
 .. autosummary::
     :toctree: _autosummary
 
+    networkx
+    npdf
     async_wrapper
     region
     span

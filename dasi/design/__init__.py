@@ -1,6 +1,6 @@
 """Primer and synthesis design
 
-.. module:: design
+.. module:: dasi.design
 
 Submodules
 ==========
@@ -8,7 +8,8 @@ Submodules
 .. autosummary::
     :toctree: _autosummary
 
-    assembly
+    graph_builder
+    plotter
 """
 from __future__ import annotations
 

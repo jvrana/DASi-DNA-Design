@@ -5,6 +5,13 @@ dasi.cost
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      decoder
+      encoder
+   
    
 
    
@@ -13,13 +20,10 @@ dasi.cost
 
    .. autosummary::
    
-      CostParams
-      JunctionCost
-      JxnParams
-      Slicer
+      CostBuilder
+      PrimerCostBuilder
       SpanCost
-      SynParams
-      SynthesisCost
+      SynthesisCostBuilder
    
    
 

@@ -1,3 +1,5 @@
+"""Cost utilities"""
+
 import numpy as np
 
 

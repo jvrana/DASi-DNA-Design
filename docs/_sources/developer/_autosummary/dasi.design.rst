@@ -5,6 +5,12 @@ dasi.design
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      run_blast
+   
    
 
    
@@ -13,9 +19,10 @@ dasi.design
 
    .. autosummary::
    
+      Assembly
       Design
-      DesignBacktrace
-      DesignBase
+      DesignResult
+      FakePool
       LibraryDesign
    
    

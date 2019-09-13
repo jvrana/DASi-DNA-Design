@@ -1,6 +1,6 @@
 """Cost
 
-.. module:: alignments
+.. module:: dasi.alignments
 
 Submodules
 ==========

@@ -1,4 +1,6 @@
 class Constants(object):
+    """DASi constants."""
+
     FRAGMENT = (
         "PRE-MADE DNA FRAGMENT"
     )  # an alignment that is generate from an already existing PCR product or fragment

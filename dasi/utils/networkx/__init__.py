@@ -1,3 +1,20 @@
+"""NetworkX Utilities
+
+.. module:: dasi.utils.networkx
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    algorithms
+    exceptions
+    shortest_path
+    utils
+"""
+
+
 from .algorithms import sympy_floyd_warshall, floyd_warshall_with_efficiency
 from .shortest_path import (
     sympy_dijkstras,

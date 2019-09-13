@@ -130,8 +130,8 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # Guzzle theme options (see theme.conf for more information)
 html_theme_options = {
     # Set the name of the project to appear in the sidebar
-    "navbar_title": "Trident",
-    "navbar_site_name": "Trident",
+    "navbar_title": "DASi",
+    "navbar_site_name": "DASi",
     # Render the next and previous page links in navbar. (Default: true)
     "navbar_sidebarrel": True,
     # Render the current pages TOC in the navbar. (Default: true)
@@ -176,7 +176,7 @@ html_theme_options = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "Tridentdoc"
+htmlhelp_basename = "DASidoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -202,8 +202,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "Trident.tex",
-        "Trident Documentation",
+        "DASi.tex",
+        "DASi Documentation",
         "Justin Vrana, Eric Klavins, Ben Keller",
         "manual",
     )
@@ -225,10 +225,10 @@ man_pages = [(master_doc, "dasi", "DASi Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "Trident",
-        "Trident Documentation",
+        "DASi",
+        "DASi Documentation",
         author,
-        "Trident",
+        "DASi",
         "One line description of project.",
         "Miscellaneous",
     )

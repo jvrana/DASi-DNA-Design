@@ -12,6 +12,9 @@ Submodules
     cost
     design
     utils
+    constants
+    exceptions
+    log
 
 """
 

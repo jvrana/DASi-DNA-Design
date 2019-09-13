@@ -1,4 +1,16 @@
-# @title cost
+"""Cost
+
+.. module:: dasi.cost
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: _autosummary
+
+    params
+    utils
+"""
 
 from abc import ABC, abstractmethod
 from functools import partial
@@ -12,6 +24,7 @@ from .params import PrimerParams, SynthesisParams, Globals
 from .utils import lexargmin, slicer, df_to_np_ranged
 from .utils import slicer, df_to_np_ranged, lexargmin
 import msgpack
+from typing import Union, Tuple
 
 slice_dict = {
     (0, 0): slicer[:, :1, :1],
@@ -22,6 +35,12 @@ slice_dict = {
 
 
 def encoder(obj):
+    """
+    msgpack encoder for cost functions.
+
+    :param obj:
+    :return:
+    """
     if isinstance(obj, NumpyDataFrame):
         return {"__numpydataframe__": True, "data": obj.data}
     elif isinstance(obj, SpanCost):
@@ -34,6 +53,12 @@ def encoder(obj):
 
 
 def decoder(obj):
+    """
+    msgpack decoder for cost functions.
+
+    :param obj:
+    :return:
+    """
     if b"__numpydataframe__" in obj:
         data = obj[b"data"]
         data = {k.decode(): v for k, v in data.items()}
@@ -55,9 +80,11 @@ class CostBuilder(ABC):
 
     @abstractmethod
     def compute(self):
+        """Before the numpy-based cost calculations"""
         pass
 
     def to_df(self):
+        """Convert the cost builder to a pandas.DataFrame"""
         dfs = []
         for ext, jxn in self.cost_dict.items():
             df = jxn.to_df()
@@ -68,12 +95,20 @@ class CostBuilder(ABC):
 
     @property
     def plot(self):
+        """Plot attributes across 'span' from the pandas.DataFrame"""
         return partial(
             sns.lineplot, data=self.to_df(), x="span", y="cost", hue="condition"
         )
 
     # TODO: what if there is a gap in the span?
-    def cost(self, bp, ext, invalidate=False):
+    def cost(self, bp: Union[np.ndarray, int], ext: Tuple[bool, bool], invalidate=False):
+        """
+
+        :param bp:
+        :param ext:
+        :param invalidate:
+        :return:
+        """
         if isinstance(bp, int):
             bp = np.array([bp])
         _span = self.span.flatten()
@@ -360,11 +395,11 @@ class SpanCost(CostBuilder):
     def loadb(cls, s: bytes):
         return msgpack.unpackb(s, object_hook=decoder, raw=True, use_list=False)
 
-    def dump(self, path):
+    def dump(self, path: str):
         with open(path, "wb") as f:
             f.write(self.dumpb())
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path: str):
         with open(path, "rb") as f:
             return cls.loadb(f.read())

@@ -279,6 +279,8 @@ nbsphinx_epilog = r"""
     {{ env.doc2path(env.docname, base='doc') | escape_latex }}}} ends here.}}
 """
 
+mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+
 mathjax_config = {
     "TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": True}}
 }

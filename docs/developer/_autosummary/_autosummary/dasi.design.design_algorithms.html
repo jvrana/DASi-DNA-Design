@@ -119,11 +119,11 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.assemble_graph" title="dasi.design.design_algorithms.assemble_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_graph</span></code></a>(container, span_cost)</p></td>
 <td><p>Build an assembly graph for a specified query.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_assemble_graph</span></code>(containers, …)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.multiprocessing_assemble_graph" title="dasi.design.design_algorithms.multiprocessing_assemble_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_assemble_graph</span></code></a>(containers, …)</p></td>
+<td><p>Assemble graphs using multiprocessing</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_optimize_graph</span></code>(graphs, …)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.multiprocessing_optimize_graph" title="dasi.design.design_algorithms.multiprocessing_optimize_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_optimize_graph</span></code></a>(graphs, …)</p></td>
+<td><p>Optimize graphs using multiprocessing</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.optimize_graph" title="dasi.design.design_algorithms.optimize_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_graph</span></code></a>(graph, query_length, cyclic, …)</p></td>
 <td><p>Optimize the graph associated with the specified query_key</p></td>
@@ -208,6 +208,18 @@
 <dt id="dasi.design.design_algorithms.assemble_graph">
 <code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">assemble_graph</code><span class="sig-paren">(</span><em class="sig-param">container</em>, <em class="sig-param">span_cost</em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dasi/design/design_algorithms.html#assemble_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms.assemble_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build an assembly graph for a specified query.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dasi.design.design_algorithms.multiprocessing_assemble_graph">
+<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">multiprocessing_assemble_graph</code><span class="sig-paren">(</span><em class="sig-param">containers</em>, <em class="sig-param">span_cost</em>, <em class="sig-param">n_jobs</em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dasi/design/design_algorithms.html#multiprocessing_assemble_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms.multiprocessing_assemble_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assemble graphs using multiprocessing</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dasi.design.design_algorithms.multiprocessing_optimize_graph">
+<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">multiprocessing_optimize_graph</code><span class="sig-paren">(</span><em class="sig-param">graphs</em>, <em class="sig-param">query_lengths</em>, <em class="sig-param">cyclics</em>, <em class="sig-param">n_paths</em>, <em class="sig-param">n_jobs</em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dasi/design/design_algorithms.html#multiprocessing_optimize_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms.multiprocessing_optimize_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimize graphs using multiprocessing</p>
 </dd></dl>
 
 <dl class="function">

@@ -392,7 +392,7 @@ class FakePool(object):
     TEMPLATES = &quot;templates&quot;
     QUERIES = &quot;queries&quot;
     FRAGMENTS = &quot;fragments&quot;
-    DEFAULT_N_THREADS = 1
+    DEFAULT_N_JOBS = 1
 
     def __init__(self, span_cost=None, seqdb=None, n_threads=None):
         self.blast_factory = BioBlastFactory()
@@ -406,7 +406,7 @@ class FakePool(object):
         self.graphs = {}
         self.results = {}
         self.container_factory = AlignmentContainerFactory(self.seqdb)
-        self.n_threads = n_threads or self.DEFAULT_N_THREADS
+        self.n_threads = n_threads or self.DEFAULT_N_JOBS
 
     @property
     def seqdb(self):
@@ -555,13 +555,13 @@ class FakePool(object):
         &quot;&quot;&quot;List of query keys in this design.&quot;&quot;&quot;
         return list(self.container_factory.containers())</div>
 
-    def assemble_graphs(self, n_cores=None):
-        n_cores = n_cores or self.n_threads
-        if n_cores &gt; 1:
+    def assemble_graphs(self, n_jobs=None):
+        n_jobs = n_jobs or self.n_threads
+        if n_jobs &gt; 1:
             # with self.logger.timeit(&quot;INFO&quot;,
             #                         &quot;assembling graphs (n_graphs={}, threads={})&quot;.format(len(self.container_list()),
-            #                                                                              n_cores)):
-            graphs = self._assemble_graphs_with_threads(n_cores)
+            #                                                                              n_jobs)):
+            graphs = self._assemble_graphs_with_threads(n_jobs)
             return graphs
         return self._assemble_graphs_without_threads()
 
@@ -574,20 +574,20 @@ class FakePool(object):
         ):
             self.graphs[query_key] = assemble_graph(container, self.span_cost)</div>
 
-    def _assemble_graphs_with_threads(self, n_cores=None):
+    def _assemble_graphs_with_threads(self, n_jobs=None):
         query_keys, containers = zip(*self.container_factory.containers().items())
         graphs = multiprocessing_assemble_graph(
-            containers, self.span_cost, n_cores=n_cores
+            containers, self.span_cost, n_jobs=n_jobs
         )
         for qk, g in zip(query_keys, graphs):
             self.graphs[qk] = g
 
-<div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design.compile">[docs]</a>    def compile(self, n_cores=None):
+<div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.Design.compile">[docs]</a>    def compile(self, n_jobs=None):
         &quot;&quot;&quot;Compile materials to assembly graph&quot;&quot;&quot;
         self.results = {}
         with self.logger.timeit(&quot;INFO&quot;, &quot;running blast&quot;):
             self._blast()
-        self.assemble_graphs(n_cores=n_cores)</div>
+        self.assemble_graphs(n_jobs=n_jobs)</div>
 
     # def plot_matrix(self, matrix):
     # plot matrix
@@ -757,16 +757,16 @@ class FakePool(object):
                     )
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
-    def optimize(self, n_paths=3, n_cores=None):
-        n_cores = n_cores or self.n_threads
-        if n_cores &gt; 1:
+    def optimize(self, n_paths=3, n_jobs=None):
+        n_jobs = n_jobs or self.n_threads
+        if n_jobs &gt; 1:
             with self.logger.timeit(
                 &quot;INFO&quot;,
                 &quot;optimizing graphs (n_graphs={}, threads={})&quot;.format(
-                    len(self.graphs), n_cores
+                    len(self.graphs), n_jobs
                 ),
             ):
-                return self._optimize_with_threads(n_paths, n_cores)
+                return self._optimize_with_threads(n_paths, n_jobs)
         return self._optimize_without_threads(n_paths)
 
     # TODO: n_paths to class attribute
@@ -796,7 +796,7 @@ class FakePool(object):
             result.add_assemblies(paths)
         return results_dict</div>
 
-    def _optimize_with_threads(self, n_paths=5, n_cores=10):
+    def _optimize_with_threads(self, n_paths=5, n_jobs=10):
         results_dict = {}
         query_keys, graphs, query_lengths, cyclics, results = zip(
             *list(self._collect_optimize_args(self.graphs))
@@ -807,7 +807,7 @@ class FakePool(object):
             query_lengths=query_lengths,
             cyclics=cyclics,
             n_paths=n_paths,
-            n_cores=n_cores,
+            n_jobs=n_jobs,
         )
         for qk, paths, result in zip(query_keys, list_of_paths, results):
             result.add_assemblies(paths)
@@ -834,7 +834,7 @@ class FakePool(object):
     Design class for producing assemblies for libraries.
     &quot;&quot;&quot;
 
-    DEFAULT_N_THREADS = 10
+    DEFAULT_N_JOBS = 10
 
     def __init__(self, span_cost=None, n_threads=None):
         super().__init__(span_cost=span_cost, n_threads=n_threads)
@@ -953,13 +953,13 @@ class FakePool(object):
             # repeats += list(self._get_iter_non_repeats(alignments))
         self.repeats = repeats</div>
 
-<div class="viewcode-block" id="LibraryDesign.compile_library"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign.compile_library">[docs]</a>    def compile_library(self, n_cores=None):
+<div class="viewcode-block" id="LibraryDesign.compile_library"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign.compile_library">[docs]</a>    def compile_library(self, n_jobs=None):
         &quot;&quot;&quot;Compile the materials list into assembly graphs.&quot;&quot;&quot;
-        n_cores = n_cores or self.DEFAULT_N_THREADS
+        n_jobs = n_jobs or self.DEFAULT_N_THREADS
         self.graphs = {}
         self._blast()
         self._share_query_blast()
-        self.assemble_graphs(n_cores=n_cores)</div>
+        self.assemble_graphs(n_jobs=n_jobs)</div>
 
 <div class="viewcode-block" id="LibraryDesign.optimize_library"><a class="viewcode-back" href="../../developer/_autosummary/dasi.design.html#dasi.design.LibraryDesign.optimize_library">[docs]</a>    def optimize_library(self):
         &quot;&quot;&quot;Optimize the assembly graph for library assembly.&quot;&quot;&quot;

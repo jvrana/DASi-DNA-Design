@@ -252,12 +252,13 @@ def _multiprocessing_optimize_graph(args):
     return optimize_graph(args[0], args[1], args[2], args[3])
 
 
-def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_cores):
+<div class="viewcode-block" id="multiprocessing_optimize_graph"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.design.design_algorithms.html#dasi.design.design_algorithms.multiprocessing_optimize_graph">[docs]</a>def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_jobs):
+    &quot;&quot;&quot;Optimize graphs using multiprocessing&quot;&quot;&quot;
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
-    with Pool(processes=min(n_cores, len(graphs))) as pool:  # start 4 worker processes
+    with Pool(processes=min(n_jobs, len(graphs))) as pool:  # start 4 worker processes
         graphs = pool.map(_multiprocessing_optimize_graph, args)
-    return graphs
+    return graphs</div>
 
 
 <div class="viewcode-block" id="assemble_graph"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.design.design_algorithms.html#dasi.design.design_algorithms.assemble_graph">[docs]</a>def assemble_graph(container, span_cost):
@@ -283,13 +284,14 @@ def _multiprocessing_assemble_graph(arg):
     return assemble_graph(arg[0], arg[1])
 
 
-def multiprocessing_assemble_graph(containers, span_cost, n_cores):
+<div class="viewcode-block" id="multiprocessing_assemble_graph"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.design.design_algorithms.html#dasi.design.design_algorithms.multiprocessing_assemble_graph">[docs]</a>def multiprocessing_assemble_graph(containers, span_cost, n_jobs):
+    &quot;&quot;&quot;Assemble graphs using multiprocessing&quot;&quot;&quot;
     args = [(container, span_cost) for container in containers]
     with Pool(
-        processes=min(n_cores, len(containers))
+        processes=min(n_jobs, len(containers))
     ) as pool:  # start 4 worker processes
         graphs = pool.map(_multiprocessing_assemble_graph, args)
-    return graphs
+    return graphs</div>
 </pre></div>
 
     </div>

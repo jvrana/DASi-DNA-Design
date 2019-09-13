@@ -10,6 +10,7 @@ Submodules
 
     graph_builder
     plotter
+    design_algorithms
 """
 from __future__ import annotations
 
@@ -38,14 +39,20 @@ from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
 from dasi.log import logger
 from dasi.utils import perfect_subject, sort_cycle
-from .design_algorithms import assemble_graph, optimize_graph, multiprocessing_assemble_graph, \
-    multiprocessing_optimize_graph
+from .design_algorithms import (
+    assemble_graph,
+    optimize_graph,
+    multiprocessing_assemble_graph,
+    multiprocessing_optimize_graph,
+)
 from .graph_builder import AssemblyGraphBuilder
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 
 
 class DesignResult(Iterable):
+    """DesignResult container."""
+
     def __init__(self, container, graph, query_key):
         self.container = container
         self.graph = graph
@@ -88,12 +95,12 @@ class Assembly(Iterable):
     """
 
     def __init__(
-            self,
-            nodes: List[AssemblyNode],
-            container: AlignmentContainer,
-            full_assembly_graph: nx.DiGraph,
-            query_key: str,
-            query: SeqRecord,
+        self,
+        nodes: List[AssemblyNode],
+        container: AlignmentContainer,
+        full_assembly_graph: nx.DiGraph,
+        query_key: str,
+        query: SeqRecord,
     ):
         self.container = container
         self.groups = container.groups()
@@ -170,11 +177,11 @@ class Assembly(Iterable):
         return self.graph.nodes(data=data)
 
     def edit_distance(
-            self, other: Assembly, explain=False
+        self, other: Assembly, explain=False
     ) -> Tuple[int, List[Tuple[int, str]]]:
         differences = []
         for i, (n1, n2) in enumerate(
-                zip_longest(self.nodes(data=False), other.nodes(data=False))
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
             if n1 is None or n2 is None:
                 differences.append((i, "{} != {}".format(n1, n2)))
@@ -205,7 +212,7 @@ class Assembly(Iterable):
 
     def print_diff(self, other: Assembly):
         for i, (n1, n2) in enumerate(
-                zip_longest(self.nodes(data=False), other.nodes(data=False))
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
             if n1 != n2:
                 desc = False
@@ -256,6 +263,7 @@ class Assembly(Iterable):
         for n in self.nodes(data=False):
             yield n
 
+
 def run_blast(args):
     if args is None or args[0] is None:
         return []
@@ -266,7 +274,6 @@ def run_blast(args):
 
 
 class FakePool(object):
-
     def __init__(self, *args, **kwargs):
         pass
 
@@ -289,7 +296,7 @@ class Design(object):
     TEMPLATES = "templates"
     QUERIES = "queries"
     FRAGMENTS = "fragments"
-    DEFAULT_N_THREADS = 1
+    DEFAULT_N_JOBS = 1
 
     def __init__(self, span_cost=None, seqdb=None, n_threads=None):
         self.blast_factory = BioBlastFactory()
@@ -303,18 +310,18 @@ class Design(object):
         self.graphs = {}
         self.results = {}
         self.container_factory = AlignmentContainerFactory(self.seqdb)
-        self.n_threads = n_threads or self.DEFAULT_N_THREADS
+        self.n_threads = n_threads or self.DEFAULT_N_JOBS
 
     @property
     def seqdb(self):
         return self._seqdb
 
     def add_materials(
-            self,
-            primers: List[SeqRecord],
-            templates: List[SeqRecord],
-            queries: List[SeqRecord],
-            fragments=None,
+        self,
+        primers: List[SeqRecord],
+        templates: List[SeqRecord],
+        queries: List[SeqRecord],
+        fragments=None,
     ):
         if fragments is None:
             fragments = []
@@ -452,37 +459,39 @@ class Design(object):
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
-    def assemble_graphs(self, n_cores=None):
-        n_cores = n_cores or self.n_threads
-        if n_cores > 1:
+    def assemble_graphs(self, n_jobs=None):
+        n_jobs = n_jobs or self.n_threads
+        if n_jobs > 1:
             # with self.logger.timeit("INFO",
             #                         "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
-            #                                                                              n_cores)):
-            graphs = self._assemble_graphs_with_threads(n_cores)
+            #                                                                              n_jobs)):
+            graphs = self._assemble_graphs_with_threads(n_jobs)
             return graphs
         return self._assemble_graphs_without_threads()
 
     def _assemble_graphs_without_threads(self):
         """Assemble all assembly graphs for all queries in this design."""
         for query_key, container in self.logger.tqdm(
-                self.container_factory.containers().items(),
-                "INFO",
-                desc="assembling graphs (threads=1)",
+            self.container_factory.containers().items(),
+            "INFO",
+            desc="assembling graphs (threads=1)",
         ):
             self.graphs[query_key] = assemble_graph(container, self.span_cost)
 
-    def _assemble_graphs_with_threads(self, n_cores=None):
+    def _assemble_graphs_with_threads(self, n_jobs=None):
         query_keys, containers = zip(*self.container_factory.containers().items())
-        graphs = multiprocessing_assemble_graph(containers, self.span_cost, n_cores=n_cores)
+        graphs = multiprocessing_assemble_graph(
+            containers, self.span_cost, n_jobs=n_jobs
+        )
         for qk, g in zip(query_keys, graphs):
             self.graphs[qk] = g
 
-    def compile(self, n_cores=None):
+    def compile(self, n_jobs=None):
         """Compile materials to assembly graph"""
         self.results = {}
         with self.logger.timeit("INFO", "running blast"):
             self._blast()
-        self.assemble_graphs(n_cores=n_cores)
+        self.assemble_graphs(n_jobs=n_jobs)
 
     # def plot_matrix(self, matrix):
     # plot matrix
@@ -540,7 +549,7 @@ class Design(object):
                         subject_rec_name = subject_rec.name
                         subject_seq = str(
                             subject_rec[
-                            align.subject_region.a: align.subject_region.b
+                                align.subject_region.a : align.subject_region.b
                             ].seq
                         )
                         subject_region = (
@@ -558,7 +567,7 @@ class Design(object):
                             seqs.append(
                                 str(
                                     rec[
-                                    align.subject_region.a: align.subject_region.b
+                                        align.subject_region.a : align.subject_region.b
                                     ].seq
                                 )
                             )
@@ -632,9 +641,9 @@ class Design(object):
                         span.a = span.a + 20
 
                     ranges = span.ranges()
-                    frag_seq = record[ranges[0][0]: ranges[0][1]]
+                    frag_seq = record[ranges[0][0] : ranges[0][1]]
                     for r in ranges[1:]:
-                        frag_seq += record[r[0]: r[1]]
+                        frag_seq += record[r[0] : r[1]]
 
                     fragments.append(
                         {
@@ -652,22 +661,28 @@ class Design(object):
                     )
         return pd.DataFrame(fragments), pd.DataFrame(primers)
 
-    def optimize(self, n_paths=3, n_cores=None):
-        n_cores = n_cores or self.n_threads
-        if n_cores > 1:
-            with self.logger.timeit("INFO",
-                                    "optimizing graphs (n_graphs={}, threads={})".format(len(self.graphs), n_cores)):
-                return self._optimize_with_threads(n_paths, n_cores)
+    def optimize(self, n_paths=3, n_jobs=None):
+        n_jobs = n_jobs or self.n_threads
+        if n_jobs > 1:
+            with self.logger.timeit(
+                "INFO",
+                "optimizing graphs (n_graphs={}, threads={})".format(
+                    len(self.graphs), n_jobs
+                ),
+            ):
+                return self._optimize_with_threads(n_paths, n_jobs)
         return self._optimize_without_threads(n_paths)
 
     # TODO: n_paths to class attribute
-    def _optimize_without_threads(self, n_paths=5) -> Dict[str, List[List[AssemblyNode]]]:
+    def _optimize_without_threads(
+        self, n_paths=5
+    ) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
         results_dict = {}
         for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
-                self._collect_optimize_args(self.graphs),
-                "INFO",
-                desc="optimizing graphs (n_graphs={}, threads=1)".format(len(self.graphs))
+            self._collect_optimize_args(self.graphs),
+            "INFO",
+            desc="optimizing graphs (n_graphs={}, threads=1)".format(len(self.graphs)),
         ):
             container = self.containers[query_key]
             query = container.seqdb[query_key]
@@ -685,12 +700,19 @@ class Design(object):
             result.add_assemblies(paths)
         return results_dict
 
-    def _optimize_with_threads(self, n_paths=5, n_cores=10):
+    def _optimize_with_threads(self, n_paths=5, n_jobs=10):
         results_dict = {}
-        query_keys, graphs, query_lengths, cyclics, results = zip(*list(self._collect_optimize_args(self.graphs)))
+        query_keys, graphs, query_lengths, cyclics, results = zip(
+            *list(self._collect_optimize_args(self.graphs))
+        )
 
-        list_of_paths = multiprocessing_optimize_graph(graphs=graphs, query_lengths=query_lengths, cyclics=cyclics,
-                                                       n_paths=n_paths, n_cores=n_cores)
+        list_of_paths = multiprocessing_optimize_graph(
+            graphs=graphs,
+            query_lengths=query_lengths,
+            cyclics=cyclics,
+            n_paths=n_paths,
+            n_jobs=n_jobs,
+        )
         for qk, paths, result in zip(query_keys, list_of_paths, results):
             result.add_assemblies(paths)
             results_dict[qk] = result
@@ -698,7 +720,7 @@ class Design(object):
 
     def _collect_optimize_args(self, graphs):
         for query_key, graph in self.logger.tqdm(
-                graphs.items(), "INFO", desc="optimizing graphs"
+            graphs.items(), "INFO", desc="optimizing graphs"
         ):
             container = self.containers[query_key]
             query = container.seqdb[query_key]
@@ -716,7 +738,7 @@ class LibraryDesign(Design):
     Design class for producing assemblies for libraries.
     """
 
-    DEFAULT_N_THREADS = 10
+    DEFAULT_N_JOBS = 10
 
     def __init__(self, span_cost=None, n_threads=None):
         super().__init__(span_cost=span_cost, n_threads=n_threads)
@@ -835,13 +857,13 @@ class LibraryDesign(Design):
             # repeats += list(self._get_iter_non_repeats(alignments))
         self.repeats = repeats
 
-    def compile_library(self, n_cores=None):
+    def compile_library(self, n_jobs=None):
         """Compile the materials list into assembly graphs."""
-        n_cores = n_cores or self.DEFAULT_N_THREADS
+        n_jobs = n_jobs or self.DEFAULT_N_THREADS
         self.graphs = {}
         self._blast()
         self._share_query_blast()
-        self.assemble_graphs(n_cores=n_cores)
+        self.assemble_graphs(n_jobs=n_jobs)
 
     def optimize_library(self):
         """Optimize the assembly graph for library assembly."""

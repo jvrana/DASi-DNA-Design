@@ -156,10 +156,11 @@ def _multiprocessing_optimize_graph(args):
     return optimize_graph(args[0], args[1], args[2], args[3])
 
 
-def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_cores):
+def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_jobs):
+    """Optimize graphs using multiprocessing"""
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
-    with Pool(processes=min(n_cores, len(graphs))) as pool:  # start 4 worker processes
+    with Pool(processes=min(n_jobs, len(graphs))) as pool:  # start 4 worker processes
         graphs = pool.map(_multiprocessing_optimize_graph, args)
     return graphs
 
@@ -187,8 +188,11 @@ def _multiprocessing_assemble_graph(arg):
     return assemble_graph(arg[0], arg[1])
 
 
-def multiprocessing_assemble_graph(containers, span_cost, n_cores):
+def multiprocessing_assemble_graph(containers, span_cost, n_jobs):
+    """Assemble graphs using multiprocessing"""
     args = [(container, span_cost) for container in containers]
-    with Pool(processes=min(n_cores, len(containers))) as pool:  # start 4 worker processes
+    with Pool(
+        processes=min(n_jobs, len(containers))
+    ) as pool:  # start 4 worker processes
         graphs = pool.map(_multiprocessing_assemble_graph, args)
     return graphs

@@ -1,5 +1,6 @@
 """DASi exceptions and warnings"""
 
+
 class DASiWarning(Warning):
     """A generic dasi warning"""
 

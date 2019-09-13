@@ -487,6 +487,7 @@ class NumpyDataFrame(Mapping):
     def __repr__(self):
         return str(self)
 
+
 class NumpyDataFrameIndexer(Mapping):
     """The indexer for NumpyDataFrames"""
 

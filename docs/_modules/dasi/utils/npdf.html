@@ -95,6 +95,7 @@
       
   <h1>Source code for dasi.utils.npdf</h1><div class="highlight"><pre>
 <span></span>&quot;&quot;&quot;NumpyDataFrame&quot;&quot;&quot;
+
 import pprint
 from collections import OrderedDict
 from collections.abc import Mapping, Iterable
@@ -112,40 +113,7 @@ m.patch()
 
 
 <div class="viewcode-block" id="NumpyDataFrameException"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrameException">[docs]</a>class NumpyDataFrameException(Exception):
-    pass</div>
-
-
-class NumpyDataFrameIndexer(Mapping):
-    def __init__(self, df):
-        self.df = df
-
-    def __len__(self):
-        return len(self.df.columns)
-
-    def __iter__(self):
-        for c in self.df.columns:
-            yield c
-
-    def __contains__(self, item):
-        for c in self:
-            if item == c:
-                return True
-        return False
-
-    def __delitem__(self, key):
-        del self.df.data[key]
-
-    def __setitem__(self, col, val):
-        self.df.data[col] = val
-        self.df.validate()
-
-    def __getitem__(self, cols):
-        if isinstance(cols, str):
-            cols = (cols,)
-        elif not isinstance(cols, Iterable):
-            cols = (cols,)
-        data = {k: self.df.data[k] for k in self.df.data if k in cols}
-        return self.df.__class__(data)
+    &quot;&quot;&quot;Generic exceptions for NumpyDataFrame&quot;&quot;&quot;</div>
 
 
 <div class="viewcode-block" id="NumpyDataFrame"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame">[docs]</a>class NumpyDataFrame(Mapping):
@@ -291,6 +259,15 @@ class NumpyDataFrameIndexer(Mapping):
     &quot;&quot;&quot;
 
     def __init__(self, data=None, apply=None):
+        &quot;&quot;&quot;
+        Initializes a numpy data frame from a dict of string to np.ndarrays.
+        The dict keys are representative of *column names* and the values
+        are rows of that column. The shapes of each np.ndarray must be the
+        same, else :class:`NumpyDataFrameException` is raised.
+
+        :param data: A dict of string to np.ndarrays
+        :param apply: Function to apply across the numpy data frame
+        &quot;&quot;&quot;
         if data is None:
             data = {}
         self._data = OrderedDict()
@@ -301,14 +278,17 @@ class NumpyDataFrameIndexer(Mapping):
 
     @property
     def data(self):
+        &quot;&quot;&quot;The underlying data dict of the dataframe&quot;&quot;&quot;
         return self._data
 
     @data.setter
     def data(self, new):
+        &quot;&quot;&quot;Set and validate the underlying data dict for the dataframe&quot;&quot;&quot;
         self._data = new
         self.validate()
 
-    def validate(self):
+<div class="viewcode-block" id="NumpyDataFrame.validate"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.validate">[docs]</a>    def validate(self):
+        &quot;&quot;&quot;Validate that the shapes of all of the np.ndarrays are the same&quot;&quot;&quot;
         shapes = set(v.shape for v in self.data.values())
         if len(shapes) &gt; 1:
             keys_and_shapes = {}
@@ -319,34 +299,67 @@ class NumpyDataFrameIndexer(Mapping):
                 &quot;of the data, set &#39;apply=np.squeeze&#39;&quot;.format(
                     self.__class__, keys_and_shapes
                 )
-            )
+            )</div>
 
-    def prefix(self, s, cols=None, inplace=False):
+<div class="viewcode-block" id="NumpyDataFrame.prefix"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.prefix">[docs]</a>    def prefix(self, s, cols=None, inplace=False):
+        &quot;&quot;&quot;Adds a prefix to all of the column names and returns a new dataframe&quot;&quot;&quot;
         if cols is None:
             cols = self.columns
-        return self.apply_to_col_names(lambda x: s + x, cols=cols, inplace=inplace)
+        return self.apply_to_col_names(lambda x: s + x, cols=cols, inplace=inplace)</div>
 
-    def suffix(self, s, cols=None, inplace=False):
+<div class="viewcode-block" id="NumpyDataFrame.suffix"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.suffix">[docs]</a>    def suffix(self, s, cols=None, inplace=False):
+        &quot;&quot;&quot;Adds a prefix to all of the column names and returns a new dataframe&quot;&quot;&quot;
         if cols is None:
             cols = self.columns
-        return self.apply_to_col_names(lambda x: x + s, cols=cols, inplace=inplace)
+        return self.apply_to_col_names(lambda x: x + s, cols=cols, inplace=inplace)</div>
 
-    def apply_to_col_names(self, func, *args, cols=None, inplace=False, **kwargs):
+<div class="viewcode-block" id="NumpyDataFrame.apply_to_col_names"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.apply_to_col_names">[docs]</a>    def apply_to_col_names(self, func, *args, cols=None, inplace=False, **kwargs):
+        &quot;&quot;&quot;
+        Apply a function to the column names and returns a new dataframe.
+
+        :param func: the function to apply
+        :param args: the additional function arguments
+        :param cols: the columns to apply the function to. If False, all columns are used.
+        :param inplace: if True, will apply the function to the current df and return the current df.
+        :param kwargs: the additional function keyword arguments
+        :return:
+        &quot;&quot;&quot;
         if cols is None:
             cols = self.columns
         data = {func(k, *args, **kwargs): v for k, v in self.data.items() if k in cols}
         if inplace:
             self.data = data
             return self
-        return self.__class__(data)
+        return self.__class__(data)</div>
 
-    def aggregate(self, func, *args, cols=None, **kwargs):
+<div class="viewcode-block" id="NumpyDataFrame.aggregate"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.aggregate">[docs]</a>    def aggregate(self, func, *args, cols=None, **kwargs):
+        &quot;&quot;&quot;
+        Group all of the np.ndarrays across all columns as a list and apply
+        a function.
+
+        :param func: the function to apply (e.g. np.hstack)
+        :param args: the additional arguments of the function
+        :param cols: the cols to apply the function to. If False, all columns are used.
+        :param kwargs: the keyword arguments to apply to the function
+        :return: the result of the function
+        &quot;&quot;&quot;
         if cols is None:
             cols = self.columns
         collapsed = [self.data[c] for c in cols]
-        return func(collapsed, *args, **kwargs)
+        return func(collapsed, *args, **kwargs)</div>
 
-    def apply(self, func, *args, astype=None, preprocess=None, inplace=False, **kwargs):
+<div class="viewcode-block" id="NumpyDataFrame.apply"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.apply">[docs]</a>    def apply(self, func, *args, astype=None, preprocess=None, inplace=False, **kwargs):
+        &quot;&quot;&quot;
+        Apply a function to each np.ndarray.
+
+        :param func: The function to appluy
+        :param args: the additional arguments of the function
+        :param astype: the type of data frame to return
+        :param preprocess: preprocess function to apply to each np.ndarray before applying &#39;func&#39;
+        :param inplace: If True, will apply the function to the current df and return the current df.
+        :param kwargs: the keyword arguments to apply to the function
+        :return: a new dataframe
+        &quot;&quot;&quot;
         data = {}
         for k, v in self.data.items():
             try:
@@ -371,29 +384,45 @@ class NumpyDataFrameIndexer(Mapping):
             return self
         if astype is None:
             astype = self.__class__
-        return astype(data)
+        return astype(data)</div>
 
-    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.merge"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.merge">[docs]</a>    @classmethod
     def merge(cls, others):
+        &quot;&quot;&quot;Merge many dfs into a single df.&quot;&quot;&quot;
         df = cls()
         for a in others:
             df.update(a)
-        return df
+        return df</div>
 
-    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.concat"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.concat">[docs]</a>    @classmethod
     def concat(cls, others, fill_value=Null):
-        return cls.group_apply(others, np.hstack, _fill_value=fill_value)
+        &quot;&quot;&quot;Concatenate several dfs into a single df.&quot;&quot;&quot;
+        return cls.group_apply(others, np.hstack, _fill_value=fill_value)</div>
 
-    def append(self, other):
-        self.group_apply((other,), np.hstack)
+<div class="viewcode-block" id="NumpyDataFrame.append"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.append">[docs]</a>    def append(self, other):
+        &quot;&quot;&quot;Append the contents of the other df to this df.&quot;&quot;&quot;
+        self.group_apply((other,), np.hstack)</div>
 
-    def fill_value(self, cols, value):
+<div class="viewcode-block" id="NumpyDataFrame.fill_value"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.fill_value">[docs]</a>    def fill_value(self, cols, value):
+        &quot;&quot;&quot;Create new columns, if they are missing, and fill them with the specified value.&quot;&quot;&quot;
         for c in cols:
             if c not in self.col:
-                self.col[c] = np.array([value for _ in range(len(self))])
+                self.col[c] = np.array([value for _ in range(len(self))])</div>
 
-    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.group_apply"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.group_apply">[docs]</a>    @classmethod
     def group_apply(cls, others, func, *args, expand=False, _fill_value=Null, **kwargs):
+        &quot;&quot;&quot;
+        Groups np.arrays according to their column name for several dataframes (as a list) and applies
+        a function to each group. Returns a new df with the results.
+
+        :param others: iterable of dfs
+        :param func: the function to apply
+        :param args: additional arguments for the function
+        :param expand: If true, the list of np.arrays will be expanded, as in `func(*list_of_arrs, ...)`
+        :param _fill_value:
+        :param kwargs: additional keyword arguments for the function
+        :return: a new df
+        &quot;&quot;&quot;
         d = {}
         other_cols = set(tuple(sorted(o.columns)) for o in others)
         if len(other_cols) &gt; 1:
@@ -417,72 +446,88 @@ class NumpyDataFrameIndexer(Mapping):
             data = {k: func(*v, *args, **kwargs) for k, v in d.items()}
         else:
             data = {k: func(v, *args, **kwargs) for k, v in d.items()}
-        return cls(data)
+        return cls(data)</div>
 
-    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.stack"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.stack">[docs]</a>    @classmethod
     def stack(cls, others, axis):
-        return cls.group_apply(others, np.stack, axis=axis)
+        &quot;&quot;&quot;Apply np.stack to each column for several dfs.&quot;&quot;&quot;
+        return cls.group_apply(others, np.stack, axis=axis)</div>
 
-    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.hstack"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.hstack">[docs]</a>    @classmethod
     def hstack(cls, others):
-        return cls.group_apply(others, np.hstack)
+        &quot;&quot;&quot;Apply np.hstack to each column for several dfs.&quot;&quot;&quot;
+        return cls.group_apply(others, np.hstack)</div>
 
-    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.vstack"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.vstack">[docs]</a>    @classmethod
     def vstack(cls, others):
-        return cls.group_apply(others, np.vstack)
+        &quot;&quot;&quot;Apply np.vstack to each column for several dfs.&quot;&quot;&quot;
+        return cls.group_apply(others, np.vstack)</div>
 
     @property
     def shape(self):
+        &quot;&quot;&quot;Return the expected shape for the underlying np.ndarray. This
+        is the shape of the array for any given column.&quot;&quot;&quot;
         return list(self.data.values())[0].shape
 
-    def reshape(self, shape):
-        return self.apply(np.reshape, shape)
+<div class="viewcode-block" id="NumpyDataFrame.reshape"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.reshape">[docs]</a>    def reshape(self, shape):
+        &quot;&quot;&quot;Reshape all arrays in the df.&quot;&quot;&quot;
+        return self.apply(np.reshape, shape)</div>
 
     @property
     def columns(self):
+        &quot;&quot;&quot;Return the column names&quot;&quot;&quot;
         return tuple(self.data)
 
     @property
     def col(self):
+        &quot;&quot;&quot;Return the column indexer.&quot;&quot;&quot;
         return NumpyDataFrameIndexer(self)
 
-    def to_df(self, squeeze=True):
+<div class="viewcode-block" id="NumpyDataFrame.to_df"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.to_df">[docs]</a>    def to_df(self, squeeze=True):
+        &quot;&quot;&quot;Attempt to convert the df to a pandas.DataFrame&quot;&quot;&quot;
         if squeeze:
             return pd.DataFrame(self.apply(np.squeeze).data)
-        return pd.DataFrame(self.data)
+        return pd.DataFrame(self.data)</div>
 
-    def update(self, data, apply=None):
+<div class="viewcode-block" id="NumpyDataFrame.update"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.update">[docs]</a>    def update(self, data, apply=None):
+        &quot;&quot;&quot;Update the df from a dict or another df.&quot;&quot;&quot;
         if issubclass(type(data), NumpyDataFrame):
             data = data.data
         if issubclass(type(data), dict):
             self.data.update(data)
             if apply:
                 self.apply(apply)
-            self.validate()
+            self.validate()</div>
 
 <div class="viewcode-block" id="NumpyDataFrame.items"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.items">[docs]</a>    def items(self):
+        &quot;&quot;&quot;Iterate key: arr for the the underlying data dict&quot;&quot;&quot;
         return self.data.items()</div>
 
-    def copy(self):
-        return self.apply(np.copy)
+<div class="viewcode-block" id="NumpyDataFrame.copy"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.copy">[docs]</a>    def copy(self):
+        &quot;&quot;&quot;Copy the df&quot;&quot;&quot;
+        return self.apply(np.copy)</div>
 
-    def dumps(self):
-        return msgpack.dumps(self.data)
+<div class="viewcode-block" id="NumpyDataFrame.dumps"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.dumps">[docs]</a>    def dumps(self):
+        &quot;&quot;&quot;Use msgpack to dump df to a byte string&quot;&quot;&quot;
+        return msgpack.dumps(self.data)</div>
 
-    def dump(self, f):
+<div class="viewcode-block" id="NumpyDataFrame.dump"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.dump">[docs]</a>    def dump(self, f):
+        &quot;&quot;&quot;Dump byte repr of df to the specified path.&quot;&quot;&quot;
         with open(f, &quot;wb&quot;) as f:
-            msgpack.dump(self.data, f)
+            msgpack.dump(self.data, f)</div>
 
-    def loads(self, s):
+<div class="viewcode-block" id="NumpyDataFrame.loads"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.loads">[docs]</a>    def loads(self, s):
+        &quot;&quot;&quot;Use msgpack to load a df from a byte string&quot;&quot;&quot;
         data = msgpack.loads(s)
         data = {k.decode(): v for k, v in data.items()}
-        return NumpyDataFrame(data)
+        return NumpyDataFrame(data)</div>
 
-    def load(self, f):
+<div class="viewcode-block" id="NumpyDataFrame.load"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.load">[docs]</a>    def load(self, f):
+        &quot;&quot;&quot;Load the byte repr of df from the specified path.&quot;&quot;&quot;
         with open(f, &quot;rb&quot;) as f:
             data = msgpack.load(f)
             data = {k.decode(): v for k, v in data.items()}
-            return NumpyDataFrame(data)
+            return NumpyDataFrame(data)</div>
 
     def __getitem__(self, key):
         new = self.__class__(self.data)
@@ -537,6 +582,41 @@ class NumpyDataFrameIndexer(Mapping):
 
     def __repr__(self):
         return str(self)</div>
+
+
+<div class="viewcode-block" id="NumpyDataFrameIndexer"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrameIndexer">[docs]</a>class NumpyDataFrameIndexer(Mapping):
+    &quot;&quot;&quot;The indexer for NumpyDataFrames&quot;&quot;&quot;
+
+    def __init__(self, df: NumpyDataFrame):
+        self.df = df
+
+    def __len__(self):
+        return len(self.df.columns)
+
+    def __iter__(self):
+        for c in self.df.columns:
+            yield c
+
+    def __contains__(self, item):
+        for c in self:
+            if item == c:
+                return True
+        return False
+
+    def __delitem__(self, key):
+        del self.df.data[key]
+
+    def __setitem__(self, col, val):
+        self.df.data[col] = val
+        self.df.validate()
+
+    def __getitem__(self, cols):
+        if isinstance(cols, str):
+            cols = (cols,)
+        elif not isinstance(cols, Iterable):
+            cols = (cols,)
+        data = {k: self.df.data[k] for k in self.df.data if k in cols}
+        return self.df.__class__(data)</div>
 </pre></div>
 
     </div>

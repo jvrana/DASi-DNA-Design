@@ -101,7 +101,9 @@ class CostBuilder(ABC):
         )
 
     # TODO: what if there is a gap in the span?
-    def cost(self, bp: Union[np.ndarray, int], ext: Tuple[bool, bool], invalidate=False):
+    def cost(
+        self, bp: Union[np.ndarray, int], ext: Tuple[bool, bool], invalidate=False
+    ):
         """
 
         :param bp:

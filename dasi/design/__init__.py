@@ -454,10 +454,11 @@ class Design(object):
     def assemble_graphs(self, n_cores=None):
         n_cores = n_cores or self.n_threads
         if n_cores > 1:
-            with self.logger.timeit("INFO",
-                                    "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
-                                                                                         n_cores)):
-                return self._assemble_graphs_with_threads(n_cores)
+            # with self.logger.timeit("INFO",
+            #                         "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
+            #                                                                              n_cores)):
+            graphs = self._assemble_graphs_with_threads(n_cores)
+            return graphs
         return self._assemble_graphs_without_threads()
 
     def _assemble_graphs_without_threads(self):
@@ -714,6 +715,8 @@ class LibraryDesign(Design):
     Design class for producing assemblies for libraries.
     """
 
+    DEFAULT_N_THREADS = 10
+
     def __init__(self, span_cost=None, n_threads=None):
         super().__init__(span_cost=span_cost, n_threads=n_threads)
         self.shared_alignments = []
@@ -729,9 +732,12 @@ class LibraryDesign(Design):
     #             repeats.append((qk, r['query']['start'], r['query']['end']))
     #     return repeats
 
-    def _get_iter_repeats(self, alignments: List[Alignment]):
+    # TODO: why?
+    def _get_iter_non_repeats(self, alignments: List[Alignment]):
         """
-        Return repeat regions of alignments
+        Return repeat regions of alignments. These are alignments that align
+        to themselves.
+
         :param alignments:
         :return:
         """
@@ -820,16 +826,21 @@ class LibraryDesign(Design):
             self.logger.info(
                 "{} shared fragments for {}".format(len(alignments), query_key)
             )
+            non_repeats = list(self._get_iter_non_repeats(alignments))
+            self.logger.info(
+                "{} non repeats for {}".format(len(non_repeats), query_key)
+            )
             # add to list of possible repeats
-            repeats += list(self._get_iter_repeats(alignments))
+            # repeats += list(self._get_iter_non_repeats(alignments))
         self.repeats = repeats
 
-    def compile_library(self):
+    def compile_library(self, n_cores=None):
         """Compile the materials list into assembly graphs."""
+        n_cores = n_cores or self.DEFAULT_N_THREADS
         self.graphs = {}
         self._blast()
         self._share_query_blast()
-        self.assemble_graphs()
+        self.assemble_graphs(n_cores=n_cores)
 
     def optimize_library(self):
         """Optimize the assembly graph for library assembly."""

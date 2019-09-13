@@ -34,3 +34,10 @@ How do you optimize a plasmid AND then potentially use that as a template for th
 
 1. `check_design` method in testing needs to be updated, since its returning np.inf.
 2. plot assembly using matplotlib
+
+**Primer Optimization**
+
+
+* Find primers that have high sequence similarity. Make internal edge cost high in those cases.
+* Primers with different Tms. Internal edge efficiency.
+* Assembly junctions with high sequence similarity.

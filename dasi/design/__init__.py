@@ -714,8 +714,8 @@ class LibraryDesign(Design):
     Design class for producing assemblies for libraries.
     """
 
-    def __init__(self, span_cost=None):
-        super().__init__(span_cost)
+    def __init__(self, span_cost=None, n_threads=None):
+        super().__init__(span_cost=span_cost, n_threads=n_threads)
         self.shared_alignments = []
         self._edges = []
 

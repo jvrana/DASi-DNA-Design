@@ -211,6 +211,7 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
 
     design.optimize()
 
+
 def test_pickle_design_result():
     container = AlignmentContainer({'none', None}, [])
     pickle.dumps(container)

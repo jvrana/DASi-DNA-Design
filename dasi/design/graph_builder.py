@@ -239,8 +239,6 @@ class AssemblyGraphBuilder(object):
                 )
         edges_to_remove = []
 
-
-
         for condition, info in edge_dict.items():
             edges, edata, spans = zip(*info)
             npdf = self.span_cost.cost(np.array(spans), condition)

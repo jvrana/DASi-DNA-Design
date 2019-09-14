@@ -31,10 +31,15 @@ def test_large_pkl(here, paths, span_cost):
 
     design.compile()
     results = design.optimize()
-    with logger.timeit("DEBUG", "Pickling container_factory"):
+
+    with logger.timeit("DEBUG", "pickling graphs"):
+        pickle.loads(pickle.dumps(design.graphs))
+
+    with logger.timeit("DEBUG", "pickling containers"):
         pickle.loads(pickle.dumps(design.container_factory))
-    with logger.timeit("DEBUG", "Pickling results"):
-        pickle.loads(pickle.dumps(results))
+
+    with logger.timeit("DEBUG", "pickling span_cost"):
+        pickle.loads(pickle.dumps(span_cost))
 
 def f(arg):
     scost, primers, templates, queries, results = arg

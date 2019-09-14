@@ -161,8 +161,8 @@ def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_jo
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
     with Pool(processes=min(n_jobs, len(graphs))) as pool:  # start 4 worker processes
-        graphs = pool.map(_multiprocessing_optimize_graph, args)
-    return graphs
+        paths = pool.map(_multiprocessing_optimize_graph, args)
+    return paths
 
 
 def assemble_graph(container, span_cost):

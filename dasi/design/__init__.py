@@ -45,6 +45,7 @@ from .design_algorithms import (
     multiprocessing_assemble_graph,
     multiprocessing_optimize_graph,
 )
+from dasi.exceptions import DasiDesignException
 from .graph_builder import AssemblyGraphBuilder
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
@@ -102,14 +103,30 @@ class Assembly(Iterable):
         query_key: str,
         query: SeqRecord,
     ):
+        self.logger = logger(self)
         self.container = container
         self.groups = container.groups()
+        if len(self.groups) == 0:
+            raise DasiDesignException("No groups were found in container.")
         self.query_key = query_key
         self.query = query
         self._nodes = tuple(nodes)
         self._full_graph = full_assembly_graph
         self.graph = self._subgraph(self._full_graph, nodes)
         nx.freeze(self.graph)
+
+    @staticmethod
+    def _missing_edata():
+        return {
+            "cost": np.inf,
+            "weight": np.inf,
+            "material": np.inf,
+            "efficiency": 0.0,
+            "type": "missing",
+            "span": np.inf,
+            "name": "missing",
+            'internal_or_external': 'missing'
+        }
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
         def _resolve(node: AssemblyNode, query_region) -> Tuple[int, dict]:
@@ -135,15 +152,7 @@ class Assembly(Iterable):
         for n1, n2 in pair_iter:
             edata = deepcopy(graph.get_edge_data(n1, n2))
             if edata is None:
-                edata = {
-                    "cost": np.inf,
-                    "weight": np.inf,
-                    "material": np.inf,
-                    "efficiency": 0.0,
-                    "type": "missing",
-                    "span": np.inf,
-                    "name": "missing",
-                }
+                edata = self._missing_edata()
             else:
                 assert 'internal_or_external' in edata
 
@@ -154,6 +163,11 @@ class Assembly(Iterable):
             groups = self.container.find_groups_by_pos(
                 query_region.a, query_region.b, groups=self.groups
             )
+            self.logger.debug(len(groups))
+            self.logger.debug(query_region)
+            if edata['internal_or_external'] == 'internal' and not groups:
+                raise DasiDesignException("Missing groups for edge between {} and {}".format(n1, n2))
+
             edata["groups"] = groups
             edata["query_region"] = query_region
             SG.add_edge(
@@ -231,6 +245,7 @@ class Assembly(Iterable):
         for n1, n2, edata in self.edges():
             print(edata)
             groups = edata["groups"]
+
             if groups:
                 group = groups[0]
                 if isinstance(group, ComplexAlignmentGroup):
@@ -257,6 +272,7 @@ class Assembly(Iterable):
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],
+                    'internal_or_external': edata['internal_or_external'],
                     "efficiency": edata.get("efficiency", np.nan),
                 }
             )

@@ -8,7 +8,7 @@ from Bio import BiopythonParserWarning
 
 warnings.simplefilter("ignore", BiopythonParserWarning)
 
-logger.set_level("INFO")
+logger.set_level("DEBUG")
 
 
 import pandas as pd

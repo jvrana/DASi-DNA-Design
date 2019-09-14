@@ -165,6 +165,8 @@ class AlignmentGroupBase(object):
             alignments=alignments_copy, group_type=type, name="subregion"
         )
 
+    def __repr__(self):
+        return "<AlignmentGroup {}>".format(self.query_region)
 
 class AlignmentGroup(AlignmentGroupBase):
     """

@@ -31,7 +31,7 @@ class Alignment(Sized):
         self,
         query_region: Region,
         subject_region: Region,
-        type: str,
+        atype: str,
         query_key: str,
         subject_key: str,
     ):
@@ -40,14 +40,14 @@ class Alignment(Sized):
 
         :param query_region: Query region this alignment aligns to
         :param subject_region: Subject region this alignment aligns to.
-        :param type: Type of alignment
+        :param atype: Type of alignment
         :param query_key: The record identifier for the query
         :param subject_key: The record identifier for the subject
         """
         self.query_region = query_region
         self.subject_region = subject_region
         self.validate()
-        self.type = type
+        self.type = atype
         self.query_key = query_key
         self.subject_key = subject_key
         self.grouping_tags = {}
@@ -63,14 +63,14 @@ class Alignment(Sized):
     def is_perfect_subject(self):
         return len(self.subject_region) == self.subject_region.context_length
 
-    def sub_region(self, qstart: int, qend: int, type=None):
+    def sub_region(self, qstart: int, qend: int, atype=None):
         """
         Returns a copy of the alignment between the inclusive start and end relative to the
         query region.
 
         :param qstart: start of the query sub region
         :param qend: end of the query sub region
-        :param type: optional type of alignment to return
+        :param atype: optional type of alignment to return
         :return:
         """
         query_copy = self.query_region.sub(qstart, qend)
@@ -90,24 +90,24 @@ class Alignment(Sized):
             delta_b = None
         subject_copy = self.subject_region[delta_a:delta_b]
 
-        if type is None:
-            type = self.type
+        if atype is None:
+            atype = self.type
         self.validate()
         return self.__class__(
             query_region=query_copy,
             subject_region=subject_copy,
-            type=type,
+            atype=atype,
             query_key=self.query_key,
             subject_key=self.subject_key,
         )
 
-    def copy(self, type=None):
-        if type is None:
-            type = self.type
+    def copy(self, atype=None):
+        if atype is None:
+            atype = self.type
         return self.__class__(
             self.query_region,
             self.subject_region,
-            type,
+            atype,
             self.query_key,
             self.subject_region,
         )
@@ -133,10 +133,10 @@ class AlignmentGroupBase(object):
 
     def __init__(
         self,
-        query_region: Region,
         alignments: List[Alignment],
         group_type: str,
         name=None,
+        query_region=None
     ):
         self.query_region = query_region
         self.alignments = alignments
@@ -155,18 +155,19 @@ class AlignmentGroupBase(object):
     def subject_keys(self):
         return [a.subject_key for a in self.alignments]
 
-    def sub_region(self, qstart: int, qend: int, type: str):
+    def sub_region(self, qstart: int, qend: int, atype: str):
         alignments_copy = []
         for a in self.alignments:
             alignments_copy.append(a.sub_region(qstart, qend))
         for a in alignments_copy:
-            a.type = type
+            a.type = atype
         return self.__class__(
-            alignments=alignments_copy, group_type=type, name="subregion"
+            alignments=alignments_copy, group_type=atype, name="subregion"
         )
 
     def __repr__(self):
         return "<AlignmentGroup {}>".format(self.query_region)
+
 
 class AlignmentGroup(AlignmentGroupBase):
     """
@@ -177,10 +178,14 @@ class AlignmentGroup(AlignmentGroupBase):
     __slots__ = ["query_region", "alignments", "name", "type"]
 
     def __init__(self, alignments: List[Alignment], group_type: str, name=None):
-        super().__init__(alignments[0].query_region, alignments, group_type, name=name)
+        super().__init__(alignments=alignments, group_type=group_type, name=name, query_region=alignments[0].query_region)
 
 
 class ComplexAlignmentGroup(AlignmentGroupBase):
+    """
+    A representation of an alignment in which the query region is the concatenation of the
+    underlying alignments provided.
+    """
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 
@@ -189,4 +194,4 @@ class ComplexAlignmentGroup(AlignmentGroupBase):
         query_region = query_region.new(
             alignments[0].query_region.a, alignments[-1].query_region.b
         )
-        super().__init__(query_region, alignments, group_type)
+        super().__init__(alignments=alignments, group_type=group_type, query_region=query_region)

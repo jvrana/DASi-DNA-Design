@@ -17,9 +17,7 @@ Submodules
 
 import bisect
 from .region import Region
-from .span import Span
 import functools
-from .async_wrapper import make_async
 from .npdf import NumpyDataFrame, NumpyDataFrameException
 from .networkx.utils import sort_cycle
 from .networkx.shortest_path import multipoint_shortest_path
@@ -39,7 +37,6 @@ def bisect_between(a, low, high):
     :param a: sorted array (does not check)
     :param low: low key
     :param high: high key
-    :param key: key function
     :return: tuple of start (inclusive) and end (exclusive) indices
     """
     i = bisect.bisect_left(a, low)

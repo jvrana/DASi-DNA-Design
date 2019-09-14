@@ -420,18 +420,20 @@ class NumpyDataFrame(Mapping):
         with open(f, "wb") as f:
             msgpack.dump(self.data, f)
 
-    def loads(self, s):
+    @classmethod
+    def loads(cls, s):
         """Use msgpack to load a df from a byte string"""
         data = msgpack.loads(s)
         data = {k.decode(): v for k, v in data.items()}
-        return NumpyDataFrame(data)
+        return cls(data)
 
-    def load(self, f):
+    @classmethod
+    def load(cls, f):
         """Load the byte repr of df from the specified path."""
         with open(f, "rb") as f:
             data = msgpack.load(f)
             data = {k.decode(): v for k, v in data.items()}
-            return NumpyDataFrame(data)
+            return cls(data)
 
     def __getitem__(self, key):
         new = self.__class__(self.data)

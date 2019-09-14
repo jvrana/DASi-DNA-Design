@@ -73,6 +73,11 @@ def decoder(obj):
 
 
 class CostBuilder(ABC):
+
+    def __init__(self, span):
+        self.cost_dict = {}
+        self.span = span
+
     @classmethod
     @abstractmethod
     def from_params(cls, *args):
@@ -155,20 +160,20 @@ class PrimerCostBuilder(CostBuilder):
         self.time_cost = time_cost
         self.min_anneal = min_anneal
         max_span = self.primer_df["max"].max() * 2 - min_span
-        self.span = np.arange(min_span, max_span, dtype=np.int32)
+        span = np.arange(min_span, max_span, dtype=np.int32)
+        super().__init__(span)
         self.material_modifier = material_mod
-        self.cost_dict = {}
         self.compute()
 
     @classmethod
-    def from_params(cls, params: PrimerParams):
+    def from_params(cls, primer_params: PrimerParams):
         return cls(
-            pdf=params.primer_df,
-            edf=params.eff_df,
-            min_anneal=params.min_anneal,
-            time_cost=params.time_cost,
-            material_mod=params.material_modifier,
-            min_span=params.min_span,
+            pdf=primer_params.primer_df,
+            edf=primer_params.eff_df,
+            min_anneal=primer_params.min_anneal,
+            time_cost=primer_params.time_cost,
+            material_mod=primer_params.material_modifier,
+            min_span=primer_params.min_span,
         )
 
     def compute(self):
@@ -241,26 +246,23 @@ class SynthesisCostBuilder(CostBuilder):
         self.lspanrange = left_span_range
         self.primer_cost = primer_cost
         self.time_cost = time_cost
-        self.cost_dict = {}
-        self.span = None
+        super().__init__(None)
         # self.logger = logger(self)
         self.compute()
 
     @classmethod
-    def from_params(cls, params: SynthesisParams, primer_cost: PrimerCostBuilder):
+    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostBuilder):
         return cls(
-            sdf=params.synthesis_df,
+            sdf=syn_params.synthesis_df,
             primer_cost=primer_cost,
-            time_cost=params.time_cost,
-            material_modifier=params.material_modifier,
-            step_size=params.step_size,
-            left_span_range=params.left_span_range,
+            time_cost=syn_params.time_cost,
+            material_modifier=syn_params.material_modifier,
+            step_size=syn_params.step_size,
+            left_span_range=syn_params.left_span_range,
         )
 
     def compute(self):
         syn = df_to_np_ranged("min", "max", self.synthesis_df, dtype=np.float32)
-        x = syn[:, 0].reshape(-1, 1)
-        x[:: self.step_size, :]
         gene_sizes = syn[:, 0].reshape(-1, 1)[:: self.step_size, :].astype(np.int32)
         gene_costs = syn[:, 1][gene_sizes]
         gene_times = syn[:, 2][gene_sizes]
@@ -335,8 +337,8 @@ class SynthesisCostBuilder(CostBuilder):
 
         return gap_df
 
-    def cost(self, bp, ext):
-        return super().cost(bp, ext, invalidate=True)
+    def cost(self, bp, ext, invalidate=True):
+        return super().cost(bp, ext, invalidate=invalidate)
 
     def __call__(self, bp, ext):
         return self.cost(bp, ext)
@@ -352,8 +354,8 @@ class SpanCost(CostBuilder):
             self.primer_cost.span.min(),
             self.primer_cost.span.max(),
         ]
-        self.span = np.arange(min(x), max(x))
-        self.cost_dict = {}
+        span = np.arange(min(x), max(x))
+        super().__init__(span)
         self.compute()
 
     @classmethod
@@ -387,8 +389,8 @@ class SpanCost(CostBuilder):
             )
             self.cost_dict[s] = df4
 
-    def cost(self, bp, ext):
-        return super().cost(bp, ext, invalidate=True)
+    def cost(self, bp, ext, invalidate=True):
+        return super().cost(bp, ext, invalidate=invalidate)
 
     def dumpb(self) -> bytes:
         return msgpack.packb(self, default=encoder, use_bin_type=True)

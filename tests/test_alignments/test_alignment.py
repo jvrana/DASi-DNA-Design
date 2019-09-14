@@ -1,4 +1,4 @@
-from dasi.utils import Span
+from dasi.utils.region import Span
 from dasi.alignments import Alignment
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentException

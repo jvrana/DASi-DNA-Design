@@ -18,7 +18,7 @@ import bisect
 from collections.abc import Iterable
 from copy import deepcopy
 from itertools import zip_longest
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Union
 
 import networkx as nx
 import numpy as np
@@ -27,7 +27,6 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
 from pyblast.utils import Span, is_circular
-from multiprocessing import Pool
 from dasi.alignments import (
     Alignment,
     AlignmentContainerFactory,
@@ -129,8 +128,8 @@ class Assembly(Iterable):
         }
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
-        def _resolve(node: AssemblyNode, query_region) -> Tuple[int, dict]:
-            new_node = AssemblyNode(query_region.t(node.index), *list(node)[1:])
+        def _resolve(node: AssemblyNode, qregion) -> Tuple[AssemblyNode, dict]:
+            new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
             return new_node, {}
 
         SG = nx.OrderedDiGraph()
@@ -198,7 +197,7 @@ class Assembly(Iterable):
 
     def edit_distance(
         self, other: Assembly, explain=False
-    ) -> Tuple[int, List[Tuple[int, str]]]:
+    ) -> Union[int, List[Tuple[int, str]]]:
         differences = []
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))
@@ -333,6 +332,9 @@ class Design(object):
         self.span_cost = span_cost
         self.graphs = {}
         self.results = {}
+        self.template_results = []
+        self.fragment_results = []
+        self.primer_results = []
         self.container_factory = AlignmentContainerFactory(self.seqdb)
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS
 
@@ -354,10 +356,6 @@ class Design(object):
         self.add_templates(templates + fragments)
         self.add_queries(queries)
         self.add_fragments(fragments)
-
-        self.template_results = []
-        self.fragment_results = []
-        self.primer_results = []
 
     def add_primers(self, primers: List[SeqRecord]):
         """Add primer sequences to materials list"""
@@ -489,9 +487,8 @@ class Design(object):
             with self.logger.timeit("INFO",
                                     "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
                                                                                          n_jobs)):
-                graphs = self._assemble_graphs_with_threads(n_jobs)
-            return graphs
-        return self._assemble_graphs_without_threads()
+                self._assemble_graphs_with_threads(n_jobs)
+        self._assemble_graphs_without_threads()
 
     def _assemble_graphs_without_threads(self):
         """Assemble all assembly graphs for all queries in this design."""
@@ -538,152 +535,13 @@ class Design(object):
             if a == align.query_region.a and b == align.query_region.b:
                 yield align
 
-    def path_to_edge_costs(self, path, graph):
+    @staticmethod
+    def path_to_edge_costs(path, graph):
         arr = []
         for n1, n2 in pairwise(path):
             edata = graph[n1][n2]
             arr.append((n1, n2, edata))
         return arr
-
-    def path_to_df(self, paths_dict):
-
-        fragments = []
-        primers = []
-
-        for qk, paths in paths_dict.items():
-            paths = paths
-            G = self.graphs[qk]
-            container = self.container_factory.containers()[qk]
-
-            record = self.container_factory.seqdb[qk]
-            path = paths[0] + paths[0][:1]
-
-            for n1, n2 in pairwise(path):
-                edata = G[n1][n2]
-                cost = edata["weight"]
-                if n1[2] == "A" and n2[2] == "B":
-                    A = n1[0]
-                    B = n2[0]
-                    group = container.find_groups_by_pos(A, B)[0]
-
-                    if isinstance(group, AlignmentGroup):
-                        align = group.alignments[0]
-                        subject = align.subject_key
-                        subject_rec = self.container_factory.seqdb[align.subject_key]
-                        subject_rec_name = subject_rec.name
-                        subject_seq = str(
-                            subject_rec[
-                                align.subject_region.a : align.subject_region.b
-                            ].seq
-                        )
-                        subject_region = (
-                            align.subject_region.a,
-                            align.subject_region.b,
-                        )
-                    elif isinstance(group, ComplexAlignmentGroup):
-                        names = []
-                        seqs = []
-                        regions = []
-                        subject = []
-                        for align in group.alignments:
-                            subject.append(align.subject_key)
-                            rec = self.container_factory.seqdb[align.subject_key]
-                            seqs.append(
-                                str(
-                                    rec[
-                                        align.subject_region.a : align.subject_region.b
-                                    ].seq
-                                )
-                            )
-                            regions.append(
-                                (align.subject_region.a, align.subject_region.b)
-                            )
-                            names.append(rec.name)
-                        subject_rec_name = ", ".join(names)
-                        subject_seq = ", ".join(seqs)
-                        subject_region = regions[:]
-                        subject = ",".join(subject)
-
-                    fragments.append(
-                        {
-                            "query": qk,
-                            "query_name": record.name,
-                            "query_region": (
-                                group.query_region.a,
-                                group.query_region.b,
-                            ),
-                            "subject": subject,
-                            "subject_name": subject_rec_name,
-                            "subject_region": subject_region,
-                            "fragment_length": len(group.query_region),
-                            "fragment_seq": subject_seq,
-                            "cost": cost,
-                            "type": edata["type"],
-                        }
-                    )
-
-                    # TODO: design overhangs (how long?)
-                    # if n1[1]:
-                    #     primers.append({
-                    #         'query': qk,
-                    #         'query_name': record.name,
-                    #         'query_region': (align.query_region.a, align.query_region.b),
-                    #         'subject': sk,
-                    #         'subject_name': subject_rec.name,
-                    #         'subject_region': (align.subject_region.a, align.subject_region.a + 20),
-                    #         'anneal_seq': str(subject_rec[align.subject_region.a:align.subject_region.a + 20].seq),
-                    #         'overhang_seq': '?',
-                    #         'cost': '?',
-                    #         'type': 'PRIMER'
-                    #     })
-                    # if n2[1]:
-                    #     primers.append({
-                    #         'query': qk,
-                    #         'query_name': record.name,
-                    #         'query_region': (align.query_region.a, align.query_region.b),
-                    #         'subject': sk,
-                    #         'subject_name': subject_rec.name,
-                    #         'subject_region': (align.subject_region.b - 20, align.subject_region.b),
-                    #         'fragment_length': 0,
-                    #         'anneal_seq': str(subject_rec[align.subject_region.b-20:align.subject_region.b].reverse_complement().seq),
-                    #         'overhang_seq': '?',
-                    #         'cost': '?',
-                    #         'type': 'PRIMER'
-                    #     })
-
-                else:
-                    B = n1[0]
-                    A = n2[0]
-                    span = Span(
-                        B, A, len(record), cyclic=is_circular(record), allow_wrap=True
-                    )
-
-                    # TODO: extending the gene synthesis
-                    if not n1[1]:
-                        span.b = span.b - 20
-                    if not n2[1]:
-                        span.a = span.a + 20
-
-                    ranges = span.ranges()
-                    frag_seq = record[ranges[0][0] : ranges[0][1]]
-                    for r in ranges[1:]:
-                        frag_seq += record[r[0] : r[1]]
-
-                    fragments.append(
-                        {
-                            "query": qk,
-                            "query_name": record.name,
-                            "query_region": (B, A),
-                            "subject": None,
-                            "subject_name": "SYNTHESIS",
-                            "subject_region": None,
-                            "fragment_length": len(span),
-                            "fragment_seq": str(frag_seq.seq),
-                            "cost": cost,
-                            "type": edata["type"],
-                        }
-                    )
-        return pd.DataFrame(fragments), pd.DataFrame(primers)
 
     def optimize(self, n_paths=3, n_jobs=None):
         n_jobs = n_jobs or self.n_jobs
@@ -764,8 +622,8 @@ class LibraryDesign(Design):
 
     DEFAULT_N_JOBS = 10
 
-    def __init__(self, span_cost=None, n_threads=None):
-        super().__init__(span_cost=span_cost, n_threads=n_threads)
+    def __init__(self, span_cost=None, n_jobs=None):
+        super().__init__(span_cost=span_cost, n_jobs=n_jobs)
         self.shared_alignments = []
         self._edges = []
 
@@ -780,7 +638,8 @@ class LibraryDesign(Design):
     #     return repeats
 
     # TODO: why?
-    def _get_iter_non_repeats(self, alignments: List[Alignment]):
+    @staticmethod
+    def _get_iter_non_repeats(alignments: List[Alignment]):
         """
         Return repeat regions of alignments. These are alignments that align
         to themselves.

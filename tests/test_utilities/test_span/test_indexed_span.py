@@ -1,4 +1,4 @@
-from dasi.utils import Span
+from dasi.utils.region import Span
 import pytest
 
 

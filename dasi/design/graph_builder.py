@@ -46,7 +46,7 @@ class AssemblyGraphBuilder(object):
         time,
         efficiency,
         span,
-        type,
+        atype,
         **kwargs
     ):
         self.G.add_edge(
@@ -58,7 +58,7 @@ class AssemblyGraphBuilder(object):
             time=time,
             efficiency=efficiency,
             span=span,
-            type=type,
+            type=atype,
             **kwargs
         )
 
@@ -145,7 +145,7 @@ class AssemblyGraphBuilder(object):
                             internal_or_external='internal',
                             span=len(align.query_region),
                             condition=(a_expand, b_expand),
-                            type=align.type,
+                            atype=align.type,
                             efficiency=0.95,
                         ),
                     )
@@ -185,30 +185,30 @@ class AssemblyGraphBuilder(object):
             list(x) for x in partition(lambda x: x.overhang, b_nodes)
         ]
 
-        def make_overlap_iterator(anodes, bnodes):
-            anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
-            for bnode in bnodes:
-                i = bisect.bisect_left(akeys, bnode.index)
-                for anode in anodes[:i]:
-                    yield bnode, anode
+        def make_overlap_iterator(a, b):
+            a, akeys = sort_with_keys(a, lambda x: x.index)
+            for _b in b:
+                i = bisect.bisect_left(akeys, _b.index)
+                for _a in a[:i]:
+                    yield _b, _a
 
-        def make_gap_itererator(anodes, bnodes):
-            anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
-            for bnode in bnodes:
-                i = bisect.bisect_left(akeys, bnode.index)
-                for anode in anodes[i:]:
-                    yield bnode, anode
+        def make_gap_itererator(a, b):
+            a, akeys = sort_with_keys(a, lambda x: x.index)
+            for _b in b:
+                i = bisect.bisect_left(akeys, _b.index)
+                for _a in a[i:]:
+                    yield _b, _a
 
-        def make_origin_iterator(anodes, bnodes):
-            anodes, akeys = sort_with_keys(anodes, lambda x: x.index)
-            bnodes, bkeys = sort_with_keys(bnodes, lambda x: x.index)
+        def make_origin_iterator(a, b):
+            a, akeys = sort_with_keys(a, lambda x: x.index)
+            b, bkeys = sort_with_keys(b, lambda x: x.index)
 
             i = bisect.bisect_right(akeys, length)
             j = bisect.bisect_left(bkeys, length)
 
-            for bnode in bnodes[j:]:
-                for anode in anodes[:i]:
-                    yield bnode, anode
+            for _b in b[j:]:
+                for _a in a[:i]:
+                    yield _b, _a
 
         overlap_iter = make_overlap_iterator(a_nodes_overhang, b_nodes_overhang)
         gap_iter = make_gap_itererator(a_nodes_gap, b_nodes_gap)
@@ -283,7 +283,7 @@ class AssemblyGraphBuilder(object):
                     efficiency=None,
                     internal_or_external='external',
                     name="overlap",
-                    type="overlap",
+                    atype="overlap",
                     condition=condition,
                     span=span,
                 )
@@ -307,7 +307,7 @@ class AssemblyGraphBuilder(object):
                 efficiency=None,
                 internal_or_external='external',
                 name="gap",
-                type="gap",
+                atype="gap",
                 condition=condition,
                 span=span,
             )

@@ -16,17 +16,17 @@ import itertools
 # TODO: test linear fragments
 
 
-def random_seq(len):
+def random_seq(n_bases):
     bases = "AGTC"
     seq = ""
-    for _ in range(len):
+    for _ in range(n_bases):
         i = random.randint(0, 3)
         seq += bases[i]
     return seq
 
 
-def random_record(len):
-    return SeqRecord(Seq(random_seq(len)), id=str(uuid4()))
+def random_record(n_bases):
+    return SeqRecord(Seq(random_seq(n_bases)), id=str(uuid4()))
 
 
 def print_edge_cost(path, graph):
@@ -37,7 +37,7 @@ def print_edge_cost(path, graph):
             edata = graph[n1][n2]
             total += edata["weight"]
             print((n1, n2, edata))
-        except:
+        except KeyError:
             print((n1, n2, "MISSING EDGE"))
             total += np.inf
 

@@ -49,7 +49,7 @@ def print_edge_cost(path, graph):
             edata = graph[n1][n2]
             total += edata["weight"]
             print((n1, n2, edata["weight"]))
-        except:
+        except KeyError:
             print((n1, n2, "MISSING EDGE"))
 
     print("TOTAL: {}".format(total))

@@ -8,7 +8,7 @@ from dasi.utils import Region, bisect_slice_between, sort_with_keys
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from more_itertools import partition, unique_everseen, flatten
-from typing import Dict, List
+from typing import Dict, List, Union, Tuple
 from Bio.SeqRecord import SeqRecord
 from bisect import bisect_left
 from copy import deepcopy
@@ -130,8 +130,8 @@ class AlignmentContainer(Sized):
     def _create_pcr_product_alignment(
         self,
         template_group: AlignmentGroup,
-        fwd: Alignment,
-        rev: Alignment,
+        fwd: Union[Alignment, None],
+        rev: Union[Alignment, None],
         alignment_type: str,
     ):
         groups = []
@@ -207,7 +207,7 @@ class AlignmentContainer(Sized):
         return pairs
 
     def expand_overlaps(
-        self, alignment_groups: List[AlignmentGroup], type=Constants.PCR_PRODUCT
+        self, alignment_groups: List[AlignmentGroup], atype=Constants.PCR_PRODUCT
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -250,10 +250,10 @@ class AlignmentContainer(Sized):
             for group_b in overlapping:
                 if group_b is not group_a:
                     left = group_a.sub_region(
-                        group_a.query_region.a, group_b.query_region.a, type
+                        group_a.query_region.a, group_b.query_region.a, atype
                     )
                     overlap = group_a.sub_region(
-                        group_b.query_region.a, group_a.query_region.b, type
+                        group_b.query_region.a, group_a.query_region.b, atype
                     )
                     # right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
 
@@ -298,14 +298,14 @@ class AlignmentContainer(Sized):
         self.logger.info("Number of total groups: {}".format(len(self.groups())))
 
     @classmethod
-    def _new_grouping_tag(cls, alignments, type: str, key=None):
+    def _new_grouping_tag(cls, alignments, atype: str, key=None):
         """
         Make a new ordered grouping by type and a uuid.
 
         :param alignments:
         :type alignments:
-        :param type:
-        :type type:
+        :param atype:
+        :type atype:
         :param key:
         :type key:
         :return:
@@ -313,7 +313,7 @@ class AlignmentContainer(Sized):
         """
         if key is None:
             key = str(uuid4())
-        group_key = (key, type)
+        group_key = (key, atype)
         for i, a in enumerate(alignments):
             if key in a.grouping_tags:
                 raise AlignmentContainerException(
@@ -329,18 +329,18 @@ class AlignmentContainer(Sized):
     @classmethod
     def complex_alignment_groups(
         cls, alignments: List[Alignment]
-    ) -> List[AlignmentGroup]:
+    ) -> List[Union[AlignmentGroup, ComplexAlignmentGroup]]:
         key_to_alignments = {}
         for a in alignments:
             if not isinstance(a, Alignment):
                 raise Exception
         for a in alignments:
-            for (uuid, type), i in a.grouping_tags.items():
-                key_to_alignments.setdefault((uuid, type), list()).append((i, a))
+            for (uuid, atype), i in a.grouping_tags.items():
+                key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
         complex_groups = []
-        for (uuid, type), alist in key_to_alignments.items():
+        for (uuid, atype), alist in key_to_alignments.items():
             sorted_alist = [x[-1] for x in sorted(alist)]
-            complex_groups.append(ComplexAlignmentGroup(sorted_alist, type))
+            complex_groups.append(ComplexAlignmentGroup(sorted_alist, atype))
         return complex_groups
 
     @classmethod
@@ -368,7 +368,7 @@ class AlignmentContainer(Sized):
         return allgroups
 
     @property
-    def types(self) -> List[str]:
+    def types(self) -> List[Tuple]:
         """
         Return all valid types.
 
@@ -376,7 +376,7 @@ class AlignmentContainer(Sized):
         """
         return tuple(self.valid_types)
 
-    def get_groups_by_types(self, types: List[str]) -> List[AlignmentGroup]:
+    def get_groups_by_types(self, types: List[str]) -> Union[AlignmentGroup, List[AlignmentGroup]]:
         """
         Return AlignmentGroups by fragment type
 
@@ -395,7 +395,7 @@ class AlignmentContainer(Sized):
 
     # TODO: change from property
     @property
-    def groups_by_type(self) -> Dict[str, AlignmentGroup]:
+    def groups_by_type(self) -> Dict[str, List[Union[AlignmentGroup, ComplexAlignmentGroup]]]:
         """
         Return alignment groups according to their alignment 'type'
 
@@ -444,20 +444,20 @@ class AlignmentContainerFactory(object):
         self.logger = logger(self)
         self.seqdb = seqdb
 
-    def load_blast_json(self, data: List[Dict], type: str):
+    def load_blast_json(self, data: List[Dict], atype: str):
         """
         Create alignments from a formatted BLAST JSON result.
 
         :param data: formatted BLAST JSON result
-        :param type: the type of alignment to initialize
+        :param atype: the type of alignment to initialize
         :return: None
         """
         self.logger.info(
             'Loading blast json ({} entries) to fragment type "{}"'.format(
-                len(data), type
+                len(data), atype
             )
         )
-        assert type in self.valid_types
+        assert atype in self.valid_types
         for d in data:
             query_region = blast_to_region(d["query"], self.seqdb)
             subject_region = blast_to_region(d["subject"], self.seqdb)
@@ -467,7 +467,7 @@ class AlignmentContainerFactory(object):
             alignment = Alignment(
                 query_region,
                 subject_region,
-                type=type,
+                atype=atype,
                 query_key=query_key,
                 subject_key=subject_key,
             )

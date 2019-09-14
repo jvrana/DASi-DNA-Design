@@ -1,6 +1,6 @@
 import networkx as nx
 import numpy as np
-from .utils import divide, select_from_arrs, replace_nan_with_inf
+from .utils import select_from_arrs, replace_nan_with_inf
 from sympy import sympify, lambdify
 from collections import OrderedDict
 from .exceptions import TerrariumNetworkxError
@@ -156,9 +156,9 @@ def sympy_floyd_warshall(
             d = 1.0
         else:
             raise TerrariumNetworkxError(
-                "Accumulator key {} must either by '{}' or '{}' or a callable with two "
+                "Accumulator key {} must either be '{}' or '{}' or a callable with two "
                 "arguments ('M' a numpy matrix and 'i' a node index as an int)".format(
-                    key
+                    key, SUM, PRODUCT
                 )
             )
 
@@ -177,7 +177,7 @@ def sympy_floyd_warshall(
             else:
                 raise TerrariumNetworkxError(
                     "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
-                        PRODUCT, SUM
+                        key, PRODUCT, SUM
                     )
                 )
 

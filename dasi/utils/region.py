@@ -1,4 +1,4 @@
-from .span import Span
+from pyblast.utils import Span
 
 """
 Project: jdna
@@ -34,11 +34,11 @@ class Region(Span):
         index=0,
         direction=FORWARD,
         name=None,
-        id=None,
+        region_id=None,
         allow_wrap=True,
     ):
         self.name = name
-        self.id = id
+        self.id = region_id
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
         self.direction = direction
         super().__init__(

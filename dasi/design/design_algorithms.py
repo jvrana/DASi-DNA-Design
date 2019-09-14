@@ -73,21 +73,21 @@ def _collect_cycle_endpoints(graph: nx.DiGraph, length: int):
     :param length: the size of the query sequence
     :return:
     """
-    nodelist, nkeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
+    nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
     node_to_i = {v: i for i, v in enumerate(nodelist)}
     weight_matrix = _all_pairs_shortest_path(graph, nodelist)
     endpoints = []
 
-    def bisect_iterator(nodelist, nkeys):
+    def bisect_iterator(nlist, nkeys):
         _i = bisect.bisect_right(nkeys, length)
-        for i, A in enumerate(nodelist[:_i]):
+        for i, A in enumerate(nlist[:_i]):
             _j = bisect.bisect_left(nkeys, A.index + length)
-            for B in nodelist[_j:]:
+            for B in nlist[_j:]:
                 if B.type == "B":
                     j = node_to_i[B]
                     yield i, j, A, B
 
-    pair_iterator = bisect_iterator(nodelist, nkeys)
+    pair_iterator = bisect_iterator(nodelist, nodekeys)
     for i, j, A, B in pair_iterator:
 
         # TODO: must include final edge

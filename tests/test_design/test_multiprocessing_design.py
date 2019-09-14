@@ -4,6 +4,7 @@ from os.path import join
 from dasi import Design
 from dasi.design import DesignResult
 from dasi.alignments import AlignmentContainer
+from dasi.log import logger
 import pickle
 import networkx as nx
 
@@ -14,6 +15,26 @@ def test_pickle_design_result():
     result = DesignResult(AlignmentContainer({'none': None}, []), nx.DiGraph, "none")
     s = pickle.dumps(result)
     unpickled_result = pickle.loads(s)
+
+# long tests
+def test_large_pkl(here, paths, span_cost):
+    """Expect more than one graph to be output if multiple queries are provided"""
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["templates"])
+
+    query_path = join(here, "data/test_data/genbank/designs/*.gb")
+    queries = make_circular(load_genbank_glob(query_path))[:3]
+
+    design = Design(span_cost=span_cost)
+
+    design.add_materials(primers=primers, templates=templates, queries=queries)
+
+    design.compile()
+    results = design.optimize()
+    with logger.timeit("DEBUG", "Pickling container_factory"):
+        pickle.loads(pickle.dumps(design.container_factory))
+    with logger.timeit("DEBUG", "Pickling results"):
+        pickle.loads(pickle.dumps(results))
 
 def f(arg):
     scost, primers, templates, queries, results = arg
@@ -40,25 +61,6 @@ def test_multiprocessing(here, paths, span_cost, ncores):
     print(results)
     assert results
 
-# # long tests
-# def test_multidesign(here, paths, span_cost):
-#     """Expect more than one graph to be output if multiple queries are provided"""
-#     primers = make_linear(load_fasta_glob(paths["primers"]))
-#     templates = load_genbank_glob(paths["templates"])
-#
-#     query_path = join(here, "data/test_data/genbank/designs/*.gb")
-#     queries = make_circular(load_genbank_glob(query_path))
-#
-#     design = Design(span_cost=span_cost)
-#
-#     design.add_materials(primers=primers, templates=templates, queries=queries)
-#
-#     design.compile()
-#
-#     assert len(design.graphs) == len(queries)
-#     assert len(design.graphs) > 1
-#
-#     design.optimize()
 
 
 def test_multiprocessing_multidesign(here, paths, span_cost):

@@ -504,14 +504,24 @@ class Design(object):
             "INFO",
             desc="assembling graphs (threads=1)",
         ):
-            self.graphs[query_key] = assemble_graph(container, self.span_cost)
+            self.logger.debug("ngroups: {}".format(len(container.groups())))
+            self.graphs[query_key], _ = assemble_graph(container, self.span_cost)
+            self.logger.debug("ngroups: {}".format(len(container.groups())))
 
     def _assemble_graphs_with_threads(self, n_jobs=None):
         query_keys, containers = zip(*self.container_factory.containers().items())
+        for c in containers:
+            self.logger.debug("ngroups: {}".format(len(c.groups())))
+
+        for c in containers:
+            self.logger.debug(len(c.groups()))
+
         graphs = multiprocessing_assemble_graph(
-            containers, self.span_cost, n_jobs=n_jobs
+            self.container_factory, self.span_cost, n_jobs=n_jobs
         )
-        for qk, g in zip(query_keys, graphs):
+
+        # update graphs dict
+        for qk, g, c in zip(query_keys, graphs, containers):
             self.graphs[qk] = g
 
     def compile(self, n_jobs=None):
@@ -574,6 +584,7 @@ class Design(object):
             "INFO",
             desc="optimizing graphs (n_graphs={}, threads=1)".format(len(self.graphs)),
         ):
+
             container = self.containers[query_key]
             query = container.seqdb[query_key]
             cyclic = is_circular(query)

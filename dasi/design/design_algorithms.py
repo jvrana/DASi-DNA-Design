@@ -5,6 +5,8 @@ import networkx as nx
 import numpy as np
 
 from dasi.design.graph_builder import AssemblyGraphBuilder
+from dasi.alignments import AlignmentContainerFactory, AlignmentContainer
+from dasi.cost import SpanCost
 from dasi.exceptions import DasiDesignException
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
@@ -18,7 +20,7 @@ path_length_config = {
 }
 
 
-def _check_paths(paths):
+def _check_paths(paths: List[tuple]):
     """
     Validates a path to check for duplicate nodes.
 
@@ -43,7 +45,7 @@ def _check_paths(paths):
         )
 
 
-def _all_pairs_shortest_path(graph, nodelist):
+def _all_pairs_shortest_path(graph, nodelist) -> np.ndarray:
     return sympy_floyd_warshall(
         graph,
         f=path_length_config["f"],
@@ -53,7 +55,7 @@ def _all_pairs_shortest_path(graph, nodelist):
     )
 
 
-def _multinode_to_shortest_path(graph, nodes, cyclic):
+def _multinode_to_shortest_path(graph, nodes, cyclic) -> List[tuple]:
     """Estimate the shortest path that touches the specified nodes."""
     path_length, path = sympy_multipoint_shortest_path(
         graph,
@@ -65,7 +67,7 @@ def _multinode_to_shortest_path(graph, nodes, cyclic):
     return path
 
 
-def _collect_cycle_endpoints(graph: nx.DiGraph, length: int):
+def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -> List[tuple]:
     """
     Use the floyd-warshall algorithm to compute the shortest path endpoints.
 
@@ -124,7 +126,7 @@ def _nodes_to_fullpaths(
 
 def _collect_optimized_paths(
     graph: nx.DiGraph, length: int, cyclic: bool, n_paths=None
-):
+) -> List[List[tuple]]:
     """
     Collect minimum cycles or linear paths from a graph.
 
@@ -145,18 +147,18 @@ def _collect_optimized_paths(
     return paths
 
 
-def optimize_graph(graph, query_length, cyclic, n_paths):
+def optimize_graph(graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int) -> List[List[tuple]]:
     """Optimize the graph associated with the specified query_key"""
     # self.logger.info("Optimizing {}".format(query_key))
     paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
     return paths
 
 
-def _multiprocessing_optimize_graph(args):
+def _multiprocessing_optimize_graph(args: Tuple[nx.DiGraph, int, bool, int]) -> List[List[tuple]]:
     return optimize_graph(args[0], args[1], args[2], args[3])
 
 
-def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_jobs):
+def multiprocessing_optimize_graph(graphs: List[nx.DiGraph], query_lengths: List[int], cyclics: List[bool], n_paths: List[List[tuple]], n_jobs: int):
     """Optimize graphs using multiprocessing"""
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
@@ -165,34 +167,33 @@ def multiprocessing_optimize_graph(graphs, query_lengths, cyclics, n_paths, n_jo
     return paths
 
 
-def assemble_graph(container, span_cost):
+def assemble_graph(container: AlignmentContainer, span_cost: SpanCost) -> Tuple[nx.DiGraph, AlignmentContainer]:
     """Build an assembly graph for a specified query."""
     container.expand(expand_overlaps=True, expand_primers=True)
     container.freeze()
-    # group by query_regions
-    # groups = container.groups()
-    # self.logger.info(
-    #     "Number of types: {}".format(len(container.groups_by_type))
-    # )
-    # self.logger.info("Number of groups: {}".format(len(groups)))
-    # build assembly graph
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
     G = graph_builder.build_assembly_graph()
-    # self.logger.info("=== Assembly Graph ===")
-    # self.logger.info(nx.info(G))
     assert G.number_of_edges()
-    return G
+    return G, container
 
 
-def _multiprocessing_assemble_graph(arg):
+def _multiprocessing_assemble_graph(arg: Tuple[AlignmentContainer, SpanCost]) -> Tuple[nx.DiGraph, AlignmentContainer]:
     return assemble_graph(arg[0], arg[1])
 
 
-def multiprocessing_assemble_graph(containers, span_cost, n_jobs):
+def multiprocessing_assemble_graph(container_factory: AlignmentContainerFactory,
+                                   span_cost: SpanCost, n_jobs: int) -> List[nx.DiGraph]:
     """Assemble graphs using multiprocessing"""
+    query_keys = container_factory.alignments.keys()
+    containers = [container_factory.containers()[k] for k in query_keys]
+
     args = [(container, span_cost) for container in containers]
     with Pool(
         processes=min(n_jobs, len(containers))
     ) as pool:  # start 4 worker processes
-        graphs = pool.map(_multiprocessing_assemble_graph, args)
+        graphs, expanded_containers = zip(*pool.map(_multiprocessing_assemble_graph, args))
+
+    # update container_factory alignments
+    for key, container in zip(query_keys, expanded_containers):
+        container_factory.alignments[key] = list(container.alignments)
     return graphs

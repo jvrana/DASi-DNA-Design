@@ -67,7 +67,7 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
     templates = load_genbank_glob(paths["templates"])
 
     query_path = join(here, "data/test_data/genbank/designs/*.gb")
-    queries = make_circular(load_genbank_glob(query_path))[:2]
+    queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost=span_cost)
     design.n_jobs = 10

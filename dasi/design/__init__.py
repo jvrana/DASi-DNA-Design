@@ -494,7 +494,8 @@ class Design(object):
                                     "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
                                                                                          n_jobs)):
                 self._assemble_graphs_with_threads(n_jobs)
-        self._assemble_graphs_without_threads()
+        else:
+            self._assemble_graphs_without_threads()
 
     def _assemble_graphs_without_threads(self):
         """Assemble all assembly graphs for all queries in this design."""
@@ -559,7 +560,8 @@ class Design(object):
                 ),
             ):
                 return self._optimize_with_threads(n_paths, n_jobs)
-        return self._optimize_without_threads(n_paths)
+        else:
+            return self._optimize_without_threads(n_paths)
 
     # TODO: n_paths to class attribute
     def _optimize_without_threads(

@@ -237,16 +237,25 @@ class AssemblyGraphBuilder(object):
                 edge_dict.setdefault(condition, []).append(
                     ((n1, n2), edata, edata["span"])
                 )
+        edges_to_remove = []
+
+
+
         for condition, info in edge_dict.items():
             edges, edata, spans = zip(*info)
             npdf = self.span_cost.cost(np.array(spans), condition)
-
+            data = npdf.aggregate(np.vstack)
+            cost_i = [i for i, col in enumerate(npdf.columns) if col == 'cost'][0]
+            self.logger.debug(data.shape)
             # update each edge
-            for e, d, edge in zip(edata, npdf, edges):
-                if d.data["cost"] > self.COST_THRESHOLD:
-                    self.G.remove_edge(*edge)
+
+            for i, (e, edge) in enumerate(zip(edata, edges)):
+                if data[cost_i, i] > self.COST_THRESHOLD:
+                    edges_to_remove.append(edge)
                 else:
-                    e.update(d.data)
+                    _d = {c: data[col_i, i] for col_i, c in enumerate(npdf.columns)}
+                    e.update(_d)
+        self.G.remove_edges_from(edges_to_remove)
 
     def _get_cost(self, bp, ext):
         data = self.span_cost(bp, ext).data

@@ -83,6 +83,7 @@ class AlignmentContainer(Sized):
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
         self._alignments = []
+        self._frozen = False
         if alignments is not None:
             self.alignments = alignments
         self.seqdb = seqdb
@@ -94,6 +95,8 @@ class AlignmentContainer(Sized):
 
     @alignments.setter
     def alignments(self, v):
+        if self._frozen:
+            raise AlignmentContainerException("Cannot set alignments. Container is frozen.")
         self._alignments = v
         self._check_single_query_key(self._alignments)
 
@@ -411,10 +414,12 @@ class AlignmentContainer(Sized):
     def freeze(self):
         """Freeze the container, disallowing further modifications to alignments"""
         self._alignments = tuple(self._alignments)
+        self._frozen = True
 
     def unfreeze(self):
         """Unfreeze the container, allowing modifications to alignments"""
         self._alignments = list(self._alignments)
+        self._frozen = False
 
     def __len__(self):
         return len(self.alignments)

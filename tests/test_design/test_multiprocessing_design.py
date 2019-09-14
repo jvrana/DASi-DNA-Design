@@ -22,7 +22,7 @@ def f(arg):
     design.compile()
     return design.optimize()
 
-@pytest.mark.parametrize("ncores", [1, 10])
+@pytest.mark.parametrize("ncores", [10])
 def test_multiprocessing(here, paths, span_cost, ncores):
     """Test that demonstrates how multiprocessing can speed up designing multiple constructs."""
     from multiprocessing import Pool
@@ -67,10 +67,10 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
     templates = load_genbank_glob(paths["templates"])
 
     query_path = join(here, "data/test_data/genbank/designs/*.gb")
-    queries = make_circular(load_genbank_glob(query_path))
+    queries = make_circular(load_genbank_glob(query_path))[:2]
 
     design = Design(span_cost=span_cost)
-    design.n_jobs = 4
+    design.n_jobs = 10
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
     design.compile()

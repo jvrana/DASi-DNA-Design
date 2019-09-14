@@ -162,8 +162,6 @@ class Assembly(Iterable):
             groups = self.container.find_groups_by_pos(
                 query_region.a, query_region.b, groups=self.groups
             )
-            self.logger.debug(len(groups))
-            self.logger.debug(query_region)
             if edata['internal_or_external'] == 'internal' and not groups:
                 raise DasiDesignException("Missing groups for edge between {} and {}".format(n1, n2))
 
@@ -242,7 +240,6 @@ class Assembly(Iterable):
     def to_df(self):
         rows = []
         for n1, n2, edata in self.edges():
-            print(edata)
             groups = edata["groups"]
 
             if groups:
@@ -322,6 +319,15 @@ class Design(object):
     DEFAULT_N_JOBS = 1
 
     def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
+        """
+
+        :param span_cost:
+        :type span_cost: SpanCost
+        :param seqdb:
+        :type seqdb: dict
+        :param n_jobs:
+        :type n_jobs: int
+        """
         self.blast_factory = BioBlastFactory()
         self.logger = logger(self)
 
@@ -484,7 +490,7 @@ class Design(object):
     def assemble_graphs(self, n_jobs=None):
         n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
-            with self.logger.timeit("INFO",
+            with self.logger.timeit("DEBUG",
                                     "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
                                                                                          n_jobs)):
                 self._assemble_graphs_with_threads(n_jobs)
@@ -510,7 +516,7 @@ class Design(object):
     def compile(self, n_jobs=None):
         """Compile materials to assembly graph"""
         self.results = {}
-        with self.logger.timeit("INFO", "running blast"):
+        with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
 
@@ -547,7 +553,7 @@ class Design(object):
         n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
             with self.logger.timeit(
-                "INFO",
+                "DEBUG",
                 "optimizing graphs (n_graphs={}, threads={})".format(
                     len(self.graphs), n_jobs
                 ),

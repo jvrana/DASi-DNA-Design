@@ -3,7 +3,7 @@ from pyblast.utils import make_linear, make_circular, load_fasta_glob, load_genb
 from os.path import join
 from dasi import Design
 from dasi.design import DesignResult
-from dasi.alignments import AlignmentContainer, Alignment
+from dasi.alignments import AlignmentContainer
 import pickle
 import networkx as nx
 
@@ -24,7 +24,7 @@ def f(arg):
     return design.optimize()
 
 
-@pytest.mark.parametrize("ncores", [10])
+@pytest.mark.parametrize("ncores", [1, 10])
 def test_multiprocessing(here, paths, span_cost, ncores):
     """Test that demonstrates how multiprocessing can speed up designing multiple constructs."""
     from multiprocessing import Pool
@@ -69,7 +69,7 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
     templates = load_genbank_glob(paths["templates"])
 
     query_path = join(here, "data/test_data/genbank/designs/*.gb")
-    queries = make_circular(load_genbank_glob(query_path))[:2]
+    queries = make_circular(load_genbank_glob(query_path))
 
     design = Design(span_cost=span_cost)
     design.n_jobs = 1

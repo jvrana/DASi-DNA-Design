@@ -15,14 +15,12 @@ def test_pickle_design_result():
     s = pickle.dumps(result)
     unpickled_result = pickle.loads(s)
 
-
 def f(arg):
     scost, primers, templates, queries, results = arg
     design = Design(span_cost=scost)
     design.add_materials(primers=primers, templates=templates, queries=queries)
     design.compile()
     return design.optimize()
-
 
 @pytest.mark.parametrize("ncores", [1, 10])
 def test_multiprocessing(here, paths, span_cost, ncores):

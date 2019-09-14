@@ -63,7 +63,7 @@ class AssemblyGraphBuilder(object):
         )
 
     # TODO: internal cost should correlate with span_cost
-    # TODO: interanl cost should also have an efficiency associated with it (can you amplify it?).
+    # TODO: internal cost should also have an efficiency associated with it (can you amplify it?).
     #       How fast can you compute this for all alignments?
     # TODO: test internal and external edge costs for all cases.
     # TODO: We are counting the primer material cost **twice**, once in the JxnCost and once here.

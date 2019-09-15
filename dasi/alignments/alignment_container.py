@@ -423,6 +423,7 @@ class AlignmentContainer(Sized):
     def __len__(self):
         return len(self.alignments)
 
+from frozendict import frozendict
 
 class AlignmentContainerFactory(object):
     """
@@ -442,11 +443,20 @@ class AlignmentContainerFactory(object):
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
-        self.alignments = (
+        self._alignments = (
             {}
         )  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
+        self._containers = None
         self.logger = logger(self)
         self.seqdb = seqdb
+
+    @property
+    def alignments(self):
+        return frozendict(self._alignments)
+
+    def set_alignments(self, alignments):
+        self._alignments = alignments
+        self._containers = None
 
     def load_blast_json(self, data: List[Dict], atype: str):
         """
@@ -475,10 +485,12 @@ class AlignmentContainerFactory(object):
                 query_key=query_key,
                 subject_key=subject_key,
             )
-            self.alignments.setdefault(query_key, list()).append(alignment)
+            self._alignments.setdefault(query_key, list()).append(alignment)
 
     def containers(self):
-        container_dict = {}
-        for key, alignments in self.alignments.items():
-            container_dict[key] = AlignmentContainer(self.seqdb, alignments=alignments)
-        return container_dict
+        if self._containers is None:
+            container_dict = {}
+            for key, alignments in self.alignments.items():
+                container_dict[key] = AlignmentContainer(self.seqdb, alignments=alignments)
+            self._containers = container_dict
+        return frozendict(self._containers)

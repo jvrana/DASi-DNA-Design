@@ -96,7 +96,7 @@ class AssemblyGraphBuilder(object):
             raise DASiException("Could not determine cost of {}".format(align))
         return internal_cost
 
-    def internal_edge_data(self, align):
+    def iter_internal_edge_data(self, align):
         q = align.query_region
         a_expand, b_expand = True, True
         if align.type in [
@@ -124,16 +124,16 @@ class AssemblyGraphBuilder(object):
             # linear
             pairs = [(q.a, q.b)]
 
-        nodes = []
-        edges = []
+        # nodes = []
+        # edges = []
         for a, b in pairs:
             if a is not None:
                 anode = (a, a_expand, "A")
-                nodes.append(anode)
+                # nodes.append(anode)
                 if b is not None:
                     bnode = (b, b_expand, "B")
-                    nodes.append(bnode)
-                    edge = (
+                    # nodes.append(bnode)
+                    yield (
                         anode,
                         bnode,
                         dict(
@@ -149,21 +149,13 @@ class AssemblyGraphBuilder(object):
                             efficiency=0.95,
                         ),
                     )
-                    edges.append(edge)
-        return nodes, edges
+                    # edges.append(edge)
+        # return nodes, edges
 
     def add_internal_edges(self, groups):
         for g in groups:
-            nodes, edges = self.internal_edge_data(g)
-
-            for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
-                # for n in nodes:
-                #     if n[2] == 'A':
-                #         o = a_overhang
-                #     else:
-                #         o = b_overhang
-                #     self.add_node((n[0], n[1], n[2], o))
-                for a, b, ab_data in edges:
+            for a, b, ab_data in self.iter_internal_edge_data(g):
+                for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
                     a_node = AssemblyNode(a[0], a[1], a[2], a_overhang)
                     b_node = AssemblyNode(b[0], b[1], b[2], b_overhang)
                     self.add_edge(a_node, b_node, **ab_data)

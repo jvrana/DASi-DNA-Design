@@ -363,23 +363,23 @@ class Design(object):
 
     def add_primers(self, primers: List[SeqRecord]):
         """Add primer sequences to materials list"""
-        self.logger.info("Adding primers")
         self.blast_factory.add_records(primers, self.PRIMERS)
+        self.logger.info("Added {} primers".format(len(primers)))
 
     def add_templates(self, templates: List[SeqRecord]):
         """Add template sequences to materials list"""
-        self.logger.info("Adding templates")
         self.blast_factory.add_records(templates, self.TEMPLATES)
+        self.logger.info("Added {} templates".format(len(templates)))
 
     def add_queries(self, queries: List[SeqRecord]):
         """Add goal/query sequences to materials list"""
-        self.logger.info("Adding queries")
         self.blast_factory.add_records(queries, self.QUERIES)
+        self.logger.info("Added {} queries".format(len(queries)))
 
     def add_fragments(self, fragments: List[SeqRecord]):
         """Add fragment sequences to materials list"""
-        self.logger.info("Adding fragments")
         self.blast_factory.add_records(fragments, self.FRAGMENTS)
+        self.logger.info("Added {} queries".format(len(fragments)))
         # self.blast_factory.add_records(fragments, self.TEMPLATES)
 
     @classmethod
@@ -502,17 +502,10 @@ class Design(object):
             "INFO",
             desc="assembling graphs (threads=1)",
         ):
-            self.logger.debug("ngroups: {}".format(len(container.groups())))
             self.graphs[query_key], _ = assemble_graph(container, self.span_cost)
-            self.logger.debug("ngroups: {}".format(len(container.groups())))
 
     def _assemble_graphs_with_threads(self, n_jobs=None):
         query_keys, containers = zip(*self.container_factory.containers().items())
-        for c in containers:
-            self.logger.debug("ngroups: {}".format(len(c.groups())))
-
-        for c in containers:
-            self.logger.debug(len(c.groups()))
 
         graphs = multiprocessing_assemble_graph(
             self.container_factory, self.span_cost, n_jobs=n_jobs

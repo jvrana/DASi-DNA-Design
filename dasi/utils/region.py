@@ -1,16 +1,5 @@
 from pyblast.utils import Span
 
-"""
-Project: jdna
-File: region
-Author: Justin
-Date: 2/21/17
-
-Description: Basic functionality for defining regions of linear, circularized, or reversed
-regions of a sequence.
-
-"""
-
 
 class Direction(object):
     FORWARD = 1
@@ -36,13 +25,14 @@ class Region(Span):
         name=None,
         region_id=None,
         allow_wrap=True,
+        does_wrap_origin=False
     ):
         self.name = name
         self.id = region_id
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
         self.direction = direction
         super().__init__(
-            start, end, length, cyclic=cyclic, index=index, allow_wrap=allow_wrap
+            start, end, length, cyclic=cyclic, index=index, allow_wrap=allow_wrap, does_wrap_origin=does_wrap_origin
         )
 
     @property

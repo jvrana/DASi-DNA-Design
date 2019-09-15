@@ -48,6 +48,7 @@ def blast_to_region(query_or_subject, seqdb):
         index=0,
         name="{}: {}".format(record.id, record.name),
         allow_wrap=True,
+        does_wrap_origin=True
     )
     return region
 

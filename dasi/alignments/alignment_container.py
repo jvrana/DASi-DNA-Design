@@ -11,7 +11,6 @@ from more_itertools import partition, unique_everseen, flatten
 from typing import Dict, List, Union, Tuple
 from Bio.SeqRecord import SeqRecord
 from bisect import bisect_left
-from copy import deepcopy
 from collections.abc import Sized
 from uuid import uuid4
 
@@ -187,7 +186,7 @@ class AlignmentContainer(Sized):
                             f.query_region.a, g.query_region.b
                         )
                     except IndexError:
-                        _rev_span = deepcopy(g.query_region)
+                        _rev_span = g.query_region
 
                     for a, b in _rev_span.ranges():
                         _rev_bind += bisect_slice_between(rev_bind, rkeys, a, b)

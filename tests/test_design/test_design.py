@@ -58,6 +58,7 @@ def print_edge_cost(path, graph):
 @pytest.mark.parametrize(
     "query",
     [
+        'pins-0a-psv40-citrine-wpre.gb',
         "pmodkan-ho-pact1-z4-er-vpr.gb",
         "plko-pef1a-frt-tdtomato-wpre.gb",
         "pins-01-hu6-sv40-nt1-optgrna.gb",

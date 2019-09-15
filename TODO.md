@@ -9,6 +9,8 @@
 * avoid repeats
 * consider design flexibility in optimization algorithm
 
+Pyblast still does not handle regions with 0,0 properly. Unsure how to handle these.
+
 **Multi-plasmid optimization**
 
 0. Find shared edges between assembly graphs, we concatenate all of the queries separated by ???'s and align the subjects.

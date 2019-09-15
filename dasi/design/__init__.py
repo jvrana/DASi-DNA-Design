@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import bisect
 from collections.abc import Iterable
-from copy import deepcopy
 from itertools import zip_longest
 from typing import List, Tuple, Dict, Union
 
@@ -26,12 +25,11 @@ import pandas as pd
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
-from pyblast.utils import Span, is_circular
+from pyblast.utils import is_circular
 from dasi.alignments import (
     Alignment,
     AlignmentContainerFactory,
     AlignmentContainer,
-    AlignmentGroup,
     ComplexAlignmentGroup,
 )
 from dasi.constants import Constants
@@ -149,7 +147,7 @@ class Assembly(Iterable):
             pair_iter = list(pairwise(nodes))
 
         for n1, n2 in pair_iter:
-            edata = deepcopy(graph.get_edge_data(n1, n2))
+            edata = graph.get_edge_data(n1, n2)
             if edata is None:
                 edata = self._missing_edata()
             else:

@@ -25,14 +25,14 @@ class Region(Span):
         name=None,
         region_id=None,
         allow_wrap=True,
-        does_wrap_origin=False
+        strict=None,
     ):
         self.name = name
         self.id = region_id
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
         self.direction = direction
         super().__init__(
-            start, end, length, cyclic=cyclic, index=index, allow_wrap=allow_wrap, does_wrap_origin=does_wrap_origin
+            start, end, length, cyclic=cyclic, index=index, allow_wrap=allow_wrap, strict=strict
         )
 
     @property

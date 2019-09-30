@@ -39,6 +39,7 @@ def blast_to_region(query_or_subject, seqdb):
     #     e -= l
     if data["strand"] == -1:
         s, e = e, s
+
     region = Region(
         s - 1,
         e,
@@ -47,8 +48,7 @@ def blast_to_region(query_or_subject, seqdb):
         direction=data["strand"],
         index=0,
         name="{}: {}".format(record.id, record.name),
-        allow_wrap=True,
-        does_wrap_origin=True
+        allow_wrap=True
     )
     return region
 

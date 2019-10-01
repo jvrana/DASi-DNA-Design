@@ -13,6 +13,7 @@ from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentGroup
 from dasi.alignments import ComplexAlignmentGroup
 from dasi.constants import Constants
+from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.exceptions import DASiException
 from dasi.log import logger
@@ -81,78 +82,19 @@ class AssemblyGraphBuilder:
             efficiency=efficiency,
             span=span,
             type=atype,
+            type_def=MoleculeType.types[atype],
             **kwargs,
         )
-
-    # TODO: internal cost should correlate with span_cost
-    # TODO: internal cost should also have an efficiency associated with it (can you
-    #       amplify it?).
-    #       How fast can you compute this for all alignments?
-    # TODO: test internal and external edge costs for all cases.
-    # TODO: We are counting the primer material cost **twice**, once in the JxnCost
-    #       and once here.
-    #       Really, the cost of the internal fragment is either its already available
-    #       ($0) or
-    #       we have to PCR amplify. The material cost of PCR amplification is just the
-    #       reagents and time
-    #       of setting up the reaction itself.
-    #       We should also account for the 'efficiency' of PCR amplification and include
-    #       that in the edge
-    #       Perhaps multiple edges and taking the 'max' efficiency and 'min' material
-    #       cost, recording
-    #       which alignment is being used for the calculations.
-    #       For the jxn cost, we need a way to optimize the JxnEfficiency by
-    #       *efficiency* AND *material cost*
-    #       while heavily emphasizing the 'efficiency', since that has the most impact
-    #       on overall assembly cost.
-    #       At the end, we will need to separate material and efficiency and use
-    #       efficiency in the overall assembly
-    #       optimization.
-
-    # TODO: make internal_cost, and efficiency a global parameter
-    @staticmethod
-    def internal_edge_cost(
-        align: Union[AlignmentGroup, ComplexAlignmentGroup]
-    ) -> float:
-        """
-
-        :param align:
-        :return:
-        """
-        if align.type == Constants.FRAGMENT:
-            internal_cost = 0
-        elif align.type in [
-            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
-            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-        ]:
-            internal_cost = 10.0
-        elif align.type == Constants.PCR_PRODUCT_WITH_PRIMERS:
-            internal_cost = 10.0
-        elif align.type == Constants.PCR_PRODUCT:
-            internal_cost = 10.0
-        else:
-            raise DASiException("Could not determine cost of {}".format(align))
-        return internal_cost
 
     def iter_internal_edge_data(
         self, align: Union[AlignmentGroup, ComplexAlignmentGroup]
     ) -> dict:
         q = align.query_region
-        a_expand, b_expand = True, True
-        if align.type in [
-            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-            Constants.FRAGMENT,
-            Constants.PCR_PRODUCT_WITH_PRIMERS,
-        ]:
-            b_expand = False
-        if align.type in [
-            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
-            Constants.FRAGMENT,
-            Constants.PCR_PRODUCT_WITH_PRIMERS,
-        ]:
-            a_expand = False
 
-        internal_cost = self.internal_edge_cost(align)
+        mtype = MoleculeType.types[align.type]
+        a_expand, b_expand = mtype.design
+        internal_cost = mtype.cost
+        internal_efficiency = mtype.efficiency
 
         if q.cyclic:
             # cyclic
@@ -177,16 +119,16 @@ class AssemblyGraphBuilder:
                         anode,
                         bnode,
                         dict(
-                            weight=internal_cost / 0.95,
+                            weight=internal_cost / internal_efficiency,
                             material=internal_cost,
-                            cost=internal_cost / 0.95,
+                            cost=internal_cost / internal_efficiency,
                             name="",
                             time=0.1,
                             internal_or_external="internal",
                             span=len(align.query_region),
                             condition=(a_expand, b_expand),
                             atype=align.type,
-                            efficiency=0.95,
+                            efficiency=internal_efficiency,
                         ),
                     )
                     # edges.append(edge)
@@ -332,7 +274,6 @@ class AssemblyGraphBuilder:
                 )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
-        # TODO: PRIORITY no way to determine overlaps from just end points
         if not origin:
             span = anode.index - bnode.index
         else:

@@ -190,7 +190,7 @@ class Assembly(Iterable):
     def cyclic(self):
         return is_circular(self.query)
 
-    # TODO: this cost is no longer true...
+    # TODO: consolidate this with shortest path utils in networkx
     def cost(self):
         material = 0
         efficiency = 1.0
@@ -546,9 +546,7 @@ class Design:
             return self._optimize_without_threads(n_paths)
 
     # TODO: n_paths to class attribute
-    def _optimize_without_threads(
-        self, n_paths=5
-    ) -> Dict[str, List[List[AssemblyNode]]]:
+    def _optimize_without_threads(self, n_paths) -> Dict[str, List[List[AssemblyNode]]]:
         """Finds the optimal paths for each query in the design."""
         results_dict = {}
         for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
@@ -599,10 +597,6 @@ class Design:
             cyclic = is_circular(query)
             result = DesignResult(container=container, query_key=query_key, graph=graph)
             yield query_key, graph, len(query), cyclic, result
-
-    # TODO: make this a method outside of class scope for multithreading.
-    #       In order to do this, all of the methods will need to be scoped
-    #       outside of the class, probably in its own file as 'design_algorithms.py'
 
 
 class LibraryDesign(Design):

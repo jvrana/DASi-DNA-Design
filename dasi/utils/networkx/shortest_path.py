@@ -178,7 +178,6 @@ def _multisource_dijkstra(
     return dist
 
 
-# TODO: move to networkx utils
 def multipoint_shortest_path(
     graph: nx.DiGraph,
     nodes: List[str],

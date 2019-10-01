@@ -483,8 +483,6 @@ class Span(Container, Iterable, Sized):
         :return:
         :rtype:
         """
-
-        # TODO: replace this with _nwraps > 0
         if self._cyclic and (self._b < self._a or self._nwraps):
             ranges = [(self._a, self.bounds()[1])]
             for _ in range(self._nwraps - 1):

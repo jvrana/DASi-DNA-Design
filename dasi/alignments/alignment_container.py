@@ -410,7 +410,7 @@ class AlignmentContainer(Sized):
         :param types: list of types
         :return:
         """
-        groups = self.groups_by_type
+        groups = self.groups_by_type()
         if isinstance(types, str):
             return groups[types]
         else:
@@ -420,8 +420,6 @@ class AlignmentContainer(Sized):
         groups = self.get_groups_by_types(types)
         return list(flatten([g.alignments for g in groups]))
 
-    # TODO: change from property
-    @property
     def groups_by_type(
         self
     ) -> Dict[str, List[Union[AlignmentGroup, ComplexAlignmentGroup]]]:

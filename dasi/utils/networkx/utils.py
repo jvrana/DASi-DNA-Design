@@ -132,7 +132,6 @@ def compare_path_rank_order(mat, path_dict, nodelist, verbose=False):
             print("{}  {}".format(true_pair, mat_pair))
 
 
-# TODO: move to networkx utils
 def sort_cycle(arr, key=None):
     """Sort a cyclic array, maintaining order."""
     if key is None:

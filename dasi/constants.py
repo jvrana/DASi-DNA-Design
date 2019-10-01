@@ -1,3 +1,7 @@
+from typing import Tuple
+from typing import Union
+
+
 class Constants:
     """DASi constants."""
 
@@ -30,3 +34,32 @@ class Constants:
     MIN_OVERLAP = 20
     MAX_HOMOLOGY = 100
     INF = 10.0 ** 6
+
+
+class MoleculeType:
+
+    types = {}
+
+    def __init__(
+        self,
+        name: str,
+        design: Tuple[bool, bool],
+        use_direct: bool,
+        cost: float,
+        efficiency=1.0,
+    ):
+        self.name = name
+        self.design = design
+        self.cost = cost
+        self.use_direct = use_direct
+        self.types[name] = self
+        self.efficiency = efficiency
+
+
+MoleculeType(Constants.FRAGMENT, (False, False), True, 0.0, 0.98)
+MoleculeType(Constants.PCR_PRODUCT, (True, True), False, 10.0, 0.95)
+MoleculeType(Constants.PCR_PRODUCT_WITH_PRIMERS, (False, False), False, 10.0, 0.95)
+MoleculeType(Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, (True, False), False, 10.0, 0.95)
+MoleculeType(Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 10.0, 0.95)
+MoleculeType(Constants.OVERLAP, (False, False), False, 0.0, 1.0)
+MoleculeType(Constants.GAP, (False, False), False, 0.0, 1.0)

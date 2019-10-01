@@ -93,8 +93,6 @@ def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -> List[tuple]:
 
     pair_iterator = bisect_iterator(nodelist, nodekeys)
     for i, j, A, B in pair_iterator:
-
-        # TODO: must include final edge
         a = weight_matrix[i, j]
         b = weight_matrix[j, i]
         if a != np.inf and b != np.inf:

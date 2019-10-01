@@ -15,10 +15,6 @@ from pyblast.utils import make_linear
 from dasi import Design
 from dasi.cost import SpanCost
 
-# TODO: tests with reverse_complement
-# TODO: test total span == query
-# TODO: test linear fragments
-
 
 def random_seq(n_bases):
     bases = "AGTC"

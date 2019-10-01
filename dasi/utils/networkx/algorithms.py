@@ -148,7 +148,6 @@ def sympy_floyd_warshall(
             part = parts_dict[key]
             c = C > C_part
 
-            # TODO: is this if np.any(c) correct?
             if np.any(c):
                 assert M.shape == part.shape
                 # matrix_dict[key] = np.asmatrix(np.choose(c, (M, part)))

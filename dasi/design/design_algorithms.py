@@ -212,7 +212,8 @@ def multiprocessing_assemble_graph(
 
     # update container_factory alignments
     new_alignments = {
-        key: container for key, container in zip(query_keys, expanded_containers)
+        key: container.alignments
+        for key, container in zip(query_keys, expanded_containers)
     }
     container_factory.set_alignments(new_alignments)
     return graphs

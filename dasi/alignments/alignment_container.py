@@ -475,7 +475,7 @@ class AlignmentContainerFactory:
         :param alignments: new iterable of alignments
         :return:
         """
-        self._alignments = tuple(alignments)
+        self._alignments = alignments
         self._containers = None
 
     def load_blast_json(self, data: List[Dict], atype: str):

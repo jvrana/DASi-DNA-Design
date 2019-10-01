@@ -55,13 +55,13 @@ class Alignment(Sized):
     def validate(self):
         if not len(self.query_region) == len(self.subject_region):
             raise AlignmentException(
-                "Regions must have the same size: {} vs {}".format(
-                    len(self.query_region), len(self.subject_region)
+                "Regions must have the same size: {} vs {}. {} vs {}".format(
+                    len(self.query_region), len(self.subject_region), self.query_region, self.subject_region
                 )
             )
 
     def is_perfect_subject(self):
-        return len(self.subject_region) == self.subject_region.context_length
+        return len(self.subject_region) == self.subject_region.bontext_length
 
     def sub_region(self, qstart: int, qend: int, atype=None):
         """
@@ -74,21 +74,13 @@ class Alignment(Sized):
         :return:
         """
         query_copy = self.query_region.sub(qstart, qend)
-        if self.query_region.a != qstart:
-            delta_a_span = self.query_region.sub(self.query_region.a, qstart)
-            delta_a = len(delta_a_span)
-        else:
-            delta_a = 0
-        if qend != self.query_region.b:
-            delta_b_span = self.query_region.sub(qend, self.query_region.b)
-            delta_b = -len(delta_b_span)
-        else:
-            delta_b = 0
-        if delta_a == 0:
-            delta_a = None
-        if delta_b == 0:
-            delta_b = None
-        subject_copy = self.subject_region[delta_a:delta_b]
+        i = self.query_region.i(qstart)
+        if i < 0:
+            i += self.subject_region.context_length
+        try:
+            subject_copy = self.subject_region[i:i+len(query_copy)]
+        except Exception as e:
+            raise e
 
         if atype is None:
             atype = self.type

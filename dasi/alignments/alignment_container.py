@@ -33,10 +33,9 @@ def blast_to_region(query_or_subject, seqdb):
     data = query_or_subject
     record = seqdb[data["origin_key"]]
 
-    s, e = data["start"], data["end"]
+    s, e = data["start"], data["raw_end"]
     l = len(record)
-    # if data['circular'] and e > l and data['length'] == 2 * l:
-    #     e -= l
+
     if data["strand"] == -1:
         s, e = e, s
 
@@ -48,7 +47,7 @@ def blast_to_region(query_or_subject, seqdb):
         direction=data["strand"],
         index=0,
         name="{}: {}".format(record.id, record.name),
-        allow_wrap=True
+        ignore_wrap=False
     )
     return region
 

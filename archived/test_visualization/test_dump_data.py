@@ -30,7 +30,7 @@ def test_dump_for_visualization(here, paths, query):
             query_region = container.alignment_groups[0].query_region
             data = {
                 "query": {
-                    "length": query_region.context_length,
+                    "length": query_region.bontext_length,
                     "name": query_region.name,
                 },
                 "subjects": [],

@@ -255,7 +255,7 @@ class AssemblyGraphBuilder(object):
         self, bnode, anode, query_region, group_keys, groups, origin=False
     ):
         # TODO: PRIORITY this step is extremely slow
-        q = query_region.new(anode.index, bnode.index, allow_wrap=True)
+        q = query_region.new(anode.index, bnode.index)
         if len(q) == 0:
             return
         if not origin:

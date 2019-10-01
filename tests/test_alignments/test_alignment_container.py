@@ -78,8 +78,8 @@ def new_alignment_in_container(container, a, b, type, direction=1):
 
     query_region = container.alignments[0].query_region
     subject_region = container.alignments[0].subject_region
-    new_query_region = query_region.new(a, b, allow_wrap=True)
-    new_subject_region = subject_region.new(a, b, allow_wrap=True)
+    new_query_region = query_region.new(a, b)
+    new_subject_region = subject_region.new(a, b)
 
     new_subject_region.direction = direction
     alignment = Alignment(

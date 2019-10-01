@@ -155,7 +155,7 @@ class Assembly(Iterable):
 
             # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(
-                n1.index, n2.index, allow_wrap=True
+                n1.index, n2.index
             )
             groups = self.container.find_groups_by_pos(
                 query_region.a, query_region.b, groups=self.groups

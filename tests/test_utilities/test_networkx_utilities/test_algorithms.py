@@ -12,8 +12,8 @@ import pytest
 
 
 COMPARISON_THRESHOLD = (
-    0.05
-)  # within 5% due to floating point errors during accumulating of multiple floats
+    0.03
+)  # within 3% due to floating point errors during accumulating of multiple floats
 
 
 def add_data(G, u, v, weight, eff, weight_key="weight", eff_key="eff"):

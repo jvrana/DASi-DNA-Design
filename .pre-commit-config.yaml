@@ -3,18 +3,14 @@ repos:
     rev: stable
     hooks:
     - id: black
-    - id: flake8
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
     -   id: forbid-new-submodules
+    -   id: flake8
 -   repo: https://github.com/myint/docformatter
+    rev: v1.3
+    hooks:
     -   id: docformatter
-        name: docformatter
-        description: 'Formats docstrings to follow PEP 257.'
-        entry: docformatter
-        args: [-i]
-        language: python
-        types: [python]

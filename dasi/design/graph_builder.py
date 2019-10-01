@@ -1,13 +1,13 @@
 import bisect
 import itertools
 from collections import namedtuple
-from typing import Iterable
+from typing import Iterable, Union, List
 
 import networkx as nx
 import numpy as np
 from more_itertools import partition
 
-from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentContainer, AlignmentGroup, ComplexAlignmentGroup
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.exceptions import DASiException
@@ -33,7 +33,13 @@ class AssemblyGraphBuilder(object):
         self.G = None
         self.logger = logger(self)
 
-    def add_node(self, node):
+    def add_node(self, node: AssemblyNode) -> None:
+        """
+        Add node to the graph.
+
+        :param node: the assembly node to add
+        :return: None
+        """
         self.G.add_node(AssemblyNode(*node))
 
     def add_edge(
@@ -41,14 +47,29 @@ class AssemblyGraphBuilder(object):
         n1: AssemblyNode,
         n2: AssemblyNode,
         name,
-        cost,
-        material,
-        time,
-        efficiency,
-        span,
-        atype,
+        cost: Union[float, None],
+        material: Union[float, None],
+        time: Union[float, None],
+        efficiency: Union[float, None],
+        span: int,
+        atype: str,
         **kwargs
     ):
+        """
+        Add an edge between two assembly nodes.
+
+        :param n1: src node
+        :param n2: dest node
+        :param name: name of the edge
+        :param cost: overall cost of the edge
+        :param material: material cost of the edge. Used in path calculations.
+        :param time: time cost of the edge. Used in path calculations.
+        :param efficiency: efficiency of the edge. Used in path calculations.
+        :param span: spanning distance (in bp) of the edge.
+        :param atype: alignment type of the edge.
+        :param kwargs: additional kwargs for the edge data
+        :return:
+        """
         self.G.add_edge(
             n1,
             n2,
@@ -80,7 +101,14 @@ class AssemblyGraphBuilder(object):
 
     # TODO: make internal_cost, and efficiency a global parameter
     @staticmethod
-    def internal_edge_cost(align):
+    def internal_edge_cost(
+        align: Union[AlignmentGroup, ComplexAlignmentGroup]
+    ) -> float:
+        """
+
+        :param align:
+        :return:
+        """
         if align.type == Constants.FRAGMENT:
             internal_cost = 0
         elif align.type in [
@@ -96,7 +124,9 @@ class AssemblyGraphBuilder(object):
             raise DASiException("Could not determine cost of {}".format(align))
         return internal_cost
 
-    def iter_internal_edge_data(self, align):
+    def iter_internal_edge_data(
+        self, align: Union[AlignmentGroup, ComplexAlignmentGroup]
+    ) -> dict:
         q = align.query_region
         a_expand, b_expand = True, True
         if align.type in [
@@ -142,7 +172,7 @@ class AssemblyGraphBuilder(object):
                             cost=internal_cost / 0.95,
                             name="",
                             time=0.1,
-                            internal_or_external='internal',
+                            internal_or_external="internal",
                             span=len(align.query_region),
                             condition=(a_expand, b_expand),
                             atype=align.type,
@@ -152,10 +182,14 @@ class AssemblyGraphBuilder(object):
                     # edges.append(edge)
         # return nodes, edges
 
-    def add_internal_edges(self, groups):
+    def add_internal_edges(
+        self, groups: List[Union[AlignmentGroup, ComplexAlignmentGroup]]
+    ):
         for g in groups:
             for a, b, ab_data in self.iter_internal_edge_data(g):
-                for a_overhang, b_overhang in itertools.product([True, False], repeat=2):
+                for a_overhang, b_overhang in itertools.product(
+                    [True, False], repeat=2
+                ):
                     a_node = AssemblyNode(a[0], a[1], a[2], a_overhang)
                     b_node = AssemblyNode(b[0], b[1], b[2], b_overhang)
                     self.add_edge(a_node, b_node, **ab_data)
@@ -235,7 +269,7 @@ class AssemblyGraphBuilder(object):
             edges, edata, spans = zip(*info)
             npdf = self.span_cost.cost(np.array(spans), condition)
             data = npdf.aggregate(np.vstack)
-            cost_i = [i for i, col in enumerate(npdf.columns) if col == 'cost'][0]
+            cost_i = [i for i, col in enumerate(npdf.columns) if col == "cost"][0]
             self.logger.debug(data.shape)
             # update each edge
 
@@ -280,7 +314,7 @@ class AssemblyGraphBuilder(object):
                     material=None,
                     time=None,
                     efficiency=None,
-                    internal_or_external='external',
+                    internal_or_external="external",
                     name="overlap",
                     atype="overlap",
                     condition=condition,
@@ -304,14 +338,14 @@ class AssemblyGraphBuilder(object):
                 material=None,
                 time=None,
                 efficiency=None,
-                internal_or_external='external',
+                internal_or_external="external",
                 name="gap",
                 atype="gap",
                 condition=condition,
                 span=span,
             )
 
-    def build_assembly_graph(self):
+    def build_assembly_graph(self) -> nx.DiGraph:
 
         self.G = nx.DiGraph(name="Assembly Graph")
 

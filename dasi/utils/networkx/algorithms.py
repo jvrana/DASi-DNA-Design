@@ -4,7 +4,7 @@ from .utils import select_from_arrs, replace_nan_with_inf
 from sympy import sympify, lambdify
 from collections import OrderedDict
 from .exceptions import TerrariumNetworkxError
-
+from typing import Union
 # TODO: cycle finder using *almost cycles*
 # TODO: test directed vs undirected
 # TODO: test multigraph
@@ -73,8 +73,8 @@ SUM = "sum"
 
 
 def sympy_floyd_warshall(
-    G,
-    f,
+    g: Union[nx.DiGraph, nx.Graph],
+    f: str,
     accumulators: dict,
     nonedge=None,
     nodelist=None,
@@ -82,7 +82,7 @@ def sympy_floyd_warshall(
     identity_subs=None,
     return_all=False,
     dtype=None,
-):
+) -> np.ndarray:
     """
     Implementation of all pairs shortest path length using a modified floyd-warshall algorithm with arbitrary path
     length functions. The following path length function is valid:
@@ -107,14 +107,16 @@ def sympy_floyd_warshall(
     This means a predecessor dictionary cannot be used to reconstruct the paths easily. To do so, use the modified
     Dijkstra's algorithm below which handles arbitrary path functions.
 
-    :param accumulators: if 'sum' or missing, apply $\sum$, if 'product' apply $\prod$ to edge weights
-    :param nonedge:
-    :param nodelist:
-    :param multigraph_weight:
-    :param identity_subs:
-    :param return_all:
-    :param dtype:
-    :return:
+    :param g: 
+    :param f: 
+    :param accumulators: 
+    :param nonedge: 
+    :param nodelist: 
+    :param multigraph_weight: 
+    :param identity_subs: 
+    :param return_all: 
+    :param dtype: 
+    :return: 
     """
     if dtype is None:
         dtype = np.float64
@@ -136,7 +138,7 @@ def sympy_floyd_warshall(
 
     for sym in symbols:
         matrix_dict[sym.name] = nx.to_numpy_matrix(
-            G,
+            g,
             nodelist=nodelist,
             multigraph_weight=multigraph_weight.get(sym.name, min),
             weight=sym.name,
@@ -206,25 +208,27 @@ def sympy_floyd_warshall(
 
 
 def floyd_warshall_with_efficiency(
-    G, weight, efficiency, nodelist=None, return_all=False, dtype=None
-):
+    g: Union[nx.DiGraph, nx.Graph], weight_key: str, eff_key: str, nodelist=None, return_all=False, dtype=None
+) -> np.ndarray:
     """
     Computes the shortest path between all pairs using the cost function: SUM(w) / PROD(e)
 
     Warning: This is guaranteed to return precise values due to floating point rounding errors.
 
-    :param G:
-    :param weight:
-    :param efficiency:
-    :param nodelist:
-    :return:
+    :param g: the graph
+    :param weight_key: the weight key
+    :param eff_key: the efficiency key
+    :param nodelist: optional list of nodes
+    :param return_all: whether to return the weight matrix and weight dictionary
+    :param dtype: dtype of the np.array matrix
+    :return: the weight matrix
     """
-    f = "{} / {}".format(weight, efficiency)
+    f = "{} / {}".format(weight_key, eff_key)
     return sympy_floyd_warshall(
-        G,
+        g,
         f,
-        accumulators={weight: SUM, efficiency: PRODUCT},
-        nonedge={weight: np.inf, efficiency: 0.0},
+        accumulators={weight_key: SUM, eff_key: PRODUCT},
+        nonedge={weight_key: np.inf, eff_key: 0.0},
         nodelist=nodelist,
         return_all=return_all,
         dtype=dtype,

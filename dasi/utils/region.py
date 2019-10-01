@@ -329,7 +329,7 @@ class Span(Container, Iterable, Sized):
             end_wrap = 0
         else:
             start_wrap = int((a - index) / l)
-            end_wrap = int((b - index - 1) / (l))
+            end_wrap = int((b - index - 1) / l)
 
         if self._abs_wrap is False and start_wrap > end_wrap:
             self._a = a
@@ -418,7 +418,7 @@ class Span(Container, Iterable, Sized):
 
     @property
     def _nwraps(self):
-        return int((self._c - self._index - 1) / (self._context_length))
+        return int((self._c - self._index - 1) / self._context_length)
 
     def bounds(self) -> tuple:
         """Return the context bounds (end exclusive)"""
@@ -567,8 +567,8 @@ class Span(Container, Iterable, Sized):
         def in_range(pos, ranges):
             for i, r in enumerate(ranges):
                 if r[0] <= pos < r[1]:
-                    return (True, i)
-            return (False, None)
+                    return True, i
+            return False, None
 
         start_in_range, start_range = in_range(a, valid_ranges)
 
@@ -860,16 +860,19 @@ class Span(Container, Iterable, Sized):
             raise ValueError("indexing does not support {}".format(type(val)))
 
     def __repr__(self):
-        return "<{cls} {a} {b} ({c}) context_len={l} len={length} cyclic={cyclic} index={index}, nwraps={n}>".format(
-            cls=self.__class__.__name__,
-            a=self._a,
-            b=self._b,
-            c=self._c,
-            l=self._context_length,
-            cyclic=self._cyclic,
-            index=self._index,
-            length=len(self),
-            n=self._nwraps,
+        return (
+            "<{cls} {a} {b} ({c}) context_len={context_len} len={length} cyclic={cyclic} "
+            "index={index}, nwraps={n}>".format(
+                cls=self.__class__.__name__,
+                a=self._a,
+                b=self._b,
+                c=self._c,
+                context_len=self._context_length,
+                cyclic=self._cyclic,
+                index=self._index,
+                length=len(self),
+                n=self._nwraps,
+            )
         )
 
     def __str__(self):
@@ -913,7 +916,14 @@ class Region(Span):
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
         self.direction = direction
         super().__init__(
-            start, end, length, cyclic=cyclic, index=index, ignore_wrap=ignore_wrap, strict=strict, abs_wrap=abs_wrap
+            start,
+            end,
+            length,
+            cyclic=cyclic,
+            index=index,
+            ignore_wrap=ignore_wrap,
+            strict=strict,
+            abs_wrap=abs_wrap,
         )
 
     @property

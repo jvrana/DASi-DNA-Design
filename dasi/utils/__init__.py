@@ -53,7 +53,11 @@ def perfect_subject(data):
     """Determine whether a blast result consumes the entire subject."""
     if data["strand"] == 1 and data["start"] == 1 and data["raw_end"] == data["length"]:
         return True
-    elif data["strand"] == -1 and data["raw_end"] == 1 and data["start"] == data["length"]:
+    elif (
+        data["strand"] == -1
+        and data["raw_end"] == 1
+        and data["start"] == data["length"]
+    ):
         return True
 
 

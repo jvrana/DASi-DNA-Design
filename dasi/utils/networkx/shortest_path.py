@@ -16,7 +16,7 @@ def _weight_function(v, u, e, k):
 
 
 def sympy_multisource_dijkstras(
-    G, sources, f, accumulators=None, init=None, target=None, cutoff=None
+    g, sources, f, accumulators=None, init=None, target=None, cutoff=None
 ):
     if not sources:
         raise ValueError("sources must not be empty")
@@ -24,7 +24,7 @@ def sympy_multisource_dijkstras(
         return (0, [target])
     paths = {source: [source] for source in sources}  # dictionary of paths
     dist = _multisource_dijkstra(
-        G,
+        g,
         sources,
         f,
         target=target,
@@ -42,12 +42,12 @@ def sympy_multisource_dijkstras(
 
 
 def sympy_dijkstras(
-    G, source, f, target=None, accumulators=None, init=None, cutoff=None
+    g, source, f, target=None, accumulators=None, init=None, cutoff=None
 ):
     """
     Computes the shortest path distance and path for a graph using an arbitrary function.
 
-    :param G:
+    :param g:
     :param source:
     :param f:
     :param target:
@@ -57,7 +57,7 @@ def sympy_dijkstras(
     :return:
     """
     dist, path = sympy_multisource_dijkstras(
-        G,
+        g,
         [source],
         f,
         target=target,
@@ -69,7 +69,7 @@ def sympy_dijkstras(
 
 
 def _multisource_dijkstra(
-    G,
+    g,
     sources,
     f,
     target=None,
@@ -83,7 +83,7 @@ def _multisource_dijkstra(
     init = init or {}
 
     # successor dictionary
-    G_succ = G._succ if G.is_directed() else G._adj
+    g_succ = g._succ if g.is_directed() else g._adj
 
     # push/pop methods to use
     push = heappush
@@ -127,7 +127,7 @@ def _multisource_dijkstra(
 
     # push the initial values for the sources
     for source in sources:
-        if source not in G:
+        if source not in g:
             raise nx.NodeNotFound("Source {} is not in G".format(source))
         seen[source] = func(*init)
         push(fringe, (0, next(c), source, init))
@@ -142,7 +142,7 @@ def _multisource_dijkstra(
         dist[v] = func(*d)
         if v == target:
             break
-        for u, e in G_succ[v].items():
+        for u, e in g_succ[v].items():
             # vu cost breakdown for  each symbol
             costs = np.array([_weight_function(v, u, e, sym) for sym in symbols])
 

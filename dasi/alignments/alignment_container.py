@@ -34,7 +34,7 @@ def blast_to_region(query_or_subject, seqdb):
     record = seqdb[data["origin_key"]]
 
     s, e = data["start"], data["raw_end"]
-    l = len(record)
+    length = len(record)
 
     if data["strand"] == -1:
         s, e = e, s
@@ -42,12 +42,12 @@ def blast_to_region(query_or_subject, seqdb):
     region = Region(
         s - 1,
         e,
-        length=l,
+        length=length,
         cyclic=data["circular"],
         direction=data["strand"],
         index=0,
         name="{}: {}".format(record.id, record.name),
-        ignore_wrap=False
+        ignore_wrap=False,
     )
     return region
 
@@ -95,7 +95,9 @@ class AlignmentContainer(Sized):
     @alignments.setter
     def alignments(self, v):
         if self._frozen:
-            raise AlignmentContainerException("Cannot set alignments. Container is frozen.")
+            raise AlignmentContainerException(
+                "Cannot set alignments. Container is frozen."
+            )
         self._alignments = v
         self._check_single_query_key(self._alignments)
 
@@ -235,7 +237,7 @@ class AlignmentContainer(Sized):
         :return: list
         """
 
-        MIN_OVERLAP = Constants.MIN_OVERLAP
+        min_overlap = Constants.MIN_OVERLAP
         group_sort, group_keys = sort_with_keys(
             alignment_groups, key=lambda x: x.query_region.a
         )
@@ -259,10 +261,10 @@ class AlignmentContainer(Sized):
                     )
                     # right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
 
-                    if len(left.query_region) > MIN_OVERLAP:
+                    if len(left.query_region) > min_overlap:
                         alignments += left.alignments
 
-                    if len(overlap.query_region) > MIN_OVERLAP:
+                    if len(overlap.query_region) > min_overlap:
                         alignments += overlap.alignments
 
                     # if len(right.query_region) > MIN_OVERLAP:
@@ -326,7 +328,7 @@ class AlignmentContainer(Sized):
     @staticmethod
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""
-        return (a.query_region.a, a.query_region.b, a.query_region.direction, a.type)
+        return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
     @classmethod
     def complex_alignment_groups(
@@ -378,7 +380,9 @@ class AlignmentContainer(Sized):
         """
         return tuple(self.valid_types)
 
-    def get_groups_by_types(self, types: List[str]) -> Union[AlignmentGroup, List[AlignmentGroup]]:
+    def get_groups_by_types(
+        self, types: List[str]
+    ) -> Union[AlignmentGroup, List[AlignmentGroup]]:
         """
         Return AlignmentGroups by fragment type
 
@@ -397,7 +401,9 @@ class AlignmentContainer(Sized):
 
     # TODO: change from property
     @property
-    def groups_by_type(self) -> Dict[str, List[Union[AlignmentGroup, ComplexAlignmentGroup]]]:
+    def groups_by_type(
+        self
+    ) -> Dict[str, List[Union[AlignmentGroup, ComplexAlignmentGroup]]]:
         """
         Return alignment groups according to their alignment 'type'
 
@@ -423,7 +429,9 @@ class AlignmentContainer(Sized):
     def __len__(self):
         return len(self.alignments)
 
+
 from frozendict import frozendict
+
 
 class AlignmentContainerFactory(object):
     """
@@ -491,6 +499,8 @@ class AlignmentContainerFactory(object):
         if self._containers is None:
             container_dict = {}
             for key, alignments in self.alignments.items():
-                container_dict[key] = AlignmentContainer(self.seqdb, alignments=alignments)
+                container_dict[key] = AlignmentContainer(
+                    self.seqdb, alignments=alignments
+                )
             self._containers = container_dict
         return frozendict(self._containers)

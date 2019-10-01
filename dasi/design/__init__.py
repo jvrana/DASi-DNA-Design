@@ -122,7 +122,7 @@ class Assembly(Iterable):
             "type": "missing",
             "span": np.inf,
             "name": "missing",
-            'internal_or_external': 'missing'
+            "internal_or_external": "missing",
         }
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
@@ -130,7 +130,7 @@ class Assembly(Iterable):
             new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
             return new_node, {}
 
-        SG = nx.OrderedDiGraph()
+        subgraph = nx.OrderedDiGraph()
         nodes = [AssemblyNode(*n) for n in nodes]
         example_query_region = self.container.alignments[0].query_region
 
@@ -139,7 +139,7 @@ class Assembly(Iterable):
             resolved_nodes = sort_cycle(
                 resolved_nodes, key=lambda n: (n[0].type, n[0].index, n)
             )
-        SG.add_nodes_from(resolved_nodes)
+        subgraph.add_nodes_from(resolved_nodes)
 
         if self.cyclic:
             pair_iter = list(pairwise(nodes + nodes[:1]))
@@ -151,7 +151,7 @@ class Assembly(Iterable):
             if edata is None:
                 edata = self._missing_edata()
             else:
-                assert 'internal_or_external' in edata
+                assert "internal_or_external" in edata
 
             # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(
@@ -160,15 +160,17 @@ class Assembly(Iterable):
             groups = self.container.find_groups_by_pos(
                 query_region.a, query_region.b, groups=self.groups
             )
-            if edata['internal_or_external'] == 'internal' and not groups:
-                raise DasiDesignException("Missing groups for edge between {} and {}".format(n1, n2))
+            if edata["internal_or_external"] == "internal" and not groups:
+                raise DasiDesignException(
+                    "Missing groups for edge between {} and {}".format(n1, n2)
+                )
 
             edata["groups"] = groups
             edata["query_region"] = query_region
-            SG.add_edge(
+            subgraph.add_edge(
                 _resolve(n1, query_region)[0], _resolve(n2, query_region)[0], **edata
             )
-        return SG
+        return subgraph
 
     @property
     def cyclic(self):
@@ -177,10 +179,10 @@ class Assembly(Iterable):
     # TODO: this cost is no longer true...
     def cost(self):
         material = 0
-        efficiency = 1.
+        efficiency = 1.0
         for _, _, edata in self.edges():
             material += edata["material"]
-            efficiency *= edata['efficiency']
+            efficiency *= edata["efficiency"]
         if efficiency == 0:
             return np.inf
         return material / efficiency
@@ -262,11 +264,11 @@ class Assembly(Iterable):
                     "subject_start": subject_starts,
                     "subject_ends": subject_ends,
                     "cost": edata["cost"],
-                    "material": edata['material'],
+                    "material": edata["material"],
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],
-                    'internal_or_external': edata['internal_or_external'],
+                    "internal_or_external": edata["internal_or_external"],
                     "efficiency": edata.get("efficiency", np.nan),
                 }
             )
@@ -301,7 +303,8 @@ class FakePool(object):
     def __exit__(self, a, b, c):
         pass
 
-    def map(self, func, args):
+    @staticmethod
+    def map(func, args):
         return [func(arg) for arg in args]
 
 
@@ -488,9 +491,12 @@ class Design(object):
     def assemble_graphs(self, n_jobs=None):
         n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
-            with self.logger.timeit("DEBUG",
-                                    "assembling graphs (n_graphs={}, threads={})".format(len(self.container_list()),
-                                                                                         n_jobs)):
+            with self.logger.timeit(
+                "DEBUG",
+                "assembling graphs (n_graphs={}, threads={})".format(
+                    len(self.container_list()), n_jobs
+                ),
+            ):
                 self._assemble_graphs_with_threads(n_jobs)
         else:
             self._assemble_graphs_without_threads()

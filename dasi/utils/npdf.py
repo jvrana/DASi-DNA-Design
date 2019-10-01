@@ -35,19 +35,19 @@ class NumpyDataFrame(Mapping):
 
     .. code-block::
 
-      df = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
-      df[0]
-      df[0, 1]
-      df[np.array([0, 1])]
+        df = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
+        df[0]
+        df[0, 1]
+        df[np.array([0, 1])]
 
     Columns can be selected and returned:
 
     .. code-block::
 
-      df.col['A', 'B']    # return df with 'A' and 'B'
-      df.col['A']         # return df with only 'A'
-      print(list(df.col)) # return the column names
-      print(df.columns)   # also returns the column names
+        df.col['A', 'B']    # return df with 'A' and 'B'
+        df.col['A']         # return df with only 'A'
+        print(list(df.col)) # return the column names
+        print(df.columns)   # also returns the column names
 
     New columns can be added:
 

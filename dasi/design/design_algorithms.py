@@ -20,7 +20,7 @@ path_length_config = {
 }
 
 
-def _check_paths(paths: List[tuple]):
+def _check_paths(paths: List[List[tuple]]) -> None:
     """
     Validates a path to check for duplicate nodes.
 
@@ -141,24 +141,34 @@ def _collect_optimized_paths(
     else:
         raise NotImplementedError("Linear assemblies are not yet implemented.")
     paths = _nodes_to_fullpaths(
-        graph, [n[0] for n in nodes], cyclic=cyclic, n_paths=n_paths
+        graph, tuple(n[0] for n in nodes), cyclic=cyclic, n_paths=n_paths
     )
     _check_paths(paths)
     return paths
 
 
-def optimize_graph(graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int) -> List[List[tuple]]:
+def optimize_graph(
+    graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
+) -> List[List[tuple]]:
     """Optimize the graph associated with the specified query_key"""
     # self.logger.info("Optimizing {}".format(query_key))
     paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
     return paths
 
 
-def _multiprocessing_optimize_graph(args: Tuple[nx.DiGraph, int, bool, int]) -> List[List[tuple]]:
+def _multiprocessing_optimize_graph(
+    args: Tuple[nx.DiGraph, int, bool, int]
+) -> List[List[tuple]]:
     return optimize_graph(args[0], args[1], args[2], args[3])
 
 
-def multiprocessing_optimize_graph(graphs: List[nx.DiGraph], query_lengths: List[int], cyclics: List[bool], n_paths: List[List[tuple]], n_jobs: int):
+def multiprocessing_optimize_graph(
+    graphs: List[nx.DiGraph],
+    query_lengths: List[int],
+    cyclics: List[bool],
+    n_paths: List[List[tuple]],
+    n_jobs: int,
+):
     """Optimize graphs using multiprocessing"""
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
@@ -167,22 +177,27 @@ def multiprocessing_optimize_graph(graphs: List[nx.DiGraph], query_lengths: List
     return paths
 
 
-def assemble_graph(container: AlignmentContainer, span_cost: SpanCost) -> Tuple[nx.DiGraph, AlignmentContainer]:
+def assemble_graph(
+    container: AlignmentContainer, span_cost: SpanCost
+) -> Tuple[nx.DiGraph, AlignmentContainer]:
     """Build an assembly graph for a specified query."""
     container.expand(expand_overlaps=True, expand_primers=True)
     container.freeze()
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
-    G = graph_builder.build_assembly_graph()
-    assert G.number_of_edges()
-    return G, container
+    graph = graph_builder.build_assembly_graph()
+    assert graph.number_of_edges()
+    return graph, container
 
 
-def _multiprocessing_assemble_graph(arg: Tuple[AlignmentContainer, SpanCost]) -> Tuple[nx.DiGraph, AlignmentContainer]:
+def _multiprocessing_assemble_graph(
+    arg: Tuple[AlignmentContainer, SpanCost]
+) -> Tuple[nx.DiGraph, AlignmentContainer]:
     return assemble_graph(arg[0], arg[1])
 
 
-def multiprocessing_assemble_graph(container_factory: AlignmentContainerFactory,
-                                   span_cost: SpanCost, n_jobs: int) -> List[nx.DiGraph]:
+def multiprocessing_assemble_graph(
+    container_factory: AlignmentContainerFactory, span_cost: SpanCost, n_jobs: int
+) -> List[nx.DiGraph]:
     """Assemble graphs using multiprocessing"""
     query_keys = container_factory.alignments.keys()
     containers = [container_factory.containers()[k] for k in query_keys]
@@ -191,7 +206,9 @@ def multiprocessing_assemble_graph(container_factory: AlignmentContainerFactory,
     with Pool(
         processes=min(n_jobs, len(containers))
     ) as pool:  # start 4 worker processes
-        graphs, expanded_containers = zip(*pool.map(_multiprocessing_assemble_graph, args))
+        graphs, expanded_containers = zip(
+            *pool.map(_multiprocessing_assemble_graph, args)
+        )
 
     # update container_factory alignments
     for key, container in zip(query_keys, expanded_containers):

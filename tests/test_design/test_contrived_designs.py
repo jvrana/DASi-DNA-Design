@@ -180,6 +180,7 @@ def test_design_with_no_gaps(span_cost):
         primers=[], templates=[r1, r2, r3], queries=[goal], fragments=[]
     )
 
+
     expected_path = [
         (0, True, "A", False),
         (1000, True, "B", False),
@@ -445,9 +446,7 @@ def test_fully_overlapped(span_cost):
 
     expected_path = [
         (1177, False, "A", False),
-        (1225, False, "B", True),
-        (1188, False, "A", True),
-        (1300, True, "B", False),
+        (1300, False, "B", True),
     ]
 
     check_design_result(design, expected_path)

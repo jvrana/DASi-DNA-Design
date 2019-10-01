@@ -149,11 +149,11 @@ class TestAllPairShortestPath(object):
         G = nx.path_graph(10)
         add_edata(G, "cost", "efficiency")
 
-        C = floyd_warshall_with_efficiency(G, weight="y", efficiency="x")
+        C = floyd_warshall_with_efficiency(G, weight_key="y", eff_key="x")
         assert 2.0 in C
 
-        D = floyd_warshall_with_efficiency(G, weight="cost", efficiency="x")
-        E = floyd_warshall_with_efficiency(G, weight="cost", efficiency="efficiency")
+        D = floyd_warshall_with_efficiency(G, weight_key="cost", eff_key="x")
+        E = floyd_warshall_with_efficiency(G, weight_key="cost", eff_key="efficiency")
         assert np.all(D <= E)
         assert 2.0 not in E
         assert 2.0 not in D
@@ -162,7 +162,7 @@ class TestAllPairShortestPath(object):
         G = nx.path_graph(10)
         add_edata(G)
         C, B = floyd_warshall_with_efficiency(
-            G, weight="weight", efficiency="efficiency", return_all=True
+            G, weight_key="weight", eff_key="efficiency", return_all=True
         )
         assert np.all(B["weight"] >= C)
         assert np.all(B["efficiency"] <= 1)
@@ -266,7 +266,7 @@ class TestDijkstras(object):
         G.add_edge(7, 4, weight=200, eff=0.75)
 
         path_length, path = sympy_dijkstras(
-            G=G, source=0, target=4, f="weight / eff", accumulators={"eff": "product"}
+            g=G, source=0, target=4, f="weight / eff", accumulators={"eff": "product"}
         )
         assert path_length == 200 * 4 / 0.75 ** 4
         assert path == [0, 5, 6, 7, 4]

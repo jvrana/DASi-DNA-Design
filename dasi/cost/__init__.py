@@ -73,7 +73,6 @@ def decoder(obj):
 
 
 class CostBuilder(ABC):
-
     def __init__(self, span):
         self.cost_dict = {}
         self.span = span

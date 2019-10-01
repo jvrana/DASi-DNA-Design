@@ -20,14 +20,6 @@ class Constants:
         "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
     )  # A fragment alignment that is shared with other queries for potential reuse
 
-    PCR_COST = {
-        PCR_PRODUCT: 30 + 25 + 10,
-        PCR_PRODUCT_WITH_PRIMERS: 30,
-        PCR_PRODUCT_WITH_LEFT_PRIMER: 15,
-        PCR_PRODUCT_WITH_RIGHT_PRIMER: 15,
-        FRAGMENT: 0,
-    }
-
     PRIMER = "PRIMER"  # a primer binding alignment
 
     PRIMER_MIN_BIND = 15

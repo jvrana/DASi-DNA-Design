@@ -1,6 +1,6 @@
 LOCUS       pX330-U6-Chimeric_BB-CB 8506 bp ds-DNA     circular     11-JUL-2016
 DEFINITION  .
-KEYWORDS    "accession:addgene_42230_59271"                                    
+KEYWORDS    "accession:addgene_42230_59271"
 FEATURES             Location/Qualifiers
      feature         1296..1319
                      /label="FLAG"

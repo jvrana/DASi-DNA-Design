@@ -1,12 +1,18 @@
-from dasi.design import Design, DesignResult
+import pickle
+from os.path import join
+
+import networkx as nx
+import pytest
+from more_itertools import pairwise
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+
 from dasi.alignments import AlignmentContainer
 from dasi.cost import SpanCost
-from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
-import pytest
-from os.path import join
-from more_itertools import pairwise
-import networkx as nx
-import pickle
+from dasi.design import Design
+from dasi.design import DesignResult
 
 
 @pytest.mark.parametrize(
@@ -58,7 +64,7 @@ def print_edge_cost(path, graph):
 @pytest.mark.parametrize(
     "query",
     [
-        'pins-0a-psv40-citrine-wpre.gb',
+        "pins-0a-psv40-citrine-wpre.gb",
         "pmodkan-ho-pact1-z4-er-vpr.gb",
         "plko-pef1a-frt-tdtomato-wpre.gb",
         "pins-01-hu6-sv40-nt1-optgrna.gb",
@@ -144,4 +150,3 @@ def test_real_design2(here, paths, span_cost):
         assert len(result.query) == sum(assembly.to_df()["span"])
 
         assembly.print()
-

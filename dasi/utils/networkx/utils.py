@@ -1,6 +1,8 @@
-import numpy as np
-from itertools import product, zip_longest
+from itertools import product
+from itertools import zip_longest
+
 import networkx as nx
+import numpy as np
 
 
 def select_from_arrs(A, B, condition):

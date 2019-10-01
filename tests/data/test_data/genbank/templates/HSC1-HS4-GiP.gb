@@ -1,6 +1,6 @@
 LOCUS       HSC1-HS4-GiP            8805 bp ds-DNA     circular     11-OCT-2016
 DEFINITION  .
-KEYWORDS    "accession:addgene_58540_90629"                                    
+KEYWORDS    "accession:addgene_58540_90629"
 FEATURES             Location/Qualifiers
      primer          complement(1231..1252)
                      /label="EGFP_N_primer"

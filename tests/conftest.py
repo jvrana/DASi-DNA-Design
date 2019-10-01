@@ -1,10 +1,17 @@
-import pytest
-from os.path import dirname, abspath, join
-from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
-from pyblast import BioBlastFactory
-from dasi.log import logger
 import warnings
+from os.path import abspath
+from os.path import dirname
+from os.path import join
+
+import pytest
 from Bio import BiopythonParserWarning
+from pyblast import BioBlastFactory
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+
+from dasi.log import logger
 
 warnings.simplefilter("ignore", BiopythonParserWarning)
 

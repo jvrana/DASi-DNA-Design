@@ -1,5 +1,6 @@
-from dasi.cost.utils import lexargmin
 import numpy as np
+
+from dasi.cost.utils import lexargmin
 
 
 def test_lexargmin():

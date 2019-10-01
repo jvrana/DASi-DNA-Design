@@ -1,11 +1,16 @@
-from dasi.design import Design
-from dasi.cost import SpanCost
-from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
-import pytest
 from os.path import join
 
+import pytest
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
 
-class TestBenchmarkCosts(object):
+from dasi.cost import SpanCost
+from dasi.design import Design
+
+
+class TestBenchmarkCosts:
     def test_span_cost_constructor(self, benchmark):
         benchmark.pedantic(SpanCost.default, rounds=1, iterations=1)
 

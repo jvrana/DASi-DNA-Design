@@ -1,6 +1,6 @@
 LOCUS       hCas9                   9553 bp ds-DNA     circular     14-JUN-2016
 DEFINITION  .
-KEYWORDS    "accession:addgene_41815_83002"                                    
+KEYWORDS    "accession:addgene_41815_83002"
 FEATURES             Location/Qualifiers
      regulatory      130..417
                      /label="CAG_enhancer"

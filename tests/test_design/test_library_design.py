@@ -1,6 +1,11 @@
-from dasi.design import LibraryDesign
-from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
 from os.path import join
+
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+
+from dasi.design import LibraryDesign
 
 
 def test_library_design(paths, here, span_cost):

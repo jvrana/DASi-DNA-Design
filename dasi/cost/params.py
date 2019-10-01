@@ -1,15 +1,14 @@
 """Cost Parameters."""
-
 import numpy as np
 import pandas as pd
 
 
-class Globals(object):
+class Globals:
     time_cost = 10.0
     material_modifier = 1.0
 
 
-class PrimerParams(object):
+class PrimerParams:
     # @title Parameters
     time_cost = Globals.time_cost  # @param {type:"number"}
     material_modifier = Globals.material_modifier  # @param {type:"number"}
@@ -52,7 +51,7 @@ class PrimerParams(object):
     )
 
 
-class SynthesisParams(object):
+class SynthesisParams:
     synthesis_df = pd.DataFrame(
         [
             [0, 1, 0, 0],

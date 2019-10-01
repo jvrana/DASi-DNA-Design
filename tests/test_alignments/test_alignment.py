@@ -1,8 +1,9 @@
-from dasi.utils.region import Span
+import pytest
+
 from dasi.alignments import Alignment
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentException
-import pytest
+from dasi.utils.region import Span
 
 
 def test_init():
@@ -19,7 +20,8 @@ def test_init():
 
 
 def test_init_raises_alignment_exception():
-    """Expect an error if query_region and subject_region have different lengths"""
+    """Expect an error if query_region and subject_region have different
+    lengths."""
     query_region = Span(0, 1000, 10000)
     subject_region = Span(1001, 2000, 5000)
     with pytest.raises(AlignmentException):

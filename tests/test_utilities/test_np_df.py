@@ -1,9 +1,9 @@
-"""Test NumpyDataFrame"""
-
+"""Test NumpyDataFrame."""
 import numpy as np
 import pytest
 
-from dasi.utils import NumpyDataFrame, NumpyDataFrameException
+from dasi.utils import NumpyDataFrame
+from dasi.utils import NumpyDataFrameException
 
 
 @pytest.fixture(scope="function")
@@ -129,7 +129,7 @@ class TestUpdateMerge:
         assert np.all(c.data["B"] == np.arange(10, 20))
 
 
-class Slicer(object):
+class Slicer:
     def __getitem__(self, item):
         return item
 

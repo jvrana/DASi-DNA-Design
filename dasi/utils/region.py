@@ -1,7 +1,12 @@
 from __future__ import annotations
-from collections.abc import Container, Iterable, Sized
+
+from collections.abc import Container
+from collections.abc import Iterable
+from collections.abc import Sized
 from itertools import chain
-from typing import List, Tuple, Union
+from typing import List
+from typing import Tuple
+from typing import Union
 
 
 class SpanError(Exception):
@@ -807,8 +812,9 @@ class Span(Container, Iterable, Sized):
                 )
             elif not inclusive and (val > len(self) or val < -len(self)):
                 raise IndexError(
-                    "Exclusive index '{}' outside of linear span with length of {}"
-                    .format(val, len(self))
+                    "Exclusive index '{}' outside of linear span with length of {}".format(
+                        val, len(self)
+                    )
                 )
 
     def __getitem__(self, val):
@@ -891,7 +897,7 @@ class EmptySpan(Span):
         return [(self.bounds()[0], self.bounds()[0])]
 
 
-class Direction(object):
+class Direction:
     FORWARD = 1
     REVERSE = -1
     BOTH = 0

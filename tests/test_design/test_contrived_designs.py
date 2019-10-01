@@ -1,15 +1,19 @@
-import pytest
+import itertools
 import random
-from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
+from typing import List
+from typing import Tuple
 from uuid import uuid4
-from pyblast.utils import make_linear, make_circular
+
+import numpy as np
+import pytest
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from more_itertools import pairwise
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+
 from dasi import Design
 from dasi.cost import SpanCost
-from more_itertools import pairwise
-import numpy as np
-from typing import Tuple, List
-import itertools
 
 # TODO: tests with reverse_complement
 # TODO: test total span == query
@@ -165,7 +169,7 @@ def test_blast_has_same_results(span_cost):
 
 
 def test_design_with_no_gaps(span_cost):
-    """Fragments with overlaps"""
+    """Fragments with overlaps."""
 
     goal = random_record(3000)
     make_circular([goal])
@@ -180,7 +184,6 @@ def test_design_with_no_gaps(span_cost):
         primers=[], templates=[r1, r2, r3], queries=[goal], fragments=[]
     )
 
-
     expected_path = [
         (0, True, "A", False),
         (1000, True, "B", False),
@@ -194,7 +197,7 @@ def test_design_with_no_gaps(span_cost):
 
 
 def test_design_with_overlaps(span_cost):
-    """Fragments with overlaps"""
+    """Fragments with overlaps."""
 
     goal = random_record(3000)
     make_circular([goal])
@@ -222,7 +225,7 @@ def test_design_with_overlaps(span_cost):
 
 
 def test_design_with_overlaps2(span_cost):
-    """Fragments with overlaps"""
+    """Fragments with overlaps."""
 
     goal = random_record(3000)
     make_circular([goal])
@@ -250,7 +253,7 @@ def test_design_with_overlaps2(span_cost):
 
 
 def test_design_with_overlaps_with_templates(span_cost):
-    """Fragments with overlaps"""
+    """Fragments with overlaps."""
 
     goal = random_record(3000)
     make_circular([goal])
@@ -278,7 +281,7 @@ def test_design_with_overlaps_with_templates(span_cost):
 
 
 def test_design_task_with_gaps(span_cost):
-    """Fragments with overlaps"""
+    """Fragments with overlaps."""
 
     goal = random_record(3000)
     make_circular([goal])
@@ -342,7 +345,6 @@ def test_amplify_fragment(span_cost):
     f1 = goal[500:3000]
     f2 = goal[1000:4000]
     f3 = goal[:500]
-
 
 
 def test_requires_synthesis(span_cost):
@@ -444,21 +446,17 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [
-        (1177, False, "A", False),
-        (1300, True, "B", False),
-    ]
+    expected_path = [(1177, False, "A", False), (1300, True, "B", False)]
 
     check_design_result(design, expected_path)
 
 
 def test_case(span_cost):
-    """
-    This is a test case which has previously failed to find a solution.
+    """This is a test case which has previously failed to find a solution.
 
-    The case is that there are just two small fragments with a small <10bp gap.
-    The solution should be to PCR amplify both fragment and synthesize the
-    rest of the plasmid.
+    The case is that there are just two small fragments with a small
+    <10bp gap. The solution should be to PCR amplify both fragment and
+    synthesize the rest of the plasmid.
     """
     goal = random_record(2000)
     make_circular([goal])
@@ -471,9 +469,6 @@ def test_case(span_cost):
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
-    expected_path = [
-        (1238, True, "A", False),
-        (1282, True, "B", False),
-    ]
+    expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
 
     check_design_result(design, expected_path)

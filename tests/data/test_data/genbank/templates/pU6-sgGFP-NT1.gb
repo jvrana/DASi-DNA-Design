@@ -1,6 +1,6 @@
 LOCUS       pU6-sgGFP-NT1           8308 bp ds-DNA     circular     28-JUL-2016
 DEFINITION  .
-KEYWORDS    "accession:addgene_46914_66635"                                    
+KEYWORDS    "accession:addgene_46914_66635"
 FEATURES             Location/Qualifiers
      primer                         781..801
                                     /label="CMV_fwd_primer"

@@ -1,4 +1,4 @@
-class Constants(object):
+class Constants:
     """DASi constants."""
 
     FRAGMENT = (

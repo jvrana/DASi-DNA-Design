@@ -14,13 +14,14 @@ Submodules
     region
     span
 """
-
 import bisect
-from .region import Region
 import functools
-from .npdf import NumpyDataFrame, NumpyDataFrameException
-from .networkx.utils import sort_cycle
+
 from .networkx.shortest_path import multipoint_shortest_path
+from .networkx.utils import sort_cycle
+from .npdf import NumpyDataFrame
+from .npdf import NumpyDataFrameException
+from .region import Region
 
 
 def sort_with_keys(a, key):

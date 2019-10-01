@@ -1,11 +1,15 @@
+from heapq import heappop
+from heapq import heappush
+from itertools import count
+from typing import List
+
 import networkx as nx
 import numpy as np
-from heapq import heappush, heappop
-from itertools import count
-from sympy import sympify, lambdify
-from .exceptions import TerrariumNetworkxError
-from typing import List
 from more_itertools import pairwise
+from sympy import lambdify
+from sympy import sympify
+
+from .exceptions import TerrariumNetworkxError
 from .utils import sort_cycle
 
 

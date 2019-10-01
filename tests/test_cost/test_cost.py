@@ -1,14 +1,14 @@
-from dasi.cost import (
-    PrimerCostBuilder,
-    SynthesisCostBuilder,
-    PrimerParams,
-    SynthesisParams,
-    SpanCost,
-)
-import pytest
-import pylab as plt
-import numpy as np
 import os
+
+import numpy as np
+import pylab as plt
+import pytest
+
+from dasi.cost import PrimerCostBuilder
+from dasi.cost import PrimerParams
+from dasi.cost import SpanCost
+from dasi.cost import SynthesisCostBuilder
+from dasi.cost import SynthesisParams
 
 
 @pytest.fixture(scope="module")
@@ -26,7 +26,7 @@ def span_cost(primer_cost, syn_cost):
     return SpanCost(syn_cost)
 
 
-class TestPlotters(object):
+class TestPlotters:
     def test_plot_primer_cost(self, primer_cost):
         primer_cost.plot()
         plt.show()
@@ -40,7 +40,7 @@ class TestPlotters(object):
         plt.show()
 
 
-class TestDf(object):
+class TestDf:
     def test_primer_cost_df(self, primer_cost):
         primer_cost.to_df()
 
@@ -51,7 +51,7 @@ class TestDf(object):
         span_cost.to_df()
 
 
-class TestCall(object):
+class TestCall:
     @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_primer_cost_df(self, primer_cost, ext):
         primer_cost(np.arange(-300, 1000), ext)
@@ -65,7 +65,7 @@ class TestCall(object):
         span_cost(np.arange(-300, 1000), (0, 0))
 
 
-class TestEdgeCases(object):
+class TestEdgeCases:
     @pytest.mark.parametrize("ext", [(0, 0), (1, 0), (0, 1), (1, 1)])
     def test_primer_extreme_left(self, primer_cost, ext):
         df = primer_cost(-1000, ext)
@@ -103,7 +103,7 @@ class TestEdgeCases(object):
         assert df.data["cost"][0] == np.inf
 
 
-class TestSerialization(object):
+class TestSerialization:
 
     here = os.path.abspath(os.path.dirname(__file__))
 

@@ -17,7 +17,10 @@ from __future__ import annotations
 import bisect
 from collections.abc import Iterable
 from itertools import zip_longest
-from typing import List, Tuple, Dict, Union
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
 import networkx as nx
 import numpy as np
@@ -26,24 +29,22 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
 from pyblast.utils import is_circular
-from dasi.alignments import (
-    Alignment,
-    AlignmentContainerFactory,
-    AlignmentContainer,
-    ComplexAlignmentGroup,
-)
+
+from .design_algorithms import assemble_graph
+from .design_algorithms import multiprocessing_assemble_graph
+from .design_algorithms import multiprocessing_optimize_graph
+from .design_algorithms import optimize_graph
+from .graph_builder import AssemblyGraphBuilder
+from dasi.alignments import Alignment
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentContainerFactory
+from dasi.alignments import ComplexAlignmentGroup
 from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
-from dasi.log import logger
-from dasi.utils import perfect_subject, sort_cycle
-from .design_algorithms import (
-    assemble_graph,
-    optimize_graph,
-    multiprocessing_assemble_graph,
-    multiprocessing_optimize_graph,
-)
 from dasi.exceptions import DasiDesignException
-from .graph_builder import AssemblyGraphBuilder
+from dasi.log import logger
+from dasi.utils import perfect_subject
+from dasi.utils import sort_cycle
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 
@@ -292,7 +293,7 @@ def run_blast(args):
     return blast.get_perfect()
 
 
-class FakePool(object):
+class FakePool:
     def __init__(self, *args, **kwargs):
         pass
 
@@ -307,7 +308,7 @@ class FakePool(object):
         return [func(arg) for arg in args]
 
 
-class Design(object):
+class Design:
     """Design class that returns optimal assemblies from a set of materials."""
 
     PRIMERS = "primers"
@@ -552,9 +553,7 @@ class Design(object):
                 self.logger.error(
                     "\n\tThere were no solutions found for design '{}' ({}).\n\t"
                     "This sequence may be better synthesized. Use a tool such as JBEI's"
-                    " BOOST.".format(
-                        query_rec.name, query_key
-                    )
+                    " BOOST.".format(query_rec.name, query_key)
                 )
             result.add_assemblies(paths)
         return results_dict

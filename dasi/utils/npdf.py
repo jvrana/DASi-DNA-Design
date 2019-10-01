@@ -1,18 +1,18 @@
 """NumpyDataFrame."""
-
 import pprint
 from collections import OrderedDict
-from collections.abc import Mapping, Iterable
+from collections.abc import Iterable
+from collections.abc import Mapping
 
-import numpy as np
-import pandas as pd
 import msgpack
 import msgpack_numpy as m
+import numpy as np
+import pandas as pd
 
 m.patch()
 
 
-class Null(object):
+class Null:
     """Not None."""
 
 
@@ -196,7 +196,7 @@ class NumpyDataFrame(Mapping):
 
     def validate(self):
         """Validate that the shapes of all of the np.ndarrays are the same."""
-        shapes = set(v.shape for v in self.data.values())
+        shapes = {v.shape for v in self.data.values()}
         if len(shapes) > 1:
             keys_and_shapes = {}
             for k, v in self.data.items():
@@ -336,7 +336,7 @@ class NumpyDataFrame(Mapping):
         :return: a new df
         """
         d = {}
-        other_cols = set(tuple(sorted(o.columns)) for o in others)
+        other_cols = {tuple(sorted(o.columns)) for o in others}
         if len(other_cols) > 1:
             if _fill_value is Null:
                 raise NumpyDataFrameException(

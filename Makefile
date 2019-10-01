@@ -13,7 +13,7 @@ init:
 
 
 check:
-    poetry run pre-commit run
+	poetry run pre-commit run
 
 
 clean:

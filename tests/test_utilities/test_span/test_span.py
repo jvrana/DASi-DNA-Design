@@ -1,5 +1,6 @@
-from dasi.utils.region import Span
 import pytest
+
+from dasi.utils.region import Span
 
 
 class TestInit:
@@ -222,7 +223,7 @@ class TestIntersection:
         assert sliced.b == 30
 
 
-class TestSlice(object):
+class TestSlice:
     @pytest.mark.parametrize("i", list(range(-20, 20)))
     @pytest.mark.parametrize("cyclic", [True, False])
     def test_indexing(self, i, cyclic):

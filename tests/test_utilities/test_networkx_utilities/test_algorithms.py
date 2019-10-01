@@ -1,14 +1,14 @@
-from dasi.utils.networkx import (
-    floyd_warshall_with_efficiency,
-    sympy_floyd_warshall,
-    sympy_dijkstras,
-    sympy_multisource_dijkstras,
-    find_all_min_paths,
-)
+import random
+
 import networkx as nx
 import numpy as np
-import random
 import pytest
+
+from dasi.utils.networkx import find_all_min_paths
+from dasi.utils.networkx import floyd_warshall_with_efficiency
+from dasi.utils.networkx import sympy_dijkstras
+from dasi.utils.networkx import sympy_floyd_warshall
+from dasi.utils.networkx import sympy_multisource_dijkstras
 
 
 COMPARISON_THRESHOLD = (
@@ -96,7 +96,7 @@ def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
 
-class TestAllPairShortestPath(object):
+class TestAllPairShortestPath:
     def floyd_warshall_compare(self, G, nodelist):
         C = floyd_warshall_with_efficiency(G, "weight", "eff", nodelist=nodelist)
         compare(G, C, nodelist)
@@ -114,7 +114,7 @@ class TestAllPairShortestPath(object):
     @pytest.mark.parametrize("n", list(range(2, 8)))
     @pytest.mark.parametrize("repeat", range(3))
     def test_complete_directed(self, n, repeat):
-        """Checks to make sure the return result is not symmetric"""
+        """Checks to make sure the return result is not symmetric."""
         G, nodelist = complete_graph(n, create_using=nx.DiGraph)
         C = self.floyd_warshall_compare(G, nodelist)
         compare(G, C, nodelist)
@@ -123,8 +123,8 @@ class TestAllPairShortestPath(object):
     @pytest.mark.parametrize("using", [nx.Graph, nx.DiGraph])
     @pytest.mark.parametrize("n", [8])
     def test_equivalent_to_floyd_marshall(self, n, using):
-        """Check in the trivial case where eff=1., that the result is equivalent
-            to the result of the floyd_warshall_numpy algorithm"""
+        """Check in the trivial case where eff=1., that the result is
+        equivalent to the result of the floyd_warshall_numpy algorithm."""
         G, nodelist = complete_graph(n, create_using=using)
         for n1, n2, edata in G.edges(data=True):
             edata["eff"] = 1.0
@@ -168,7 +168,7 @@ class TestAllPairShortestPath(object):
         assert np.all(B["efficiency"] <= 1)
 
 
-class TestSymPyAllPairsShortestPath(object):
+class TestSymPyAllPairsShortestPath:
     def test_simple_graph(self):
         G, nodelist = simple_graph()
         C = sympy_floyd_warshall(
@@ -209,7 +209,7 @@ class TestSymPyAllPairsShortestPath(object):
         compare(G, C, nodelist)
 
 
-class TestDijkstras(object):
+class TestDijkstras:
     def test_simple_path(self):
         G = nx.path_graph(4)
 
@@ -272,7 +272,7 @@ class TestDijkstras(object):
         assert path == [0, 5, 6, 7, 4]
 
 
-class TestBenchmarks(object):
+class TestBenchmarks:
     def test_dijkstras(self, benchmark):
         G, nodelist = complete_graph(200, create_using=nx.DiGraph)
         benchmark(

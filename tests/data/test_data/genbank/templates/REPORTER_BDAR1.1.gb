@@ -1,7 +1,7 @@
 LOCUS       REPORTER_BDAR1.1        4934 bp ds-DNA     circular     14-JUN-2016
 DEFINITION  .
-SOURCE      synthetic DNA construct                                            
-  ORGANISM  recombinant plasmid                                                
+SOURCE      synthetic DNA construct
+  ORGANISM  recombinant plasmid
 FEATURES             Location/Qualifiers
      promoter        2151..2465
                      /label="CRP-b Promoter"

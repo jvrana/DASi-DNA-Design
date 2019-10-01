@@ -1,12 +1,10 @@
-from pyblast.utils import (
-    make_linear,
-    make_circular,
-    load_fasta_glob,
-    load_genbank_glob,
-    reverse_complement,
-)
-from pyblast import BioBlastFactory
 from pyblast import __version__
+from pyblast import BioBlastFactory
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+from pyblast.utils import reverse_complement
 
 
 PRIMERS = "primers"

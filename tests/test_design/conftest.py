@@ -1,6 +1,8 @@
-import pytest
-from dasi.cost import SpanCost
 import os
+
+import pytest
+
+from dasi.cost import SpanCost
 from dasi.log import logger
 
 here = os.path.abspath(os.path.dirname(__file__))

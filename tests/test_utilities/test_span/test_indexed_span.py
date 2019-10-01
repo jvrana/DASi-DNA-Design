@@ -1,5 +1,6 @@
-from dasi.utils.region import Span
 import pytest
+
+from dasi.utils.region import Span
 
 
 @pytest.mark.parametrize("index", range(3))

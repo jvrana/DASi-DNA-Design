@@ -11,19 +11,24 @@ Submodules
     params
     utils
 """
-
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from functools import partial
+from typing import Tuple
+from typing import Union
 
+import msgpack
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from .params import Globals
+from .params import PrimerParams
+from .params import SynthesisParams
+from .utils import df_to_np_ranged
+from .utils import lexargmin
+from .utils import slicer
 from dasi.utils import NumpyDataFrame
-from .params import PrimerParams, SynthesisParams, Globals
-from .utils import lexargmin, slicer, df_to_np_ranged
-import msgpack
-from typing import Union, Tuple
 
 slice_dict = {
     (0, 0): slicer[:, :1, :1],

@@ -1,13 +1,18 @@
-from dasi.alignments import Alignment, AlignmentContainer, AlignmentContainerFactory
+import random
+from copy import copy
+from copy import deepcopy
+from uuid import uuid4
+
+import pytest
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+
+from dasi.alignments import Alignment
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.utils import Region
-import pytest
-import random
-from uuid import uuid4
-from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
-from copy import copy, deepcopy
 
 
 def random_seq(len):
@@ -125,7 +130,7 @@ def test_group():
 
 
 def test_group_by_types():
-    """Tests if we correctly gather alignments by their type"""
+    """Tests if we correctly gather alignments by their type."""
     container = random_container(10, 3, Constants.PCR_PRODUCT)
 
     # add two FRAGMENT types
@@ -270,14 +275,12 @@ class TestExpandPrimers:
             container.get_groups_by_types(Constants.PCR_PRODUCT)
         )
         assert len(alignments) == 3
-        types = set([a.type for a in alignments])
-        assert types == set(
-            [
-                Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-                Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
-                Constants.PCR_PRODUCT_WITH_PRIMERS,
-            ]
-        )
+        types = {a.type for a in alignments}
+        assert types == {
+            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_PRIMERS,
+        }
         for a in alignments:
             if a.type == Constants.PCR_PRODUCT_WITH_LEFT_PRIMER:
                 a.query_region.a == 110

@@ -1,5 +1,4 @@
 """Cost utilities."""
-
 import numpy as np
 
 
@@ -86,7 +85,7 @@ def lexargmin(a, axis):
     return imin
 
 
-class Slicer(object):
+class Slicer:
     def __getitem__(self, item):
         return item
 

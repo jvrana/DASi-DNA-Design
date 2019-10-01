@@ -1,16 +1,19 @@
 import bisect
-from typing import List, Tuple
+from multiprocessing import Pool
+from typing import List
+from typing import Tuple
 
 import networkx as nx
 import numpy as np
 
-from dasi.design.graph_builder import AssemblyGraphBuilder
-from dasi.alignments import AlignmentContainerFactory, AlignmentContainer
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentContainerFactory
 from dasi.cost import SpanCost
+from dasi.design.graph_builder import AssemblyGraphBuilder
 from dasi.exceptions import DasiDesignException
 from dasi.utils import sort_with_keys
-from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_path
-from multiprocessing import Pool
+from dasi.utils.networkx import sympy_floyd_warshall
+from dasi.utils.networkx import sympy_multipoint_shortest_path
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'
@@ -208,6 +211,8 @@ def multiprocessing_assemble_graph(
         )
 
     # update container_factory alignments
-    for key, container in zip(query_keys, expanded_containers):
-        container_factory.alignments[key] = list(container.alignments)
+    new_alignments = {
+        key: container for key, container in zip(query_keys, expanded_containers)
+    }
+    container_factory.set_alignments(new_alignments)
     return graphs

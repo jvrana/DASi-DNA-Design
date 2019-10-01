@@ -12,11 +12,9 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-
 import os
 import sys
 
@@ -56,7 +54,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
     "sphinx.ext.inheritance_diagram",
-    "recommonmark"
+    "recommonmark",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -74,7 +72,7 @@ master_doc = "index"
 # General information about the project.
 project = dasi.__title__
 copyright = "2017-2019, University of Washington"
-author = ', '.join(dasi.__authors__)
+author = ", ".join(dasi.__authors__)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -279,7 +277,9 @@ nbsphinx_epilog = r"""
     {{ env.doc2path(env.docname, base='doc') | escape_latex }}}} ends here.}}
 """
 
-mathjax_path="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+mathjax_path = (
+    "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+)
 
 mathjax_config = {
     "TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": True}}

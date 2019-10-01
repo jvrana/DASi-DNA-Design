@@ -1,17 +1,28 @@
 """Alignment container."""
-
-from .alignment import Alignment, AlignmentGroup, ComplexAlignmentGroup
-from dasi.log import logger
-from dasi.utils import Region, bisect_slice_between, sort_with_keys
-from dasi.constants import Constants
-from dasi.exceptions import AlignmentContainerException
-from more_itertools import partition, unique_everseen, flatten
-from typing import Dict, List, Union, Tuple, Any
-from Bio.SeqRecord import SeqRecord
 from bisect import bisect_left
 from collections.abc import Sized
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 from uuid import uuid4
+
+from Bio.SeqRecord import SeqRecord
 from frozendict import frozendict
+from more_itertools import flatten
+from more_itertools import partition
+from more_itertools import unique_everseen
+
+from .alignment import Alignment
+from .alignment import AlignmentGroup
+from .alignment import ComplexAlignmentGroup
+from dasi.constants import Constants
+from dasi.exceptions import AlignmentContainerException
+from dasi.log import logger
+from dasi.utils import bisect_slice_between
+from dasi.utils import Region
+from dasi.utils import sort_with_keys
 
 
 def blast_to_region(query_or_subject, seqdb):
@@ -99,7 +110,7 @@ class AlignmentContainer(Sized):
 
     @staticmethod
     def _check_single_query_key(alignments):
-        keys = set(a.query_key for a in alignments)
+        keys = {a.query_key for a in alignments}
         if len(keys) > 1:
             raise AlignmentContainerException(
                 "AlignmentContainer cannot contain more than one query. Contains the "
@@ -420,7 +431,7 @@ class AlignmentContainer(Sized):
         return len(self.alignments)
 
 
-class AlignmentContainerFactory(object):
+class AlignmentContainerFactory:
     """Class that maintains a shared list of alignments and shared sequence
     database.
 

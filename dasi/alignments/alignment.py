@@ -1,10 +1,11 @@
 """Alignments."""
-
 from __future__ import annotations
-from dasi.utils import Region
-from dasi.exceptions import AlignmentException
-from typing import List
+
 from collections.abc import Sized
+from typing import List
+
+from dasi.exceptions import AlignmentException
+from dasi.utils import Region
 
 ALIGNMENT_SLOTS = [
     "query_region",
@@ -122,7 +123,7 @@ class Alignment(Sized):
         return str(self)
 
 
-class AlignmentGroupBase(object):
+class AlignmentGroupBase:
     """A representative Alignment representing a group of alignments."""
 
     __slots__ = ["query_region", "alignments", "name", "type"]

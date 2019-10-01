@@ -1,10 +1,15 @@
+from collections import OrderedDict
+from typing import Tuple
+from typing import Union
+
 import networkx as nx
 import numpy as np
-from .utils import select_from_arrs, replace_nan_with_inf
-from sympy import sympify, lambdify
-from collections import OrderedDict
+from sympy import lambdify
+from sympy import sympify
+
 from .exceptions import TerrariumNetworkxError
-from typing import Union, Tuple
+from .utils import replace_nan_with_inf
+from .utils import select_from_arrs
 
 PRODUCT = "product"
 SUM = "sum"
@@ -27,12 +32,12 @@ def sympy_floyd_warshall(
     length functions. The following path length function is valid:
 
     $$
-    C = \frac{\sum_{i}^{n}{a_i}}{\prod_{i}^{n}{b_i}}
+    C = \frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
     $$
 
     Where $a_i$ and $b_i$ is the weight 'a' and 'b' of the *ith* edge in the path
     respectively.
-    $\sum_{i}^{n}{a_i}$ is the accumulated sum of weights 'a' and $\prod_{i}^{n}{b_i}$
+    $\\sum_{i}^{n}{a_i}$ is the accumulated sum of weights 'a' and $\\prod_{i}^{n}{b_i}$
      is the accumulated product of weights 'b'. Arbitrarily complex path functions with
       arbitrary numbers of weights
      ($a, b, c,...$) can be used in the algorithm.
@@ -108,8 +113,7 @@ def sympy_floyd_warshall(
         else:
             raise TerrariumNetworkxError(
                 "Accumulator key {} must either be '{}' or '{}' or a callable with two "
-                "arguments ('M' a numpy matrix and 'i' a node index as an int)"
-                .format(
+                "arguments ('M' a numpy matrix and 'i' a node index as an int)".format(
                     key, SUM, PRODUCT
                 )
             )
@@ -128,8 +132,7 @@ def sympy_floyd_warshall(
                 parts_dict[key] = np.multiply(M[i, :], M[:, i])
             else:
                 raise TerrariumNetworkxError(
-                    "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'"
-                    .format(
+                    "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
                         key, PRODUCT, SUM
                     )
                 )

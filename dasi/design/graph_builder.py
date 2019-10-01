@@ -1,23 +1,28 @@
 import bisect
 import itertools
 from collections import namedtuple
-from typing import Iterable, Union, List
+from typing import Iterable
+from typing import List
+from typing import Union
 
 import networkx as nx
 import numpy as np
 from more_itertools import partition
 
-from dasi.alignments import AlignmentContainer, AlignmentGroup, ComplexAlignmentGroup
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentGroup
+from dasi.alignments import ComplexAlignmentGroup
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.exceptions import DASiException
 from dasi.log import logger
-from dasi.utils import sort_with_keys, bisect_slice_between
+from dasi.utils import bisect_slice_between
+from dasi.utils import sort_with_keys
 
 AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
 
 
-class AssemblyGraphBuilder(object):
+class AssemblyGraphBuilder:
     """Class that builds an AssemblyGraph from an alignment container."""
 
     COST_THRESHOLD = 10000
@@ -50,7 +55,7 @@ class AssemblyGraphBuilder(object):
         efficiency: Union[float, None],
         span: int,
         atype: str,
-        **kwargs
+        **kwargs,
     ):
         """Add an edge between two assembly nodes.
 
@@ -76,7 +81,7 @@ class AssemblyGraphBuilder(object):
             efficiency=efficiency,
             span=span,
             type=atype,
-            **kwargs
+            **kwargs,
         )
 
     # TODO: internal cost should correlate with span_cost

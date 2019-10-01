@@ -1,24 +1,31 @@
-import pytest
-from pyblast.utils import make_linear, make_circular, load_fasta_glob, load_genbank_glob
-from os.path import join
-from dasi import Design
-from dasi.design import DesignResult
-from dasi.alignments import AlignmentContainer
-from dasi.log import logger
 import pickle
+from os.path import join
+
 import networkx as nx
+import pytest
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+
+from dasi import Design
+from dasi.alignments import AlignmentContainer
+from dasi.design import DesignResult
+from dasi.log import logger
 
 
 def test_pickle_design_result():
-    container = AlignmentContainer({'none', None}, [])
+    container = AlignmentContainer({"none", None}, [])
     pickle.dumps(container)
-    result = DesignResult(AlignmentContainer({'none': None}, []), nx.DiGraph, "none")
+    result = DesignResult(AlignmentContainer({"none": None}, []), nx.DiGraph, "none")
     s = pickle.dumps(result)
     unpickled_result = pickle.loads(s)
 
+
 # long tests
 def test_large_pkl(here, paths, span_cost):
-    """Expect more than one graph to be output if multiple queries are provided"""
+    """Expect more than one graph to be output if multiple queries are
+    provided."""
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
@@ -41,6 +48,7 @@ def test_large_pkl(here, paths, span_cost):
     with logger.timeit("DEBUG", "pickling span_cost"):
         pickle.loads(pickle.dumps(span_cost))
 
+
 def f(arg):
     scost, primers, templates, queries, results = arg
     design = Design(span_cost=scost)
@@ -48,9 +56,11 @@ def f(arg):
     design.compile()
     return design.optimize()
 
+
 @pytest.mark.parametrize("ncores", [10])
 def test_multiprocessing(here, paths, span_cost, ncores):
-    """Test that demonstrates how multiprocessing can speed up designing multiple constructs."""
+    """Test that demonstrates how multiprocessing can speed up designing
+    multiple constructs."""
     from multiprocessing import Pool
 
     primers = make_linear(load_fasta_glob(paths["primers"]))
@@ -67,9 +77,9 @@ def test_multiprocessing(here, paths, span_cost, ncores):
     assert results
 
 
-
 def test_multiprocessing_multidesign(here, paths, span_cost):
-    """Expect more than one graph to be output if multiple queries are provided"""
+    """Expect more than one graph to be output if multiple queries are
+    provided."""
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
@@ -89,6 +99,7 @@ def test_multiprocessing_multidesign(here, paths, span_cost):
 
     # assert
     import numpy as np
+
     for result in results.values():
         for assembly in result.assemblies:
             df = assembly.to_df()

@@ -1,8 +1,13 @@
-from dasi.design import Design
-from pyblast.utils import load_genbank_glob, load_fasta_glob, make_linear, make_circular
-import pytest
-from os.path import join
 import json
+from os.path import join
+
+import pytest
+from pyblast.utils import load_fasta_glob
+from pyblast.utils import load_genbank_glob
+from pyblast.utils import make_circular
+from pyblast.utils import make_linear
+
+from dasi.design import Design
 
 
 @pytest.mark.parametrize(

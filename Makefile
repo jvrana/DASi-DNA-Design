@@ -12,6 +12,10 @@ init:
 	poetry run pyblast status
 
 
+check:
+    poetry run pre-commit run
+
+
 clean:
 	rm -rf dist
 	rm -rf pip-wheel-metadata

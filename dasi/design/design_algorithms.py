@@ -13,7 +13,8 @@ from dasi.utils.networkx import sympy_floyd_warshall, sympy_multipoint_shortest_
 from multiprocessing import Pool
 
 # definition of how to compute path length
-# c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material' and 'efficiency' for a given path
+# c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'
+# and 'efficiency' for a given path
 path_length_config = {
     "f": "material / efficiency",
     "accumulators": {"efficiency": "product"},

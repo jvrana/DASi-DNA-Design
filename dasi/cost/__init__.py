@@ -22,7 +22,6 @@ import seaborn as sns
 from dasi.utils import NumpyDataFrame
 from .params import PrimerParams, SynthesisParams, Globals
 from .utils import lexargmin, slicer, df_to_np_ranged
-from .utils import slicer, df_to_np_ranged, lexargmin
 import msgpack
 from typing import Union, Tuple
 

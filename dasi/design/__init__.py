@@ -392,43 +392,6 @@ class Design(object):
         """return only results whose subject is 100% aligned to query."""
         return [r for r in results if perfect_subject(r["subject"])]
 
-    # # TODO: do a single blast and sort results based on record keys
-    # def _blast(self):
-    #     """Preform blast of materials against queries."""
-    #     self.logger.info("Compiling assembly graph")
-    #
-    #     with Pool(processes=3) as pool:
-    #         template_blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
-    #         template_blast.update_config(BLAST_PENALTY_CONFIG)
-    #         self.container_factory.seqdb.update(template_blast.seq_db.records)
-    #
-    #         if self.blast_factory.record_groups[self.FRAGMENTS]:
-    #             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
-    #             fragment_blast.update_config(BLAST_PENALTY_CONFIG)
-    #             self.container_factory.seqdb.update(fragment_blast.seq_db.records)
-    #         else:
-    #             fragment_blast = None
-    #
-    #         if self.blast_factory.record_groups[self.PRIMERS]:
-    #             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
-    #             primer_blast.update_config(BLAST_PENALTY_CONFIG)
-    #             self.container_factory.seqdb.update(primer_blast.seq_db.records)
-    #         else:
-    #             primer_blast = None
-    #
-    #         template_results, fragment_results, primer_results = pool.map(run_blast, (
-    #             (template_blast, 'quick_blastn'),
-    #             (fragment_blast, 'quick_blastn'),
-    #             (primer_blast, 'quick_blastn_short')
-    #         ))
-    #
-    #         fragment_results = self.filter_perfect_subject(fragment_results)
-    #         primer_results = self.filter_perfect_subject(primer_results)
-    #
-    #         self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
-    #         self.container_factory.load_blast_json(template_results, Constants.PCR_PRODUCT)
-    #         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
-
     # non-threaded blast
     def _blast(self):
         # align templates
@@ -587,8 +550,9 @@ class Design(object):
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
                 self.logger.error(
-                    "\n\tThere were no solutions found for design '{}' ({}).\n\tThis sequence may"
-                    " be better synthesized. Use a tool such as JBEI's BOOST.".format(
+                    "\n\tThere were no solutions found for design '{}' ({}).\n\t"
+                    "This sequence may be better synthesized. Use a tool such as JBEI's"
+                    " BOOST.".format(
                         query_rec.name, query_key
                     )
                 )

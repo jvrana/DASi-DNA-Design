@@ -304,11 +304,13 @@ class Span(Container, Iterable, Sized):
         :type index: int
         :param strict: if True, positions outside of context bounds are disallowed.
         :type strict: bool
-        :param ignore_wrap: if True (default False), initialization indicies that wrap around multiple times will
+        :param ignore_wrap: if True (default False), initialization indicies that wrap
+                            around multiple times will
                             simply be mapped directly to the context (no wrapping used).
         :type ignore_wrap: bool
-        :param abs_wrap: if True, the abs difference between start and end wrappings are used. Starting wraps that
-                            are greater than ending wraps are valid. If False and the starting wrap is greater than
+        :param abs_wrap:    if True, the abs difference between start and end wrappings
+                            are used. Starting wraps that are greater than ending wraps
+                            are valid. If False and the starting wrap is greater than
                             the ending wrap, an IndexError is thrown.
         """
 
@@ -383,7 +385,8 @@ class Span(Container, Iterable, Sized):
                 )
             )
 
-        # allow wrap mean this will keep track of how many time the span wraps around the context
+        # allow wrap mean this will keep track of how many time the span wraps around
+        # the context
         if not ignore_wrap and end_wrap - start_wrap:
             if self._abs_wrap:
                 _c = self._b + abs(end_wrap - start_wrap) * l
@@ -804,9 +807,8 @@ class Span(Container, Iterable, Sized):
                 )
             elif not inclusive and (val > len(self) or val < -len(self)):
                 raise IndexError(
-                    "Exclusive index '{}' outside of linear span with length of {}".format(
-                        val, len(self)
-                    )
+                    "Exclusive index '{}' outside of linear span with length of {}"
+                    .format(val, len(self))
                 )
 
     def __getitem__(self, val):
@@ -866,8 +868,8 @@ class Span(Container, Iterable, Sized):
 
     def __repr__(self):
         return (
-            "<{cls} {a} {b} ({c}) context_len={context_len} len={length} cyclic={cyclic} "
-            "index={index}, nwraps={n}>".format(
+            "<{cls} {a} {b} ({c}) context_len={context_len} len={length} "
+            "cyclic={cyclic} index={index}, nwraps={n}>".format(
                 cls=self.__class__.__name__,
                 a=self._a,
                 b=self._b,

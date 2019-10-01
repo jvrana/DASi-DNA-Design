@@ -202,8 +202,8 @@ class NumpyDataFrame(Mapping):
             for k, v in self.data.items():
                 keys_and_shapes.setdefault(v.shape, list()).append(k)
             raise NumpyDataFrameException(
-                "{} can only have one shape. Found the following shapes {}. If you want "
-                "to sqeeze all of the data, set 'apply=np.squeeze'".format(
+                "{} can only have one shape. Found the following shapes {}. If you want"
+                " to sqeeze all of the data, set 'apply=np.squeeze'".format(
                     self.__class__, keys_and_shapes
                 )
             )

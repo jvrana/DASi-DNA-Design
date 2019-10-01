@@ -6,69 +6,6 @@ from collections import OrderedDict
 from .exceptions import TerrariumNetworkxError
 from typing import Union, Tuple
 
-# TODO: cycle finder using *almost cycles*
-# TODO: test directed vs undirected
-# TODO: test multigraph
-
-
-# def _archived_floyd_warhsall_with_efficiency(
-#     G, weight="weight", efficiency="eff", nodelist=None, return_all=False, dtype=None
-# ):
-#     """
-#     Computes the shortest path between all pairs using the cost function: SUM(w) / PROD(e)
-#
-#     Warning: This is guaranteed to return precise values due to floating point rounding errors.
-#
-#     :param G:
-#     :param weight:
-#     :param efficiency:
-#     :param nodelist:
-#     :return:
-#     """
-#     if dtype is None:
-#         dtype = np.float64
-#     A = nx.to_numpy_matrix(
-#         G,
-#         nodelist=nodelist,
-#         multigraph_weight=min,
-#         weight=weight,
-#         nonedge=np.inf,
-#         dtype=dtype,
-#     )
-#     B = nx.to_numpy_matrix(
-#         G,
-#         nodelist=nodelist,
-#         multigraph_weight=min,
-#         weight=efficiency,
-#         nonedge=0.0,
-#         dtype=dtype,
-#     )
-#
-#     n, m = A.shape
-#     I = np.identity(n)
-#     A[I == 1] = 0  # diagonal elements should be zero
-#     B[I == 1] = 1
-#
-#     for i in np.arange(n):
-#         # get weight and efficiency of path using node 'i'
-#         A_part = A[i, :] + A[:, i]
-#         B_part = np.multiply(B[i, :], B[:, i])
-#
-#         # get total cost
-#         C = divide(A, B)
-#         C_part = divide(A_part, B_part)
-#
-#         # update
-#         A = np.asmatrix(select_from_arrs(A, A_part, C < C_part))
-#         B = np.asmatrix(select_from_arrs(B, B_part, C < C_part))
-#
-#     C = divide(A, B)
-#     if return_all:
-#         return C, A, B
-#     else:
-#         return C
-
-
 PRODUCT = "product"
 SUM = "sum"
 
@@ -116,7 +53,9 @@ def sympy_floyd_warshall(
 
     :param g: the graph
     :param f: the function string that represents SymPy function to compute the weights
-    :param accumulators: 
+    :param accumulators: diciontary of symbols to accumulator functions (choose from
+                         ["PRODUCT", "SUM"] to use for accumulation of weights through
+                         a path. If missing "SUM" is used.
     :param nonedge: dictionary of symbol to value to use for nonedges
                     (e.g. {'weight': np.inf})
     :param nodelist: optional nodelist to use
@@ -159,7 +98,7 @@ def sympy_floyd_warshall(
     n, m = list(matrix_dict.values())[0].shape
 
     # replace diagonals
-    I = np.identity(n)
+    identity = np.identity(n)
     for key, matrix in matrix_dict.items():
         # set accumulators
         if accumulators.get(key, SUM) == SUM:
@@ -169,13 +108,14 @@ def sympy_floyd_warshall(
         else:
             raise TerrariumNetworkxError(
                 "Accumulator key {} must either be '{}' or '{}' or a callable with two "
-                "arguments ('M' a numpy matrix and 'i' a node index as an int)".format(
+                "arguments ('M' a numpy matrix and 'i' a node index as an int)"
+                .format(
                     key, SUM, PRODUCT
                 )
             )
 
         # set diagonal
-        matrix[I == 1] = identity_subs.get(key, d)
+        matrix[identity == 1] = identity_subs.get(key, d)
 
     for i in np.arange(n):
         # get costs if using node 'i'
@@ -188,7 +128,8 @@ def sympy_floyd_warshall(
                 parts_dict[key] = np.multiply(M[i, :], M[:, i])
             else:
                 raise TerrariumNetworkxError(
-                    "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
+                    "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'"
+                    .format(
                         key, PRODUCT, SUM
                     )
                 )
@@ -228,7 +169,8 @@ def floyd_warshall_with_efficiency(
     """Computes the shortest path between all pairs using the cost function:
     SUM(w) / PROD(e)
 
-    Warning: This is guaranteed to return precise values due to floating point rounding errors.
+    Warning: This is *not guaranteed* to return precise values due to floating point
+    rounding errors.
 
     :param g: the graph
     :param weight_key: the weight key

@@ -76,7 +76,7 @@ class Alignment(Sized):
         query_copy = self.query_region.sub(qstart, qend)
         i = self.query_region.i(qstart)
         if i < 0:
-            i += self.subject_region.context_length
+            i = self.query_region.i(qstart + self.query_region.context_length)
         try:
             subject_copy = self.subject_region[i:i+len(query_copy)]
         except Exception as e:

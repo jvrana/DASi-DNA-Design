@@ -8,11 +8,12 @@ from dasi.utils import Region, bisect_slice_between, sort_with_keys
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from more_itertools import partition, unique_everseen, flatten
-from typing import Dict, List, Union, Tuple
+from typing import Dict, List, Union, Tuple, Any
 from Bio.SeqRecord import SeqRecord
 from bisect import bisect_left
 from collections.abc import Sized
 from uuid import uuid4
+from frozendict import frozendict
 
 
 def blast_to_region(query_or_subject, seqdb):
@@ -106,8 +107,8 @@ class AlignmentContainer(Sized):
         keys = set(a.query_key for a in alignments)
         if len(keys) > 1:
             raise AlignmentContainerException(
-                "AlignmentContainer cannot contain more than one query. Contains the following"
-                "query keys: {}".format(keys)
+                "AlignmentContainer cannot contain more than one query. Contains the "
+                "following query keys: {}".format(keys)
             )
 
     @classmethod
@@ -150,8 +151,8 @@ class AlignmentContainer(Sized):
     ) -> List[Alignment]:
         """
         Creates new alignments for all possible primer pairs. Searches for fwd and
-        rev primer pairs that exist within other alignments and produces all combinations
-        of alignments that can form from these primer pairs.
+        rev primer pairs that exist within other alignments and produces all
+        combinations of alignments that can form from these primer pairs.
 
         :return: list
         """
@@ -233,7 +234,8 @@ class AlignmentContainer(Sized):
                  |--------|     alignment 2
                      |----|     new alignment
 
-        :param alignment_groups:
+        :param alignment_groups: list of alignment groups to expand
+        :param atype: the alignment type label for expanded alignments
         :return: list
         """
 
@@ -259,16 +261,12 @@ class AlignmentContainer(Sized):
                     overlap = group_a.sub_region(
                         group_b.query_region.a, group_a.query_region.b, atype
                     )
-                    # right = group_b.sub_region(group_a.query_region.b, group_b.query_region.b, type)
 
                     if len(left.query_region) > min_overlap:
                         alignments += left.alignments
 
                     if len(overlap.query_region) > min_overlap:
                         alignments += overlap.alignments
-
-                    # if len(right.query_region) > MIN_OVERLAP:
-                    #     alignments += right.alignments
         return alignments
 
     # TODO: break apart long alignments
@@ -282,7 +280,8 @@ class AlignmentContainer(Sized):
         """
 
         self.logger.info("=== Expanding alignments ===")
-        # We annotate any original PCR_PRODUCT with FRAGMENT if they are 'perfect_subjects'
+        # We annotate any original PCR_PRODUCT with FRAGMENT if they are
+        # 'perfect_subjects'
         # This means they already exist as pre-made fragments
         self.logger.info("Number of alignments: {}".format(len(self.alignments)))
 
@@ -372,7 +371,7 @@ class AlignmentContainer(Sized):
         return allgroups
 
     @property
-    def types(self) -> List[Tuple]:
+    def types(self) -> Tuple[Any]:
         """
         Return all valid types.
 
@@ -430,9 +429,6 @@ class AlignmentContainer(Sized):
         return len(self.alignments)
 
 
-from frozendict import frozendict
-
-
 class AlignmentContainerFactory(object):
     """
     Class that maintains a shared list of alignments and shared sequence database.
@@ -451,6 +447,11 @@ class AlignmentContainerFactory(object):
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
+        """
+        Construct a new AlignmentContainer
+
+        :param seqdb: a sequence record database
+        """
         self._alignments = (
             {}
         )  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
@@ -459,11 +460,21 @@ class AlignmentContainerFactory(object):
         self.seqdb = seqdb
 
     @property
-    def alignments(self):
+    def alignments(self) -> frozendict:
+        """
+        Return dict of alignments keyed by query_key
+        :return:
+        """
         return frozendict(self._alignments)
 
-    def set_alignments(self, alignments):
-        self._alignments = alignments
+    def set_alignments(self, alignments: Dict[str, List[Alignment]]) -> None:
+        """
+        Set the alignments.
+
+        :param alignments: new iterable of alignments
+        :return:
+        """
+        self._alignments = tuple(alignments)
         self._containers = None
 
     def load_blast_json(self, data: List[Dict], atype: str):
@@ -495,7 +506,11 @@ class AlignmentContainerFactory(object):
             )
             self._alignments.setdefault(query_key, list()).append(alignment)
 
-    def containers(self):
+    def containers(self) -> Dict[str, AlignmentContainer]:
+        """
+        Return dictionary of AlignmentContainers keyed by query_keys
+        :return:
+        """
         if self._containers is None:
             container_dict = {}
             for key, alignments in self.alignments.items():

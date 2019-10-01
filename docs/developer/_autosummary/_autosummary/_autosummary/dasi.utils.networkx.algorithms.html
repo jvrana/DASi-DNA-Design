@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.utils.networkx.algorithms &#8212; dasi 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="dasi.utils.networkx.exceptions" href="dasi.utils.networkx.exceptions.html" />
+    <link rel="prev" title="dasi.utils.networkx" href="../dasi.utils.networkx.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+    
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../api_reference.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="../dasi.utils.networkx.html" title="Previous Chapter: dasi.utils.networkx"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dasi.utils.networkx</span>
+    </a>
+  </li>
+  <li>
+    <a href="dasi.utils.networkx.exceptions.html" title="Next Chapter: dasi.utils.networkx.exceptions"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.utils.ne... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../../../../_sources/developer/_autosummary/_autosummary/_autosummary/dasi.utils.networkx.algorithms.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="module-dasi.utils.networkx.algorithms">
+<span id="dasi-utils-networkx-algorithms"></span><h1>dasi.utils.networkx.algorithms<a class="headerlink" href="#module-dasi.utils.networkx.algorithms" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.networkx.algorithms.floyd_warshall_with_efficiency" title="dasi.utils.networkx.algorithms.floyd_warshall_with_efficiency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floyd_warshall_with_efficiency</span></code></a>(g, …[, …])</p></td>
+<td><p>Computes the shortest path between all pairs using the cost function: SUM(w) / PROD(e)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.networkx.algorithms.sympy_floyd_warshall" title="dasi.utils.networkx.algorithms.sympy_floyd_warshall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sympy_floyd_warshall</span></code></a>(g, f, accumulators[, …])</p></td>
+<td><p>Implementation of all pairs shortest path length using a modified floyd-warshall algorithm with arbitrary path</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="dasi.utils.networkx.algorithms.floyd_warshall_with_efficiency">
+<code class="sig-prename descclassname">dasi.utils.networkx.algorithms.</code><code class="sig-name descname">floyd_warshall_with_efficiency</code><span class="sig-paren">(</span><em class="sig-param">g: Union[networkx.classes.digraph.DiGraph, networkx.classes.graph.Graph], weight_key: str, eff_key: str, nodelist=None, return_all=False, dtype=None</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../../../_modules/dasi/utils/networkx/algorithms.html#floyd_warshall_with_efficiency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.networkx.algorithms.floyd_warshall_with_efficiency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the shortest path between all pairs using the cost function: SUM(w) / PROD(e)</p>
+<p>Warning: This is guaranteed to return precise values due to floating point rounding errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g</strong> – the graph</p></li>
+<li><p><strong>weight_key</strong> – the weight key</p></li>
+<li><p><strong>eff_key</strong> – the efficiency key</p></li>
+<li><p><strong>nodelist</strong> – optional list of nodes</p></li>
+<li><p><strong>return_all</strong> – whether to return the weight matrix and weight dictionary</p></li>
+<li><p><strong>dtype</strong> – dtype of the np.array matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the weight matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="dasi.utils.networkx.algorithms.sympy_floyd_warshall">
+<code class="sig-prename descclassname">dasi.utils.networkx.algorithms.</code><code class="sig-name descname">sympy_floyd_warshall</code><span class="sig-paren">(</span><em class="sig-param">g: Union[networkx.classes.digraph.DiGraph, networkx.classes.graph.Graph], f: str, accumulators: dict, nonedge=None, nodelist=None, multigraph_weight=None, identity_subs=None, return_all=False, dtype=None</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../../../../_modules/dasi/utils/networkx/algorithms.html#sympy_floyd_warshall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.networkx.algorithms.sympy_floyd_warshall" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Implementation of all pairs shortest path length using a modified floyd-warshall algorithm with arbitrary path
+length functions. The following path length function is valid:</p>
+<p>$$
+C =</p>
+</div></blockquote>
+<dl>
+<dt>rac{sum_{i}^{n}{a_i}}{prod_{i}^{n}{b_i}}</dt><dd><p>$$</p>
+<p>Where $a_i$ and $b_i$ is the weight ‘a’ and ‘b’ of the <em>ith</em> edge in the path respectively.
+$sum_{i}^{n}{a_i}$ is the accumulated sum of weights ‘a’ and $prod_{i}^{n}{b_i}$</p>
+<blockquote>
+<div><p>is the accumulated product of weights ‘b’. Arbitrarily complex path functions with arbitrary numbers of weights
+($a, b, c,…$) can be used in the algorithm.</p>
+</div></blockquote>
+<p>Because arbitrary functions are used, the shortest path between ij and jk does not necessarily mean the shortest
+path nodes ijk is the concatenation of these two paths. In other words, for the shortest path $p_{ik}$ between
+nodes $i$ $j$ and $k$:</p>
+<p>$$
+p_{ij} + p_{jk}</p>
+</dd>
+<dt>eq p_{ijk}</dt><dd><p>$$</p>
+<p>This means a predecessor dictionary cannot be used to reconstruct the paths easily. To do so, use the modified
+Dijkstra’s algorithm below which handles arbitrary path functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param g</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param f</dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param accumulators</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param nonedge</dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param nodelist</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param multigraph_weight</dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param identity_subs</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param return_all</dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param dtype</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">return</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

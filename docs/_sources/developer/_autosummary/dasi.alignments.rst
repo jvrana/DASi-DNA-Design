@@ -1,7 +1,7 @@
-dasi.utils.span
+dasi.alignments
 ===============
 
-.. automodule:: dasi.utils.span
+.. automodule:: dasi.alignments
 
    
    

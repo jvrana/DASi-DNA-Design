@@ -37,7 +37,8 @@ class Alignment(Sized):
         subject_key: str,
     ):
         """
-        Makes an alignment between two regions of sequences. Validates the regions are the same length.
+        Makes an alignment between two regions of sequences. Validates the regions are
+        the same length.
 
         :param query_region: Query region this alignment aligns to
         :param subject_region: Subject region this alignment aligns to.
@@ -192,8 +193,8 @@ class AlignmentGroup(AlignmentGroupBase):
 
 class ComplexAlignmentGroup(AlignmentGroupBase):
     """
-    A representation of an alignment in which the query region is the concatenation of the
-    underlying alignments provided.
+    A representation of an alignment in which the query region is the concatenation of
+    the underlying alignments provided.
     """
 
     __slots__ = ["query_region", "alignments", "name", "type"]

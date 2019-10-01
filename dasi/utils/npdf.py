@@ -21,8 +21,10 @@ class NumpyDataFrameException(Exception):
 
 
 class NumpyDataFrame(Mapping):
-    """The NumpyDataFrame is a class halfway between pandas and numpy. It has named columns, indexing, slicing,
-    function applications, and mathematical operations. Unlike pandas however, it maintains the multi-dimensionality
+    """The NumpyDataFrame is a class halfway between pandas and numpy. It has named
+    columns, indexing, slicing,
+    function applications, and mathematical operations. Unlike pandas however, it
+    maintains the multi-dimensionality
     of underlying data (as np.ndarray), allowing broadcasting and complex indexing.
 
     Usage:
@@ -86,7 +88,8 @@ class NumpyDataFrame(Mapping):
       df = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
       df.aggregate(np.hstack)
 
-    Functions can be applied to grouped columns of multiple dataframes using `np.group_apply`.
+    Functions can be applied to grouped columns of multiple dataframes using
+    `np.group_apply`.
     For example, the following applies stackes each column in each df horizontally:
 
     .. code-block::
@@ -96,7 +99,8 @@ class NumpyDataFrame(Mapping):
       NumpyDataFrame.group_apply((df1, df2), np.hstack)
 
     In another example, we can apply np.divide to two dfs, using `expand=True` to expand
-    the underlying arguments to properly run `np.divide`. The following two strategies are
+    the underlying arguments to properly run `np.divide`. The following two strategies
+    are
     functionally equivalent:
 
     .. code-block::
@@ -135,7 +139,8 @@ class NumpyDataFrame(Mapping):
         df2 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
         NumpyDataFrame.concat((df1, df2))
 
-    Dataframes with different column can be concatenated together by setting a fill value
+    Dataframes with different column can be concatenated together by setting a fill
+    value
 
     .. code-block::
 
@@ -199,8 +204,8 @@ class NumpyDataFrame(Mapping):
             for k, v in self.data.items():
                 keys_and_shapes.setdefault(v.shape, list()).append(k)
             raise NumpyDataFrameException(
-                "{} can only have one shape. Found the following shapes {}. If you want to sqeeze all"
-                "of the data, set 'apply=np.squeeze'".format(
+                "{} can only have one shape. Found the following shapes {}. If you want "
+                "to sqeeze all of the data, set 'apply=np.squeeze'".format(
                     self.__class__, keys_and_shapes
                 )
             )
@@ -223,8 +228,10 @@ class NumpyDataFrame(Mapping):
 
         :param func: the function to apply
         :param args: the additional function arguments
-        :param cols: the columns to apply the function to. If False, all columns are used.
-        :param inplace: if True, will apply the function to the current df and return the current df.
+        :param cols: the columns to apply the function to. If False, all columns are
+        used.
+        :param inplace: if True, will apply the function to the current df and return
+        the current df.
         :param kwargs: the additional function keyword arguments
         :return:
         """
@@ -259,8 +266,10 @@ class NumpyDataFrame(Mapping):
         :param func: The function to appluy
         :param args: the additional arguments of the function
         :param astype: the type of data frame to return
-        :param preprocess: preprocess function to apply to each np.ndarray before applying 'func'
-        :param inplace: If True, will apply the function to the current df and return the current df.
+        :param preprocess: preprocess function to apply to each np.ndarray before
+        applying 'func'
+        :param inplace: If True, will apply the function to the current df and return
+        the current df.
         :param kwargs: the keyword arguments to apply to the function
         :return: a new dataframe
         """
@@ -308,7 +317,8 @@ class NumpyDataFrame(Mapping):
         self.group_apply((other,), np.hstack)
 
     def fill_value(self, cols, value):
-        """Create new columns, if they are missing, and fill them with the specified value."""
+        """Create new columns, if they are missing, and fill them with the specified
+        value."""
         for c in cols:
             if c not in self.col:
                 self.col[c] = np.array([value for _ in range(len(self))])
@@ -316,13 +326,15 @@ class NumpyDataFrame(Mapping):
     @classmethod
     def group_apply(cls, others, func, *args, expand=False, _fill_value=Null, **kwargs):
         """
-        Groups np.arrays according to their column name for several dataframes (as a list) and applies
+        Groups np.arrays according to their column name for several dataframes
+        (as a list) and applies
         a function to each group. Returns a new df with the results.
 
         :param others: iterable of dfs
         :param func: the function to apply
         :param args: additional arguments for the function
-        :param expand: If true, the list of np.arrays will be expanded, as in `func(*list_of_arrs, ...)`
+        :param expand: If true, the list of np.arrays will be expanded, as in
+        `func(*list_of_arrs, ...)`
         :param _fill_value:
         :param kwargs: additional keyword arguments for the function
         :return: a new df

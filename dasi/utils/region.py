@@ -20,7 +20,8 @@ class Span(Container, Iterable, Sized):
 
         - `a` - the starting (inclusive) position of the span
         - `b` - the mapped exclusive position of the span
-        - `c` - the unmapped exclusive position of the span (used for cyclic spans that wrap context multiple times)
+        - `c` - the unmapped exclusive position of the span (used for cyclic spans that
+                wrap context multiple times)
         - `cyclic` - whether the underlying context is circular or linear
         - `index` - the first index of the context
         - `context_length` - the length of the underlying context.
@@ -33,7 +34,8 @@ class Span(Container, Iterable, Sized):
             s = Span(0, 10, 20)
             assert s.a == 0
             assert s.b == 10
-            assert list(s) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # spans are always exclusive at endpoint.
+            assert list(s) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # spans are always
+                                                              # exclusive at endpoint.
 
         **Indexing and Slicing**
 
@@ -52,19 +54,23 @@ class Span(Container, Iterable, Sized):
             s = Span(5, 8, 10, index=5)
             assert s.a == 5
             assert s.b == 8
-            assert s[0] == 5  # the 'first' position in the span equivalent to the starting index
-            assert s[-1] == 7  # the 'last' position in the span is the last inclusive index
+            assert s[0] == 5    # the 'first' position in the span equivalent to the
+                                # starting index
+            assert s[-1] == 7   # the 'last' position in the span is the last inclusive
+                                # index
 
         Positions can be mapped automatically during initialization:
 
         .. code-block::
 
-            s = Span(-1, 5, 10, cyclic=True, index=0)  # index '-1' is mapped onto last available index on the context,
+            s = Span(-1, 5, 10, cyclic=True, index=0)   # index '-1' is mapped onto last
+                                                        # available index on the context,
             '9'
             assert s.a == 9
             assert s.b == 5
 
-            s = Span(6, -1, 10, cyclic=True, index=0)  # index '-1' is mapped onto last available exclusive index on the
+            s = Span(6, -1, 10, cyclic=True, index=0)  # index '-1' is mapped onto last
+                                                       # available exclusive index on the
              context, '10'
             assert s.a == 6
             assert s.b == 10
@@ -119,7 +125,8 @@ class Span(Container, Iterable, Sized):
             assert len(s) == 4
 
         **Wrapping cyclic spans**
-        Spans the wrap around the context multiple times can be represented as well. The mapped endpoint
+        Spans the wrap around the context multiple times can be represented as well.
+        The mapped endpoint
         is found with `span.b` and the non-mapped endpoint is found using `span.c`.
 
         .. code-block::
@@ -131,7 +138,8 @@ class Span(Container, Iterable, Sized):
             assert s.b == 1  # mapped endpoint
             assert s.c == 21 # the unmapped endpoint
 
-        The indices are reduced to their lowest 'wrapping' whenever possible. For example, the following
+        The indices are reduced to their lowest 'wrapping' whenever possible.
+        For example, the following
         initializations are equivalent:
 
         .. code-block::
@@ -215,11 +223,13 @@ class Span(Container, Iterable, Sized):
         abs_wrap=False,
     ):
         """
-        Constructs a new Span. There are several options to customize the initialization procedure.
+        Constructs a new Span. There are several options to customize the
+        initialization procedure.
 
         **strict=True**
 
-        When strict, any index outside the valid bounds of the context raises an IndexError.
+        When strict, any index outside the valid bounds of the context raises an
+        IndexError.
 
         .. code-block::
 
@@ -229,7 +239,8 @@ class Span(Container, Iterable, Sized):
 
         **ignore_wrap=True**
 
-        When wrapping is ignored, indices are simply mapped to the context with no consideration
+        When wrapping is ignored, indices are simply mapped to the context with no
+        consideration
         of the number of times the absolute position would wrap around the context.
 
         .. code-block::
@@ -242,9 +253,12 @@ class Span(Container, Iterable, Sized):
 
         **abs_wrap=True**
 
-        When absolute wrapping is used, the absolute difference between starting and ending index wrappings
-        is calculated, the starting index is to the context while the ending index is adjusted such
-        that the length will reflect the abs difference between starting and ending index wrappings.
+        When absolute wrapping is used, the absolute difference between starting and
+        ending index wrappings
+        is calculated, the starting index is to the context while the ending index is
+        adjusted such
+        that the length will reflect the abs difference between starting and ending
+        index wrappings.
         This can be unintuitive
         is best shown with the following example:
 
@@ -719,7 +733,8 @@ class Span(Container, Iterable, Sized):
     def invert(self) -> Union[Tuple[Span, Span], Tuple[Span, None]]:
         """
         Invert the region, returning a tuple of the remaining spans from the context.
-        If cyclic, a tuple (span, None) tuple is returned. If linear, a (span, span) is returned.
+        If cyclic, a tuple (span, None) tuple is returned. If linear, a (span, span) is
+        returned.
 
         :return: inverted regions
         :rtype: tuple

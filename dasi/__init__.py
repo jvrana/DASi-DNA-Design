@@ -15,7 +15,6 @@ Submodules
     constants
     exceptions
     log
-
 """
 
 from .design import Design, LibraryDesign

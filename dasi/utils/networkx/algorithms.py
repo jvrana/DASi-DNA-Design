@@ -4,7 +4,8 @@ from .utils import select_from_arrs, replace_nan_with_inf
 from sympy import sympify, lambdify
 from collections import OrderedDict
 from .exceptions import TerrariumNetworkxError
-from typing import Union
+from typing import Union, Tuple
+
 # TODO: cycle finder using *almost cycles*
 # TODO: test directed vs undirected
 # TODO: test multigraph
@@ -82,41 +83,50 @@ def sympy_floyd_warshall(
     identity_subs=None,
     return_all=False,
     dtype=None,
-) -> np.ndarray:
+) -> Union[np.ndarray, Tuple[np.ndarray, dict]]:
     """
-    Implementation of all pairs shortest path length using a modified floyd-warshall algorithm with arbitrary path
+    Implementation of all pairs shortest path length using a modified floyd-warshall
+    algorithm with arbitrary path
     length functions. The following path length function is valid:
 
     $$
     C = \frac{\sum_{i}^{n}{a_i}}{\prod_{i}^{n}{b_i}}
     $$
 
-    Where $a_i$ and $b_i$ is the weight 'a' and 'b' of the *ith* edge in the path respectively.
+    Where $a_i$ and $b_i$ is the weight 'a' and 'b' of the *ith* edge in the path
+    respectively.
     $\sum_{i}^{n}{a_i}$ is the accumulated sum of weights 'a' and $\prod_{i}^{n}{b_i}$
-     is the accumulated product of weights 'b'. Arbitrarily complex path functions with arbitrary numbers of weights
+     is the accumulated product of weights 'b'. Arbitrarily complex path functions with
+      arbitrary numbers of weights
      ($a, b, c,...$) can be used in the algorithm.
 
-    Because arbitrary functions are used, the shortest path between ij and jk does not necessarily mean the shortest
-    path nodes ijk is the concatenation of these two paths. In other words, for the shortest path $p_{ik}$ between
+    Because arbitrary functions are used, the shortest path between ij and jk does not
+    necessarily mean the shortest
+    path nodes ijk is the concatenation of these two paths. In other words, for the
+    shortest path $p_{ik}$ between
     nodes $i$ $j$ and $k$:
 
     $$
     p_{ij} + p_{jk} \neq p_{ijk}
     $$
 
-    This means a predecessor dictionary cannot be used to reconstruct the paths easily. To do so, use the modified
+    This means a predecessor dictionary cannot be used to reconstruct the paths easily.
+    To do so, use the modified
     Dijkstra's algorithm below which handles arbitrary path functions.
 
-    :param g: 
-    :param f: 
+    :param g: the graph
+    :param f: the function string that represents SymPy function to compute the weights
     :param accumulators: 
-    :param nonedge: 
-    :param nodelist: 
-    :param multigraph_weight: 
-    :param identity_subs: 
-    :param return_all: 
-    :param dtype: 
-    :return: 
+    :param nonedge: dictionary of symbol to value to use for nonedges
+                    (e.g. {'weight': np.inf})
+    :param nodelist: optional nodelist to use
+    :param multigraph_weight: optional (default: min) function to use for multigraphs
+    :param identity_subs: the dictionary of values to set along the diagonal axis
+    :param return_all: if True, return both the resulting weight matrix and the
+            individual components broken down by symbol strings.
+    :param dtype: the dtype of the resulting np.ndarrays used and returned
+    :return: either just the weight matrix or, if return_all is True, the weight_matrix
+                and the dictionary of the weight components.
     """
     if dtype is None:
         dtype = np.float64
@@ -208,7 +218,12 @@ def sympy_floyd_warshall(
 
 
 def floyd_warshall_with_efficiency(
-    g: Union[nx.DiGraph, nx.Graph], weight_key: str, eff_key: str, nodelist=None, return_all=False, dtype=None
+    g: Union[nx.DiGraph, nx.Graph],
+    weight_key: str,
+    eff_key: str,
+    nodelist=None,
+    return_all=False,
+    dtype=None,
 ) -> np.ndarray:
     """
     Computes the shortest path between all pairs using the cost function: SUM(w) / PROD(e)

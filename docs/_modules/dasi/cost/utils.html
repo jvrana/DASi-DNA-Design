@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.cost.utils &#8212; dasi 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+    
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.cost.utils</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;Cost utilities&quot;&quot;&quot;
+
+import numpy as np
+
+
+<div class="viewcode-block" id="square_broadcast"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.cost.utils.html#dasi.cost.utils.square_broadcast">[docs]</a>def square_broadcast(a, b, a_axis=0, b_axis=1):
+    &quot;&quot;&quot;Broadcast b to the a_axis of ndarray &#39;a&#39; and perform a hstack&quot;&quot;&quot;
+    c = np.broadcast_to(b, (a.shape[a_axis], b.shape[b_axis]))
+    return np.hstack([a, c])</div>
+
+
+<div class="viewcode-block" id="df_to_np_ranged"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.cost.utils.html#dasi.cost.utils.df_to_np_ranged">[docs]</a>def df_to_np_ranged(min_col, max_col, df, cols=None, dtype=None):
+    &quot;&quot;&quot;
+    Expand a pandas data frame, which has min and max span columns defined, into a
+    numpy ndarray. Specific columns to include in the expansion can be defined in the
+    `remaining_cols` argument, else all columns are used.
+
+    For example:
+
+    .. code-block::
+
+      df = pd.DataFrame([
+        [0, 10, 10], [10, 20, 100]
+      ], columns=[&#39;min&#39;, &#39;max&#39;, &#39;x&#39;])
+      a = df_to_np_ranged(&#39;min&#39;, &#39;max&#39;, df, dtype=np.float64)
+      assert a.shape == (20, 2)
+      assert a[5] == [5., 10.]
+      assert a[17] == [17., 100.]
+
+    &quot;&quot;&quot;
+    vblocks = []
+    mn, mx = min_col, max_col
+    if cols is None:
+        cols = [c for c in df.columns if c not in [mn, mx]]
+    for _, row in df.iterrows():
+        _a = np.arange(row[mn], row[mx], dtype=np.int32).reshape(-1, 1)
+        cost_row = row[cols]
+        vblocks.append(square_broadcast(_a, cost_row.to_numpy(dtype=dtype), 0, 0))
+
+    a = np.vstack(vblocks)
+    return a</div>
+
+
+def unshape(shape, axis):
+    if isinstance(axis, int):
+        axis = (axis,)
+    return [s for i, s in enumerate(shape) if i not in axis]
+
+
+<div class="viewcode-block" id="flatten_axis"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.cost.utils.html#dasi.cost.utils.flatten_axis">[docs]</a>def flatten_axis(a, axis=None, copy=True):
+    &quot;&quot;&quot;Flatten the array along the specified axes&quot;&quot;&quot;
+    if axis is None:
+        return a.flatten()
+    if isinstance(axis, int):
+        axis = (axis,)
+    to_axis = tuple(range(len(axis)))
+    print(unshape(a.shape, axis))
+    g = np.prod(unshape(a.shape, axis))
+    view = np.moveaxis(a, axis, to_axis).reshape(-1, g)
+    if copy:
+        return view.copy()
+    else:
+        return view</div>
+
+
+<div class="viewcode-block" id="duplicates"><a class="viewcode-back" href="../../../developer/_autosummary/_autosummary/dasi.cost.utils.html#dasi.cost.utils.duplicates">[docs]</a>def duplicates(b, axis=None):
+    &quot;&quot;&quot;Find duplicates within the specified axes. If axis not provided,
+       flatten array and return duplicates.&quot;&quot;&quot;
+    b = flatten_axis(b, axis, copy=False)
+    s = np.sort(b)
+    if axis:
+        duplicate_list = []
+        for x in b:
+            duplicate_list.append(duplicates(x))
+        return duplicate_list
+    return np.unique(s[:-1][s[1:] == s[:-1]])</div>
+
+
+def lexargmin(a, axis):
+    shape = a[0].shape
+    reshaped = tuple([_a.reshape(shape[axis], -1) for _a in a])
+    i = np.lexsort(reshaped, axis=1)
+    i = i[:, :1]
+    i = np.unravel_index(i, unshape(shape, axis))
+    imin = (np.arange(shape[axis]), *[np.squeeze(_i) for _i in i])
+    return imin
+
+
+class Slicer(object):
+    def __getitem__(self, item):
+        return item
+
+
+slicer = Slicer()
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

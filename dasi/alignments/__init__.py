@@ -1,4 +1,5 @@
-"""Cost
+"""
+Alignments are representative regions between two sequences.
 
 .. module:: dasi.alignments
 

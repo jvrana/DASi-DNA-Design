@@ -8,6 +8,7 @@ class SpanError(Exception):
     pass
 
 
+# TODO: move this to pyblast?
 class Span(Container, Iterable, Sized):
     """
         `Span` maps the provided positions onto a context

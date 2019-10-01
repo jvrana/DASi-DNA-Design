@@ -9,7 +9,11 @@
 * avoid repeats
 * consider design flexibility in optimization algorithm
 
-Pyblast still does not handle regions with 0,0 properly. Unsure how to handle these.
+**Possible Failure Modes**
+
+* overhang are homologous to other overhangs. This could be translated to some global score.
+* Efficiency of PCR amplification could be low. This could be determined by Primer3.
+* PCR amplification could have multiple products. This could be determined by Primer3.
 
 **Multi-plasmid optimization**
 

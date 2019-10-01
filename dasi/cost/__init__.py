@@ -1,4 +1,4 @@
-"""Cost
+"""Cost.
 
 .. module:: dasi.cost
 
@@ -35,8 +35,7 @@ slice_dict = {
 
 
 def encoder(obj):
-    """
-    msgpack encoder for cost functions.
+    """msgpack encoder for cost functions.
 
     :param obj:
     :return:
@@ -53,8 +52,7 @@ def encoder(obj):
 
 
 def decoder(obj):
-    """
-    msgpack decoder for cost functions.
+    """msgpack decoder for cost functions.
 
     :param obj:
     :return:
@@ -84,11 +82,11 @@ class CostBuilder(ABC):
 
     @abstractmethod
     def compute(self):
-        """Before the numpy-based cost calculations"""
+        """Before the numpy-based cost calculations."""
         pass
 
     def to_df(self):
-        """Convert the cost builder to a pandas.DataFrame"""
+        """Convert the cost builder to a pandas.DataFrame."""
         dfs = []
         for ext, jxn in self.cost_dict.items():
             df = jxn.to_df()
@@ -99,7 +97,7 @@ class CostBuilder(ABC):
 
     @property
     def plot(self):
-        """Plot attributes across 'span' from the pandas.DataFrame"""
+        """Plot attributes across 'span' from the pandas.DataFrame."""
         return partial(
             sns.lineplot, data=self.to_df(), x="span", y="cost", hue="condition"
         )

@@ -44,8 +44,8 @@ def sympy_multisource_dijkstras(
 def sympy_dijkstras(
     g, source, f, target=None, accumulators=None, init=None, cutoff=None
 ):
-    """
-    Computes the shortest path distance and path for a graph using an arbitrary function.
+    """Computes the shortest path distance and path for a graph using an
+    arbitrary function.
 
     :param g:
     :param source:
@@ -182,9 +182,8 @@ def multipoint_shortest_path(
     cyclic=False,
     cyclic_sort_key=None,
 ):
-    """
-    Return shortest path through nodes. If cyclic, will return the cycle sorted with the
-    'lowest' node at index 0. Self cycles are not supported
+    """Return shortest path through nodes. If cyclic, will return the cycle
+    sorted with the 'lowest' node at index 0. Self cycles are not supported.
 
     :param graph: the graph
     :param nodes: list of nodes to find path

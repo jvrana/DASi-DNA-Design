@@ -5,8 +5,11 @@ import networkx as nx
 
 def select_from_arrs(A, B, condition):
     """Returns an ndarray of same shape as A and B, selecting elements from
-    either A or B according to the condition. Somehow, this is 2X faster than
-    whatever is implemented in np.choose."""
+    either A or B according to the condition.
+
+    Somehow, this is 2X faster than whatever is implemented in
+    np.choose.
+    """
     a = np.asarray(A).ravel()
     b = np.asarray(B).ravel()
     c = np.asarray(condition).ravel()
@@ -22,14 +25,15 @@ def replace_nan_with_inf(m):
 
 
 def divide(mata, matb):
-    """Divides two matricies, replacing NaN with np.inf"""
+    """Divides two matricies, replacing NaN with np.inf."""
     matc = mata / matb
     replace_nan_with_inf(matc)
     return matc
 
 
 def find_all_min_paths(G, lim=None):
-    """Explicitly finds minimum paths according to the cost function sum(weight) / prod(efficiency)"""
+    """Explicitly finds minimum paths according to the cost function
+    sum(weight) / prod(efficiency)"""
     min_path_dict = {}
     n_paths = 0
     for n1, n2 in product(G.nodes(), repeat=2):
@@ -128,7 +132,7 @@ def compare_path_rank_order(mat, path_dict, nodelist, verbose=False):
 
 # TODO: move to networkx utils
 def sort_cycle(arr, key=None):
-    """Sort a cyclic array, maintaining order"""
+    """Sort a cyclic array, maintaining order."""
     if key is None:
         arr_with_i = sorted([(x, i) for i, x in enumerate(arr)])
     else:

@@ -1,19 +1,18 @@
-"""Cost utilities"""
+"""Cost utilities."""
 
 import numpy as np
 
 
 def square_broadcast(a, b, a_axis=0, b_axis=1):
-    """Broadcast b to the a_axis of ndarray 'a' and perform a hstack"""
+    """Broadcast b to the a_axis of ndarray 'a' and perform a hstack."""
     c = np.broadcast_to(b, (a.shape[a_axis], b.shape[b_axis]))
     return np.hstack([a, c])
 
 
 def df_to_np_ranged(min_col, max_col, df, cols=None, dtype=None):
-    """
-    Expand a pandas data frame, which has min and max span columns defined, into a
-    numpy ndarray. Specific columns to include in the expansion can be defined in the
-    `remaining_cols` argument, else all columns are used.
+    """Expand a pandas data frame, which has min and max span columns defined,
+    into a numpy ndarray. Specific columns to include in the expansion can be
+    defined in the `remaining_cols` argument, else all columns are used.
 
     For example:
 
@@ -26,7 +25,6 @@ def df_to_np_ranged(min_col, max_col, df, cols=None, dtype=None):
       assert a.shape == (20, 2)
       assert a[5] == [5., 10.]
       assert a[17] == [17., 100.]
-
     """
     vblocks = []
     mn, mx = min_col, max_col
@@ -48,7 +46,7 @@ def unshape(shape, axis):
 
 
 def flatten_axis(a, axis=None, copy=True):
-    """Flatten the array along the specified axes"""
+    """Flatten the array along the specified axes."""
     if axis is None:
         return a.flatten()
     if isinstance(axis, int):
@@ -64,8 +62,10 @@ def flatten_axis(a, axis=None, copy=True):
 
 
 def duplicates(b, axis=None):
-    """Find duplicates within the specified axes. If axis not provided,
-       flatten array and return duplicates."""
+    """Find duplicates within the specified axes.
+
+    If axis not provided, flatten array and return duplicates.
+    """
     b = flatten_axis(b, axis, copy=False)
     s = np.sort(b)
     if axis:

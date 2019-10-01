@@ -1,4 +1,4 @@
-"""DASi's logger"""
+"""DASi's logger."""
 
 from loggable import Loggable
 

@@ -1,6 +1,4 @@
-"""
-
-.. module:: dasi
+""".. module:: dasi.
 
 Submodules
 ==========

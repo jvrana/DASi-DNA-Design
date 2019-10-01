@@ -225,8 +225,8 @@ def floyd_warshall_with_efficiency(
     return_all=False,
     dtype=None,
 ) -> np.ndarray:
-    """
-    Computes the shortest path between all pairs using the cost function: SUM(w) / PROD(e)
+    """Computes the shortest path between all pairs using the cost function:
+    SUM(w) / PROD(e)
 
     Warning: This is guaranteed to return precise values due to floating point rounding errors.
 

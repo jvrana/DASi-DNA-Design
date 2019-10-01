@@ -1,5 +1,4 @@
-"""
-Alignments are representative regions between two sequences.
+"""Alignments are representative regions between two sequences.
 
 .. module:: dasi.alignments
 

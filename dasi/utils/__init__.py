@@ -1,4 +1,4 @@
-"""Utilities
+"""Utilities.
 
 .. module:: dasi.utils
 
@@ -30,9 +30,8 @@ def sort_with_keys(a, key):
 
 
 def bisect_between(a, low, high):
-    """
-    Returns the start (inclusive) and end (exclusive) indices
-    for a sorted array using a key function.
+    """Returns the start (inclusive) and end (exclusive) indices for a sorted
+    array using a key function.
 
     :param a: sorted array (does not check)
     :param low: low key

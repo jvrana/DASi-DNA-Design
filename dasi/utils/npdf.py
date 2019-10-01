@@ -1,4 +1,4 @@
-"""NumpyDataFrame"""
+"""NumpyDataFrame."""
 
 import pprint
 from collections import OrderedDict
@@ -17,15 +17,15 @@ class Null(object):
 
 
 class NumpyDataFrameException(Exception):
-    """Generic exceptions for NumpyDataFrame"""
+    """Generic exceptions for NumpyDataFrame."""
 
 
 class NumpyDataFrame(Mapping):
-    """The NumpyDataFrame is a class halfway between pandas and numpy. It has named
-    columns, indexing, slicing,
-    function applications, and mathematical operations. Unlike pandas however, it
-    maintains the multi-dimensionality
-    of underlying data (as np.ndarray), allowing broadcasting and complex indexing.
+    """The NumpyDataFrame is a class halfway between pandas and numpy. It has
+    named columns, indexing, slicing, function applications, and mathematical
+    operations. Unlike pandas however, it maintains the multi-dimensionality of
+    underlying data (as np.ndarray), allowing broadcasting and complex
+    indexing.
 
     Usage:
 
@@ -119,7 +119,7 @@ class NumpyDataFrame(Mapping):
 
     .. code-block::
 
-      	df1 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
+        df1 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
         df2 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
 
         df3 = df1 + df2  # add each element in each column
@@ -135,7 +135,7 @@ class NumpyDataFrame(Mapping):
 
     .. code-block::
 
-      	df1 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
+        df1 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
         df2 = NumpyDataFrame({'A': np.arange(10), 'B': np.arange(10)})
         NumpyDataFrame.concat((df1, df2))
 
@@ -164,15 +164,13 @@ class NumpyDataFrame(Mapping):
 
     .. code-block::
       df1.apply(np.astype, np.float64)
-
     """
 
     def __init__(self, data=None, apply=None):
-        """
-        Initializes a numpy data frame from a dict of string to np.ndarrays.
-        The dict keys are representative of *column names* and the values
-        are rows of that column. The shapes of each np.ndarray must be the
-        same, else :class:`NumpyDataFrameException` is raised.
+        """Initializes a numpy data frame from a dict of string to np.ndarrays.
+        The dict keys are representative of *column names* and the values are
+        rows of that column. The shapes of each np.ndarray must be the same,
+        else :class:`NumpyDataFrameException` is raised.
 
         :param data: A dict of string to np.ndarrays
         :param apply: Function to apply across the numpy data frame
@@ -187,17 +185,17 @@ class NumpyDataFrame(Mapping):
 
     @property
     def data(self):
-        """The underlying data dict of the dataframe"""
+        """The underlying data dict of the dataframe."""
         return self._data
 
     @data.setter
     def data(self, new):
-        """Set and validate the underlying data dict for the dataframe"""
+        """Set and validate the underlying data dict for the dataframe."""
         self._data = new
         self.validate()
 
     def validate(self):
-        """Validate that the shapes of all of the np.ndarrays are the same"""
+        """Validate that the shapes of all of the np.ndarrays are the same."""
         shapes = set(v.shape for v in self.data.values())
         if len(shapes) > 1:
             keys_and_shapes = {}
@@ -211,20 +209,21 @@ class NumpyDataFrame(Mapping):
             )
 
     def prefix(self, s, cols=None, inplace=False):
-        """Adds a prefix to all of the column names and returns a new dataframe"""
+        """Adds a prefix to all of the column names and returns a new
+        dataframe."""
         if cols is None:
             cols = self.columns
         return self.apply_to_col_names(lambda x: s + x, cols=cols, inplace=inplace)
 
     def suffix(self, s, cols=None, inplace=False):
-        """Adds a prefix to all of the column names and returns a new dataframe"""
+        """Adds a prefix to all of the column names and returns a new
+        dataframe."""
         if cols is None:
             cols = self.columns
         return self.apply_to_col_names(lambda x: x + s, cols=cols, inplace=inplace)
 
     def apply_to_col_names(self, func, *args, cols=None, inplace=False, **kwargs):
-        """
-        Apply a function to the column names and returns a new dataframe.
+        """Apply a function to the column names and returns a new dataframe.
 
         :param func: the function to apply
         :param args: the additional function arguments
@@ -244,8 +243,7 @@ class NumpyDataFrame(Mapping):
         return self.__class__(data)
 
     def aggregate(self, func, *args, cols=None, **kwargs):
-        """
-        Group all of the np.ndarrays across all columns as a list and apply
+        """Group all of the np.ndarrays across all columns as a list and apply
         a function.
 
         :param func: the function to apply (e.g. np.hstack)
@@ -260,8 +258,7 @@ class NumpyDataFrame(Mapping):
         return func(collapsed, *args, **kwargs)
 
     def apply(self, func, *args, astype=None, preprocess=None, inplace=False, **kwargs):
-        """
-        Apply a function to each np.ndarray.
+        """Apply a function to each np.ndarray.
 
         :param func: The function to appluy
         :param args: the additional arguments of the function
@@ -317,18 +314,17 @@ class NumpyDataFrame(Mapping):
         self.group_apply((other,), np.hstack)
 
     def fill_value(self, cols, value):
-        """Create new columns, if they are missing, and fill them with the specified
-        value."""
+        """Create new columns, if they are missing, and fill them with the
+        specified value."""
         for c in cols:
             if c not in self.col:
                 self.col[c] = np.array([value for _ in range(len(self))])
 
     @classmethod
     def group_apply(cls, others, func, *args, expand=False, _fill_value=Null, **kwargs):
-        """
-        Groups np.arrays according to their column name for several dataframes
-        (as a list) and applies
-        a function to each group. Returns a new df with the results.
+        """Groups np.arrays according to their column name for several
+        dataframes (as a list) and applies a function to each group. Returns a
+        new df with the results.
 
         :param others: iterable of dfs
         :param func: the function to apply
@@ -381,8 +377,10 @@ class NumpyDataFrame(Mapping):
 
     @property
     def shape(self):
-        """Return the expected shape for the underlying np.ndarray. This
-        is the shape of the array for any given column."""
+        """Return the expected shape for the underlying np.ndarray.
+
+        This is the shape of the array for any given column.
+        """
         return list(self.data.values())[0].shape
 
     def reshape(self, shape):
@@ -391,7 +389,7 @@ class NumpyDataFrame(Mapping):
 
     @property
     def columns(self):
-        """Return the column names"""
+        """Return the column names."""
         return tuple(self.data)
 
     @property
@@ -400,7 +398,7 @@ class NumpyDataFrame(Mapping):
         return NumpyDataFrameIndexer(self)
 
     def to_df(self, squeeze=True):
-        """Attempt to convert the df to a pandas.DataFrame"""
+        """Attempt to convert the df to a pandas.DataFrame."""
         if squeeze:
             return pd.DataFrame(self.apply(np.squeeze).data)
         return pd.DataFrame(self.data)
@@ -416,15 +414,15 @@ class NumpyDataFrame(Mapping):
             self.validate()
 
     def items(self):
-        """Iterate key: arr for the the underlying data dict"""
+        """Iterate key: arr for the the underlying data dict."""
         return self.data.items()
 
     def copy(self):
-        """Copy the df"""
+        """Copy the df."""
         return self.apply(np.copy)
 
     def dumps(self):
-        """Use msgpack to dump df to a byte string"""
+        """Use msgpack to dump df to a byte string."""
         return msgpack.dumps(self.data)
 
     def dump(self, f):
@@ -434,7 +432,7 @@ class NumpyDataFrame(Mapping):
 
     @classmethod
     def loads(cls, s):
-        """Use msgpack to load a df from a byte string"""
+        """Use msgpack to load a df from a byte string."""
         data = msgpack.loads(s)
         data = {k.decode(): v for k, v in data.items()}
         return cls(data)
@@ -503,7 +501,7 @@ class NumpyDataFrame(Mapping):
 
 
 class NumpyDataFrameIndexer(Mapping):
-    """The indexer for NumpyDataFrames"""
+    """The indexer for NumpyDataFrames."""
 
     def __init__(self, df: NumpyDataFrame):
         self.df = df

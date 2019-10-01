@@ -1,6 +1,4 @@
-"""
-Alignment container
-"""
+"""Alignment container."""
 
 from .alignment import Alignment, AlignmentGroup, ComplexAlignmentGroup
 from dasi.log import logger
@@ -17,11 +15,9 @@ from frozendict import frozendict
 
 
 def blast_to_region(query_or_subject, seqdb):
-    """
-    Converts a blast data result to a Region. Blast
-    results are indicated by two positions with index starting
-    at 1 and positions being inclusive. This returns a Region
-    with index starting at 0 and the end point position being
+    """Converts a blast data result to a Region. Blast results are indicated by
+    two positions with index starting at 1 and positions being inclusive. This
+    returns a Region with index starting at 0 and the end point position being
     exclusive.
 
     :param query_or_subject:
@@ -54,8 +50,7 @@ def blast_to_region(query_or_subject, seqdb):
 
 
 class AlignmentContainer(Sized):
-    """
-    Container for a set of query-to-subject alignments for a single query.
+    """Container for a set of query-to-subject alignments for a single query.
 
     Instance Attributes/Properties:
         alignments  list of alignments for the container
@@ -149,10 +144,10 @@ class AlignmentContainer(Sized):
     def expand_primer_pairs(
         self, alignment_groups: List[AlignmentGroup]
     ) -> List[Alignment]:
-        """
-        Creates new alignments for all possible primer pairs. Searches for fwd and
-        rev primer pairs that exist within other alignments and produces all
-        combinations of alignments that can form from these primer pairs.
+        """Creates new alignments for all possible primer pairs. Searches for
+        fwd and rev primer pairs that exist within other alignments and
+        produces all combinations of alignments that can form from these primer
+        pairs.
 
         :return: list
         """
@@ -271,8 +266,8 @@ class AlignmentContainer(Sized):
 
     # TODO: break apart long alignments
     def expand(self, expand_overlaps=True, expand_primers=True):
-        """
-        Expand the number of alignments in this container using overlaps or primers.
+        """Expand the number of alignments in this container using overlaps or
+        primers.
 
         :param expand_overlaps:
         :param expand_primers:
@@ -302,8 +297,7 @@ class AlignmentContainer(Sized):
 
     @classmethod
     def _new_grouping_tag(cls, alignments, atype: str, key=None):
-        """
-        Make a new ordered grouping by type and a uuid.
+        """Make a new ordered grouping by type and a uuid.
 
         :param alignments:
         :type alignments:
@@ -350,8 +344,7 @@ class AlignmentContainer(Sized):
     def redundent_alignment_groups(
         cls, alignments: List[Alignment]
     ) -> List[AlignmentGroup]:
-        """
-        Return AlignmentGroups that have been grouped by alignment_hash
+        """Return AlignmentGroups that have been grouped by alignment_hash.
 
         :param alignments:
         :return:
@@ -372,8 +365,7 @@ class AlignmentContainer(Sized):
 
     @property
     def types(self) -> Tuple[Any]:
-        """
-        Return all valid types.
+        """Return all valid types.
 
         :return:
         """
@@ -382,8 +374,7 @@ class AlignmentContainer(Sized):
     def get_groups_by_types(
         self, types: List[str]
     ) -> Union[AlignmentGroup, List[AlignmentGroup]]:
-        """
-        Return AlignmentGroups by fragment type
+        """Return AlignmentGroups by fragment type.
 
         :param types: list of types
         :return:
@@ -403,8 +394,7 @@ class AlignmentContainer(Sized):
     def groups_by_type(
         self
     ) -> Dict[str, List[Union[AlignmentGroup, ComplexAlignmentGroup]]]:
-        """
-        Return alignment groups according to their alignment 'type'
+        """Return alignment groups according to their alignment 'type'.
 
         :return: dict
         """
@@ -416,12 +406,13 @@ class AlignmentContainer(Sized):
         return d
 
     def freeze(self):
-        """Freeze the container, disallowing further modifications to alignments"""
+        """Freeze the container, disallowing further modifications to
+        alignments."""
         self._alignments = tuple(self._alignments)
         self._frozen = True
 
     def unfreeze(self):
-        """Unfreeze the container, allowing modifications to alignments"""
+        """Unfreeze the container, allowing modifications to alignments."""
         self._alignments = list(self._alignments)
         self._frozen = False
 
@@ -430,10 +421,11 @@ class AlignmentContainer(Sized):
 
 
 class AlignmentContainerFactory(object):
-    """
-    Class that maintains a shared list of alignments and shared sequence database.
+    """Class that maintains a shared list of alignments and shared sequence
+    database.
 
-    AlignmentContainers can be retrieved in a dict grouped by their query via `.containers()`
+    AlignmentContainers can be retrieved in a dict grouped by their
+    query via `.containers()`
     """
 
     valid_types = (
@@ -447,8 +439,7 @@ class AlignmentContainerFactory(object):
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
-        """
-        Construct a new AlignmentContainer
+        """Construct a new AlignmentContainer.
 
         :param seqdb: a sequence record database
         """
@@ -461,15 +452,14 @@ class AlignmentContainerFactory(object):
 
     @property
     def alignments(self) -> frozendict:
-        """
-        Return dict of alignments keyed by query_key
+        """Return dict of alignments keyed by query_key.
+
         :return:
         """
         return frozendict(self._alignments)
 
     def set_alignments(self, alignments: Dict[str, List[Alignment]]) -> None:
-        """
-        Set the alignments.
+        """Set the alignments.
 
         :param alignments: new iterable of alignments
         :return:
@@ -478,8 +468,7 @@ class AlignmentContainerFactory(object):
         self._containers = None
 
     def load_blast_json(self, data: List[Dict], atype: str):
-        """
-        Create alignments from a formatted BLAST JSON result.
+        """Create alignments from a formatted BLAST JSON result.
 
         :param data: formatted BLAST JSON result
         :param atype: the type of alignment to initialize
@@ -507,8 +496,8 @@ class AlignmentContainerFactory(object):
             self._alignments.setdefault(query_key, list()).append(alignment)
 
     def containers(self) -> Dict[str, AlignmentContainer]:
-        """
-        Return dictionary of AlignmentContainers keyed by query_keys
+        """Return dictionary of AlignmentContainers keyed by query_keys.
+
         :return:
         """
         if self._containers is None:

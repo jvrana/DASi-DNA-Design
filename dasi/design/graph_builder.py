@@ -18,9 +18,7 @@ AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
 
 
 class AssemblyGraphBuilder(object):
-    """
-    Class that builds an AssemblyGraph from an alignment container.
-    """
+    """Class that builds an AssemblyGraph from an alignment container."""
 
     COST_THRESHOLD = 10000
 
@@ -34,8 +32,7 @@ class AssemblyGraphBuilder(object):
         self.logger = logger(self)
 
     def add_node(self, node: AssemblyNode) -> None:
-        """
-        Add node to the graph.
+        """Add node to the graph.
 
         :param node: the assembly node to add
         :return: None
@@ -55,8 +52,7 @@ class AssemblyGraphBuilder(object):
         atype: str,
         **kwargs
     ):
-        """
-        Add an edge between two assembly nodes.
+        """Add an edge between two assembly nodes.
 
         :param n1: src node
         :param n2: dest node

@@ -1,21 +1,21 @@
-"""DASi exceptions and warnings"""
+"""DASi exceptions and warnings."""
 
 
 class DASiWarning(Warning):
-    """A generic dasi warning"""
+    """A generic dasi warning."""
 
 
 class DASiException(Exception):
-    """A generic dasi exception"""
+    """A generic dasi exception."""
 
 
 class AlignmentException(DASiException):
-    """An alignment exception"""
+    """An alignment exception."""
 
 
 class AlignmentContainerException(DASiException):
-    """An alignment container exception"""
+    """An alignment container exception."""
 
 
 class DasiDesignException(DASiException):
-    """A design exception"""
+    """A design exception."""

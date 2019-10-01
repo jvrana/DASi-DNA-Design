@@ -1,6 +1,4 @@
-"""
-Alignments
-"""
+"""Alignments."""
 
 from __future__ import annotations
 from dasi.utils import Region
@@ -19,9 +17,8 @@ ALIGNMENT_SLOTS = [
 
 
 class Alignment(Sized):
-    """
-    A pair of Regions that 'aligns' two regions of DNA sequences. All regions must
-    always be the same length.
+    """A pair of Regions that 'aligns' two regions of DNA sequences. All
+    regions must always be the same length.
 
     A subregion of both regions may be taken.
     """
@@ -36,9 +33,8 @@ class Alignment(Sized):
         query_key: str,
         subject_key: str,
     ):
-        """
-        Makes an alignment between two regions of sequences. Validates the regions are
-        the same length.
+        """Makes an alignment between two regions of sequences. Validates the
+        regions are the same length.
 
         :param query_region: Query region this alignment aligns to
         :param subject_region: Subject region this alignment aligns to.
@@ -69,9 +65,8 @@ class Alignment(Sized):
         return len(self.subject_region) == self.subject_region.bontext_length
 
     def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
-        """
-        Returns a copy of the alignment between the inclusive start and end relative to the
-        query region.
+        """Returns a copy of the alignment between the inclusive start and end
+        relative to the query region.
 
         :param qstart: start of the query sub region
         :param qend: end of the query sub region
@@ -99,9 +94,8 @@ class Alignment(Sized):
         )
 
     def copy(self, atype=None) -> Alignment:
-        """
-        Do shallow copy of this alignment. Query and subject regions between this
-        and the copied alignment will be identical.
+        """Do shallow copy of this alignment. Query and subject regions between
+        this and the copied alignment will be identical.
 
         :param atype: new alignment type
         :return:
@@ -129,9 +123,7 @@ class Alignment(Sized):
 
 
 class AlignmentGroupBase(object):
-    """
-    A representative Alignment representing a group of alignments.
-    """
+    """A representative Alignment representing a group of alignments."""
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 
@@ -159,8 +151,8 @@ class AlignmentGroupBase(object):
         return [a.subject_key for a in self.alignments]
 
     def sub_region(self, qstart: int, qend: int, atype: str) -> AlignmentGroupBase:
-        """Produce a new alignment group with sub-regions of the
-         query region and subject regions at the specified new indicies."""
+        """Produce a new alignment group with sub-regions of the query region
+        and subject regions at the specified new indicies."""
         alignments_copy = []
         for a in self.alignments:
             alignments_copy.append(a.sub_region(qstart, qend))
@@ -175,10 +167,8 @@ class AlignmentGroupBase(object):
 
 
 class AlignmentGroup(AlignmentGroupBase):
-    """
-    A representative Alignment representing a group of alignments sharing the
-    same starting and ending position for a query sequence.
-    """
+    """A representative Alignment representing a group of alignments sharing
+    the same starting and ending position for a query sequence."""
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 
@@ -192,10 +182,8 @@ class AlignmentGroup(AlignmentGroupBase):
 
 
 class ComplexAlignmentGroup(AlignmentGroupBase):
-    """
-    A representation of an alignment in which the query region is the concatenation of
-    the underlying alignments provided.
-    """
+    """A representation of an alignment in which the query region is the
+    concatenation of the underlying alignments provided."""
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 

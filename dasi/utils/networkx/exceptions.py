@@ -1,2 +1,2 @@
 class TerrariumNetworkxError(Exception):
-    """Generic error for terrarium networkx utilities"""
+    """Generic error for terrarium networkx utilities."""

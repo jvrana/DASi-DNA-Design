@@ -21,8 +21,7 @@ path_length_config = {
 
 
 def _check_paths(paths: List[List[tuple]]) -> None:
-    """
-    Validates a path to check for duplicate nodes.
+    """Validates a path to check for duplicate nodes.
 
     :param paths:
     :return:
@@ -68,8 +67,7 @@ def _multinode_to_shortest_path(graph, nodes, cyclic) -> List[tuple]:
 
 
 def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -> List[tuple]:
-    """
-    Use the floyd-warshall algorithm to compute the shortest path endpoints.
+    """Use the floyd-warshall algorithm to compute the shortest path endpoints.
 
     :param graph: the networkx graph
     :param length: the size of the query sequence
@@ -106,8 +104,7 @@ def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -> List[tuple]:
 def _nodes_to_fullpaths(
     graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
 ) -> List[List[Tuple]]:
-    """
-    Recover full paths from cycle endpoints.
+    """Recover full paths from cycle endpoints.
 
     :param graph:
     :param cycle_endpoints:
@@ -127,8 +124,7 @@ def _nodes_to_fullpaths(
 def _collect_optimized_paths(
     graph: nx.DiGraph, length: int, cyclic: bool, n_paths=None
 ) -> List[List[tuple]]:
-    """
-    Collect minimum cycles or linear paths from a graph.
+    """Collect minimum cycles or linear paths from a graph.
 
     :param graph: the networkx graph representing the assembly graph
     :param length: length of the query
@@ -150,7 +146,7 @@ def _collect_optimized_paths(
 def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
 ) -> List[List[tuple]]:
-    """Optimize the graph associated with the specified query_key"""
+    """Optimize the graph associated with the specified query_key."""
     # self.logger.info("Optimizing {}".format(query_key))
     paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
     return paths
@@ -169,7 +165,7 @@ def multiprocessing_optimize_graph(
     n_paths: List[List[tuple]],
     n_jobs: int,
 ):
-    """Optimize graphs using multiprocessing"""
+    """Optimize graphs using multiprocessing."""
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
     with Pool(processes=min(n_jobs, len(graphs))) as pool:  # start 4 worker processes
@@ -198,7 +194,7 @@ def _multiprocessing_assemble_graph(
 def multiprocessing_assemble_graph(
     container_factory: AlignmentContainerFactory, span_cost: SpanCost, n_jobs: int
 ) -> List[nx.DiGraph]:
-    """Assemble graphs using multiprocessing"""
+    """Assemble graphs using multiprocessing."""
     query_keys = container_factory.alignments.keys()
     containers = [container_factory.containers()[k] for k in query_keys]
 

@@ -1,4 +1,4 @@
-"""Primer and synthesis design
+"""Primer and synthesis design.
 
 .. module:: dasi.design
 
@@ -88,9 +88,8 @@ class DesignResult(Iterable):
 
 
 class Assembly(Iterable):
-    """
-    Should take in a path, graph, container, seqdb to produce relevant information
-    """
+    """Should take in a path, graph, container, seqdb to produce relevant
+    information."""
 
     def __init__(
         self,
@@ -309,9 +308,7 @@ class FakePool(object):
 
 
 class Design(object):
-    """
-    Design class that returns optimal assemblies from a set of materials.
-    """
+    """Design class that returns optimal assemblies from a set of materials."""
 
     PRIMERS = "primers"
     TEMPLATES = "templates"
@@ -365,34 +362,34 @@ class Design(object):
         self.add_fragments(fragments)
 
     def add_primers(self, primers: List[SeqRecord]):
-        """Add primer sequences to materials list"""
+        """Add primer sequences to materials list."""
         self.blast_factory.add_records(primers, self.PRIMERS)
         self.logger.info("Added {} primers".format(len(primers)))
 
     def add_templates(self, templates: List[SeqRecord]):
-        """Add template sequences to materials list"""
+        """Add template sequences to materials list."""
         self.blast_factory.add_records(templates, self.TEMPLATES)
         self.logger.info("Added {} templates".format(len(templates)))
 
     def add_queries(self, queries: List[SeqRecord]):
-        """Add goal/query sequences to materials list"""
+        """Add goal/query sequences to materials list."""
         self.blast_factory.add_records(queries, self.QUERIES)
         self.logger.info("Added {} queries".format(len(queries)))
 
     def add_fragments(self, fragments: List[SeqRecord]):
-        """Add fragment sequences to materials list"""
+        """Add fragment sequences to materials list."""
         self.blast_factory.add_records(fragments, self.FRAGMENTS)
         self.logger.info("Added {} queries".format(len(fragments)))
         # self.blast_factory.add_records(fragments, self.TEMPLATES)
 
     @classmethod
     def filter_linear_records(cls, records):
-        """Return only linear records"""
+        """Return only linear records."""
         return [r for r in records if not is_circular(r)]
 
     @classmethod
     def filter_perfect_subject(cls, results):
-        """return only results whose subject is 100% aligned to query"""
+        """return only results whose subject is 100% aligned to query."""
         return [r for r in results if perfect_subject(r["subject"])]
 
     # # TODO: do a single blast and sort results based on record keys
@@ -522,7 +519,7 @@ class Design(object):
             self.graphs[qk] = g
 
     def compile(self, n_jobs=None):
-        """Compile materials to assembly graph"""
+        """Compile materials to assembly graph."""
         self.results = {}
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
@@ -632,9 +629,7 @@ class Design(object):
 
 
 class LibraryDesign(Design):
-    """
-    Design class for producing assemblies for libraries.
-    """
+    """Design class for producing assemblies for libraries."""
 
     DEFAULT_N_JOBS = 10
 
@@ -656,8 +651,7 @@ class LibraryDesign(Design):
     # TODO: why?
     @staticmethod
     def _get_iter_non_repeats(alignments: List[Alignment]):
-        """
-        Return repeat regions of alignments. These are alignments that align
+        """Return repeat regions of alignments. These are alignments that align
         to themselves.
 
         :param alignments:
@@ -670,8 +664,7 @@ class LibraryDesign(Design):
                 yield (qk, align.query_region.a, align.query_region.b)
 
     def _share_query_blast(self):
-        """
-        Find and use shared fragments across queries.
+        """Find and use shared fragments across queries.
 
         :return:
         """

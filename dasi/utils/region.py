@@ -10,193 +10,192 @@ class SpanError(Exception):
 
 # TODO: move this to pyblast?
 class Span(Container, Iterable, Sized):
-    """
-        `Span` maps the provided positions onto a context
+    """`Span` maps the provided positions onto a context.
 
-        Spans have no direction and have an underlying context
-        that has a certain length, can be linear or cyclic, and has a starting index.
+    Spans have no direction and have an underlying context
+    that has a certain length, can be linear or cyclic, and has a starting index.
 
-        The following attributes are accessible:
+    The following attributes are accessible:
 
-        - `a` - the starting (inclusive) position of the span
-        - `b` - the mapped exclusive position of the span
-        - `c` - the unmapped exclusive position of the span (used for cyclic spans that
-                wrap context multiple times)
-        - `cyclic` - whether the underlying context is circular or linear
-        - `index` - the first index of the context
-        - `context_length` - the length of the underlying context.
+    - `a` - the starting (inclusive) position of the span
+    - `b` - the mapped exclusive position of the span
+    - `c` - the unmapped exclusive position of the span (used for cyclic spans that
+            wrap context multiple times)
+    - `cyclic` - whether the underlying context is circular or linear
+    - `index` - the first index of the context
+    - `context_length` - the length of the underlying context.
 
-        **Linear spans**
-        For example, a basic linear span can be represented using the following:
+    **Linear spans**
+    For example, a basic linear span can be represented using the following:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(0, 10, 20)
-            assert s.a == 0
-            assert s.b == 10
-            assert list(s) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # spans are always
-                                                              # exclusive at endpoint.
+        s = Span(0, 10, 20)
+        assert s.a == 0
+        assert s.b == 10
+        assert list(s) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # spans are always
+                                                          # exclusive at endpoint.
 
-        **Indexing and Slicing**
+    **Indexing and Slicing**
 
-        New indexes can be provided to spans.
+    New indexes can be provided to spans.
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(1, 10, 10, index=1)
-            assert s.a == 1
-            assert s.b == 10
+        s = Span(1, 10, 10, index=1)
+        assert s.a == 1
+        assert s.b == 10
 
-        Positions can be mapped to the span:
+    Positions can be mapped to the span:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(5, 8, 10, index=5)
-            assert s.a == 5
-            assert s.b == 8
-            assert s[0] == 5    # the 'first' position in the span equivalent to the
-                                # starting index
-            assert s[-1] == 7   # the 'last' position in the span is the last inclusive
-                                # index
+        s = Span(5, 8, 10, index=5)
+        assert s.a == 5
+        assert s.b == 8
+        assert s[0] == 5    # the 'first' position in the span equivalent to the
+                            # starting index
+        assert s[-1] == 7   # the 'last' position in the span is the last inclusive
+                            # index
 
-        Positions can be mapped automatically during initialization:
+    Positions can be mapped automatically during initialization:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(-1, 5, 10, cyclic=True, index=0)   # index '-1' is mapped onto last
-                                                        # available index on the context,
-            '9'
-            assert s.a == 9
-            assert s.b == 5
+        s = Span(-1, 5, 10, cyclic=True, index=0)   # index '-1' is mapped onto last
+                                                    # available index on the context,
+        '9'
+        assert s.a == 9
+        assert s.b == 5
 
-            s = Span(6, -1, 10, cyclic=True, index=0)  # index '-1' is mapped onto last
-                                                       # available exclusive index on the
-             context, '10'
-            assert s.a == 6
-            assert s.b == 10
+        s = Span(6, -1, 10, cyclic=True, index=0)  # index '-1' is mapped onto last
+                                                   # available exclusive index on the
+         context, '10'
+        assert s.a == 6
+        assert s.b == 10
 
-        Inclusive positions can be mapped onto the context using `t`:
+    Inclusive positions can be mapped onto the context using `t`:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(-1, 5, 10, cyclic=True)
-            assert s.t(11) == 1
-            assert s.t(10) == 0
+        s = Span(-1, 5, 10, cyclic=True)
+        assert s.t(11) == 1
+        assert s.t(10) == 0
 
-        **Reindexing**
+    **Reindexing**
 
-        Context starting index can be remapped:
+    Context starting index can be remapped:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(0, 5, 10)
-            s1 = s.reindex(1)
-            asset s1.a == 1
-            assert s2.b == 6
+        s = Span(0, 5, 10)
+        s1 = s.reindex(1)
+        asset s1.a == 1
+        assert s2.b == 6
 
-        **Slicing**
+    **Slicing**
 
-        Spans can be sliced similarly to lists:
+    Spans can be sliced similarly to lists:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(4, 8, 10)
-            s1 = s[1:]
-            assert s1.a == 5
-            assert s2.b == 8
+        s = Span(4, 8, 10)
+        s1 = s[1:]
+        assert s1.a == 5
+        assert s2.b == 8
 
-            s2 = s[:-1]
-            assert s2.a == 4
-            assert s2.b == 7
+        s2 = s[:-1]
+        assert s2.a == 4
+        assert s2.b == 7
 
-            s3 = s[2:-1]
-            assert s3.a == 5
-            assert s3.b == 7
+        s3 = s[2:-1]
+        assert s3.a == 5
+        assert s3.b == 7
 
-        **Cyclic spans**
-        A cyclic span can be represented in the following way:
+    **Cyclic spans**
+    A cyclic span can be represented in the following way:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(18, 2, 20, cyclic=True)
-            assert s.a == 18
-            assert s.b == 2
-            assert list(s) == [18, 19, 0, 1]
-            assert len(s) == 4
+        s = Span(18, 2, 20, cyclic=True)
+        assert s.a == 18
+        assert s.b == 2
+        assert list(s) == [18, 19, 0, 1]
+        assert len(s) == 4
 
-        **Wrapping cyclic spans**
-        Spans the wrap around the context multiple times can be represented as well.
-        The mapped endpoint
-        is found with `span.b` and the non-mapped endpoint is found using `span.c`.
+    **Wrapping cyclic spans**
+    Spans the wrap around the context multiple times can be represented as well.
+    The mapped endpoint
+    is found with `span.b` and the non-mapped endpoint is found using `span.c`.
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(9, 21, 10, cyclic=True)
-            assert list(s) == [9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-            assert len(s) == 12
-            assert s.a == 9  # start point
-            assert s.b == 1  # mapped endpoint
-            assert s.c == 21 # the unmapped endpoint
+        s = Span(9, 21, 10, cyclic=True)
+        assert list(s) == [9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        assert len(s) == 12
+        assert s.a == 9  # start point
+        assert s.b == 1  # mapped endpoint
+        assert s.c == 21 # the unmapped endpoint
 
-        The indices are reduced to their lowest 'wrapping' whenever possible.
-        For example, the following
-        initializations are equivalent:
+    The indices are reduced to their lowest 'wrapping' whenever possible.
+    For example, the following
+    initializations are equivalent:
 
-        .. code-block::
+    .. code-block::
 
-            s1 = Span(1, 5, 10, cyclic=True)
-            s2 = Span(11, 15, 10, cyclic=True)
-            s3 = Span(21, 25, 10, cyclic=True)
-            assert s1 == s2
-            assert s2 == s3
+        s1 = Span(1, 5, 10, cyclic=True)
+        s2 = Span(11, 15, 10, cyclic=True)
+        s3 = Span(21, 25, 10, cyclic=True)
+        assert s1 == s2
+        assert s2 == s3
 
-        **Iterating through spans**
+    **Iterating through spans**
 
-        Spans can be treated like iterators:
+    Spans can be treated like iterators:
 
-        .. code-block::
+    .. code-block::
 
-            for i in Span(5, 3, 10, cyclic=True):
-                print(i)
+        for i in Span(5, 3, 10, cyclic=True):
+            print(i)
 
-        **Span inversion**
+    **Span inversion**
 
-        Inversion returns two spans that represent everything *except* the span:
+    Inversion returns two spans that represent everything *except* the span:
 
-        .. code-block::
+    .. code-block::
 
-            s = Span(4, 8, 10)
-            s1, s2 = s.invert()  # also s[::-1]
-            assert s1.a == 0
-            assert s1.b == 4
-            assert s2.a == 8
-            assert s2.b == 10
+        s = Span(4, 8, 10)
+        s1, s2 = s.invert()  # also s[::-1]
+        assert s1.a == 0
+        assert s1.b == 4
+        assert s2.a == 8
+        assert s2.b == 10
 
-            # inverted cyclic span returns one valid span and None
-            s = Span(4, 8, 10, cyclic=True)
-            s1, s2 = s.invert()
-            assert s1.a == 8
-            assert s1.b == 4
-            assert s2 is None
+        # inverted cyclic span returns one valid span and None
+        s = Span(4, 8, 10, cyclic=True)
+        s1, s2 = s.invert()
+        assert s1.a == 8
+        assert s1.b == 4
+        assert s2 is None
 
-        **Intersections, differences**
+    **Intersections, differences**
 
-        .. code-block::
+    .. code-block::
 
-            s1 = Span(4, 10, 20)
-            s2 = Span(8, 12, 20)
-            s3 = s1.intersection(s2)
-            assert s3.a == 8
-            assert s3.b == 10
+        s1 = Span(4, 10, 20)
+        s2 = Span(8, 12, 20)
+        s3 = s1.intersection(s2)
+        assert s3.a == 8
+        assert s3.b == 10
 
-        .. code-block::
+    .. code-block::
 
-            s1 = Span(4, 10, 20)
-            s2 = Span(8, 12, 20)
-            s3, s4 = s1.differences(s2)
+        s1 = Span(4, 10, 20)
+        s2 = Span(8, 12, 20)
+        s3, s4 = s1.differences(s2)
 
-            assert s3.a, s3.b == 4, 8
-            assert s4,a, s4.b == 10, 12
+        assert s3.a, s3.b == 4, 8
+        assert s4,a, s4.b == 10, 12
     """
 
     __slots__ = [
@@ -222,8 +221,7 @@ class Span(Container, Iterable, Sized):
         strict=False,
         abs_wrap=False,
     ):
-        """
-        Constructs a new Span. There are several options to customize the
+        """Constructs a new Span. There are several options to customize the
         initialization procedure.
 
         **strict=True**
@@ -439,8 +437,7 @@ class Span(Container, Iterable, Sized):
         return self._index, self._context_length + self._index
 
     def t(self, p: int, throw_error=True) -> int:
-        """
-        Translates a position 'p' to an index within the context bounds.
+        """Translates a position 'p' to an index within the context bounds.
 
         :param p:
         :type p:
@@ -460,8 +457,7 @@ class Span(Container, Iterable, Sized):
             return self.bounds()[0] + _x
 
     def i(self, p: int) -> int:
-        """
-        Find index of position.
+        """Find index of position.
 
         :param p:
         :return:
@@ -474,8 +470,7 @@ class Span(Container, Iterable, Sized):
         return "[" + s + "]"
 
     def ranges(self) -> List[Tuple[int, int]]:
-        """
-        Return ranges of valid positions.
+        """Return ranges of valid positions.
 
         :return:
         :rtype:
@@ -493,8 +488,7 @@ class Span(Container, Iterable, Sized):
             return [(self._a, self._b)]
 
     def slices(self):
-        """
-        Return list of slices
+        """Return list of slices.
 
         :return:
         :rtype:
@@ -502,8 +496,7 @@ class Span(Container, Iterable, Sized):
         return [slice(*r) for r in self.ranges()]
 
     def reindex(self, i, strict=None, ignore_wrap=None):
-        """
-        Return a new span with positions reindexed.
+        """Return a new span with positions reindexed.
 
         :param i: new index
         :param strict: initialize with 'strict'
@@ -556,8 +549,7 @@ class Span(Container, Iterable, Sized):
         )
 
     def sub(self, a: int, b: int) -> Span:
-        """
-        Create a sub region starting from a to b.
+        """Create a sub region starting from a to b.
 
         :param a: starting pos
         :param b: ending pos
@@ -611,8 +603,7 @@ class Span(Container, Iterable, Sized):
         )
 
     def force_context(self, other: Span) -> None:
-        """
-        Raise error if another Span has different context.
+        """Raise error if another Span has different context.
 
         :param other: The other span
         :return: None
@@ -622,8 +613,7 @@ class Span(Container, Iterable, Sized):
             raise SpanError("Cannot compare with different contexts")
 
     def overlaps_with(self, other: Span) -> bool:
-        """
-        Returns True if other span has an overlap with this span.
+        """Returns True if other span has an overlap with this span.
 
         :param other: The other span
         :return: True if the two spans overlap.
@@ -643,7 +633,8 @@ class Span(Container, Iterable, Sized):
         return False
 
     def differences(self, other: Span) -> Union[Tuple[Span], Tuple[Span, Span]]:
-        """Return a tuple of differences between this span and the other span."""
+        """Return a tuple of differences between this span and the other
+        span."""
         self.force_context(other)
         if other.a in self and other.b not in self:
             return (self.new(self._a, other.a),)
@@ -669,7 +660,8 @@ class Span(Container, Iterable, Sized):
             return self[:]
 
     def consecutive(self, other: Span) -> bool:
-        """Returns True if other span is immediately consecutive with this span."""
+        """Returns True if other span is immediately consecutive with this
+        span."""
         self.force_context(other)
         try:
             return self._b == other.t(other.a)
@@ -677,8 +669,7 @@ class Span(Container, Iterable, Sized):
             return False
 
     def connecting_span(self, other: Span) -> Union[Span, None]:
-        """
-        Return the span that connects the two spans. Returns None
+        """Return the span that connects the two spans. Returns None.
 
         :param other:
         :return:
@@ -731,10 +722,9 @@ class Span(Container, Iterable, Sized):
     # return
 
     def invert(self) -> Union[Tuple[Span, Span], Tuple[Span, None]]:
-        """
-        Invert the region, returning a tuple of the remaining spans from the context.
-        If cyclic, a tuple (span, None) tuple is returned. If linear, a (span, span) is
-        returned.
+        """Invert the region, returning a tuple of the remaining spans from the
+        context. If cyclic, a tuple (span, None) tuple is returned. If linear,
+        a (span, span) is returned.
 
         :return: inverted regions
         :rtype: tuple

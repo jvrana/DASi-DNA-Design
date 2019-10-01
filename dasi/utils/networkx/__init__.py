@@ -1,4 +1,4 @@
-"""NetworkX Utilities
+"""NetworkX Utilities.
 
 .. module:: dasi.utils.networkx
 

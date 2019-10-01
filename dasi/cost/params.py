@@ -1,4 +1,4 @@
-"""Cost Parameters"""
+"""Cost Parameters."""
 
 import numpy as np
 import pandas as pd

@@ -797,7 +797,7 @@ class Span(Container, Iterable, Sized):
                         val, len(self)
                     )
                 )
-            elif not inclusive and (val - 1 >= len(self) or val - 1 < -len(self)):
+            elif not inclusive and (val > len(self) or val < -len(self)):
                 raise IndexError(
                     "Exclusive index '{}' outside of linear span with length of {}".format(
                         val, len(self)

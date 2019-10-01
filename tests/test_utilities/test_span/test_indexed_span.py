@@ -51,5 +51,4 @@ def test_slicing_open_left(l, index):
 
 
 def test_full():
-
-    s = Span(1, 9410, 9409, False, index=1, allow_wrap=True)
+    s = Span(1, 9410, 9409, False, index=1)

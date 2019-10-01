@@ -50,10 +50,10 @@ class TestInit:
             Span(10, 5, 100, False)
 
     def test_invalid_cyclic(self):
-        print(Span(0, 10, 10, True))
+        print(Span(0, 10, 10, cyclic=True))
         with pytest.raises(IndexError):
-            print(Span(0, 10, 9, True))
-        print(Span(0, 10, 9, True, allow_wrap=True))
+            print(Span(0, 10, 9, cyclic=True, strict=True))
+        print(Span(0, 10, 9, True, strict=False))
 
 
 def test_len_linear():
@@ -254,12 +254,27 @@ class TestSlice(object):
             x2 = s[i:4]
             assert len(x1) + len(x2) == 200
 
+    def test_open_ended_slices(self):
+        s = Span(0, 10, 20, cyclic=False)
+        assert list(s[:10]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        assert list(s[:-10]) == []
+        with pytest.raises(IndexError):
+            assert list(s[10:]) == []
+        assert list(s[-10:]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    def test_open_ended_slices_cyclic(self):
+        s = Span(0, 10, 20, cyclic=True)
+        assert list(s[:10]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        assert list(s[:-10]) == []
+        assert list(s[10:]) == []
+        assert list(s[-10:]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
     @pytest.mark.parametrize("i", list(range(-20, 20)))
     def test_open_ended_slice_left(self, i):
         s = Span(10, 20, 200, False)
-        if i >= 10 or i < -10:
+        if i > 10 or i < -10:
             with pytest.raises(IndexError):
-                assert not s[:i]
+                s[:i]
         else:
             sliced = s[:i]
             assert sliced.a == 10
@@ -467,6 +482,6 @@ def test_connecting_span_linear_no_span():
 
 
 def test_invalid_span():
-    s1 = Span(5947, 4219, 10000, cyclic=True, allow_wrap=True)
+    s1 = Span(5947, 4219, 10000, cyclic=True)
     with pytest.raises(IndexError):
         s1.sub(28, 5989)

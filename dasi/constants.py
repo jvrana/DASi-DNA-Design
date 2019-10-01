@@ -19,7 +19,9 @@ class Constants:
     SHARED_FRAGMENT = (
         "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
     )  # A fragment alignment that is shared with other queries for potential reuse
-
+    GAP = "GAP"
+    OVERLAP = "OVERLAP"
+    MISSING = "__MISSING"
     PCR_COST = {
         PCR_PRODUCT: 30 + 25 + 10,
         PCR_PRODUCT_WITH_PRIMERS: 30,

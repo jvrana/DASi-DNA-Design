@@ -85,6 +85,9 @@ class AlignmentContainer(Sized):
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
+        Constants.GAP,
+        Constants.OVERLAP,
+        Constants.MISSING,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -129,12 +132,29 @@ class AlignmentContainer(Sized):
             found += bisect_slice_between(fwd, fwd_keys, a, b)
         return found
 
-    def find_groups_by_pos(self, a, b, groups=None):
+    def find_groups_by_pos(
+        self, a: int, b: int, group_type: str, groups=None
+    ) -> List[Union[AlignmentGroup, ComplexAlignmentGroup]]:
+        """Return a list of groups that have the same positions (a, b) and same
+        group_type.
+
+        :param a: starting position
+        :param b: ending position
+        :param group_type: group_type
+        :param groups: optional list of groups to search
+        :return: list of groups
+        """
+        if group_type not in self.valid_types:
+            raise AlignmentContainerException(
+                "Type '{}' not found in valid types: {}".format(
+                    group_type, self.valid_types
+                )
+            )
         if groups is None:
             groups = self.groups()
         found = []
         for g in groups:
-            if g.query_region.a == a and g.query_region.b == b:
+            if g.query_region.a == a and g.query_region.b == b and g.type == group_type:
                 found.append(g)
         return found
 

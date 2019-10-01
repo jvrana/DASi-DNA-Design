@@ -325,8 +325,8 @@ class AssemblyGraphBuilder:
                     time=None,
                     efficiency=None,
                     internal_or_external="external",
-                    name="overlap",
-                    atype="overlap",
+                    name=Constants.OVERLAP,
+                    atype=Constants.OVERLAP,
                     condition=condition,
                     span=span,
                 )
@@ -349,8 +349,8 @@ class AssemblyGraphBuilder:
                 time=None,
                 efficiency=None,
                 internal_or_external="external",
-                name="gap",
-                atype="gap",
+                name=Constants.GAP,
+                atype=Constants.GAP,
                 condition=condition,
                 span=span,
             )

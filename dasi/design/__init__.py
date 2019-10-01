@@ -50,7 +50,10 @@ BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5
 
 
 class DesignResult(Iterable):
-    """DesignResult container."""
+    """DesignResult container.
+
+    Maintains a list of top assemblies.
+    """
 
     def __init__(self, container, graph, query_key):
         self.container = container
@@ -87,6 +90,14 @@ class DesignResult(Iterable):
     def __getitem__(self, item):
         return list(self)[item]
 
+    def __str__(self):
+        return "<{cls} query={qname} {qk} nassemblies={n}>".format(
+            cls=self.__class__.__name__,
+            qname=self.query.name,
+            qk=self.query_key,
+            n=len(self.assemblies),
+        )
+
 
 class Assembly(Iterable):
     """Should take in a path, graph, container, seqdb to produce relevant
@@ -119,7 +130,7 @@ class Assembly(Iterable):
             "weight": np.inf,
             "material": np.inf,
             "efficiency": 0.0,
-            "type": "missing",
+            "type": Constants.MISSING,
             "span": np.inf,
             "name": "missing",
             "internal_or_external": "missing",
@@ -158,7 +169,10 @@ class Assembly(Iterable):
                 n1.index, n2.index
             )
             groups = self.container.find_groups_by_pos(
-                query_region.a, query_region.b, groups=self.groups
+                query_region.a,
+                query_region.b,
+                group_type=edata["type"],
+                groups=self.groups,
             )
             if edata["internal_or_external"] == "internal" and not groups:
                 raise DasiDesignException(

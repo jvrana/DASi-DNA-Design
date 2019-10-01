@@ -472,8 +472,6 @@ def test_case(span_cost):
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
 
     expected_path = [
-        (1188, True, "A", False),
-        (1230, True, "B", False),
         (1238, True, "A", False),
         (1282, True, "B", False),
     ]

@@ -15,7 +15,6 @@ from dasi.alignments import ComplexAlignmentGroup
 from dasi.constants import Constants
 from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
-from dasi.exceptions import DASiException
 from dasi.log import logger
 from dasi.utils import bisect_slice_between
 from dasi.utils import sort_with_keys
@@ -207,6 +206,10 @@ class AssemblyGraphBuilder:
         self._batch_add_edge_costs()
 
     def _batch_add_edge_costs(self):
+        """Add costs to all edges at once batch.
+
+        :return:
+        """
         # add external_edge_costs
         edge_dict = {}
         for n1, n2, edata in self.G.edges(data=True):

@@ -108,8 +108,8 @@ class CostBuilder(ABC):
 
     # TODO: what if there is a gap in the span?
     def cost(
-        self, bp: Union[np.ndarray, int], ext: Tuple[bool, bool], invalidate=False
-    ):
+        self, bp: Union[np.ndarray, int], ext: Tuple[int, int], invalidate=False
+    ) -> NumpyDataFrame:
         """
 
         :param bp:
@@ -142,7 +142,9 @@ class CostBuilder(ABC):
         jxn.col["span"] = bp
         return jxn
 
-    def __call__(self, bp, ext):
+    def __call__(
+        self, bp: Union[int, np.ndarray], ext: Tuple[int, int]
+    ) -> NumpyDataFrame:
         return self.cost(bp, ext)
 
 
@@ -278,7 +280,15 @@ class SynthesisCostBuilder(CostBuilder):
             jxn = self._compute(gene_costs, gene_sizes, gene_times, i, j, left_span)
             self.cost_dict[(i, j)] = jxn
 
-    def _compute(self, gene_costs, gene_sizes, gene_times, i, j, left_span):
+    def _compute(
+        self,
+        gene_costs,
+        gene_sizes,
+        gene_times,
+        i: Union[bool, int],
+        j: Union[bool, int],
+        left_span,
+    ):
         # extension conditions
         left_ext = (i, 0)
         right_ext = (0, j)
@@ -338,7 +348,9 @@ class SynthesisCostBuilder(CostBuilder):
 
         return gap_df
 
-    def cost(self, bp, ext, invalidate=True):
+    def cost(
+        self, bp: Union[int, np.ndarray], ext: Tuple[int, int], invalidate=True
+    ) -> NumpyDataFrame:
         return super().cost(bp, ext, invalidate=invalidate)
 
     def __call__(self, bp, ext):
@@ -390,7 +402,9 @@ class SpanCost(CostBuilder):
             )
             self.cost_dict[s] = df4
 
-    def cost(self, bp, ext, invalidate=True):
+    def cost(
+        self, bp: Union[int, np.ndarray], ext: Tuple[int, int], invalidate=True
+    ) -> NumpyDataFrame:
         return super().cost(bp, ext, invalidate=invalidate)
 
     def dumpb(self) -> bytes:

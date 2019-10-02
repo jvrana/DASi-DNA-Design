@@ -17,6 +17,8 @@ Submodules
 import bisect
 import functools
 
+import numpy as np
+
 from .networkx.shortest_path import multipoint_shortest_path
 from .networkx.utils import sort_cycle
 from .npdf import NumpyDataFrame
@@ -40,7 +42,7 @@ def bisect_between(a, low, high):
     :return: tuple of start (inclusive) and end (exclusive) indices
     """
     i = bisect.bisect_left(a, low)
-    j = bisect.bisect_right(sorted(a[i:]), high)
+    j = bisect.bisect_right(a[i:], high)
     return i, j + i
 
 

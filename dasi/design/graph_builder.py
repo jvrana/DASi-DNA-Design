@@ -263,7 +263,6 @@ class AssemblyGraphBuilder:
                 self.add_edge(
                     bnode,
                     anode,
-                    # weight=cost_dict["cost"],
                     weight=None,
                     cost=None,
                     material=None,

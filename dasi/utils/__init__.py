@@ -17,8 +17,6 @@ Submodules
 import bisect
 import functools
 
-import numpy as np
-
 from .networkx.shortest_path import multipoint_shortest_path
 from .networkx.utils import sort_cycle
 from .npdf import NumpyDataFrame

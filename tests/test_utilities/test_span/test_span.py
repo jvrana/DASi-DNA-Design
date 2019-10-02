@@ -481,3 +481,31 @@ def test_invalid_span():
     s1 = Span(5947, 4219, 10000, cyclic=True)
     with pytest.raises(IndexError):
         s1.sub(28, 5989)
+
+
+def test_ranges_ignore_wraps():
+
+    s1 = Span(1, 5, 10, cyclic=True)
+    assert s1.ranges() == [(1, 5)]
+    assert s1.ranges(ignore_wraps=True) == [(1, 5)]
+
+    s1 = Span(1, 15, 10, cyclic=True)
+    assert s1.ranges() == [(1, 10), (0, 5)]
+    assert s1.ranges(ignore_wraps=True) == [(1, 5)]
+
+    s1 = Span(1, 25, 10, cyclic=True)
+    assert s1.ranges() == [(1, 10), (0, 10), (0, 5)]
+    assert s1.ranges(ignore_wraps=True) == [(1, 5)]
+
+    s2 = Span(8, 2, 10, cyclic=True)
+    assert s2.ranges() == [(8, 10), (0, 2)]
+    assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
+
+    # TODO: this is a strange behavior?
+    s2 = Span(8, 12, 10, cyclic=True)
+    assert s2.ranges() == [(8, 10), (0, 10), (0, 2)]
+    assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
+
+    s2 = Span(8, 22, 10, cyclic=True)
+    assert s2.ranges() == [(8, 10), (0, 10), (0, 10), (0, 2)]
+    assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]

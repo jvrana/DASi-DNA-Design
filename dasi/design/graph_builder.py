@@ -16,6 +16,7 @@ from dasi.constants import Constants
 from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.log import logger
+from dasi.utils import bisect_between
 from dasi.utils import bisect_slice_between
 from dasi.utils import sort_with_keys
 
@@ -192,18 +193,81 @@ class AssemblyGraphBuilder:
         gap_origin_iter = make_origin_iterator(a_nodes_gap, b_nodes_gap)
         overlap_origin_iter = make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
 
+        i, j = None, None
         for bnode, anode in overlap_iter:
-            self.add_overlap_edge(bnode, anode, query_region, group_keys, groups)
+            i, j = self.add_overlap_edge(
+                bnode, anode, query_region, group_keys[i:j], groups[i:j]
+            )
         for bnode, anode in gap_iter:
             self.add_gap_edge(bnode, anode, query_region)
 
-        for bnode, anode in gap_origin_iter:
-            self.add_gap_edge(bnode, anode, query_region, origin=True)
         for bnode, anode in overlap_origin_iter:
             self.add_overlap_edge(
                 bnode, anode, query_region, group_keys, groups, origin=True
             )
+        for bnode, anode in gap_origin_iter:
+            self.add_gap_edge(bnode, anode, query_region, origin=True)
         self._batch_add_edge_costs()
+
+    def add_overlap_edge(
+        self, bnode, anode, query_region, group_keys, groups, origin=False
+    ):
+        # TODO: PRIORITY this step is extremely slow
+        q = query_region.new(anode.index, bnode.index)
+        if len(q) == 0:
+            return
+        if not origin:
+            i, j = bisect_between(group_keys, q.a, q.b)
+            filtered_groups = groups[i:j]
+        else:
+            i = bisect.bisect_left(group_keys, q.a)
+            j = bisect.bisect_right(group_keys, q.b)
+            filtered_groups = groups[i:] + groups[:j]
+        if filtered_groups:
+            if not origin:
+                span = anode.index - bnode.index
+            else:
+                span = -len(q)
+            if span <= 0:
+                condition = (bnode.expandable, anode.expandable)
+                self.add_edge(
+                    bnode,
+                    anode,
+                    weight=None,
+                    cost=None,
+                    material=None,
+                    time=None,
+                    efficiency=None,
+                    internal_or_external="external",
+                    name=Constants.OVERLAP,
+                    atype=Constants.OVERLAP,
+                    condition=condition,
+                    span=span,
+                )
+        return i, j
+
+    def add_gap_edge(self, bnode, anode, query_region, origin=False):
+        if not origin:
+            span = anode.index - bnode.index
+        else:
+            span = len(query_region.new(bnode.index, anode.index))
+        if span >= 0:
+            condition = (bnode.expandable, anode.expandable)
+            # cost_dict = self._get_cost(span, condition)
+            self.add_edge(
+                bnode,
+                anode,
+                weight=None,
+                cost=None,
+                material=None,
+                time=None,
+                efficiency=None,
+                internal_or_external="external",
+                name=Constants.GAP,
+                atype=Constants.GAP,
+                condition=condition,
+                span=span,
+            )
 
     def _batch_add_edge_costs(self):
         """Add costs to all edges at once batch.
@@ -239,64 +303,6 @@ class AssemblyGraphBuilder:
     def _get_cost(self, bp, ext):
         data = self.span_cost(bp, ext).data
         return {k: v[0] for k, v in data.items()}
-
-    def add_overlap_edge(
-        self, bnode, anode, query_region, group_keys, groups, origin=False
-    ):
-        # TODO: PRIORITY this step is extremely slow
-        q = query_region.new(anode.index, bnode.index)
-        if len(q) == 0:
-            return
-        if not origin:
-            filtered_groups = bisect_slice_between(groups, group_keys, q.a, q.b)
-        else:
-            i = bisect.bisect_left(group_keys, q.a)
-            j = bisect.bisect_right(group_keys, q.b)
-            filtered_groups = groups[i:] + groups[:j]
-        if filtered_groups:
-            if not origin:
-                span = anode.index - bnode.index
-            else:
-                span = -len(q)
-            if span <= 0:
-                condition = (bnode.expandable, anode.expandable)
-                self.add_edge(
-                    bnode,
-                    anode,
-                    weight=None,
-                    cost=None,
-                    material=None,
-                    time=None,
-                    efficiency=None,
-                    internal_or_external="external",
-                    name=Constants.OVERLAP,
-                    atype=Constants.OVERLAP,
-                    condition=condition,
-                    span=span,
-                )
-
-    def add_gap_edge(self, bnode, anode, query_region, origin=False):
-        if not origin:
-            span = anode.index - bnode.index
-        else:
-            span = len(query_region.new(bnode.index, anode.index))
-        if span >= 0:
-            condition = (bnode.expandable, anode.expandable)
-            # cost_dict = self._get_cost(span, condition)
-            self.add_edge(
-                bnode,
-                anode,
-                weight=None,
-                cost=None,
-                material=None,
-                time=None,
-                efficiency=None,
-                internal_or_external="external",
-                name=Constants.GAP,
-                atype=Constants.GAP,
-                condition=condition,
-                span=span,
-            )
 
     def build_assembly_graph(self) -> nx.DiGraph:
 

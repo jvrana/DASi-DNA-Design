@@ -64,17 +64,19 @@ def print_edge_cost(path, graph):
 @pytest.mark.parametrize(
     "query",
     [
-        "pins-0a-psv40-citrine-wpre.gb",
-        "pmodkan-ho-pact1-z4-er-vpr.gb",
-        "plko-pef1a-frt-tdtomato-wpre.gb",
-        "pins-01-hu6-sv40-nt1-optgrna.gb",
+        # "pins-0a-psv40-citrine-wpre.gb",
+        # "pmodkan-ho-pact1-z4-er-vpr.gb",
+        # "plko-pef1a-frt-tdtomato-wpre.gb",
+        # "pins-01-hu6-sv40-nt1-optgrna.gb",
         "pins-01-hu6-r1-optgrna.gb",
-        "pins-01-hu6-r5-optgrna.gb",
+        # "pins-01-hu6-r5-optgrna.gb",
     ],
 )
 def test_real_design(here, paths, query, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
-    templates = load_genbank_glob(paths["templates"])
+    templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
+        paths["registry"]
+    )
 
     query_path = join(here, "data/test_data/genbank/designs", query)
     queries = make_circular(load_genbank_glob(query_path))
@@ -104,7 +106,9 @@ def test_real_design(here, paths, query, span_cost):
 @pytest.mark.parametrize("query", ["pmodkan-ho-pact1-z4-er-vpr.gb"])
 def test_profile_compile(here, paths, query, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
-    templates = load_genbank_glob(paths["templates"])
+    templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
+        paths["registry"]
+    )
 
     query_path = join(here, "data/test_data/genbank/designs", query)
     queries = make_circular(load_genbank_glob(query_path))

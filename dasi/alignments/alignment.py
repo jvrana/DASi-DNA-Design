@@ -78,10 +78,9 @@ class Alignment(Sized):
         i = self.query_region.i(qstart)
         if i < 0:
             i = self.query_region.i(qstart + self.query_region.context_length)
-        try:
-            subject_copy = self.subject_region[i : i + len(query_copy)]
-        except Exception as e:
-            raise e
+        if i == len(self.subject_region):
+            i = 0
+        subject_copy = self.subject_region[i : i + len(query_copy)]
 
         if atype is None:
             atype = self.type

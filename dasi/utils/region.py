@@ -477,18 +477,18 @@ class Span(Container, Iterable, Sized):
         s = ",".join("[{}, {})".format(*r) for r in ranges)
         return "[" + s + "]"
 
-    def ranges(self) -> List[Tuple[int, int]]:
-        """Return ranges of valid positions.
+    def ranges(self, ignore_wraps=False) -> List[Tuple[int, int]]:
+        """Return the valid ranges for this span.
 
-        :return:
-        :rtype:
+        :param ignore_wraps: if True, multiple wrappings will be ignored.
+        :return: List[Tuple[int, int]]
         """
-        if self._cyclic and (self._b < self._a or self._nwraps):
+        if self._cyclic and (self._b < self._a or (self._nwraps and not ignore_wraps)):
             ranges = [(self._a, self.bounds()[1])]
-            for _ in range(self._nwraps - 1):
-                ranges.append(self.bounds())
+            if not ignore_wraps:
+                for _ in range(self._nwraps - 1):
+                    ranges.append(self.bounds())
             ranges.append((self.bounds()[0], self._b))
-
             return ranges
         else:
             return [(self._a, self._b)]
@@ -823,7 +823,6 @@ class Span(Container, Iterable, Sized):
             else:
                 return self.t(val + self._a - self._index)
         elif issubclass(type(val), slice):
-
             self._check_index_pos(val.start)
             self._check_index_pos(val.stop, False)
 

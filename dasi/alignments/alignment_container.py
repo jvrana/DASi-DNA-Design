@@ -126,7 +126,7 @@ class AlignmentContainer(Sized):
     ):
         fwd, fwd_keys = sort_with_keys(alignments, key=key)
         found = []
-        for a, b in region.ranges():
+        for a, b in region.ranges(ignore_wraps=True):
             if not end_inclusive:
                 b = b - 1
             found += bisect_slice_between(fwd, fwd_keys, a, b)
@@ -144,7 +144,8 @@ class AlignmentContainer(Sized):
         :param groups: optional list of groups to search
         :return: list of groups
         """
-        if group_type not in self.valid_types:
+
+        if group_type not in list(self.valid_types) + ["ANY"]:
             raise AlignmentContainerException(
                 "Type '{}' not found in valid types: {}".format(
                     group_type, self.valid_types
@@ -154,7 +155,11 @@ class AlignmentContainer(Sized):
             groups = self.groups()
         found = []
         for g in groups:
-            if g.query_region.a == a and g.query_region.b == b and g.type == group_type:
+            if (
+                g.query_region.a == a
+                and g.query_region.b == b
+                and (group_type == "ANY" or g.type == group_type)
+            ):
                 found.append(g)
         return found
 
@@ -271,7 +276,6 @@ class AlignmentContainer(Sized):
         )
         alignments = []
         for group_a in logger.tqdm(group_sort, "INFO", desc="expanding pcr products"):
-
             overlapping = self.filter_alignments_by_span(
                 group_sort,
                 group_a.query_region,

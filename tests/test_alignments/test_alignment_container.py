@@ -396,7 +396,7 @@ class TestExpandPrimers:
 
         assert len(groups) == 2
 
-        groups = container.find_groups_by_pos(900, 500)
+        groups = container.find_groups_by_pos(900, 500, "ANY")
         assert not groups
 
 

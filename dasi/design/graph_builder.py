@@ -194,10 +194,6 @@ class AssemblyGraphBuilder:
                 i = bisect.bisect_right(bkeys, _a.index)
                 for _b in b[:i]:
                     yield _b, _a
-            # for _b in b:
-            #     i = bisect.bisect_left(akeys, _b.index)
-            #     for _a in a[i:]:
-            #         yield _b, _a
 
         def make_origin_iterator(a, b):
             a, akeys = sort_with_keys(a, lambda x: x.index)

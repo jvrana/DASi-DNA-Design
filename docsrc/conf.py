@@ -47,7 +47,8 @@ napoleon_use_rtype = False  # More legible
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
+    "sphinx_autodoc_typehints",
     "nbsphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.doctest",

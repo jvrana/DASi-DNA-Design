@@ -4,6 +4,7 @@ from collections.abc import Container
 from collections.abc import Iterable
 from collections.abc import Sized
 from itertools import chain
+from typing import Any
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -500,6 +501,26 @@ class Span(Container, Iterable, Sized):
         :rtype:
         """
         return [slice(*r) for r in self.ranges()]
+
+    def get_slice_iter(self, x: Iterable):
+        """Use the region to slice the iterable, returning another generator.
+
+        :param x: the iterable to slice
+        :return: iterable
+        """
+        return chain(*[x[s] for s in self.slices()])
+
+    def get_slice(self, x: Iterable, as_type=None) -> Any:
+        """Use the region to slice the iterable, returning a iterable of the
+        same type as 'x'. If as_type is provided, the iterable will be
+        typecast.
+
+        :param x: the iterable to slice
+        :return: Any
+        """
+        if as_type is None:
+            as_type = type(x)
+        return as_type(self.get_slice_iter(x))
 
     def reindex(self, i, strict=None, ignore_wrap=None):
         """Return a new span with positions reindexed.

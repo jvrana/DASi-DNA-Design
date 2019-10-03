@@ -520,6 +520,8 @@ class Span(Container, Iterable, Sized):
         """
         if as_type is None:
             as_type = type(x)
+        if as_type is str:
+            return "".join(self.get_slice_iter(x))
         return as_type(self.get_slice_iter(x))
 
     def reindex(self, i, strict=None, ignore_wrap=None):

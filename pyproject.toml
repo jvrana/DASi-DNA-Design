@@ -3,6 +3,11 @@ name = "dasi"
 version = "0.0.2"
 description = ""
 authors = ["jvrana <justin.vrana@gmail.com>"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Development Status :: 4 - Beta"
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"

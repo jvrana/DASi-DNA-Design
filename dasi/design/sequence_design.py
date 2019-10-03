@@ -2,8 +2,6 @@
 
 A module for converting DASi designs into actual DNA sequences.
 """
-import operator
-from itertools import accumulate
 from typing import Any
 from typing import Dict
 from typing import Tuple
@@ -28,7 +26,7 @@ def design_primers(
                     their end points (`.b` parameter)
     :param lseq: optional provided left sequence
     :param rseq: optional provided right sequence
-    :return:
+    :return: tuple of pairs and the 'explain' dictionary.
     """
     design = primer3plus.new()
     design.presets.as_cloning_task()

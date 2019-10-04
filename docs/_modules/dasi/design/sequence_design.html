@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -117,22 +119,25 @@ from typing import Union
 import primer3plus
 
 from dasi.utils import Region
+from dasi.design import Assembly, AssemblyNode
+from dasi.cost import SpanCost
+import networkx as nx
+from dasi.utils import NumpyDataFrame
 
 
 <div class="viewcode-block" id="design_primers"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.sequence_design.design_primers">[docs]</a>def design_primers(
     template: str, region: Region, lseq: Union[None, str], rseq: Union[None, str]
 ) -&gt; Tuple[Dict[int, dict], Dict[str, Any]]:
-    &quot;&quot;&quot;Design primers flanking the specified :class:`Region.
-
-    &lt;dasi.utils.Region&gt;`. If the region is cyclic and spans the origin, this
+    &quot;&quot;&quot;Design primers flanking the specified :class:`Region.&lt;dasi.utils.Region&gt;`.
+    If the region is cyclic and spans the origin, this
     method will handle the appropriate manipulations to design primers around
     the origin and restore the locations of the resulting primer pairs.
 
     :param template: the template string to design primers
     :param region: region specified to design primers around. Regions are exclusive at
                     their end points (`.b` parameter)
-    :param lseq: optional provided left sequence
-    :param rseq: optional provided right sequence
+    :param lseq: optionally provided left sequence
+    :param rseq: optionally provided right sequence
     :return: tuple of pairs and the &#39;explain&#39; dictionary.
     &quot;&quot;&quot;
     design = primer3plus.new()
@@ -162,6 +167,31 @@ from dasi.utils import Region
             loc = pair[&quot;RIGHT&quot;][&quot;location&quot;]
             pair[&quot;RIGHT&quot;][&quot;location&quot;] = (index[loc[0]], loc[1])
     return pairs, explain</div>
+
+
+def edata_to_npdf(edata: dict, span_cost: SpanCost) -&gt; NumpyDataFrame:
+    return span_cost.cost(edata[&#39;span&#39;], edata[&#39;type_def&#39;])
+
+
+def design_pcr_product_primers(assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode,
+                               span_cost: SpanCost):
+    graph = assembly.graph
+    successors = graph.successors(n1)
+    predecessors = graph.predecessors(n2)
+
+    edge = graph[n1][n2]
+    sedge = graph[n2][successors[0]]
+    pedge = graph[predecessors[0]][n1]
+
+    # the left and right extensions are determined by the pred and succ edges.
+    left = edata_to_npdf(pedge, span_cost)
+    right = edata_to_npdf(sedge, span_cost)
+
+
+
+
+
+
 </pre></div>
 
     </div>

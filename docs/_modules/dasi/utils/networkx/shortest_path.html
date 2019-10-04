@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -152,7 +154,7 @@ def sympy_multisource_dijkstras(
         raise nx.NetworkXNoPath(&quot;No path to {}.&quot;.format(target))
 
 
-<div class="viewcode-block" id="sympy_dijkstras"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.networkx.sympy_dijkstras">[docs]</a>def sympy_dijkstras(
+<div class="viewcode-block" id="sympy_dijkstras"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.sympy_dijkstras">[docs]</a>def sympy_dijkstras(
     g, source, f, target=None, accumulators=None, init=None, cutoff=None
 ):
     &quot;&quot;&quot;Computes the shortest path distance and path for a graph using an
@@ -285,7 +287,7 @@ def _multisource_dijkstra(
     return dist
 
 
-def multipoint_shortest_path(
+<div class="viewcode-block" id="multipoint_shortest_path"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.multipoint_shortest_path">[docs]</a>def multipoint_shortest_path(
     graph: nx.DiGraph,
     nodes: List[str],
     weight_key: str,
@@ -315,7 +317,7 @@ def multipoint_shortest_path(
     if cyclic:
         return sort_cycle(full_path, cyclic_sort_key)
     else:
-        return full_path
+        return full_path</div>
 
 
 def sympy_multipoint_shortest_path(

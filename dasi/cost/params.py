@@ -4,18 +4,18 @@ import pandas as pd
 
 
 class Globals:
-    time_cost = 10.0
-    material_modifier = 1.0
+    time_cost = 10.0  #: cost of waiting 1 day
+    material_modifier = 1.0  #: material cost multiplier
 
 
 class PrimerParams:
-    # @title Parameters
-    time_cost = Globals.time_cost  # @param {type:"number"}
-    material_modifier = Globals.material_modifier  # @param {type:"number"}
-    min_anneal = 16  # @param {type:"number"}
-    min_span = -300  # @param {type:"number"}
+    """Primer parameters for the :class:`dasi.cost.PrimerCostBuilder`."""
 
-    # efficiency table
+    time_cost = Globals.time_cost  #: cost of a day of 'waiting'
+    material_modifier = Globals.material_modifier  #: multiplier for materials cost
+    min_anneal = 16  #: minimum annealing to consider for primer annealing
+    min_span = -300  #: minimum span
+
     eff_df = pd.DataFrame(
         [
             [0, 10, 0.0],
@@ -31,9 +31,8 @@ class PrimerParams:
             [250, 300, 0.0],
         ],
         columns=["min", "max", "efficiency"],
-    )
+    )  #: efficiency table
 
-    # primer cost table
     primer_df = pd.DataFrame(
         [
             [
@@ -48,10 +47,12 @@ class PrimerParams:
             ["IDTUltramer", 45.0, 200.0, 0.0, 0.40, 1.5],
         ],
         columns=["name", "min", "max", "base cost", "cost per bp", "time (days)"],
-    )
+    )  #: primer cost table
 
 
 class SynthesisParams:
+    """Synthesis parameters for the :class:`dasi.cost.SynthesisCostBuilder`."""
+
     synthesis_df = pd.DataFrame(
         [
             [0, 1, 0, 0],
@@ -66,9 +67,10 @@ class SynthesisParams:
             [2000, 2250, 399.0, 7.0],
         ],
         columns=["min", "max", "base", "time"],
-    )
+    )  #: synthesis cost table
 
-    time_cost = Globals.time_cost
-    material_modifier = Globals.material_modifier
-    step_size = 10
-    left_span_range = (-300, 300)
+    time_cost = Globals.time_cost  #: time cost for a day of 'waiting'
+    material_modifier = Globals.material_modifier  #: material cost multiplier
+    step_size = 10  #: step size to consider during calculations. Lowering significantly
+    #: increases computation time
+    left_span_range = (-300, 300)  #: left span range to consider. Used with syn table.

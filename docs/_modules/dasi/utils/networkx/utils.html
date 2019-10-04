@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -140,7 +142,7 @@ def divide(mata, matb):
     return matc
 
 
-<div class="viewcode-block" id="find_all_min_paths"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.networkx.find_all_min_paths">[docs]</a>def find_all_min_paths(G, lim=None):
+<div class="viewcode-block" id="find_all_min_paths"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.find_all_min_paths">[docs]</a>def find_all_min_paths(G, lim=None):
     &quot;&quot;&quot;Explicitly finds minimum paths according to the cost function
     sum(weight) / prod(efficiency)&quot;&quot;&quot;
     min_path_dict = {}
@@ -239,14 +241,14 @@ def compare_path_rank_order(mat, path_dict, nodelist, verbose=False):
             print(&quot;{}  {}&quot;.format(true_pair, mat_pair))
 
 
-def sort_cycle(arr, key=None):
+<div class="viewcode-block" id="sort_cycle"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.sort_cycle">[docs]</a>def sort_cycle(arr, key=None):
     &quot;&quot;&quot;Sort a cyclic array, maintaining order.&quot;&quot;&quot;
     if key is None:
         arr_with_i = sorted([(x, i) for i, x in enumerate(arr)])
     else:
         arr_with_i = sorted([(key(x), i) for i, x in enumerate(arr)])
     i = arr_with_i[0][1]
-    return arr[i:] + arr[:i]
+    return arr[i:] + arr[:i]</div>
 </pre></div>
 
     </div>

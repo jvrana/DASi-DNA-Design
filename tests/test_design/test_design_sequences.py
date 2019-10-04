@@ -1,5 +1,6 @@
 import json
 
+from dasi.design.sequence_design import design_pcr_product_primers
 from dasi.design.sequence_design import design_primers
 from dasi.utils import Region
 
@@ -41,3 +42,7 @@ def test_primer_design2():
         print(pair["LEFT"]["location"])
         assert pair["LEFT"]["location"][0] == i
         assert pair["RIGHT"]["location"][0] == j - 1
+
+
+def test(span_cost):
+    pass

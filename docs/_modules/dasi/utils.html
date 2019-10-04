@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -114,15 +116,23 @@ from .networkx.utils import sort_cycle
 from .npdf import NumpyDataFrame
 from .npdf import NumpyDataFrameException
 from .region import Region
+from typing import Iterable, Any, Callable, Tuple, List
 
 
-def sort_with_keys(a, key):
+<div class="viewcode-block" id="sort_with_keys"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.sort_with_keys">[docs]</a>def sort_with_keys(a: Iterable[Any], key: Callable) -&gt; Tuple[List, List]:
+    &quot;&quot;&quot;
+    Sort an iterable, returning both the sorted array and the sorted keys.
+
+    :param a: the iterable
+    :param key: key function to use for sorting
+    :return:
+    &quot;&quot;&quot;
     s = sorted(a, key=key)
     keys = [key(x) for x in s]
-    return s, keys
+    return s, keys</div>
 
 
-<div class="viewcode-block" id="bisect_between"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.bisect_between">[docs]</a>def bisect_between(a, low, high):
+<div class="viewcode-block" id="bisect_between"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.bisect_between">[docs]</a>def bisect_between(a: Iterable, low: Any, high: Any) -&gt; Tuple[int, int]:
     &quot;&quot;&quot;Returns the start (inclusive) and end (exclusive) indices for a sorted
     array using a key function.
 
@@ -136,9 +146,19 @@ def sort_with_keys(a, key):
     return i, j + i</div>
 
 
-def bisect_slice_between(a, keys, low, high):
+<div class="viewcode-block" id="bisect_slice_between"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.bisect_slice_between">[docs]</a>def bisect_slice_between(a: Iterable, keys: Iterable, low: Any, high: Any) -&gt; Iterable:
+    &quot;&quot;&quot;
+    Slice the iterable using inclusive bisection. Assumes
+    both the iterable and keys are sorted. Bisect at specified `low` and `high`.
+
+    :param a: pre-sorted iterable to slice
+    :param keys: pre-sorted keys to bisect
+    :param low: low key
+    :param high: high key
+    :return: sliced iterable
+    &quot;&quot;&quot;
     i, j = bisect_between(keys, low, high)
-    return a[i:j]
+    return a[i:j]</div>
 
 
 <div class="viewcode-block" id="perfect_subject"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.perfect_subject">[docs]</a>def perfect_subject(data):
@@ -151,13 +171,6 @@ def bisect_slice_between(a, keys, low, high):
         and data[&quot;start&quot;] == data[&quot;length&quot;]
     ):
         return True</div>
-
-
-def partialclass(cls, *args, **kwds):
-    class PartialClass(cls):
-        __init__ = functools.partialmethod(cls.__init__, *args, **kwds)
-
-    return PartialClass
 </pre></div>
 
     </div>

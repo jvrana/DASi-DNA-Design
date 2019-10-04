@@ -17,7 +17,6 @@ from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.log import logger
 from dasi.utils import bisect_between
-from dasi.utils import bisect_slice_between
 from dasi.utils import sort_with_keys
 
 AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")

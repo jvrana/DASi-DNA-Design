@@ -59,29 +59,21 @@ Alignments
 Cost Calculations
 =================
 
-.. autoclass:: dasi.cost.CostBuilder
-    :members:
-    :inherited-members:
-
-.. autoclass:: dasi.cost.PrimerCostBuilder
-    :members:
-
-.. autoclass:: dasi.cost.SynthesisCostBuilder
-    :members:
-
-.. autoclass:: dasi.cost.SpanCost
-    :members:
+.. automodule:: dasi.cost
+    :members: Globals, dasi.cost.params.PrimerParams, SynthesisParams
 
 Parameters
 ----------
 
-.. autoclass:: dasi.cost.Globals
+.. automodule:: dasi.cost.params
+
+.. autoclass:: dasi.cost.params.Globals
     :members:
 
-.. autoclass:: dasi.cost.PrimerParams
+.. autoclass:: dasi.cost.params.PrimerParams
     :members:
 
-.. autoclass:: dasi.cost.SynthesisParams
+.. autoclass:: dasi.cost.params.SynthesisParams
     :members:
 
 Utilities
@@ -89,6 +81,7 @@ Utilities
 
 .. automodule:: dasi.utils
     :members:
+    :imported-members:
 
 Cost utilities
 --------------
@@ -96,6 +89,7 @@ Cost utilities
 .. automodule:: dasi.cost.utils
     :members:
     :imported-members:
+    :private-members:
 
 Networkx utilities
 ------------------
@@ -103,3 +97,4 @@ Networkx utilities
 .. automodule:: dasi.utils.networkx
     :members:
     :imported-members:
+    :private-members:

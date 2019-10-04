@@ -1,6 +1,11 @@
 """Utilities."""
 import bisect
 import functools
+from typing import Any
+from typing import Callable
+from typing import Iterable
+from typing import List
+from typing import Tuple
 
 from .networkx.shortest_path import multipoint_shortest_path
 from .networkx.utils import sort_cycle
@@ -9,13 +14,19 @@ from .npdf import NumpyDataFrameException
 from .region import Region
 
 
-def sort_with_keys(a, key):
+def sort_with_keys(a: Iterable[Any], key: Callable) -> Tuple[List, List]:
+    """Sort an iterable, returning both the sorted array and the sorted keys.
+
+    :param a: the iterable
+    :param key: key function to use for sorting
+    :return:
+    """
     s = sorted(a, key=key)
     keys = [key(x) for x in s]
     return s, keys
 
 
-def bisect_between(a, low, high):
+def bisect_between(a: Iterable, low: Any, high: Any) -> Tuple[int, int]:
     """Returns the start (inclusive) and end (exclusive) indices for a sorted
     array using a key function.
 
@@ -29,7 +40,16 @@ def bisect_between(a, low, high):
     return i, j + i
 
 
-def bisect_slice_between(a, keys, low, high):
+def bisect_slice_between(a: Iterable, keys: Iterable, low: Any, high: Any) -> Iterable:
+    """Slice the iterable using inclusive bisection. Assumes both the iterable
+    and keys are sorted. Bisect at specified `low` and `high`.
+
+    :param a: pre-sorted iterable to slice
+    :param keys: pre-sorted keys to bisect
+    :param low: low key
+    :param high: high key
+    :return: sliced iterable
+    """
     i, j = bisect_between(keys, low, high)
     return a[i:j]
 
@@ -44,10 +64,3 @@ def perfect_subject(data):
         and data["start"] == data["length"]
     ):
         return True
-
-
-def partialclass(cls, *args, **kwds):
-    class PartialClass(cls):
-        __init__ = functools.partialmethod(cls.__init__, *args, **kwds)
-
-    return PartialClass

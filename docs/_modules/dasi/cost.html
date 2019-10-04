@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -105,7 +107,7 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.cost</h1><div class="highlight"><pre>
-<span></span>&quot;&quot;&quot;Cost.&quot;&quot;&quot;
+<span></span>&quot;&quot;&quot;Classes and methods for estimating assembly costs.&quot;&quot;&quot;
 from abc import ABC
 from abc import abstractmethod
 from functools import partial
@@ -134,7 +136,7 @@ slice_dict = {
 }
 
 
-def encoder(obj):
+<div class="viewcode-block" id="encoder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.encoder">[docs]</a>def encoder(obj):
     &quot;&quot;&quot;msgpack encoder for cost functions.
 
     :param obj:
@@ -148,10 +150,10 @@ def encoder(obj):
             &quot;cost_dict&quot;: {k: v for k, v in obj.cost_dict.items()},
             &quot;span&quot;: obj.span,
         }
-    return obj
+    return obj</div>
 
 
-def decoder(obj):
+<div class="viewcode-block" id="decoder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.decoder">[docs]</a>def decoder(obj):
     &quot;&quot;&quot;msgpack decoder for cost functions.
 
     :param obj:
@@ -167,18 +169,29 @@ def decoder(obj):
         obj = SpanCost.__new__(SpanCost)
         obj.cost_dict = cost_dict
         obj.span = span
-    return obj
+    return obj</div>
 
 
 <div class="viewcode-block" id="CostBuilder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder">[docs]</a>class CostBuilder(ABC):
-    def __init__(self, span):
+    &quot;&quot;&quot;
+    Abstract base class for building a cost model.
+    &quot;&quot;&quot;
+
+    def __init__(self, span: np.ndarray):
+        &quot;&quot;&quot;
+        Initialize cost builder from a &#39;span&#39;, or a list of indices for which
+        the model is valid.
+
+        :param span: the list of indices (span) for which this cost model is evaluated.
+        &quot;&quot;&quot;
         self.cost_dict = {}
         self.span = span
 
-    @classmethod
+<div class="viewcode-block" id="CostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.from_params">[docs]</a>    @classmethod
     @abstractmethod
     def from_params(cls, *args):
-        pass
+        &quot;&quot;&quot;Initialize from parameters&quot;&quot;&quot;
+        pass</div>
 
 <div class="viewcode-block" id="CostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.compute">[docs]</a>    @abstractmethod
     def compute(self):
@@ -207,11 +220,20 @@ def decoder(obj):
         self, bp: Union[np.ndarray, int], ext: Tuple[int, int], invalidate=False
     ) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;
+        Return the :class:`NumpyDataFrame &lt;dasi.usil.NumpyDataFrame&gt;` across the
+        provided span.
 
-        :param bp:
-        :param ext:
-        :param invalidate:
-        :return:
+        :param bp: either a integer or np.ndarray of integers to compute.
+        :param ext: The extension design parameters (bool, bool) that represent
+                    whether the left or right primer is &#39;extendable&#39;. Primers
+                    that have been provided are not extendable. If we had,
+                    for example, an existing right primer and flexibility to
+                    design the left primer, this would be `(1, 0)`.
+        :param invalidate: Whether to invalidate indicies that go beyond the provided
+                            span for the cost builder (`CostBuilder.span`). Any
+                            invalid indices cost will be set to `np.inf` and efficiency
+                            to `0.0`
+        :return: NumpyDataFrame representing the cost of from the input span.
         &quot;&quot;&quot;
         if isinstance(bp, int):
             bp = np.array([bp])
@@ -241,6 +263,7 @@ def decoder(obj):
     def __call__(
         self, bp: Union[int, np.ndarray], ext: Tuple[int, int]
     ) -&gt; NumpyDataFrame:
+        &quot;&quot;&quot;Short hand for calling :meth:`cost`&quot;&quot;&quot;
         return self.cost(bp, ext)</div>
 
 
@@ -254,6 +277,20 @@ def decoder(obj):
         material_mod: float,
         min_span: int,
     ):
+        &quot;&quot;&quot;
+        Initialize the cost model for primer designs.
+
+        :param pdf: a pandas DataFrame representing costs for primers.
+                    Example parameters found at
+                    :attr:`dasi.cost.params.PrimerParams.primer_df`
+        :param edf: a pandas DataFrame representing efficiencies for spans.
+                    Example parameters found at
+                    :attr:`dasi.cost.params.PrimerParams.eff_df`
+        :param min_anneal: the number of bases to consider for annealing a primer.
+        :param time_cost: the cost to produce a primer
+        :param material_mod:
+        :param min_span:
+        &quot;&quot;&quot;
         self.primer_df = pdf
         self.eff_df = edf
         self.time_cost = time_cost
@@ -264,8 +301,14 @@ def decoder(obj):
         self.material_modifier = material_mod
         self.compute()
 
-    @classmethod
-    def from_params(cls, primer_params: Type[PrimerParams]):
+<div class="viewcode-block" id="PrimerCostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostBuilder.from_params">[docs]</a>    @classmethod
+    def from_params(cls, primer_params: Type[PrimerParams]) -&gt; &#39;PrimerCostBuilder&#39;:
+        &quot;&quot;&quot;
+        Load from :class:`dasi.cost.params.PrimerParams`.
+
+        :param primer_params: parameters
+        :return: PrimerCostBuilder
+        &quot;&quot;&quot;
         return cls(
             pdf=primer_params.primer_df,
             edf=primer_params.eff_df,
@@ -273,7 +316,7 @@ def decoder(obj):
             time_cost=primer_params.time_cost,
             material_mod=primer_params.material_modifier,
             min_span=primer_params.min_span,
-        )
+        )</div>
 
 <div class="viewcode-block" id="PrimerCostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostBuilder.compute">[docs]</a>    def compute(self):
         span = self.span
@@ -339,6 +382,17 @@ def decoder(obj):
         step_size=10,
         left_span_range=(-500, 500),
     ):
+        &quot;&quot;&quot;
+
+        :param sdf: synthesis parameter pandas dataframe. Example parameters found
+                    at :attr:`dasi.cost.params.SynthesisParams.synthesis_df`
+        :param primer_cost: primer cost builder
+        :param time_cost: time cost per day
+        :param material_modifier: material multiplier (default: 1.0)
+        :param step_size: step size to consider (default: 10)
+        :param left_span_range: span range for left primer to consider
+                (default: -500, 500)
+        &quot;&quot;&quot;
         self.synthesis_df = sdf
         self.step_size = step_size
         self.material_modifier = (material_modifier,)
@@ -349,7 +403,7 @@ def decoder(obj):
         # self.logger = logger(self)
         self.compute()
 
-    @classmethod
+<div class="viewcode-block" id="SynthesisCostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostBuilder.from_params">[docs]</a>    @classmethod
     def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostBuilder):
         return cls(
             sdf=syn_params.synthesis_df,
@@ -358,7 +412,7 @@ def decoder(obj):
             material_modifier=syn_params.material_modifier,
             step_size=syn_params.step_size,
             left_span_range=syn_params.left_span_range,
-        )
+        )</div>
 
 <div class="viewcode-block" id="SynthesisCostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostBuilder.compute">[docs]</a>    def compute(self):
         syn = df_to_np_ranged(&quot;min&quot;, &quot;max&quot;, self.synthesis_df, dtype=np.float32)
@@ -467,9 +521,9 @@ def decoder(obj):
         super().__init__(span)
         self.compute()
 
-    @classmethod
+<div class="viewcode-block" id="SpanCost.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SpanCost.from_params">[docs]</a>    @classmethod
     def from_params(cls):
-        pass
+        pass</div>
 
     @classmethod
     def default(cls):

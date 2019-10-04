@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -107,7 +109,7 @@
   <h1>Source code for dasi.utils.networkx.algorithms</h1><div class="highlight"><pre>
 <span></span>from collections import OrderedDict
 from typing import Tuple
-from typing import Union
+from typing import Union, Callable, Dict, Any, Type
 
 import networkx as nx
 import numpy as np
@@ -126,47 +128,42 @@ SUM = &quot;sum&quot;
     g: Union[nx.DiGraph, nx.Graph],
     f: str,
     accumulators: dict,
-    nonedge=None,
-    nodelist=None,
-    multigraph_weight=None,
-    identity_subs=None,
-    return_all=False,
-    dtype=None,
+    nonedge: dict=None,
+    nodelist: list=None,
+    multigraph_weight: Callable=None,
+    identity_subs: Dict[str, Any]=None,
+    return_all: bool=False,
+    dtype: Type=None,
 ) -&gt; Union[np.ndarray, Tuple[np.ndarray, dict]]:
     &quot;&quot;&quot;
-    Implementation of all pairs shortest path length using a modified floyd-warshall
-    algorithm with arbitrary path
-    length functions. The following path length function is valid:
+    Implementation of algorithm:
 
-    $$
-    C = \frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
-    $$
+    .. math::
 
-    Where $a_i$ and $b_i$ is the weight &#39;a&#39; and &#39;b&#39; of the *ith* edge in the path
+       C = \\frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
+
+    Where :math:`a_i` and :math:`b_i` is the weight &#39;a&#39; and &#39;b&#39; of the *ith* edge in the path
     respectively.
-    $\\sum_{i}^{n}{a_i}$ is the accumulated sum of weights &#39;a&#39; and $\\prod_{i}^{n}{b_i}$
-     is the accumulated product of weights &#39;b&#39;. Arbitrarily complex path functions with
-      arbitrary numbers of weights
-     ($a, b, c,...$) can be used in the algorithm.
+    :math:`\\sum_{i}^{n}{a_i}` is the accumulated sum of weights &#39;a&#39; and
+    :math:`\\prod_{i}^{n}{b_i}` is the accumulated product of weights &#39;b&#39;.
+    Arbitrarily complex path functions with arbitrary numbers of weights
+    (:math:`a, b, c,...`) can be used in the algorithm.
 
     Because arbitrary functions are used, the shortest path between ij and jk does not
-    necessarily mean the shortest
-    path nodes ijk is the concatenation of these two paths. In other words, for the
-    shortest path $p_{ik}$ between
-    nodes $i$ $j$ and $k$:
+    necessarily mean the shortest path nodes ijk is the concatenation of these two
+    paths. In other words, for the shortest path :math:`p_{ik}` between
+    nodes :math:`i` :math:`j` and :math:`k`:
 
-    $$
-    p_{ij} + p_{jk} \neq p_{ijk}
-    $$
+    .. math::
 
-    This means a predecessor dictionary cannot be used to reconstruct the paths easily.
-    To do so, use the modified
-    Dijkstra&#39;s algorithm below which handles arbitrary path functions.
+        p_{ij} + p_{jk} \\neq p_{ijk}
 
     :param g: the graph
     :param f: the function string that represents SymPy function to compute the weights
     :param accumulators: diciontary of symbols to accumulator functions (choose from
-                         [&quot;PRODUCT&quot;, &quot;SUM&quot;] to use for accumulation of weights through
+                         [&quot;PRODUCT&quot; - :math:`\\prod`,
+                         &quot;SUM&quot; - :math:`\\sum`]
+                         to use for accumulation of weights through
                          a path. If missing &quot;SUM&quot; is used.
     :param nonedge: dictionary of symbol to value to use for nonedges
                     (e.g. {&#39;weight&#39;: np.inf})

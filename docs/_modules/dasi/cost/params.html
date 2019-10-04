@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta charset='utf-8'>
@@ -58,8 +60,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#parameters">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
@@ -110,19 +112,21 @@ import numpy as np
 import pandas as pd
 
 
-<div class="viewcode-block" id="Globals"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.Globals">[docs]</a>class Globals:
-    time_cost = 10.0
-    material_modifier = 1.0</div>
+<div class="viewcode-block" id="Globals"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.params.Globals">[docs]</a>class Globals:
+    time_cost = 10.0  #: cost of waiting 1 day
+    material_modifier = 1.0  #: material cost multiplier</div>
 
 
-<div class="viewcode-block" id="PrimerParams"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.PrimerParams">[docs]</a>class PrimerParams:
-    # @title Parameters
-    time_cost = Globals.time_cost  # @param {type:&quot;number&quot;}
-    material_modifier = Globals.material_modifier  # @param {type:&quot;number&quot;}
-    min_anneal = 16  # @param {type:&quot;number&quot;}
-    min_span = -300  # @param {type:&quot;number&quot;}
+<div class="viewcode-block" id="PrimerParams"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.params.PrimerParams">[docs]</a>class PrimerParams:
+    &quot;&quot;&quot;
+    Primer parameters for the :class:`dasi.cost.PrimerCostBuilder`.
+    &quot;&quot;&quot;
 
-    # efficiency table
+    time_cost = Globals.time_cost  #: cost of a day of &#39;waiting&#39;
+    material_modifier = Globals.material_modifier  #: multiplier for materials cost
+    min_anneal = 16  #: minimum annealing to consider for primer annealing
+    min_span = -300  #: minimum span
+
     eff_df = pd.DataFrame(
         [
             [0, 10, 0.0],
@@ -138,9 +142,8 @@ import pandas as pd
             [250, 300, 0.0],
         ],
         columns=[&quot;min&quot;, &quot;max&quot;, &quot;efficiency&quot;],
-    )
+    )  #: efficiency table
 
-    # primer cost table
     primer_df = pd.DataFrame(
         [
             [
@@ -155,10 +158,14 @@ import pandas as pd
             [&quot;IDTUltramer&quot;, 45.0, 200.0, 0.0, 0.40, 1.5],
         ],
         columns=[&quot;name&quot;, &quot;min&quot;, &quot;max&quot;, &quot;base cost&quot;, &quot;cost per bp&quot;, &quot;time (days)&quot;],
-    )</div>
+    )  #: primer cost table</div>
 
 
-<div class="viewcode-block" id="SynthesisParams"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.SynthesisParams">[docs]</a>class SynthesisParams:
+<div class="viewcode-block" id="SynthesisParams"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.params.SynthesisParams">[docs]</a>class SynthesisParams:
+    &quot;&quot;&quot;
+    Synthesis parameters for the :class:`dasi.cost.SynthesisCostBuilder`.
+    &quot;&quot;&quot;
+
     synthesis_df = pd.DataFrame(
         [
             [0, 1, 0, 0],
@@ -173,12 +180,13 @@ import pandas as pd
             [2000, 2250, 399.0, 7.0],
         ],
         columns=[&quot;min&quot;, &quot;max&quot;, &quot;base&quot;, &quot;time&quot;],
-    )
+    )  #: synthesis cost table
 
-    time_cost = Globals.time_cost
-    material_modifier = Globals.material_modifier
-    step_size = 10
-    left_span_range = (-300, 300)</div>
+    time_cost = Globals.time_cost  #: time cost for a day of &#39;waiting&#39;
+    material_modifier = Globals.material_modifier   #: material cost multiplier
+    step_size = 10  #: step size to consider during calculations. Lowering significantly
+                    #: increases computation time
+    left_span_range = (-300, 300)  #: left span range to consider. Used with syn table.</div>
 </pre></div>
 
     </div>

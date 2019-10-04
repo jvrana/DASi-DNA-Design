@@ -7,25 +7,31 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+import networkx as nx
 import primer3plus
 
+from dasi.cost import SpanCost
+from dasi.design import Assembly
+from dasi.design import AssemblyNode
+from dasi.utils import NumpyDataFrame
 from dasi.utils import Region
 
 
 def design_primers(
     template: str, region: Region, lseq: Union[None, str], rseq: Union[None, str]
 ) -> Tuple[Dict[int, dict], Dict[str, Any]]:
-    """Design primers flanking the specified :class:`Region.
+    """Design primers flanking the specified.
 
-    <dasi.utils.Region>`. If the region is cyclic and spans the origin, this
-    method will handle the appropriate manipulations to design primers around
-    the origin and restore the locations of the resulting primer pairs.
+    :class:`Region.<dasi.utils.Region>`. If the region is cyclic and spans the
+    origin, this method will handle the appropriate manipulations to design
+    primers around the origin and restore the locations of the resulting primer
+    pairs.
 
     :param template: the template string to design primers
     :param region: region specified to design primers around. Regions are exclusive at
                     their end points (`.b` parameter)
-    :param lseq: optional provided left sequence
-    :param rseq: optional provided right sequence
+    :param lseq: optionally provided left sequence
+    :param rseq: optionally provided right sequence
     :return: tuple of pairs and the 'explain' dictionary.
     """
     design = primer3plus.new()
@@ -55,3 +61,24 @@ def design_primers(
             loc = pair["RIGHT"]["location"]
             pair["RIGHT"]["location"] = (index[loc[0]], loc[1])
     return pairs, explain
+
+
+def edata_to_npdf(edata: dict, span_cost: SpanCost) -> NumpyDataFrame:
+    return span_cost.cost(edata["span"], edata["type_def"])
+
+
+def design_pcr_product_primers(
+    assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, span_cost: SpanCost
+):
+    pass
+    # graph = assembly.graph
+    # successors = graph.successors(n1)
+    # predecessors = graph.predecessors(n2)
+
+    # edge = graph[n1][n2]
+    # sedge = graph[n2][successors[0]]
+    # pedge = graph[predecessors[0]][n1]
+
+    # the left and right extensions are determined by the pred and succ edges.
+    # left = edata_to_npdf(pedge, span_cost)
+    # right = edata_to_npdf(sedge, span_cost)

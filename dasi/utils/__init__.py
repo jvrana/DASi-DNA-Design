@@ -1,19 +1,4 @@
-"""Utilities.
-
-.. module:: dasi.utils
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    networkx
-    npdf
-    async_wrapper
-    region
-    span
-"""
+"""Utilities."""
 import bisect
 import functools
 

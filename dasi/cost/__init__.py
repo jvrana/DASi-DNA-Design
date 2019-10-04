@@ -1,16 +1,4 @@
-"""Cost.
-
-.. module:: dasi.cost
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    params
-    utils
-"""
+"""Cost."""
 from abc import ABC
 from abc import abstractmethod
 from functools import partial

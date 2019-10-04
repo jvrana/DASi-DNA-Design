@@ -1,24 +1,13 @@
-"""Primer and synthesis design.
-
-.. module:: dasi.design
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    graph_builder
-    plotter
-    design_algorithms
-"""
+"""Primer and synthesis design."""
 from __future__ import annotations
 
 import bisect
 from collections.abc import Iterable
 from itertools import zip_longest
 from typing import Dict
+from typing import Generator
 from typing import List
+from typing import Sized
 from typing import Tuple
 from typing import Union
 
@@ -55,7 +44,9 @@ class DesignResult(Iterable):
     Maintains a list of top assemblies.
     """
 
-    def __init__(self, container, graph, query_key):
+    def __init__(
+        self, container: AlignmentContainer, graph: nx.DiGraph, query_key: str
+    ):
         self.container = container
         self.graph = graph
         self.query_key = query_key
@@ -64,13 +55,22 @@ class DesignResult(Iterable):
         self._keys = []
 
     @property
-    def assemblies(self):
+    def assemblies(self) -> Tuple[Assembly, ...]:
+        """Return a tuple of all assemblies.
+
+        :return: tuple of all assemblies.
+        """
         return tuple(self._assemblies)
 
     def _new(self, path: List[AssemblyNode]):
         return Assembly(path, self.container, self.graph, self.query_key, self.query)
 
     def add_assembly(self, path: List[AssemblyNode]):
+        """Add an assembly from a list of nodes.
+
+        :param path: list of nodes
+        :return: None
+        """
         assembly = self._new(path)
         cost = assembly.cost()
         n_nodes = len(assembly._nodes)
@@ -80,14 +80,23 @@ class DesignResult(Iterable):
         self._keys.insert(i, k)
 
     def add_assemblies(self, paths: List[List[AssemblyNode]]):
+        """Adds a list of assemblies.
+
+        :param paths: list of list of paths
+        :return: None
+        """
         for path in paths:
             self.add_assembly(path)
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[Assembly]:
+        """Yield assemblies.
+
+        :yield: assembly
+        """
         for assembly in self.assemblies:
             yield assembly
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> Assembly:
         return list(self)[item]
 
     def __str__(self):
@@ -209,7 +218,7 @@ class Assembly(Iterable):
 
     def edit_distance(
         self, other: Assembly, explain=False
-    ) -> Union[int, List[Tuple[int, str]]]:
+    ) -> Union[int, Tuple[int, List[Tuple[int, str]]]]:
         differences = []
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))
@@ -293,7 +302,7 @@ class Assembly(Iterable):
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[AssemblyNode]:
         for n in self.nodes(data=False):
             yield n
 
@@ -358,7 +367,7 @@ class Design:
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS
 
     @property
-    def seqdb(self):
+    def seqdb(self) -> Dict[str, SeqRecord]:
         return self._seqdb
 
     def add_materials(
@@ -398,12 +407,12 @@ class Design:
         # self.blast_factory.add_records(fragments, self.TEMPLATES)
 
     @classmethod
-    def filter_linear_records(cls, records):
+    def filter_linear_records(cls, records: List[SeqRecord]) -> List[SeqRecord]:
         """Return only linear records."""
         return [r for r in records if not is_circular(r)]
 
     @classmethod
-    def filter_perfect_subject(cls, results):
+    def filter_perfect_subject(cls, results: dict) -> List[dict]:
         """return only results whose subject is 100% aligned to query."""
         return [r for r in results if perfect_subject(r["subject"])]
 
@@ -451,15 +460,15 @@ class Design:
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
     @property
-    def containers(self):
+    def containers(self) -> Dict[str, AlignmentContainer]:
         """Iterable of alignment containers in this design."""
         return self.container_factory.containers()
 
-    def container_list(self):
+    def container_list(self) -> List[AlignmentContainer]:
         """List of alignment containers in this design."""
         return list(self.container_factory.containers().values())
 
-    def query_keys(self):
+    def query_keys(self) -> List[str]:
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
@@ -519,20 +528,22 @@ class Design:
     # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
     @staticmethod
-    def _find_iter_alignment(a, b, alignments):
+    def _find_iter_alignment(a: int, b: int, alignments: Iterable[Alignment]):
         for align in alignments:
             if a == align.query_region.a and b == align.query_region.b:
                 yield align
 
     @staticmethod
-    def path_to_edge_costs(path, graph):
+    def path_to_edge_costs(
+        path: List[AssemblyNode], graph: nx.DiGraph
+    ) -> List[Tuple[AssemblyNode, AssemblyNode, dict]]:
         arr = []
         for n1, n2 in pairwise(path):
             edata = graph[n1][n2]
             arr.append((n1, n2, edata))
         return arr
 
-    def optimize(self, n_paths=3, n_jobs=None):
+    def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, List[List[AssemblyNode]]]:
         n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
             with self.logger.timeit(
@@ -570,7 +581,9 @@ class Design:
             result.add_assemblies(paths)
         return results_dict
 
-    def _optimize_with_threads(self, n_paths=5, n_jobs=10):
+    def _optimize_with_threads(
+        self, n_paths=5, n_jobs=10
+    ) -> Dict[str, List[List[AssemblyNode]]]:
         results_dict = {}
         query_keys, graphs, query_lengths, cyclics, results = zip(
             *list(self._collect_optimize_args(self.graphs))
@@ -588,7 +601,9 @@ class Design:
             results_dict[qk] = result
         return results_dict
 
-    def _collect_optimize_args(self, graphs):
+    def _collect_optimize_args(
+        self, graphs: Dict[str, nx.DiGraph]
+    ) -> Tuple[str, nx.DiGraph, bool, dict]:
         for query_key, graph in self.logger.tqdm(
             graphs.items(), "INFO", desc="optimizing graphs"
         ):
@@ -621,7 +636,7 @@ class LibraryDesign(Design):
 
     # TODO: why?
     @staticmethod
-    def _get_iter_non_repeats(alignments: List[Alignment]):
+    def _get_iter_non_repeats(alignments: List[Alignment]) -> Tuple[str, int, int]:
         """Return repeat regions of alignments. These are alignments that align
         to themselves.
 

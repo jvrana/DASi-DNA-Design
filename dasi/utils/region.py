@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from collections.abc import Sized
 from itertools import chain
 from typing import Any
+from typing import Generator
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -812,10 +813,10 @@ class Span(Container, Iterable, Sized):
         elif issubclass(type(other), Span):
             return self.contains_span(other)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum([r[1] - r[0] for r in self.ranges()])
 
-    def __iter__(self):
+    def __iter__(self) -> Generator(int):
         for i in chain(*[range(*x) for x in self.ranges()]):
             yield i
 

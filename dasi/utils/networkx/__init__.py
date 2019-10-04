@@ -1,18 +1,4 @@
-"""NetworkX Utilities.
-
-.. module:: dasi.utils.networkx
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    algorithms
-    exceptions
-    shortest_path
-    utils
-"""
+"""NetworkX Utilities."""
 from .algorithms import floyd_warshall_with_efficiency
 from .algorithms import sympy_floyd_warshall
 from .exceptions import TerrariumNetworkxError

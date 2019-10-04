@@ -164,7 +164,7 @@ def multiprocessing_optimize_graph(
     graphs: List[nx.DiGraph],
     query_lengths: List[int],
     cyclics: List[bool],
-    n_paths: List[List[tuple]],
+    n_paths: int,
     n_jobs: int,
 ):
     """Optimize graphs using multiprocessing."""

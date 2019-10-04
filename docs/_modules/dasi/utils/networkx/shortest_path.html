@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.utils.networkx.shortest_path &#8212; dasi 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#parameters">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.utils.networkx.shortest_path</h1><div class="highlight"><pre>
+<span></span>from heapq import heappop
+from heapq import heappush
+from itertools import count
+from typing import List
+
+import networkx as nx
+import numpy as np
+from more_itertools import pairwise
+from sympy import lambdify
+from sympy import sympify
+
+from .exceptions import TerrariumNetworkxError
+from .utils import sort_cycle
+
+
+def _weight_function(v, u, e, k):
+    if e is None:
+        return None
+    return e[k]
+
+
+def sympy_multisource_dijkstras(
+    g, sources, f, accumulators=None, init=None, target=None, cutoff=None
+):
+    if not sources:
+        raise ValueError(&quot;sources must not be empty&quot;)
+    if target in sources:
+        return (0, [target])
+    paths = {source: [source] for source in sources}  # dictionary of paths
+    dist = _multisource_dijkstra(
+        g,
+        sources,
+        f,
+        target=target,
+        accumulators=accumulators,
+        init=init,
+        paths=paths,
+        cutoff=cutoff,
+    )
+    if target is None:
+        return (dist, paths)
+    try:
+        return (dist[target], paths[target])
+    except KeyError:
+        raise nx.NetworkXNoPath(&quot;No path to {}.&quot;.format(target))
+
+
+<div class="viewcode-block" id="sympy_dijkstras"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.networkx.sympy_dijkstras">[docs]</a>def sympy_dijkstras(
+    g, source, f, target=None, accumulators=None, init=None, cutoff=None
+):
+    &quot;&quot;&quot;Computes the shortest path distance and path for a graph using an
+    arbitrary function.
+
+    :param g:
+    :param source:
+    :param f:
+    :param target:
+    :param accumulators:
+    :param init:
+    :param cutoff:
+    :return:
+    &quot;&quot;&quot;
+    dist, path = sympy_multisource_dijkstras(
+        g,
+        [source],
+        f,
+        target=target,
+        accumulators=accumulators,
+        init=init,
+        cutoff=cutoff,
+    )
+    return dist, path</div>
+
+
+def _multisource_dijkstra(
+    g,
+    sources,
+    f,
+    target=None,
+    accumulators=None,
+    init=None,
+    cutoff=None,
+    paths=None,
+    pred=None,
+):
+    accumulators = accumulators or {}
+    init = init or {}
+
+    # successor dictionary
+    g_succ = g._succ if g.is_directed() else g._adj
+
+    # push/pop methods to use
+    push = heappush
+    pop = heappop
+
+    # node to shortest distance, breakdown
+    dist_parts = {}
+
+    # node to shortest distance
+    dist = {}
+
+    # node to shortest distance seen
+    seen = {}
+    c = count()
+    fringe = []
+
+    # lambda function
+    func = sympify(f)
+    symbols = list([s.name for s in func.free_symbols])
+    func = lambdify(symbols, func)
+
+    # initial/default values for each symbol
+    for sym in symbols:
+        if accumulators.get(sym, &quot;sum&quot;) == &quot;sum&quot;:
+            init.setdefault(sym, 0.0)
+        elif accumulators.get(sym, &quot;product&quot;):
+            init.setdefault(sym, 1.0)
+        else:
+            raise TerrariumNetworkxError(&quot;Accumulator &#39;{}&#39; not recognized&quot;.format(sym))
+    init = np.array([init[x] for x in symbols])
+
+    # accumulator functions to each for each symbol
+    # if &#39;product&#39;, return the accumulated product
+    # else return the accumulated sum (default)
+    accu_f = []
+    for sym in symbols:
+        if accumulators.get(sym, &quot;sum&quot;) == &quot;sum&quot;:
+            accu_f.append(lambda x: np.sum(x))
+        elif accumulators[sym] == &quot;product&quot;:
+            accu_f.append(lambda x: np.prod(x))
+
+    # push the initial values for the sources
+    for source in sources:
+        if source not in g:
+            raise nx.NodeNotFound(&quot;Source {} is not in G&quot;.format(source))
+        seen[source] = func(*init)
+        push(fringe, (0, next(c), source, init))
+
+    # modified dijkstra&#39;s
+    while fringe:
+        (_, _, v, d) = pop(fringe)
+        # d np.array of values
+        if v in dist_parts:
+            continue  # already searched this node
+        dist_parts[v] = d
+        dist[v] = func(*d)
+        if v == target:
+            break
+        for u, e in g_succ[v].items():
+            # vu cost breakdown for  each symbol
+            costs = np.array([_weight_function(v, u, e, sym) for sym in symbols])
+
+            # vu_dist break down using accumulating function
+            x = np.stack([dist_parts[v], costs])
+            vu_dist_parts = []
+            for i, _x in enumerate(x.T):
+                vu_dist_parts.append(accu_f[i](_x))
+            vu_dist_parts = np.array(vu_dist_parts)
+            vu_dist = func(*vu_dist_parts)
+
+            if cutoff is not None:
+                if vu_dist &gt; cutoff:
+                    continue
+            if u in dist_parts:
+                if vu_dist &lt; dist[u]:
+                    raise ValueError(&quot;Contradictory paths found:&quot;, &quot;negative weights?&quot;)
+            elif u not in seen or vu_dist &lt; seen[u]:
+                seen[u] = func(*vu_dist_parts)
+                push(fringe, (vu_dist, next(c), u, vu_dist_parts))
+                if paths is not None:
+                    paths[u] = paths[v] + [u]
+                if pred is not None:
+                    pred[u] = v
+            elif vu_dist == seen[u]:
+                if pred is not None:
+                    pred[u].append(v)
+                    fringe = []
+    return dist
+
+
+def multipoint_shortest_path(
+    graph: nx.DiGraph,
+    nodes: List[str],
+    weight_key: str,
+    cyclic=False,
+    cyclic_sort_key=None,
+):
+    &quot;&quot;&quot;Return shortest path through nodes. If cyclic, will return the cycle
+    sorted with the &#39;lowest&#39; node at index 0. Self cycles are not supported.
+
+    :param graph: the graph
+    :param nodes: list of nodes to find path
+    :param weight_key: weight key
+    :param cyclic: whether the path is cyclic
+    :param cyclic_sort_key: the key function to use to sort the cycle (if cyclic)
+    :return:
+    &quot;&quot;&quot;
+    if cyclic_sort_key and not cyclic:
+        raise ValueError(&quot;cyclic_sort_key was provided but &#39;cyclic&#39; was False.&quot;)
+    full_path = []
+    if cyclic:
+        nodes = nodes + nodes[:1]
+    for n1, n2 in pairwise(nodes):
+        path = nx.shortest_path(graph, n1, n2, weight=weight_key)
+        full_path += path[:-1]
+    if not cyclic:
+        full_path.append(nodes[-1])
+    if cyclic:
+        return sort_cycle(full_path, cyclic_sort_key)
+    else:
+        return full_path
+
+
+def sympy_multipoint_shortest_path(
+    graph: nx.DiGraph,
+    nodes: List[str],
+    f: str,
+    accumulators: dict,
+    init=None,
+    cutoff=None,
+    cyclic=False,
+    cyclic_sort_key=None,
+):
+    if cyclic_sort_key and not cyclic:
+        raise ValueError(&quot;cyclic_sort_key was provided but &#39;cyclic&#39; was False.&quot;)
+    full_path = []
+    full_path_length = 0.0
+    if cyclic:
+        nodes = nodes + nodes[:1]
+    for n1, n2 in pairwise(nodes):
+        path_length, path = sympy_dijkstras(
+            graph,
+            f=f,
+            source=n1,
+            target=n2,
+            accumulators=accumulators,
+            init=init,
+            cutoff=cutoff,
+        )
+        full_path_length += path_length
+        full_path += path[:-1]
+    if not cyclic:
+        full_path.append(nodes[-1])
+    if cyclic:
+        return full_path_length, sort_cycle(full_path, cyclic_sort_key)
+    else:
+        return full_path_length, full_path
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -63,7 +63,7 @@ class Alignment(Sized):
             )
 
     def is_perfect_subject(self):
-        return len(self.subject_region) == self.subject_region.bontext_length
+        return len(self.subject_region) == self.subject_region.context_length
 
     def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
         """Returns a copy of the alignment between the inclusive start and end

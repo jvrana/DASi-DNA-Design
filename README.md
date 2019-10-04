@@ -1,8 +1,7 @@
 # DASi DNA Design
 
 **DASi** is an automatic DNA cloning plan designer aimed for operating on small budgets
-by focusing on material
-re-use.
+by focusing on material re-use.
 
 The software converts a nucleotide sequence, or a library of sequences, to an executable
  molecular assembly plan while

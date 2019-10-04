@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#parameters">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design.graph_builder</h1><div class="highlight"><pre>
+<span></span>import bisect
+import itertools
+from collections import namedtuple
+from typing import Iterable
+from typing import List
+from typing import Union
+
+import networkx as nx
+import numpy as np
+from more_itertools import partition
+
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentGroup
+from dasi.alignments import ComplexAlignmentGroup
+from dasi.constants import Constants
+from dasi.constants import MoleculeType
+from dasi.cost import SpanCost
+from dasi.log import logger
+from dasi.utils import bisect_between
+from dasi.utils import bisect_slice_between
+from dasi.utils import sort_with_keys
+
+AssemblyNode = namedtuple(&quot;AssemblyNode&quot;, &quot;index expandable type overhang&quot;)
+
+
+<div class="viewcode-block" id="AssemblyGraphBuilder"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.AssemblyGraphBuilder">[docs]</a>class AssemblyGraphBuilder:
+    &quot;&quot;&quot;Class that builds an AssemblyGraph from an alignment container.&quot;&quot;&quot;
+
+    COST_THRESHOLD = 10000
+
+    def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
+        self.container = alignment_container
+        if span_cost is None:
+            self.span_cost = SpanCost.default()
+        else:
+            self.span_cost = span_cost
+        self.G = None
+        self.logger = logger(self)
+
+<div class="viewcode-block" id="AssemblyGraphBuilder.add_node"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.AssemblyGraphBuilder.add_node">[docs]</a>    def add_node(self, node: AssemblyNode) -&gt; None:
+        &quot;&quot;&quot;Add node to the graph.
+
+        :param node: the assembly node to add
+        :return: None
+        &quot;&quot;&quot;
+        self.G.add_node(AssemblyNode(*node))</div>
+
+<div class="viewcode-block" id="AssemblyGraphBuilder.add_edge"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.AssemblyGraphBuilder.add_edge">[docs]</a>    def add_edge(
+        self,
+        n1: AssemblyNode,
+        n2: AssemblyNode,
+        name,
+        cost: Union[float, None],
+        material: Union[float, None],
+        time: Union[float, None],
+        efficiency: Union[float, None],
+        span: int,
+        atype: str,
+        **kwargs,
+    ):
+        &quot;&quot;&quot;Add an edge between two assembly nodes.
+
+        :param n1: src node
+        :param n2: dest node
+        :param name: name of the edge
+        :param cost: overall cost of the edge
+        :param material: material cost of the edge. Used in path calculations.
+        :param time: time cost of the edge. Used in path calculations.
+        :param efficiency: efficiency of the edge. Used in path calculations.
+        :param span: spanning distance (in bp) of the edge.
+        :param atype: alignment type of the edge.
+        :param kwargs: additional kwargs for the edge data
+        :return:
+        &quot;&quot;&quot;
+        self.G.add_edge(
+            n1,
+            n2,
+            name=name,
+            cost=cost,
+            material=material,
+            time=time,
+            efficiency=efficiency,
+            span=span,
+            type=atype,
+            type_def=MoleculeType.types[atype],
+            **kwargs,
+        )</div>
+
+    def iter_internal_edge_data(
+        self, align: Union[AlignmentGroup, ComplexAlignmentGroup]
+    ) -&gt; dict:
+        q = align.query_region
+
+        mtype = MoleculeType.types[align.type]
+        a_expand, b_expand = mtype.design
+        internal_cost = mtype.cost
+        internal_efficiency = mtype.efficiency
+
+        if q.cyclic:
+            # cyclic
+            if q.b &lt; q.a:
+                pairs = [(q.a, q.b + q.context_length), (q.a + q.context_length, q.b)]
+            else:
+                pairs = [(q.a, q.b), (q.a + q.context_length, q.b + q.context_length)]
+        else:
+            # linear
+            pairs = [(q.a, q.b)]
+
+        # nodes = []
+        # edges = []
+        for a, b in pairs:
+            if a is not None:
+                anode = (a, a_expand, &quot;A&quot;)
+                # nodes.append(anode)
+                if b is not None:
+                    bnode = (b, b_expand, &quot;B&quot;)
+                    # nodes.append(bnode)
+                    yield (
+                        anode,
+                        bnode,
+                        dict(
+                            weight=internal_cost / internal_efficiency,
+                            material=internal_cost,
+                            cost=internal_cost / internal_efficiency,
+                            name=&quot;&quot;,
+                            time=0.1,
+                            internal_or_external=&quot;internal&quot;,
+                            span=len(align.query_region),
+                            condition=(a_expand, b_expand),
+                            atype=align.type,
+                            efficiency=internal_efficiency,
+                        ),
+                    )
+                    # edges.append(edge)
+        # return nodes, edges
+
+    def add_internal_edges(
+        self, groups: List[Union[AlignmentGroup, ComplexAlignmentGroup]]
+    ):
+        for g in groups:
+            for a, b, ab_data in self.iter_internal_edge_data(g):
+                for a_overhang, b_overhang in itertools.product(
+                    [True, False], repeat=2
+                ):
+                    a_node = AssemblyNode(a[0], a[1], a[2], a_overhang)
+                    b_node = AssemblyNode(b[0], b[1], b[2], b_overhang)
+                    self.add_edge(a_node, b_node, **ab_data)
+
+    def add_external_edges(self, groups, group_keys, nodes: Iterable[AssemblyNode]):
+        if not groups:
+            return
+        query_region = groups[0].query_region
+        length = query_region.context_length
+        a_nodes, b_nodes = partition(lambda x: x.type == &quot;B&quot;, nodes)
+
+        a_nodes = sorted(a_nodes, key=lambda x: x.index)
+        b_nodes = sorted(b_nodes, key=lambda x: x.index)
+
+        a_nodes_gap, a_nodes_overhang = [
+            list(x) for x in partition(lambda x: x.overhang, a_nodes)
+        ]
+        b_nodes_gap, b_nodes_overhang = [
+            list(x) for x in partition(lambda x: x.overhang, b_nodes)
+        ]
+
+        def make_overlap_iterator(a, b):
+            &quot;&quot;&quot;Find all nodes that satisfy the below condition: b.
+
+            |--------|
+                   |-------|
+                   a
+
+            With the exception that when a.index == b.index, this is not
+            considered an overlap, but covered in the `make_gap_iterator`,
+            due to using bisect.bisect_right. Overlap is more computationally
+            intensive.
+            &quot;&quot;&quot;
+            a, akeys = sort_with_keys(a, lambda x: x.index)
+            b, bkeys = sort_with_keys(b, lambda x: x.index)
+            for _a in a:
+                i = bisect.bisect_right(bkeys, _a.index)
+                for _b in b[i:]:
+                    yield _b, _a
+
+        def make_gap_itererator(a, b):
+            &quot;&quot;&quot;Find all nodes that satisfy the below condition: b.
+
+            |--------|              |-------|              a
+            &quot;&quot;&quot;
+            a, akeys = sort_with_keys(a, lambda x: x.index)
+            b, bkeys = sort_with_keys(b, lambda x: x.index)
+
+            for _a in a:
+                i = bisect.bisect_right(bkeys, _a.index)
+                for _b in b[:i]:
+                    yield _b, _a
+
+        def make_origin_iterator(a, b):
+            a, akeys = sort_with_keys(a, lambda x: x.index)
+            b, bkeys = sort_with_keys(b, lambda x: x.index)
+
+            i = bisect.bisect_right(akeys, length)
+            j = bisect.bisect_left(bkeys, length)
+            for _a in a[:i]:
+                for _b in b[j:]:
+                    yield _b, _a
+
+        overlap_iter = make_overlap_iterator(a_nodes_overhang, b_nodes_overhang)
+        gap_iter = make_gap_itererator(a_nodes_gap, b_nodes_gap)
+        gap_origin_iter = make_origin_iterator(a_nodes_gap, b_nodes_gap)
+        overlap_origin_iter = make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
+
+        for bnode, anode in overlap_iter:
+            self.add_overlap_edge(bnode, anode, query_region, group_keys, groups)
+
+        for bnode, anode in gap_iter:
+            self.add_gap_edge(bnode, anode, query_region)
+
+        for bnode, anode in overlap_origin_iter:
+            self.add_overlap_edge(
+                bnode, anode, query_region, group_keys, groups, origin=True
+            )
+        for bnode, anode in gap_origin_iter:
+            self.add_gap_edge(bnode, anode, query_region, origin=True)
+        self._batch_add_edge_costs()
+
+    def add_overlap_edge(
+        self, bnode, anode, query_region, group_keys, groups, origin=False
+    ):
+        # TODO: PRIORITY this step is extremely slow
+        q = query_region.new(anode.index, bnode.index)
+        if len(q) == 0:
+            return
+        if not origin:
+            i, j = bisect_between(group_keys, q.a, q.b)
+            filtered_groups = groups[i:j]
+        else:
+            i = bisect.bisect_left(group_keys, q.a)
+            j = bisect.bisect_right(group_keys, q.b)
+            filtered_groups = groups[i:] + groups[:j]
+        if filtered_groups:
+            if not origin:
+                span = anode.index - bnode.index
+            else:
+                span = -len(q)
+            if span &lt;= 0:
+                condition = (bnode.expandable, anode.expandable)
+                self.add_edge(
+                    bnode,
+                    anode,
+                    weight=None,
+                    cost=None,
+                    material=None,
+                    time=None,
+                    efficiency=None,
+                    internal_or_external=&quot;external&quot;,
+                    name=Constants.OVERLAP,
+                    atype=Constants.OVERLAP,
+                    condition=condition,
+                    span=span,
+                )
+
+    def add_gap_edge(self, bnode, anode, query_region, origin=False):
+        if not origin:
+            span = anode.index - bnode.index
+        else:
+            span = len(query_region.new(bnode.index, anode.index))
+        if span &gt;= 0:
+            condition = (bnode.expandable, anode.expandable)
+            # cost_dict = self._get_cost(span, condition)
+            self.add_edge(
+                bnode,
+                anode,
+                weight=None,
+                cost=None,
+                material=None,
+                time=None,
+                efficiency=None,
+                internal_or_external=&quot;external&quot;,
+                name=Constants.GAP,
+                atype=Constants.GAP,
+                condition=condition,
+                span=span,
+            )
+
+<div class="viewcode-block" id="AssemblyGraphBuilder._batch_add_edge_costs"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.AssemblyGraphBuilder._batch_add_edge_costs">[docs]</a>    def _batch_add_edge_costs(self):
+        &quot;&quot;&quot;Add costs to all edges at once batch.
+
+        :return:
+        &quot;&quot;&quot;
+        # add external_edge_costs
+        edge_dict = {}
+        for n1, n2, edata in self.G.edges(data=True):
+            if edata[&quot;cost&quot;] is None:
+                condition = edata[&quot;condition&quot;]
+                edge_dict.setdefault(condition, []).append(
+                    ((n1, n2), edata, edata[&quot;span&quot;])
+                )
+        edges_to_remove = []
+
+        for condition, info in edge_dict.items():
+            edges, edata, spans = zip(*info)
+            npdf = self.span_cost.cost(np.array(spans), condition)
+            data = npdf.aggregate(np.vstack)
+            cost_i = [i for i, col in enumerate(npdf.columns) if col == &quot;cost&quot;][0]
+            self.logger.debug(data.shape)
+            # update each edge
+
+            for i, (e, edge) in enumerate(zip(edata, edges)):
+                if data[cost_i, i] &gt; self.COST_THRESHOLD:
+                    edges_to_remove.append(edge)
+                else:
+                    _d = {c: data[col_i, i] for col_i, c in enumerate(npdf.columns)}
+                    e.update(_d)
+        self.G.remove_edges_from(edges_to_remove)</div>
+
+    def _get_cost(self, bp, ext):
+        data = self.span_cost(bp, ext).data
+        return {k: v[0] for k, v in data.items()}
+
+    def build_assembly_graph(self) -&gt; nx.DiGraph:
+
+        self.G = nx.DiGraph(name=&quot;Assembly Graph&quot;)
+
+        groups, group_keys = sort_with_keys(
+            self.container.get_groups_by_types(
+                [
+                    Constants.PCR_PRODUCT,
+                    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+                    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+                    Constants.PCR_PRODUCT_WITH_PRIMERS,
+                    Constants.FRAGMENT,
+                ]
+            ),
+            key=lambda g: g.query_region.a,
+        )
+
+        self.add_internal_edges(groups)
+        self.add_external_edges(groups, group_keys, self.G.nodes())
+
+        nx.freeze(self.G)
+        return self.G</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

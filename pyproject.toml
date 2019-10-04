@@ -45,6 +45,7 @@ nbsphinx = "^0.4.2"
 recommonmark = "^0.6.0"
 sphinx_autodoc_typehints = "^1.8"
 flake8 = "^3.7"
+autodocsumm = "^0.1.11"
 
 [tool.black]
 line-length = 88

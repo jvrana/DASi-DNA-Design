@@ -3,6 +3,7 @@ from abc import ABC
 from abc import abstractmethod
 from functools import partial
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 import msgpack
@@ -157,7 +158,7 @@ class PrimerCostBuilder(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, primer_params: PrimerParams):
+    def from_params(cls, primer_params: Type[PrimerParams]):
         return cls(
             pdf=primer_params.primer_df,
             edf=primer_params.eff_df,

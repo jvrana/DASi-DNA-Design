@@ -503,7 +503,7 @@ class Span(Container, Iterable, Sized):
         """
         return [slice(*r) for r in self.ranges()]
 
-    def get_slice_iter(self, x: Iterable):
+    def get_slice_iter(self, x: List):
         """Use the region to slice the iterable, returning another generator.
 
         :param x: the iterable to slice
@@ -511,12 +511,13 @@ class Span(Container, Iterable, Sized):
         """
         return chain(*[x[s] for s in self.slices()])
 
-    def get_slice(self, x: Iterable, as_type=None) -> Any:
+    def get_slice(self, x: List, as_type=None) -> Any:
         """Use the region to slice the iterable, returning a iterable of the
         same type as 'x'. If as_type is provided, the iterable will be
         typecast.
 
         :param x: the iterable to slice
+        :param as_type: type to convert the iterable into
         :return: Any
         """
         if as_type is None:
@@ -675,7 +676,7 @@ class Span(Container, Iterable, Sized):
         elif self in other:
             return (self.new(self._a, self._a),)
         else:
-            return ((self[:]),)
+            return (self[:],)
 
     def intersection(self, other: Span) -> Span:
         """Return the span inersection between this span and the other span."""
@@ -760,9 +761,9 @@ class Span(Container, Iterable, Sized):
         :rtype: tuple
         """
         if len(self) >= self._context_length:
-            return (self[self._a, self._a], None)
+            return self[self._a, self._a], None
         if self._cyclic:
-            return (self[self._b, self._a], None)
+            return self[self._b, self._a], None
         else:
             return self[:, self._a], self[self._b, :]
 
@@ -816,7 +817,7 @@ class Span(Container, Iterable, Sized):
     def __len__(self) -> int:
         return sum([r[1] - r[0] for r in self.ranges()])
 
-    def __iter__(self) -> Generator(int):
+    def __iter__(self) -> Generator[int]:
         for i in chain(*[range(*x) for x in self.ranges()]):
             yield i
 
@@ -914,7 +915,7 @@ class Span(Container, Iterable, Sized):
 
 
 class EmptySpan(Span):
-    def ranges(self):
+    def ranges(self, *args) -> List[Tuple[int, int]]:
         return [(self.bounds()[0], self.bounds()[0])]
 
 

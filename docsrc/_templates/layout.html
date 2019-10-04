@@ -1,26 +1,41 @@
 {% extends "!layout.html" %}
 {% block header %}
-    {% if pagename == 'index' %}
-        <div class="container">
-            <div class="jumbotron">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h1>DASi</h1>
-                    </div>
-                    <div class="col-md-7">
-                    </div>
-                </div>
-                <p><a href="https://www.aquarium.bio/">Aquarium's</a> Python API for
-                    planning, executing, and analyzing scientific experiments.
-                </p>
-                <hr class="my-4">
-                <span>
-                  <a class="btn btn-primary btn-lg" href=basics/getting_started.html role="button">Get started with DASi</a>
-
-              </span>
-
+{% if pagename == 'index' %}
+    <script>
+    $(function(){
+      $("#includedContent").load("index.html");
+    });
+    </script>
+<div class="container">
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-3">
+                <h1>DASi</h1>
+            </div>
+            <div class="col-md-7">
             </div>
         </div>
-        {{ super() }}
-    {% endif %}
+        <p>A Python toolkit for automated <b>D</b>NA <b>AS</b>sembly.
+        </p>
+        <hr class="my-4">
+        <div class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab">Homology Cloning</a></li>
+                <li><a href="#tab2" data-toggle="tab">Golden-Gate</a></li>
+                <li><a href="#tab2" data-toggle="tab">Library Design</a></li>
+                <li><a href="#tab2" data-toggle="tab">Combinatorial Design</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab1">
+                    {% include 'homology_cloning.html' %}
+                </div>
+                <div class="tab-pane" id="tab2">
+                    <p>I'm section 2</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ super() }}
+{% endif %}
 {% endblock %}

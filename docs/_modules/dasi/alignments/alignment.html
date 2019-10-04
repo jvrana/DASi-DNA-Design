@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.alignments.alignment &#8212; dasi 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#parameters">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.alignments.alignment</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;Alignments.&quot;&quot;&quot;
+from __future__ import annotations
+
+from collections.abc import Sized
+from typing import List
+
+from dasi.exceptions import AlignmentException
+from dasi.utils import Region
+
+ALIGNMENT_SLOTS = [
+    &quot;query_region&quot;,
+    &quot;subject_region&quot;,
+    &quot;type&quot;,
+    &quot;query_key&quot;,
+    &quot;subject_key&quot;,
+    &quot;grouping_tags&quot;,
+]
+
+
+<div class="viewcode-block" id="Alignment"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.Alignment">[docs]</a>class Alignment(Sized):
+    &quot;&quot;&quot;A pair of Regions that &#39;aligns&#39; two regions of DNA sequences. All
+    regions must always be the same length.
+
+    A subregion of both regions may be taken.
+    &quot;&quot;&quot;
+
+    __slots__ = ALIGNMENT_SLOTS[:]
+
+    def __init__(
+        self,
+        query_region: Region,
+        subject_region: Region,
+        atype: str,
+        query_key: str,
+        subject_key: str,
+    ):
+        &quot;&quot;&quot;Makes an alignment between two regions of sequences. Validates the
+        regions are the same length.
+
+        :param query_region: Query region this alignment aligns to
+        :param subject_region: Subject region this alignment aligns to.
+        :param atype: Type of alignment
+        :param query_key: The record identifier for the query
+        :param subject_key: The record identifier for the subject
+        &quot;&quot;&quot;
+        self.query_region = query_region
+        self.subject_region = subject_region
+        self.validate()
+        self.type = atype
+        self.query_key = query_key
+        self.subject_key = subject_key
+        self.grouping_tags = {}
+
+    def validate(self):
+        if not len(self.query_region) == len(self.subject_region):
+            raise AlignmentException(
+                &quot;Regions must have the same size: {} vs {}. {} vs {}&quot;.format(
+                    len(self.query_region),
+                    len(self.subject_region),
+                    self.query_region,
+                    self.subject_region,
+                )
+            )
+
+    def is_perfect_subject(self):
+        return len(self.subject_region) == self.subject_region.context_length
+
+<div class="viewcode-block" id="Alignment.sub_region"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.Alignment.sub_region">[docs]</a>    def sub_region(self, qstart: int, qend: int, atype=None) -&gt; Alignment:
+        &quot;&quot;&quot;Returns a copy of the alignment between the inclusive start and end
+        relative to the query region.
+
+        :param qstart: start of the query sub region
+        :param qend: end of the query sub region
+        :param atype: optional type of alignment to return
+        :return:
+        &quot;&quot;&quot;
+        query_copy = self.query_region.sub(qstart, qend)
+        i = self.query_region.i(qstart)
+        if i &lt; 0:
+            i = self.query_region.i(qstart + self.query_region.context_length)
+        if i == len(self.subject_region):
+            i = 0
+        subject_copy = self.subject_region[i : i + len(query_copy)]
+
+        if atype is None:
+            atype = self.type
+        self.validate()
+        return self.__class__(
+            query_region=query_copy,
+            subject_region=subject_copy,
+            atype=atype,
+            query_key=self.query_key,
+            subject_key=self.subject_key,
+        )</div>
+
+<div class="viewcode-block" id="Alignment.copy"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.Alignment.copy">[docs]</a>    def copy(self, atype=None) -&gt; Alignment:
+        &quot;&quot;&quot;Do shallow copy of this alignment. Query and subject regions between
+        this and the copied alignment will be identical.
+
+        :param atype: new alignment type
+        :return:
+        &quot;&quot;&quot;
+        if atype is None:
+            atype = self.type
+        return self.__class__(
+            self.query_region,
+            self.subject_region,
+            atype,
+            self.query_key,
+            self.subject_region,
+        )</div>
+
+    def __len__(self) -&gt; int:
+        return len(self.query_region)
+
+    def __str__(self) -&gt; str:
+        return &quot;&lt;{} {} {} {}&gt;&quot;.format(
+            self.__class__.__name__, self.type, self.query_region, self.subject_region
+        )
+
+    def __repr__(self) -&gt; str:
+        return str(self)</div>
+
+
+<div class="viewcode-block" id="AlignmentGroupBase"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.AlignmentGroupBase">[docs]</a>class AlignmentGroupBase:
+    &quot;&quot;&quot;A representative Alignment representing a group of alignments.&quot;&quot;&quot;
+
+    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
+
+    def __init__(
+        self, alignments: List[Alignment], group_type: str, name=None, query_region=None
+    ):
+        self.query_region = query_region
+        self.alignments = alignments
+        self.name = name
+        self.type = group_type
+
+    @property
+    def query_key(self) -&gt; str:
+        &quot;&quot;&quot;Return the query key associated with the query region.&quot;&quot;&quot;
+        return self.alignments[0].query_key
+
+    @property
+    def subject_regions(self) -&gt; List[Region]:
+        &quot;&quot;&quot;Return the list of subject regions in this alignment group.&quot;&quot;&quot;
+        return [a.subject_region for a in self.alignments]
+
+    @property
+    def subject_keys(self) -&gt; List[str]:
+        &quot;&quot;&quot;Return the list of subject keys in this alignment group.&quot;&quot;&quot;
+        return [a.subject_key for a in self.alignments]
+
+<div class="viewcode-block" id="AlignmentGroupBase.sub_region"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.AlignmentGroupBase.sub_region">[docs]</a>    def sub_region(self, qstart: int, qend: int, atype: str) -&gt; AlignmentGroupBase:
+        &quot;&quot;&quot;Produce a new alignment group with sub-regions of the query region
+        and subject regions at the specified new indicies.&quot;&quot;&quot;
+        alignments_copy = []
+        for a in self.alignments:
+            alignments_copy.append(a.sub_region(qstart, qend))
+        for a in alignments_copy:
+            a.type = atype
+        return self.__class__(
+            alignments=alignments_copy, group_type=atype, name=&quot;subregion&quot;
+        )</div>
+
+    def __repr__(self) -&gt; str:
+        return &quot;&lt;AlignmentGroup {}&gt;&quot;.format(self.query_region)</div>
+
+
+<div class="viewcode-block" id="AlignmentGroup"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.AlignmentGroup">[docs]</a>class AlignmentGroup(AlignmentGroupBase):
+    &quot;&quot;&quot;A representative Alignment representing a group of alignments sharing
+    the same starting and ending position for a query sequence.&quot;&quot;&quot;
+
+    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
+
+    def __init__(self, alignments: List[Alignment], group_type: str, name=None):
+        super().__init__(
+            alignments=alignments,
+            group_type=group_type,
+            name=name,
+            query_region=alignments[0].query_region,
+        )</div>
+
+
+<div class="viewcode-block" id="ComplexAlignmentGroup"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup">[docs]</a>class ComplexAlignmentGroup(AlignmentGroupBase):
+    &quot;&quot;&quot;A representation of an alignment in which the query region is the
+    concatenation of the underlying alignments provided.&quot;&quot;&quot;
+
+    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
+
+    def __init__(self, alignments: List[Alignment], group_type: str):
+        query_region = alignments[0].query_region
+        query_region = query_region.new(
+            alignments[0].query_region.a, alignments[-1].query_region.b
+        )
+        super().__init__(
+            alignments=alignments, group_type=group_type, query_region=query_region
+        )</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

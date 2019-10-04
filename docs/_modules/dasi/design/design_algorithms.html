@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.design_algorithms &#8212; dasi 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#cost-calculations">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#parameters">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design.design_algorithms</h1><div class="highlight"><pre>
+<span></span>import bisect
+from multiprocessing import Pool
+from typing import List
+from typing import Tuple
+
+import networkx as nx
+import numpy as np
+
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import AlignmentContainerFactory
+from dasi.cost import SpanCost
+from dasi.design.graph_builder import AssemblyGraphBuilder
+from dasi.exceptions import DasiDesignException
+from dasi.utils import sort_with_keys
+from dasi.utils.networkx import sympy_floyd_warshall
+from dasi.utils.networkx import sympy_multipoint_shortest_path
+
+# definition of how to compute path length
+# c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes &#39;material&#39;
+# and &#39;efficiency&#39; for a given path
+path_length_config = {
+    &quot;f&quot;: &quot;material / efficiency&quot;,
+    &quot;accumulators&quot;: {&quot;efficiency&quot;: &quot;product&quot;},
+}
+
+
+<div class="viewcode-block" id="_check_paths"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._check_paths">[docs]</a>def _check_paths(paths: List[List[tuple]]) -&gt; None:
+    &quot;&quot;&quot;Validates a path to check for duplicate nodes.
+
+    :param paths:
+    :return:
+    &quot;&quot;&quot;
+    invalid_paths = []
+    for path in paths:
+        lastseen = path[0][2]
+        for p in path[1:]:
+            if p[2] == lastseen:
+                invalid_paths.append(path)
+                break
+            lastseen = p[2]
+    if invalid_paths:
+        raise DasiDesignException(
+            &quot;There are {} invalid paths:\n{}\n...{} more&quot;.format(
+                len(invalid_paths),
+                &quot;\n&quot;.join([str(x) for x in invalid_paths[:5]]),
+                max(len(invalid_paths) - 5, 0),
+            )
+        )</div>
+
+
+def _all_pairs_shortest_path(graph, nodelist) -&gt; np.ndarray:
+    return sympy_floyd_warshall(
+        graph,
+        f=path_length_config[&quot;f&quot;],
+        accumulators=path_length_config[&quot;accumulators&quot;],
+        nodelist=nodelist,
+        dtype=np.float64,
+    )
+
+
+<div class="viewcode-block" id="_multinode_to_shortest_path"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._multinode_to_shortest_path">[docs]</a>def _multinode_to_shortest_path(graph, nodes, cyclic) -&gt; List[tuple]:
+    &quot;&quot;&quot;Estimate the shortest path that touches the specified nodes.&quot;&quot;&quot;
+    path_length, path = sympy_multipoint_shortest_path(
+        graph,
+        nodes,
+        f=path_length_config[&quot;f&quot;],
+        accumulators=path_length_config[&quot;accumulators&quot;],
+        cyclic=cyclic,
+    )
+    return path</div>
+
+
+<div class="viewcode-block" id="_collect_cycle_endpoints"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._collect_cycle_endpoints">[docs]</a>def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -&gt; List[tuple]:
+    &quot;&quot;&quot;Use the floyd-warshall algorithm to compute the shortest path endpoints.
+
+    :param graph: the networkx graph
+    :param length: the size of the query sequence
+    :return:
+    &quot;&quot;&quot;
+    nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
+    node_to_i = {v: i for i, v in enumerate(nodelist)}
+    weight_matrix = _all_pairs_shortest_path(graph, nodelist)
+    endpoints = []
+
+    def bisect_iterator(nlist, nkeys):
+        _i = bisect.bisect_right(nkeys, length)
+        for i, A in enumerate(nlist[:_i]):
+            _j = bisect.bisect_left(nkeys, A.index + length)
+            for B in nlist[_j:]:
+                if B.type == &quot;B&quot;:
+                    j = node_to_i[B]
+                    yield i, j, A, B
+
+    pair_iterator = bisect_iterator(nodelist, nodekeys)
+    for i, j, A, B in pair_iterator:
+        a = weight_matrix[i, j]
+        b = weight_matrix[j, i]
+        if a != np.inf and b != np.inf:
+            x = ((A, B), (a, b), a + b)
+            endpoints.append(x)
+
+    endpoints = sorted(endpoints, key=lambda x: (x[-1], x[0]))
+    return endpoints</div>
+
+
+<div class="viewcode-block" id="_nodes_to_fullpaths"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._nodes_to_fullpaths">[docs]</a>def _nodes_to_fullpaths(
+    graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
+) -&gt; List[List[Tuple]]:
+    &quot;&quot;&quot;Recover full paths from cycle endpoints.
+
+    :param graph:
+    :param cycle_endpoints:
+    :param n_paths:
+    :return:
+    &quot;&quot;&quot;
+    unique_cyclic_paths = []
+    for nodes in cycle_endpoints:
+        if n_paths is not None and len(unique_cyclic_paths) &gt;= n_paths:
+            break
+        path = _multinode_to_shortest_path(graph, nodes, cyclic)
+        if path not in unique_cyclic_paths:
+            unique_cyclic_paths.append(path)
+    return unique_cyclic_paths</div>
+
+
+<div class="viewcode-block" id="_collect_optimized_paths"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._collect_optimized_paths">[docs]</a>def _collect_optimized_paths(
+    graph: nx.DiGraph, length: int, cyclic: bool, n_paths=None
+) -&gt; List[List[tuple]]:
+    &quot;&quot;&quot;Collect minimum cycles or linear paths from a graph.
+
+    :param graph: the networkx graph representing the assembly graph
+    :param length: length of the query
+    :param cyclic: whether to search for a cyclic assembly
+    :param n_paths: maximum number of paths to return
+    :return:
+    &quot;&quot;&quot;
+    if cyclic:
+        nodes = _collect_cycle_endpoints(graph, length=length)
+    else:
+        raise NotImplementedError(&quot;Linear assemblies are not yet implemented.&quot;)
+    paths = _nodes_to_fullpaths(
+        graph, tuple(n[0] for n in nodes), cyclic=cyclic, n_paths=n_paths
+    )
+    _check_paths(paths)
+    return paths</div>
+
+
+<div class="viewcode-block" id="optimize_graph"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms.optimize_graph">[docs]</a>def optimize_graph(
+    graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
+) -&gt; List[List[tuple]]:
+    &quot;&quot;&quot;Optimize the graph associated with the specified query_key.&quot;&quot;&quot;
+    # self.logger.info(&quot;Optimizing {}&quot;.format(query_key))
+    paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
+    return paths</div>
+
+
+def _multiprocessing_optimize_graph(
+    args: Tuple[nx.DiGraph, int, bool, int]
+) -&gt; List[List[tuple]]:
+    return optimize_graph(args[0], args[1], args[2], args[3])
+
+
+<div class="viewcode-block" id="multiprocessing_optimize_graph"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms.multiprocessing_optimize_graph">[docs]</a>def multiprocessing_optimize_graph(
+    graphs: List[nx.DiGraph],
+    query_lengths: List[int],
+    cyclics: List[bool],
+    n_paths: int,
+    n_jobs: int,
+):
+    &quot;&quot;&quot;Optimize graphs using multiprocessing.&quot;&quot;&quot;
+    args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
+
+    with Pool(processes=min(n_jobs, len(graphs))) as pool:  # start 4 worker processes
+        paths = pool.map(_multiprocessing_optimize_graph, args)
+    return paths</div>
+
+
+<div class="viewcode-block" id="assemble_graph"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms.assemble_graph">[docs]</a>def assemble_graph(
+    container: AlignmentContainer, span_cost: SpanCost
+) -&gt; Tuple[nx.DiGraph, AlignmentContainer]:
+    &quot;&quot;&quot;Build an assembly graph for a specified query.&quot;&quot;&quot;
+    container.expand(expand_overlaps=True, expand_primers=True)
+    container.freeze()
+    graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
+    graph = graph_builder.build_assembly_graph()
+    assert graph.number_of_edges()
+    return graph, container</div>
+
+
+def _multiprocessing_assemble_graph(
+    arg: Tuple[AlignmentContainer, SpanCost]
+) -&gt; Tuple[nx.DiGraph, AlignmentContainer]:
+    return assemble_graph(arg[0], arg[1])
+
+
+<div class="viewcode-block" id="multiprocessing_assemble_graph"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms.multiprocessing_assemble_graph">[docs]</a>def multiprocessing_assemble_graph(
+    container_factory: AlignmentContainerFactory, span_cost: SpanCost, n_jobs: int
+) -&gt; List[nx.DiGraph]:
+    &quot;&quot;&quot;Assemble graphs using multiprocessing.&quot;&quot;&quot;
+    query_keys = container_factory.alignments.keys()
+    containers = [container_factory.containers()[k] for k in query_keys]
+
+    args = [(container, span_cost) for container in containers]
+    with Pool(
+        processes=min(n_jobs, len(containers))
+    ) as pool:  # start 4 worker processes
+        graphs, expanded_containers = zip(
+            *pool.map(_multiprocessing_assemble_graph, args)
+        )
+
+    # update container_factory alignments
+    new_alignments = {
+        key: container.alignments
+        for key, container in zip(query_keys, expanded_containers)
+    }
+    container_factory.set_alignments(new_alignments)
+    return graphs</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

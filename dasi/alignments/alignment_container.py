@@ -399,7 +399,7 @@ class AlignmentContainer(Sized):
         return allgroups
 
     @property
-    def types(self) -> Tuple[Any]:
+    def types(self) -> Tuple[Any, ...]:
         """Return all valid types.
 
         :return:

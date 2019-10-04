@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pprint
+from collections import ItemsView
 from collections import OrderedDict
 from collections.abc import Iterable
 from collections.abc import Mapping
@@ -271,7 +272,7 @@ class NumpyDataFrame(Mapping):
     def apply(
         self,
         func: Callable,
-        *args: Tuple[Any, ...],
+        *args,
         astype=None,
         preprocess=None,
         inplace=False,
@@ -333,6 +334,7 @@ class NumpyDataFrame(Mapping):
     def append(self, other: NumpyDataFrame) -> NumpyDataFrame:
         """Append the contents of the other df to this df."""
         self.group_apply((other,), np.hstack)
+        return self
 
     def fill_value(self, cols: Iterable[str], value: Any) -> None:
         """Create new columns, if they are missing, and fill them with the
@@ -432,7 +434,7 @@ class NumpyDataFrame(Mapping):
             return pd.DataFrame(self.apply(np.squeeze).data)
         return pd.DataFrame(self.data)
 
-    def update(self, data: Dict[str, np.ndarray], apply=None):
+    def update(self, data: Union[NumpyDataFrame, Dict[str, np.ndarray]], apply=None):
         """Update the df from a dict or another df."""
         if issubclass(type(data), NumpyDataFrame):
             data = data.data
@@ -442,7 +444,7 @@ class NumpyDataFrame(Mapping):
                 self.apply(apply)
             self.validate()
 
-    def items(self) -> Generator[str, np.ndarray]:
+    def items(self) -> ItemsView[str, np.ndarray]:
         """Iterate key: arr for the the underlying data dict."""
         return self.data.items()
 
@@ -495,7 +497,7 @@ class NumpyDataFrame(Mapping):
             return self.apply(np.sum, preprocess=lambda x: (x, other))
         return self.stack([self, other], axis=1).apply(np.sum, axis=1)
 
-    def __mul__(self, other: NumpyDataFrame) -> NumpyDataFrame:
+    def __mul__(self, other: Union[int, float]) -> NumpyDataFrame:
         if not issubclass(type(other), NumpyDataFrame):
             other = np.array([other] * self.shape[0])
             return self.apply(np.multiply, other)

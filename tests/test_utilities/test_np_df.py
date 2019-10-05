@@ -232,3 +232,39 @@ class TestOperations:
     def test_sub_df(self, a):
         df = a - a
         assert np.all(df.data["A"] == np.arange(10) - np.arange(10))
+
+
+@pytest.mark.parametrize("shape", [tuple(), (1,), (5,), (1, 5), (5, 1), (5, 5)])
+def test_can_slice(shape):
+    a = NumpyDataFrame({"A": np.ones(shape), "B": np.zeros(shape)})
+    if len(shape) == 0:
+        with pytest.raises(IndexError):
+            a[0]
+    else:
+        assert a[0] is not None
+
+
+@pytest.mark.parametrize("shape", [tuple(), (1,), (5,), (1, 5), (5, 1), (5, 5)])
+def test_str(shape):
+    a = NumpyDataFrame({"A": np.ones(shape), "B": np.zeros(shape)})
+    print(str(a))
+
+
+@pytest.mark.parametrize("shape", [tuple(), (1,), (5,), (1, 5), (5, 1), (5, 5)])
+def test_repr(shape):
+    a = NumpyDataFrame({"A": np.ones(shape), "B": np.ones(shape)})
+    print(a.__repr__())
+
+
+@pytest.mark.parametrize("shape", [tuple(), (1,), (5,), (1, 5), (5, 1)])
+def test_to_df(shape):
+    a = NumpyDataFrame({"A": np.ones(shape), "B": np.zeros(shape)})
+    assert a.shape == shape
+    print(a.to_df())
+
+
+@pytest.mark.parametrize("shape", [(2, 5), (5, 2)])
+def test_to_df_raises(shape):
+    a = NumpyDataFrame({"A": np.ones(shape), "B": np.zeros(shape)})
+    with pytest.raises(NumpyDataFrameException):
+        a.to_df()

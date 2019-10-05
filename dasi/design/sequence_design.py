@@ -74,11 +74,14 @@ def design_pcr_product_primers(
     # graph = assembly.graph
     # successors = graph.successors(n1)
     # predecessors = graph.predecessors(n2)
-
+    #
     # edge = graph[n1][n2]
     # sedge = graph[n2][successors[0]]
     # pedge = graph[predecessors[0]][n1]
-
-    # the left and right extensions are determined by the pred and succ edges.
+    #
+    # # the left and right extensions are determined by the pred and succ edges.
     # left = edata_to_npdf(pedge, span_cost)
     # right = edata_to_npdf(sedge, span_cost)
+    # print(edge)
+    # print(left)
+    # print(right)

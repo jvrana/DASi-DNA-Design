@@ -7,7 +7,6 @@ from itertools import zip_longest
 from typing import Dict
 from typing import Generator
 from typing import List
-from typing import Sized
 from typing import Tuple
 from typing import Union
 

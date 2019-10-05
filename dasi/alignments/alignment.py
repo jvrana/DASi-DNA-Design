@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Sized
 from typing import List
+from typing import Union
 
 from dasi.exceptions import AlignmentException
 from dasi.utils import Region
@@ -125,15 +126,21 @@ class Alignment(Sized):
 class AlignmentGroupBase:
     """A representative Alignment representing a group of alignments."""
 
-    __slots__ = ["query_region", "alignments", "name", "type"]
+    __slots__ = ["query_region", "alignments", "name", "type", "meta"]
 
     def __init__(
-        self, alignments: List[Alignment], group_type: str, name=None, query_region=None
+        self,
+        alignments: List[Alignment],
+        group_type: str,
+        name: str = None,
+        query_region: Region = None,
+        meta: dict = None,
     ):
         self.query_region = query_region
         self.alignments = alignments
         self.name = name
         self.type = group_type
+        self.meta = meta
 
     @property
     def query_key(self) -> str:
@@ -172,12 +179,19 @@ class AlignmentGroup(AlignmentGroupBase):
 
     __slots__ = ["query_region", "alignments", "name", "type"]
 
-    def __init__(self, alignments: List[Alignment], group_type: str, name=None):
+    def __init__(
+        self,
+        alignments: List[Alignment],
+        group_type: str,
+        name: str = None,
+        meta: dict = None,
+    ):
         super().__init__(
             alignments=alignments,
             group_type=group_type,
             name=name,
             query_region=alignments[0].query_region,
+            meta=meta,
         )
 
 
@@ -185,13 +199,16 @@ class ComplexAlignmentGroup(AlignmentGroupBase):
     """A representation of an alignment in which the query region is the
     concatenation of the underlying alignments provided."""
 
-    __slots__ = ["query_region", "alignments", "name", "type"]
+    __slots__ = ["query_region", "alignments", "name", "type", "meta"]
 
-    def __init__(self, alignments: List[Alignment], group_type: str):
+    def __init__(self, alignments: List[Alignment], group_type: str, meta: dict = None):
         query_region = alignments[0].query_region
         query_region = query_region.new(
             alignments[0].query_region.a, alignments[-1].query_region.b
         )
         super().__init__(
-            alignments=alignments, group_type=group_type, query_region=query_region
+            alignments=alignments,
+            group_type=group_type,
+            query_region=query_region,
+            meta=meta,
         )

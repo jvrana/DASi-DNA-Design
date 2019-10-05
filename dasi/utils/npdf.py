@@ -217,6 +217,13 @@ class NumpyDataFrame(Mapping):
                     self.__class__, keys_and_shapes
                 )
             )
+        for k, v in self.data.items():
+            if not issubclass(type(v), np.ndarray):
+                raise NumpyDataFrameException(
+                    "{cls} only supports {typ}, not {x}".format(
+                        cls=self.__class__.__name__, typ=np.ndarray, x=type(v)
+                    )
+                )
 
     def prefix(self, s: str, cols=None, inplace=False) -> NumpyDataFrame:
         """Adds a prefix to all of the column names and returns a new
@@ -428,11 +435,21 @@ class NumpyDataFrame(Mapping):
         """Return the column indexer."""
         return NumpyDataFrameIndexer(self)
 
-    def to_df(self, squeeze=True) -> pd.DataFrame:
-        """Attempt to convert the df to a pandas.DataFrame."""
-        if squeeze:
-            return pd.DataFrame(self.apply(np.squeeze).data)
-        return pd.DataFrame(self.data)
+    def to_df(self, force=True) -> pd.DataFrame:
+        """Force the NumpyDataFrame into a pandas.DataFrame."""
+        print(self.shape)
+        x = self
+        if force:
+            if len(x.shape) >= 2:
+                x = x.apply(np.squeeze)
+            elif len(x.shape) == 0:
+                x = x.apply(np.expand_dims, axis=0)
+        if len(x.shape) > 1:
+            raise NumpyDataFrameException(
+                "Unable to force dataframe of "
+                "shape {} into a pandas.DataFrame".format(self.shape)
+            )
+        return pd.DataFrame(x.data)
 
     def update(self, data: Union[NumpyDataFrame, Dict[str, np.ndarray]], apply=None):
         """Update the df from a dict or another df."""
@@ -476,9 +493,9 @@ class NumpyDataFrame(Mapping):
             data = {k.decode(): v for k, v in data.items()}
             return cls(data)
 
-    def __getitem__(self, key: Union[int, np.ndarray]) -> NumpyDataFrame:
+    def __getitem__(self, key: Union[int, slice, np.ndarray]) -> NumpyDataFrame:
         new = self.__class__(self.data)
-        new.data = {k: v[key] for k, v in new.data.items()}
+        new.data = {k: np.array(v[key]) for k, v in new.data.items()}
         return new
 
     def __setitem__(self, key: int, val: Any):
@@ -486,7 +503,7 @@ class NumpyDataFrame(Mapping):
             v[key] = val
 
     def __len__(self) -> int:
-        return len(list(self.data.values())[0])
+        return self.shape[0]
 
     def __iter__(self) -> Generator[NumpyDataFrame]:
         for i in range(len(self)):
@@ -522,13 +539,20 @@ class NumpyDataFrame(Mapping):
         return self + -other
 
     def __str__(self) -> str:
-        stacked = self.aggregate(np.stack, axis=1)
-        return "{}\ncols={}\n{}".format(
-            self.__class__, self.columns, pprint.pformat(stacked)
-        )
+        if self.shape == tuple():
+            x = self.apply(np.expand_dims, axis=0)
+            x = x.aggregate(np.stack, axis=0).flatten()
+        else:
+            x = self.aggregate(np.stack, axis=1)
+        return "{}\ncols={}\n{}".format(self.__class__, self.columns, pprint.pformat(x))
 
     def __repr__(self) -> str:
-        return str(self)
+        return "<{cls} shape={shape} cols={cols} dtype={dtype}>".format(
+            cls=self.__class__.__name__,
+            shape=self.shape,
+            cols=self.columns,
+            dtype=list(self.data.values())[0].dtype,
+        )
 
 
 class NumpyDataFrameIndexer(Mapping):
@@ -555,6 +579,8 @@ class NumpyDataFrameIndexer(Mapping):
         del self.df.data[key]
 
     def __setitem__(self, col: str, val: np.ndarray):
+        if not issubclass(type(val), np.ndarray):
+            raise TypeError("Value must be a np.ndarray, not a {}".format(type(val)))
         self.df.data[col] = val
         self.df.validate()
 

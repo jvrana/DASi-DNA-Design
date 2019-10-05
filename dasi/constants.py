@@ -47,13 +47,18 @@ class MoleculeType:
         use_direct: bool,
         cost: float,
         efficiency=1.0,
+        synthesize=False,
     ):
         self.name = name
         self.design = design
         self.cost = cost
         self.use_direct = use_direct
+        self.synthesize = synthesize
         self.types[name] = self
         self.efficiency = efficiency
+
+    def __repr__(self):
+        return "<{} name='{}'>".format(self.__class__.__name__, self.name)
 
 
 MoleculeType(Constants.FRAGMENT, (False, False), True, 0.0, 0.98)
@@ -62,4 +67,4 @@ MoleculeType(Constants.PCR_PRODUCT_WITH_PRIMERS, (False, False), False, 10.0, 0.
 MoleculeType(Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, (True, False), False, 10.0, 0.95)
 MoleculeType(Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 10.0, 0.95)
 MoleculeType(Constants.OVERLAP, (False, False), False, 0.0, 1.0)
-MoleculeType(Constants.GAP, (False, False), False, 0.0, 1.0)
+MoleculeType(Constants.GAP, (False, False), False, 0.0, 1.0, synthesize=True)

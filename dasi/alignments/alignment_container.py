@@ -18,6 +18,7 @@ from .alignment import Alignment
 from .alignment import AlignmentGroup
 from .alignment import ComplexAlignmentGroup
 from dasi.constants import Constants
+from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
 from dasi.utils import bisect_slice_between
@@ -331,7 +332,7 @@ class AlignmentContainer(Sized):
         self.logger.info("Number of total groups: {}".format(len(self.groups())))
 
     @classmethod
-    def _new_grouping_tag(cls, alignments, atype: str, key=None):
+    def _new_grouping_tag(cls, alignments, atype: str, key=None, meta=None):
         """Make a new ordered grouping by type and a uuid.
 
         :param alignments:
@@ -351,7 +352,7 @@ class AlignmentContainer(Sized):
                 raise AlignmentContainerException(
                     "Key '{}' already exists in grouping tag".format(key)
                 )
-            a.grouping_tags[group_key] = i
+            a.grouping_tags[group_key] = i, meta
 
     @staticmethod
     def _alignment_hash(a):
@@ -367,7 +368,7 @@ class AlignmentContainer(Sized):
             if not isinstance(a, Alignment):
                 raise Exception
         for a in alignments:
-            for (uuid, atype), i in a.grouping_tags.items():
+            for (uuid, atype), (i, meta) in a.grouping_tags.items():
                 key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
         complex_groups = []
         for (uuid, atype), alist in key_to_alignments.items():

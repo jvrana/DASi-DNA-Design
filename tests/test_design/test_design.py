@@ -1,6 +1,8 @@
+import os
 import pickle
 from os.path import join
 
+import dill
 import networkx as nx
 import pytest
 from more_itertools import pairwise

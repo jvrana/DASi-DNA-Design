@@ -117,7 +117,7 @@ class CostBuilder(ABC):
                     for example, an existing right primer and flexibility to
                     design the left primer, this would be `(1, 0)`.
         :param invalidate: Whether to invalidate indicies that go beyond the provided
-                            span for the cost builder (`CostBuilder.span`). Any
+                            span for the cost builder (`CostModelBase.span`). Any
                             invalid indices cost will be set to `np.inf` and efficiency
                             to `0.0`
         :return: NumpyDataFrame representing the cost of from the input span.
@@ -129,6 +129,8 @@ class CostBuilder(ABC):
 
         # clipped index
         clipped = np.clip(index, 0, len(_span) - 1)
+        if isinstance(clipped, int):
+            index = np.array([clipped])
 
         # get junction
         jxn = self.cost_dict[ext][clipped]
@@ -144,7 +146,7 @@ class CostBuilder(ABC):
                 jxn.data["efficiency"][invalid] = 0.0
 
         # add span
-        jxn.col["span"] = bp
+        jxn.col["span"] = np.array(bp)
         return jxn
 
     def __call__(
@@ -154,7 +156,7 @@ class CostBuilder(ABC):
         return self.cost(bp, ext)
 
 
-class PrimerCostBuilder(CostBuilder):
+class PrimerCostModel(CostBuilder):
     def __init__(
         self,
         pdf: pd.DataFrame,
@@ -188,11 +190,11 @@ class PrimerCostBuilder(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, primer_params: Type[PrimerParams]) -> "PrimerCostBuilder":
+    def from_params(cls, primer_params: Type[PrimerParams]) -> "PrimerCostModel":
         """Load from :class:`dasi.cost.params.PrimerParams`.
 
         :param primer_params: parameters
-        :return: PrimerCostBuilder
+        :return: PrimerCostModel
         """
         return cls(
             pdf=primer_params.primer_df,
@@ -257,11 +259,11 @@ class PrimerCostBuilder(CostBuilder):
             )
 
 
-class SynthesisCostBuilder(CostBuilder):
+class SynthesisCostModel(CostBuilder):
     def __init__(
         self,
         sdf: pd.DataFrame,
-        primer_cost: PrimerCostBuilder,
+        primer_cost: PrimerCostModel,
         time_cost: float,
         material_modifier: float,
         step_size=10,
@@ -289,7 +291,7 @@ class SynthesisCostBuilder(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostBuilder):
+    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostModel):
         return cls(
             sdf=syn_params.synthesis_df,
             primer_cost=primer_cost,
@@ -412,8 +414,8 @@ class SpanCost(CostBuilder):
 
     @classmethod
     def default(cls):
-        primer_cost = PrimerCostBuilder.from_params(PrimerParams)
-        syn_cost = SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
+        primer_cost = PrimerCostModel.from_params(PrimerParams)
+        syn_cost = SynthesisCostModel.from_params(SynthesisParams, primer_cost)
         return cls(syn_cost)
 
     def compute(self):

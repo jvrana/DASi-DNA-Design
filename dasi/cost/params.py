@@ -9,7 +9,7 @@ class Globals:
 
 
 class PrimerParams:
-    """Primer parameters for the :class:`dasi.cost.PrimerCostBuilder`."""
+    """Primer parameters for the :class:`dasi.cost.PrimerCostModel`."""
 
     time_cost = Globals.time_cost  #: cost of a day of 'waiting'
     material_modifier = Globals.material_modifier  #: multiplier for materials cost
@@ -51,7 +51,7 @@ class PrimerParams:
 
 
 class SynthesisParams:
-    """Synthesis parameters for the :class:`dasi.cost.SynthesisCostBuilder`."""
+    """Synthesis parameters for the :class:`dasi.cost.SynthesisCostModel`."""
 
     synthesis_df = pd.DataFrame(
         [

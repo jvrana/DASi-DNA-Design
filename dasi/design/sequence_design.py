@@ -52,7 +52,20 @@ def design_primers(
         design.presets.left_sequence(lseq)
     if rseq:
         design.presets.right_sequence(rseq)
-    pairs, explain = design.run_and_optimize(5)
+    design.presets.product_size((len(region), len(region)))
+    design.PRIMER_PICK_ANYWAY = True
+    design.presets.use_overhangs()
+    design.presets.long_ok()
+    print(
+        primer3plus.utils.anneal(
+            design.SEQUENCE_TEMPLATE.value, [design.SEQUENCE_PRIMER_REVCOMP.value]
+        )
+    )
+    print(design.SEQUENCE_PRIMER.value)
+    print(design.SEQUENCE_PRIMER_REVCOMP.value)
+    print(design.SEQUENCE_INCLUDED_REGION.value)
+    print(design.SEQUENCE_TEMPLATE.value)
+    pairs, explain = design.run_and_optimize(15)
     if index is not None:
         for pair in pairs.values():
             loc = pair["LEFT"]["location"]

@@ -9,6 +9,7 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
+from dasi.alignments import AlignmentGroup
 from dasi.cost import SpanCost
 from dasi.design import Design
 from dasi.design.sequence_design import design_primers
@@ -100,26 +101,30 @@ def test_design_with_primers(here, paths, query, span_cost):
             if _i is not None and not np.isnan(_i):
                 return _i
 
-    def get_primer_extensions(graph, n1, n2):
+    def get_primer_extensions(graph, n1, n2, cyclic=True):
         successors = list(graph.successors(n2))
+        if successors:
+            sedge = graph[n2][successors[0]]
+            right = edata_to_npdf(sedge, span_cost)
+            r1 = right.data["rprimer_right_ext"]
+            r2 = right.data["right_ext"]
+            right_ext = no_none_or_nan(r2, r1)
+        elif cyclic:
+            raise Exception
+        else:
+            right_ext = 0
+
         predecessors = list(graph.predecessors(n1))
-
-        sedge = graph[n2][successors[0]]
-        pedge = graph[predecessors[0]][n1]
-
-        # the left and right extensions are determined by the pred and succ edges.
-
-        left = edata_to_npdf(pedge, span_cost)
-        right = edata_to_npdf(sedge, span_cost)
-
-        l1 = left.data["lprimer_left_ext"]
-        l2 = left.data["left_ext"]
-
-        r1 = right.data["rprimer_right_ext"]
-        r2 = right.data["right_ext"]
-
-        left_ext = no_none_or_nan(l2, l1)
-        right_ext = no_none_or_nan(r2, r1)
+        if predecessors:
+            pedge = graph[predecessors[0]][n1]
+            left = edata_to_npdf(pedge, span_cost)
+            l1 = left.data["lprimer_left_ext"]
+            l2 = left.data["left_ext"]
+            left_ext = no_none_or_nan(l2, l1)
+        elif cyclic:
+            raise Exception
+        else:
+            left_ext = 0
         return left_ext, right_ext
 
     def design_pcr_product_primers(
@@ -151,13 +156,14 @@ def test_design_with_primers(here, paths, query, span_cost):
 
             lkey, rkey = None, None
             if moltype.design == (1, 0):
-                tkey, lkey = group.subject_keys
-                region = group.alignments[0].query_region
+                tkey, rkey = group.subject_keys
+                region = group.alignments[0].subject_region
             elif moltype.design == (0, 1):
-                rkey, tkey = group.subject_keys
+                lkey, tkey = group.subject_keys
             elif moltype.design == (1, 1):
-                tkey = group.subject_keys
-                region = group.alignments[0].query_region
+                assert isinstance(group, AlignmentGroup)
+                tkey = group.subject_keys[0]
+                region = group.alignments[0].subject_region
             else:
                 raise Exception("Edge type not understood.")
 
@@ -176,11 +182,10 @@ def test_design_with_primers(here, paths, query, span_cost):
             else:
                 lrecord = None
                 lseq = None
-            print(lrecord.name)
-            print(rrecord.name)
-            print(left_ext)
-            print(right_ext)
-            design_primers(tseq, region, lseq, rseq)
+            print("DESIGNING PRIMERS!")
+            pairs, explain = design_primers(tseq, region, lseq, rseq)
+            print(explain)
+            assert pairs
 
     result = results[list(results)[0]]
     assembly = result.assemblies[0]

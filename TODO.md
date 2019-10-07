@@ -8,6 +8,7 @@
 * force parts
 * avoid repeats
 * consider design flexibility in optimization algorithm
+* primers for amplification of synthesis fragments
 
 **Possible Failure Modes**
 

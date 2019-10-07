@@ -468,3 +468,27 @@ def test_case(span_cost):
     expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
 
     check_design_result(design, expected_path)
+
+
+def test_a_reverse_pcr_fragment(span_cost):
+
+    goal = random_record(3000)
+    make_circular([goal])
+
+    t1 = (
+        random_record(2000) + goal[1000:2500].reverse_complement() + random_record(1000)
+    )
+    p1 = goal[2500 - 20 : 2510].reverse_complement()
+
+    make_linear([p1, t1])
+
+    design = Design(span_cost)
+    design.add_materials(primers=[p1], templates=[t1], queries=[goal], fragments=[])
+
+    expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
+
+    design.compile()
+    results = design.optimize()
+    result = results[list(results)[0]]
+
+    result.design_sequences()

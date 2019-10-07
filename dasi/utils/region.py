@@ -320,8 +320,9 @@ class Span(Container, Iterable, Sized):
                             are valid. If False and the starting wrap is greater than
                             the ending wrap, an IndexError is thrown.
         """
-
-        self._context_length = l
+        a = int(a)
+        b = int(b)
+        self._context_length = int(l)
         self._index = index
         self._cyclic = cyclic
         self._strict = strict
@@ -926,6 +927,8 @@ class Direction:
 
 
 class Region(Span):
+    """A direction span."""
+
     __slots__ = ["name", "id", "direction"]
 
     FORWARD = Direction.FORWARD
@@ -934,18 +937,39 @@ class Region(Span):
 
     def __init__(
         self,
-        start,
-        end,
-        length,
-        cyclic=False,
-        index=0,
-        direction=FORWARD,
-        name=None,
-        region_id=None,
-        ignore_wrap=False,
-        abs_wrap=True,
-        strict=None,
+        start: int,
+        end: int,
+        length: int,
+        cyclic: bool = False,
+        index: int = 0,
+        direction: int = FORWARD,
+        name: Union[None, str] = None,
+        region_id: Union[None, str] = None,
+        ignore_wrap: bool = False,
+        abs_wrap: bool = True,
+        strict: bool = None,
     ):
+        """Initialize a new Region.
+
+        :param start: start position
+        :param end: end position (exclusive)
+        :param length: length of context
+        :param cyclic: topology of context
+        :param index: starting index of context
+        :param direction: direction of the region
+        :param name: name of the region
+        :param region_id: id of the region
+        :param strict: if True, positions outside of context bounds are disallowed.
+        :type strict: bool
+        :param ignore_wrap: if True (default False), initialization indicies that wrap
+                            around multiple times will
+                            simply be mapped directly to the context (no wrapping used).
+        :type ignore_wrap: bool
+        :param abs_wrap:    if True, the abs difference between start and end wrappings
+                            are used. Starting wraps that are greater than ending wraps
+                            are valid. If False and the starting wrap is greater than
+                            the ending wrap, an IndexError is thrown.
+        """
         self.name = name
         self.id = region_id
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
@@ -960,6 +984,12 @@ class Region(Span):
             strict=strict,
             abs_wrap=abs_wrap,
         )
+
+    def flip(self) -> Region:
+        """Flip the indices of the region."""
+        flipped = self.new(self.context_length - self.b, self.context_length - self.a)
+        flipped.direction *= -1
+        return flipped
 
     @property
     def start(self):

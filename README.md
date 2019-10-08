@@ -11,7 +11,7 @@ optimizing material cost, assembly efficiency, and assembly time.
 The software goals are reminiscent of j5 or Teselegen but focused on:
 1. having a dead-simple user interface and
 1. utilizing information about current laboratory inventory in its optimization
-algorithm
+algorithm.
 
 ### Planned Features
 

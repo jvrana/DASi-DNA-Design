@@ -32,6 +32,7 @@ from dasi.alignments import AlignmentContainerFactory
 from dasi.alignments import AlignmentGroup
 from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
+from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
@@ -156,9 +157,9 @@ class Assembly(Iterable):
             "material": np.inf,
             "efficiency": 0.0,
             "type": Constants.MISSING,
+            "type_def": MoleculeType.types[Constants.MISSING],
             "span": np.inf,
             "name": "missing",
-            "internal_or_external": "missing",
         }
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
@@ -187,7 +188,7 @@ class Assembly(Iterable):
             if edata is None:
                 edata = self._missing_edata()
             else:
-                assert "internal_or_external" in edata
+                assert edata["type_def"].int_or_ext
 
             # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(
@@ -199,7 +200,7 @@ class Assembly(Iterable):
                 group_type=edata["type"],
                 groups=self.groups,
             )
-            if edata["internal_or_external"] == "internal" and not groups:
+            if edata["type_def"].int_or_ext == "internal" and not groups:
                 raise DasiDesignException(
                     "Missing groups for edge between {} and {}".format(n1, n2)
                 )
@@ -307,7 +308,7 @@ class Assembly(Iterable):
                     "span": edata["span"],
                     "type": edata["type"],
                     "name": edata["name"],
-                    "internal_or_external": edata["internal_or_external"],
+                    "internal_or_external": edata["type_def"].int_or_ext,
                     "efficiency": edata.get("efficiency", np.nan),
                 }
             )
@@ -892,7 +893,7 @@ def design_edge(
     qrecord = seqdb[query_key]
     # contains information about templates and queries
 
-    if edge[-1]["internal_or_external"] == "external":
+    if edge[-1]["type_def"].int_or_ext == "external":
         if moltype.use_direct:
             # this is a fragment used directly in an assembly
             return _use_direct(edge, seqdb)
@@ -941,7 +942,7 @@ def _design_pcr_product_primers(
     design: Tuple[bool, bool],
     seqdb: Dict[str, SeqRecord],
 ):
-    if edge[-1]["internal_or_external"] == "external":
+    if edge[-1]["type_def"].int_or_ext == "external":
         raise Exception()
 
     # this is a new PCR product

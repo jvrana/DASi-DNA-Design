@@ -74,6 +74,7 @@ class AssemblyGraphBuilder:
         :return:
         """
         assert condition == atype.design
+        assert internal_or_external == atype.int_or_ext
         self.G.add_edge(
             n1,
             n2,
@@ -85,7 +86,6 @@ class AssemblyGraphBuilder:
             span=span,
             type=atype.name,
             type_def=atype,
-            internal_or_external=internal_or_external,
         )
 
     def iter_internal_edge_data(

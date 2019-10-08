@@ -1,6 +1,8 @@
 from copy import copy
 from typing import Tuple
 
+from numpy import inf
+
 
 class Constants:
     """DASi constants."""
@@ -56,6 +58,7 @@ class MoleculeType:
         self.types[name] = self
         self.efficiency = efficiency
         self.design = design
+        self.int_or_ext = None
 
     def __repr__(self):
         return "<{} name='{}'>".format(self.__class__.__name__, self.name)
@@ -80,6 +83,7 @@ class InternalType(MoleculeType):
             synthesize=synthesize,
         )
         self.design = design
+        self.int_or_ext = "internal"
 
 
 class ExternalType(MoleculeType):
@@ -99,6 +103,7 @@ class ExternalType(MoleculeType):
             efficiency=efficiency,
             synthesize=synthesize,
         )
+        self.int_or_ext = "external"
 
     def __call__(self, design):
         copied = copy(self)
@@ -117,4 +122,13 @@ ExternalType(
 )
 ExternalType(
     name=Constants.GAP, use_direct=False, cost=0.0, efficiency=1.0, synthesize=True
+)
+
+MoleculeType(
+    name=Constants.MISSING,
+    design=None,
+    use_direct=False,
+    cost=inf,
+    efficiency=0.0,
+    synthesize=False,
 )

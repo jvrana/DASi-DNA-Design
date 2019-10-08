@@ -180,6 +180,7 @@ def assemble_graph(
 ) -> Tuple[nx.DiGraph, AlignmentContainer]:
     """Build an assembly graph for a specified query."""
     container.expand(expand_overlaps=True, expand_primers=True)
+    container.groups()
     container.freeze()
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
     graph = graph_builder.build_assembly_graph()

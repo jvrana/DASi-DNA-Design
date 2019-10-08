@@ -94,6 +94,7 @@ class AlignmentContainer(Sized):
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
         self._alignments = []
         self._frozen = False
+        self._frozen_groups = None
         if alignments is not None:
             self.alignments = alignments
         self.seqdb = seqdb
@@ -215,7 +216,6 @@ class AlignmentContainer(Sized):
                 product_group.rev,
             )
             self._new_grouping_tag(alignments, alignment_type)
-            self.alignments += product_group.alignments
         return groups
 
     def expand_primer_pairs(
@@ -350,26 +350,16 @@ class AlignmentContainer(Sized):
         :return:
         """
 
-        self.logger.info("=== Expanding alignments ===")
-        # We annotate any original PCR_PRODUCT with FRAGMENT if they are
-        # 'perfect_subjects'
-        # This means they already exist as pre-made fragments
-        self.logger.info("Number of alignments: {}".format(len(self.alignments)))
-
         templates = self.get_groups_by_types(
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
         )
 
         if expand_primers:
-            pairs = self.expand_primer_pairs(templates)
-            self.logger.info("Number of pairs: {}".format(len(pairs)))
+            self.expand_primer_pairs(templates)
 
         if expand_overlaps:
             expanded = self.expand_overlaps(templates)
             self.alignments += expanded
-            self.logger.info("Number of new alignments: {}".format(len(expanded)))
-        self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
-        self.logger.info("Number of total groups: {}".format(len(self.groups())))
 
     @classmethod
     def _new_grouping_tag(
@@ -448,10 +438,14 @@ class AlignmentContainer(Sized):
         return alignment_groups
 
     def groups(self) -> List[AlignmentGroup]:
-        allgroups = []
-        allgroups += self.redundent_alignment_groups(self.alignments)
-        allgroups += self.pcr_alignment_groups(self.alignments)
-        return allgroups
+        if self._frozen:
+            return self._frozen_groups
+        else:
+            allgroups = []
+            allgroups += self.redundent_alignment_groups(self.alignments)
+            allgroups += self.pcr_alignment_groups(self.alignments)
+            self._frozen_groups = allgroups
+            return allgroups
 
     @property
     def types(self) -> Tuple[Any, ...]:

@@ -973,8 +973,8 @@ def _design_pcr_product_primers(
             lkey = group.fwd.subject_key
         if group.rev:
             rkey = group.rev.subject_key
-        tkey = group.template.subject_key
-        region = group.template.subject_region
+        tkey = group.get_template().subject_key
+        region = group.get_template().subject_region
 
     if not design[1]:
         roverhang = ""

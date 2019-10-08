@@ -1,9 +1,5 @@
-import os
-import pickle
 from os.path import join
 
-import dill
-import networkx as nx
 import pytest
 from more_itertools import pairwise
 from pyblast.utils import load_fasta_glob
@@ -11,10 +7,7 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
-from dasi.alignments import AlignmentContainer
-from dasi.cost import SpanCost
 from dasi.design import Design
-from dasi.design import DesignResult
 
 
 @pytest.mark.parametrize(

@@ -1,4 +1,6 @@
 """Alignment container."""
+from __future__ import annotations
+
 from bisect import bisect_left
 from collections.abc import Sized
 from typing import Any
@@ -90,13 +92,18 @@ class AlignmentContainer(Sized):
         Constants.MISSING,
     )  # valid fragment types
 
-    def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
+    def __init__(
+        self, seqdb: Dict[str, SeqRecord], alignments=None, grouping_tags=None
+    ):
         self._alignments = []
         self._frozen = False
         if alignments is not None:
             self.alignments = alignments
         self.seqdb = seqdb
         self.logger = logger(self)
+        if grouping_tags is None:
+            grouping_tags = {}
+        self.grouping_tags = grouping_tags
 
     @property
     def alignments(self):
@@ -330,8 +337,7 @@ class AlignmentContainer(Sized):
         self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
         self.logger.info("Number of total groups: {}".format(len(self.groups())))
 
-    @classmethod
-    def _new_grouping_tag(cls, alignments, atype: str, key=None):
+    def _new_grouping_tag(self, alignments, atype: str, key=None):
         """Make a new ordered grouping by type and a uuid.
 
         :param alignments:
@@ -347,32 +353,32 @@ class AlignmentContainer(Sized):
             key = str(uuid4())
         group_key = (key, atype)
         for i, a in enumerate(alignments):
-            if key in a.grouping_tags:
+            if key in self.grouping_tags:
                 raise AlignmentContainerException(
                     "Key '{}' already exists in grouping tag".format(key)
                 )
-            a.grouping_tags[group_key] = i
+            self.grouping_tags.setdefault(group_key, list())
+            self.grouping_tags[group_key].append(a)
 
     @staticmethod
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
-    @classmethod
     def complex_alignment_groups(
-        cls, alignments: List[Alignment]
+        self, alignments: List[Alignment]
     ) -> List[Union[AlignmentGroup, ComplexAlignmentGroup]]:
-        key_to_alignments = {}
-        for a in alignments:
-            if not isinstance(a, Alignment):
-                raise Exception
-        for a in alignments:
-            for (uuid, atype), i in a.grouping_tags.items():
-                key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
+        # key_to_alignments = {}
+        # for a in alignments:
+        #     if not isinstance(a, Alignment):
+        #         raise Exception
+        # for a in alignments:
+        #     for (uuid, atype), i in a.grouping_tags.items():
+        #         key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
         complex_groups = []
-        for (uuid, atype), alist in key_to_alignments.items():
-            sorted_alist = [x[-1] for x in sorted(alist)]
-            complex_groups.append(ComplexAlignmentGroup(sorted_alist, atype))
+        for (uuid, atype), alist in self.grouping_tags.items():
+            # sorted_alist = [x[-1] for x in sorted(alist)]
+            complex_groups.append(ComplexAlignmentGroup(alist, atype))
         return complex_groups
 
     @classmethod
@@ -479,6 +485,7 @@ class AlignmentContainerFactory:
         self._alignments = (
             {}
         )  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
+        self._grouping_tags = {}
         self._containers = None
         self.logger = logger(self)
         self.seqdb = seqdb
@@ -490,15 +497,6 @@ class AlignmentContainerFactory:
         :return:
         """
         return frozendict(self._alignments)
-
-    def set_alignments(self, alignments: Dict[str, List[Alignment]]) -> None:
-        """Set the alignments.
-
-        :param alignments: new iterable of alignments
-        :return:
-        """
-        self._alignments = alignments
-        self._containers = None
 
     def load_blast_json(self, data: List[Dict], atype: str):
         """Create alignments from a formatted BLAST JSON result.
@@ -537,7 +535,7 @@ class AlignmentContainerFactory:
             container_dict = {}
             for key, alignments in self.alignments.items():
                 container_dict[key] = AlignmentContainer(
-                    self.seqdb, alignments=alignments
+                    self.seqdb, alignments=alignments, grouping_tags=self._grouping_tags
                 )
             self._containers = container_dict
         return frozendict(self._containers)

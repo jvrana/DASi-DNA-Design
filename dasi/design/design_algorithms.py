@@ -209,9 +209,9 @@ def multiprocessing_assemble_graph(
         )
 
     # update container_factory alignments
-    new_alignments = {
-        key: container.alignments
-        for key, container in zip(query_keys, expanded_containers)
-    }
-    container_factory.set_alignments(new_alignments)
+    new_containers = dict(zip(query_keys, expanded_containers))
+    for key, container in container_factory.containers().items():
+        container_factory._alignments[key] = new_containers[key].alignments
+        container_factory._containers[key] = new_containers[key]
+        container.seqdb = container_factory.seqdb
     return graphs

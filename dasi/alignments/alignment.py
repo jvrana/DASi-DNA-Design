@@ -49,7 +49,6 @@ class Alignment(Sized):
         self.type = atype
         self.query_key = query_key
         self.subject_key = subject_key
-        self.grouping_tags = {}
 
     def validate(self):
         if not len(self.query_region) == len(self.subject_region):

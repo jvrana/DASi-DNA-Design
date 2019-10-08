@@ -33,10 +33,11 @@ def test_large_pkl(here, paths, span_cost):
     queries = make_circular(load_genbank_glob(query_path))[:3]
 
     design = Design(span_cost=span_cost)
-
     design.add_materials(primers=primers, templates=templates, queries=queries)
-
+    design.n_jobs = 10
     design.compile()
+    for container in design.containers.values():
+        print(len(container.groups()))
     results = design.optimize()
 
     with logger.timeit("DEBUG", "pickling graphs"):
@@ -47,6 +48,29 @@ def test_large_pkl(here, paths, span_cost):
 
     with logger.timeit("DEBUG", "pickling span_cost"):
         pickle.loads(pickle.dumps(span_cost))
+
+
+def test_same_groups(here, paths, span_cost):
+    """Multiprocessing and non-multi group lens should be the same."""
+    primers = make_linear(load_fasta_glob(paths["primers"]))
+    templates = load_genbank_glob(paths["templates"])
+
+    query_path = join(here, "data/test_data/genbank/designs/*.gb")
+    queries = make_circular(load_genbank_glob(query_path))[:3]
+
+    design1 = Design(span_cost=span_cost)
+    design2 = Design(span_cost=span_cost)
+    design1.add_materials(primers=primers, templates=templates, queries=queries)
+    design2.add_materials(primers=primers, templates=templates, queries=queries)
+    design2.n_jobs = 10
+
+    design1.compile()
+    design2.compile()
+
+    group_lens1 = sorted([len(c.groups()) for c in design1.containers.values()])
+    group_lens2 = sorted([len(c.groups()) for c in design2.containers.values()])
+
+    assert group_lens1 == group_lens2
 
 
 def f(arg):

@@ -24,7 +24,7 @@ algorithm
 ### Use cases
 
 * developing cloning plans from computer-generated sequences
-* developing cloning plans for human-generated sequences for lazy folks (like me; no judgements)
+* developing cloning plans for human-generated sequences
 * developing plans for users that do not know the intricacies of molecular biology
 
 ### Other related repos used in this project:

@@ -2,22 +2,13 @@
 from __future__ import annotations
 
 from collections.abc import Sized
+from itertools import count
 from typing import List
 from typing import Union
 
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentException
 from dasi.utils import Region
-
-
-ALIGNMENT_SLOTS = [
-    "query_region",
-    "subject_region",
-    "type",
-    "query_key",
-    "subject_key",
-    "grouping_tags",
-]
 
 
 class Alignment(Sized):
@@ -27,7 +18,14 @@ class Alignment(Sized):
     A subregion of both regions may be taken.
     """
 
-    __slots__ = ALIGNMENT_SLOTS[:]
+    __slots__ = [
+        "query_region",
+        "subject_region",
+        "type",
+        "query_key",
+        "subject_key",
+        "uid",
+    ]
 
     def __init__(
         self,
@@ -120,6 +118,9 @@ class Alignment(Sized):
             self.__class__.__name__, self.type, self.query_region, self.subject_region
         )
 
+    # def __setstate__(self, state):
+    #     self._registry[self.uid] = self
+
     def __repr__(self) -> str:
         return str(self)
 
@@ -204,24 +205,24 @@ class AlignmentGroup(AlignmentGroupBase):
         )
 
 
-class ComplexAlignmentGroup(AlignmentGroupBase):
-    """A representation of an alignment in which the query region is the
-    concatenation of the underlying alignments provided."""
-
-    __slots__ = ["query_region", "alignments", "name", "type", "meta"]
-
-    def __init__(self, alignments: List[Alignment], group_type: str, meta: dict = None):
-        # TODO: adjust alignments
-        query_region = alignments[0].query_region
-        query_region = query_region.new(
-            alignments[0].query_region.a, alignments[-1].query_region.b
-        )
-        super().__init__(
-            alignments=alignments,
-            group_type=group_type,
-            query_region=query_region,
-            meta=meta,
-        )
+# class ComplexAlignmentGroup(AlignmentGroupBase):
+#     """A representation of an alignment in which the query region is the
+#     concatenation of the underlying alignments provided."""
+#
+#     __slots__ = ["query_region", "alignments", "name", "type", "meta"]
+#
+#     def __init__(self, alignments: List[Alignment], group_type: str, meta: dict = None):
+#         # TODO: adjust alignments
+#         query_region = alignments[0].query_region
+#         query_region = query_region.new(
+#             alignments[0].query_region.a, alignments[-1].query_region.b
+#         )
+#         super().__init__(
+#             alignments=alignments,
+#             group_type=group_type,
+#             query_region=query_region,
+#             meta=meta,
+#         )
 
 
 class PCRProductAlignmentGroup(AlignmentGroupBase):
@@ -308,4 +309,17 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
     def subject_keys(self):
         raise AlignmentException(
             "Use subject keys directly, as in `self.fwd.subject_key`"
+        )
+
+
+class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
+    def __init__(self, fwds, templates, revs, query_region, group_type):
+        self.fwds = fwds
+        self.revs = revs
+        self.raw_templates = templates
+        alignments = [
+            x for x in self.fwds + self.raw_templates + self.revs if x is not None
+        ]
+        super().__init__(
+            alignments=alignments, query_region=query_region, group_type=group_type
         )

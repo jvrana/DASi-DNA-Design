@@ -1,4 +1,6 @@
 """Alignment container."""
+from __future__ import annotations
+
 from bisect import bisect_left
 from collections.abc import Sized
 from typing import Any
@@ -16,6 +18,7 @@ from more_itertools import unique_everseen
 
 from .alignment import Alignment
 from .alignment import AlignmentGroup
+from .alignment import MultiPCRProductAlignmentGroup
 from .alignment import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
@@ -90,7 +93,9 @@ class AlignmentContainer(Sized):
         Constants.MISSING,
     )  # valid fragment types
 
-    def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
+    def __init__(
+        self, seqdb: Dict[str, SeqRecord], alignments=None, grouping_tags=None
+    ):
         self._alignments = []
         self._frozen = False
         self._frozen_groups = None
@@ -99,6 +104,10 @@ class AlignmentContainer(Sized):
             self.alignments = alignments
         self.seqdb = seqdb
         self.logger = logger(self)
+        if grouping_tags is None:
+            grouping_tags = {}
+        self.grouping_tags = grouping_tags
+        self.multi_grouping_tags = {}
 
     @property
     def alignments(self):
@@ -210,12 +219,13 @@ class AlignmentContainer(Sized):
             product_group = PCRProductAlignmentGroup(
                 fwd=fwd, template=a, rev=rev, group_type=alignment_type
             )
-            alignments = (
+            self._new_pcr_grouping_tag(
                 product_group.fwd,
                 product_group.raw_template,
                 product_group.rev,
+                atype=alignment_type,
             )
-            self._new_grouping_tag(alignments, alignment_type)
+            self._new_multi_pcr_grouping_tag(product_group)
         return groups
 
     def expand_primer_pairs(
@@ -361,63 +371,62 @@ class AlignmentContainer(Sized):
             expanded = self.expand_overlaps(templates)
             self.alignments += expanded
 
-    def _new_grouping_tag(
-        self,
-        alignments: List[Alignment],
-        atype: str,
-        key: Any = None,
-        meta: dict = None,
-    ):
-        """Make a new ordered grouping by type and a uuid.
-
-        Grouping tags are maintained as an attribute on the Alignment class.
-        The grouping tags are of the form:
-            {(<uuid>, <group_type>): (<index>, <metadata>)}
-        which registers an Alignment to a specific group in the container.
-        `None` values in the alignments are skipped.
-
-        :param alignments: list of alignments
-        :param atype:
-        :type atype:
-        :param key: optional key
-        :return:
-        :rtype:
-        """
+    def _new_pcr_grouping_tag(self, fwd, template, rev, atype: str, key=None):
         if key is None:
             key = str(uuid4())
         group_key = (key, atype)
-        for i, a in enumerate(alignments):
-            if a is not None:
-                if key in self._grouping_tags:
-                    raise AlignmentContainerException(
-                        "Key '{}' already exists in grouping tag".format(key)
-                    )
-                self._grouping_tags.setdefault(group_key, list())
-                self._grouping_tags[group_key].append((i, a))
+        self.grouping_tags[group_key] = {"fwd": fwd, "template": template, "rev": rev}
+
+    def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup, key=None):
+        group_key = (group.query_region.a, group.query_region.b, group.type)
+        self.multi_grouping_tags.setdefault(group_key, list())
+        self.multi_grouping_tags[group_key].append(
+            {
+                "fwd": group.fwd,
+                "template": group.raw_template,
+                "rev": group.rev,
+                "query_region": group.query_region,
+            }
+        )
 
     @staticmethod
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
-    def pcr_alignment_groups(
-        self, alignments: List[Alignment]
-    ) -> List[Union[AlignmentGroup, PCRProductAlignmentGroup]]:
-        for a in alignments:
-            if not isinstance(a, Alignment):
-                raise Exception
-        complex_groups = []
-        for (uuid, atype), alignments in self._grouping_tags.items():
-            alist_dict = dict(x for x in alignments)
-            complex_groups.append(
+    def old_pcr_alignment_groups(self):
+        groups = []
+        for (uuid, atype), adict in self.grouping_tags.items():
+            groups.append(
                 PCRProductAlignmentGroup(
-                    fwd=alist_dict.get(0, None),
-                    template=alist_dict[1],
-                    rev=alist_dict.get(2, None),
+                    fwd=adict["fwd"],
+                    template=adict["template"],
+                    rev=adict["rev"],
                     group_type=atype,
                 )
             )
-        return complex_groups
+        return groups
+
+    # TODO: multi pcr groups???
+    def pcr_alignment_groups(self):
+        groups = []
+        for (a, b, group_type), adict_list in self.multi_grouping_tags.items():
+            fwds, templates, revs, regions = [], [], [], []
+            for d in adict_list:
+                fwds.append(d["fwd"])
+                revs.append(d["rev"])
+                templates.append(d["template"])
+                regions.append(d["query_region"])
+            groups.append(
+                MultiPCRProductAlignmentGroup(
+                    fwds=fwds,
+                    templates=templates,
+                    revs=revs,
+                    query_region=regions[0],
+                    group_type=group_type,
+                )
+            )
+        return groups
 
     @classmethod
     def redundent_alignment_groups(
@@ -442,7 +451,7 @@ class AlignmentContainer(Sized):
         else:
             allgroups = []
             allgroups += self.redundent_alignment_groups(self.alignments)
-            allgroups += self.pcr_alignment_groups(self.alignments)
+            allgroups += self.pcr_alignment_groups()
             self._frozen_groups = allgroups
             return allgroups
 
@@ -539,15 +548,6 @@ class AlignmentContainerFactory:
         """
         return frozendict(self._alignments)
 
-    def set_alignments(self, alignments: Dict[str, List[Alignment]]) -> None:
-        """Set the alignments.
-
-        :param alignments: new iterable of alignments
-        :return:
-        """
-        self._alignments = alignments
-        self._containers = None
-
     def load_blast_json(self, data: List[Dict], atype: str):
         """Create alignments from a formatted BLAST JSON result.
 
@@ -589,3 +589,7 @@ class AlignmentContainerFactory:
                 )
             self._containers = container_dict
         return frozendict(self._containers)
+
+    def set_alignments(self, alignments):
+        self._alignments = alignments
+        self._containers = None

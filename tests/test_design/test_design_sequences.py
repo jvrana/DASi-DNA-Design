@@ -101,7 +101,7 @@ def pkl_results(here, paths, query, span_cost):
         queries = make_circular(load_genbank_glob(query_path))
 
         design = Design(span_cost=span_cost)
-
+        design.n_jobs = 10
         design.add_materials(primers=primers, templates=templates, queries=queries)
 
         design.compile()

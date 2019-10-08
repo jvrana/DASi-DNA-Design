@@ -3,6 +3,7 @@ import itertools
 from collections import namedtuple
 from typing import Iterable
 from typing import List
+from typing import Tuple
 from typing import Union
 
 import networkx as nx
@@ -55,7 +56,8 @@ class AssemblyGraphBuilder:
         efficiency: Union[float, None],
         span: int,
         atype: str,
-        **kwargs,
+        internal_or_external: str,
+        condition: Tuple[bool, bool],
     ):
         """Add an edge between two assembly nodes.
 
@@ -82,7 +84,8 @@ class AssemblyGraphBuilder:
             span=span,
             type=atype,
             type_def=MoleculeType.types[atype],
-            **kwargs,
+            internal_or_external=internal_or_external,
+            condition=condition,
         )
 
     def iter_internal_edge_data(
@@ -118,7 +121,6 @@ class AssemblyGraphBuilder:
                         anode,
                         bnode,
                         dict(
-                            weight=internal_cost / internal_efficiency,
                             material=internal_cost,
                             cost=internal_cost / internal_efficiency,
                             name="",
@@ -127,6 +129,7 @@ class AssemblyGraphBuilder:
                             span=len(align.query_region),
                             atype=align.type,
                             efficiency=internal_efficiency,
+                            condition=(a_expand, b_expand),
                         ),
                     )
                     # edges.append(edge)
@@ -246,7 +249,6 @@ class AssemblyGraphBuilder:
                 self.add_edge(
                     bnode,
                     anode,
-                    weight=None,
                     cost=None,
                     material=None,
                     time=None,
@@ -269,7 +271,6 @@ class AssemblyGraphBuilder:
             self.add_edge(
                 bnode,
                 anode,
-                weight=None,
                 cost=None,
                 material=None,
                 time=None,
@@ -277,8 +278,8 @@ class AssemblyGraphBuilder:
                 internal_or_external="external",
                 name=Constants.GAP,
                 atype=Constants.GAP,
-                condition=condition,
                 span=span,
+                condition=condition,
             )
 
     def _batch_add_edge_costs(self):
@@ -290,7 +291,7 @@ class AssemblyGraphBuilder:
         edge_dict = {}
         for n1, n2, edata in self.G.edges(data=True):
             if edata["cost"] is None:
-                condition = edata["type_def"].design
+                condition = edata["condition"]
                 edge_dict.setdefault(condition, []).append(
                     ((n1, n2), edata, edata["span"])
                 )

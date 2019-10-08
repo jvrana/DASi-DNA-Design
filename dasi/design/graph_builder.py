@@ -125,7 +125,6 @@ class AssemblyGraphBuilder:
                             time=0.1,
                             internal_or_external="internal",
                             span=len(align.query_region),
-                            condition=(a_expand, b_expand),
                             atype=align.type,
                             efficiency=internal_efficiency,
                         ),
@@ -291,7 +290,7 @@ class AssemblyGraphBuilder:
         edge_dict = {}
         for n1, n2, edata in self.G.edges(data=True):
             if edata["cost"] is None:
-                condition = edata["condition"]
+                condition = edata["type_def"].design
                 edge_dict.setdefault(condition, []).append(
                     ((n1, n2), edata, edata["span"])
                 )

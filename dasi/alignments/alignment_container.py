@@ -414,8 +414,10 @@ class AlignmentContainer(Sized):
         for (a, b, group_type), adict_list in self.multi_grouping_tags.items():
             fwds, templates, revs, regions = [], [], [], []
             for d in adict_list:
-                fwds.append(d["fwd"])
-                revs.append(d["rev"])
+                if d["fwd"] is not None:
+                    fwds.append(d["fwd"])
+                if d["rev"] is not None:
+                    revs.append(d["rev"])
                 templates.append(d["template"])
                 regions.append(d["query_region"])
             groups.append(

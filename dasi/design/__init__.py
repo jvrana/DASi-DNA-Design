@@ -854,6 +854,7 @@ def get_primer_extensions(
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
+        print(sedge)
         r1 = sedge["rprimer_right_ext"]
         r2 = sedge["right_ext"]
         right_ext = no_none_or_nan(r2, r1)
@@ -865,6 +866,7 @@ def get_primer_extensions(
     predecessors = list(graph.predecessors(n1))
     if predecessors:
         pedge = graph[predecessors[0]][n1]
+        print(pedge)
         l1 = pedge["lprimer_left_ext"]
         l2 = pedge["left_ext"]
         left_ext = no_none_or_nan(l2, l1)
@@ -885,16 +887,18 @@ def design_edge(
     graph = assembly.graph
 
     edge = n1, n2, graph[n1][n2]
+
     moltype = edge[2]["type_def"]
     qrecord = seqdb[query_key]
     # contains information about templates and queries
 
-    if moltype.use_direct:
-        # this is a fragment used directly in an assembly
-        return _use_direct(edge, seqdb)
-    elif moltype.synthesize:
-        # this is either a gene synthesis fragment or already covered by the primers.
-        return _design_gap(edge, qrecord)
+    if edge[-1]["internal_or_external"] == "external":
+        if moltype.use_direct:
+            # this is a fragment used directly in an assembly
+            return _use_direct(edge, seqdb)
+        elif moltype.synthesize:
+            # this is either a gene synthesis fragment or already covered by the primers.
+            return _design_gap(edge, qrecord)
     else:
         pairs, explain = _design_pcr_product_primers(edge, graph, moltype.design, seqdb)
         print(explain)
@@ -937,6 +941,9 @@ def _design_pcr_product_primers(
     design: Tuple[bool, bool],
     seqdb: Dict[str, SeqRecord],
 ):
+    if edge[-1]["internal_or_external"] == "external":
+        raise Exception()
+
     # this is a new PCR product
     n1, n2, edata = edge
     lext, rext = get_primer_extensions(graph, n1, n2)
@@ -969,12 +976,12 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         region = group.alignments[0].subject_region
     else:
-        if group.fwd:
-            lkey = group.fwd.subject_key
-        if group.rev:
-            rkey = group.rev.subject_key
-        tkey = group.get_template().subject_key
-        region = group.get_template().subject_region
+        if group.fwds:
+            lkey = group.fwds[0].subject_key
+        if group.revs:
+            rkey = group.revs[0].subject_key
+        tkey = group.get_template(0).subject_key
+        region = group.get_template(0).subject_region
 
     if not design[1]:
         roverhang = ""

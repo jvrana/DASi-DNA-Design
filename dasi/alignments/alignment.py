@@ -312,17 +312,44 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         )
 
 
+# TODO: rename this class
 class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
     """A PCR Product Alignment with redundant forward primer, reverse primer,
     and template alignments."""
 
-    def __init__(self, fwds, templates, revs, query_region, group_type):
+    def __init__(
+        self,
+        fwds: List[Alignment],
+        templates: List[Alignment],
+        revs: List[Alignment],
+        query_region: Region,
+        group_type: str,
+    ):
+        """Initializes a new MultiPCRProductAlignmentGroup.
+
+        :param fwds:
+        :param templates:
+        :param revs:
+        :param query_region:
+        :param group_type:
+        """
         self.fwds = fwds
         self.revs = revs
         self.raw_templates = templates
+        self._templates = [None] * len(self.raw_templates)
         alignments = [
             x for x in self.fwds + self.raw_templates + self.revs if x is not None
         ]
         super().__init__(
             alignments=alignments, query_region=query_region, group_type=group_type
         )
+
+    def get_template(self, index):
+        if self._templates[index] is None:
+            intersection = self.raw_templates[index].query_region.intersection(
+                self.query_region
+            )
+            self._templates[index] = self.raw_templates[index].sub_region(
+                intersection.a, intersection.b
+            )
+        return self._templates[index]

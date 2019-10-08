@@ -209,7 +209,11 @@ class AlignmentContainer(Sized):
             product_group = PCRProductAlignmentGroup(
                 fwd=fwd, template=a, rev=rev, group_type=alignment_type
             )
-            alignments = product_group.fwd, product_group.template, product_group.rev
+            alignments = (
+                product_group.fwd,
+                product_group.raw_template,
+                product_group.rev,
+            )
             self._new_grouping_tag(alignments, alignment_type)
             self.alignments += product_group.alignments
         return groups
@@ -419,7 +423,7 @@ class AlignmentContainer(Sized):
             complex_groups.append(
                 PCRProductAlignmentGroup(
                     fwd=alist_dict.get(0, None),
-                    template=alist_dict.get(1, None),
+                    template=alist_dict[1],
                     rev=alist_dict.get(2, None),
                     group_type=atype,
                 )

@@ -280,18 +280,30 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         b = alignments[-1].query_region.b
 
         query_region = template.query_region.new(a, b)
-        intersection = template.query_region.intersection(query_region)
-        self.template = template.sub_region(intersection.a, intersection.b)
+        self.raw_template = template
+        self._template = None
         self.fwd = fwd
         self.rev = rev
 
-        alignments = [x for x in [self.fwd, self.template, self.rev] if x is not None]
+        alignments = [
+            x for x in [self.fwd, self.raw_template, self.rev] if x is not None
+        ]
         super().__init__(
             alignments=alignments,
             group_type=group_type,
             query_region=query_region,
             meta=meta,
         )
+
+    def get_template(self):
+        if self._template is None:
+            intersection = self.raw_template.query_region.intersection(
+                self.query_region
+            )
+            self._template = self.raw_template.sub_region(
+                intersection.a, intersection.b
+            )
+        return self._template
 
     @property
     def subject_keys(self):

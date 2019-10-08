@@ -5,8 +5,10 @@ from collections.abc import Sized
 from typing import List
 from typing import Union
 
+from dasi.constants import Constants
 from dasi.exceptions import AlignmentException
 from dasi.utils import Region
+
 
 ALIGNMENT_SLOTS = [
     "query_region",
@@ -136,6 +138,14 @@ class AlignmentGroupBase:
         query_region: Region = None,
         meta: dict = None,
     ):
+        """
+
+        :param alignments:
+        :param group_type:
+        :param name:
+        :param query_region:
+        :param meta:
+        """
         self.query_region = query_region
         self.alignments = alignments
         self.name = name
@@ -202,6 +212,7 @@ class ComplexAlignmentGroup(AlignmentGroupBase):
     __slots__ = ["query_region", "alignments", "name", "type", "meta"]
 
     def __init__(self, alignments: List[Alignment], group_type: str, meta: dict = None):
+        # TODO: adjust alignments
         query_region = alignments[0].query_region
         query_region = query_region.new(
             alignments[0].query_region.a, alignments[-1].query_region.b
@@ -211,4 +222,79 @@ class ComplexAlignmentGroup(AlignmentGroupBase):
             group_type=group_type,
             query_region=query_region,
             meta=meta,
+        )
+
+
+class PCRProductAlignmentGroup(AlignmentGroupBase):
+    """Represents a PCR product alignment from a template alignment and
+    forward and reverse alignments. Represents several situations:
+
+    ::
+
+            Situations the PCRProductAlignmentGroup represents:
+
+            Rev primer with overhang
+                        <--------
+            ------------------
+            ---->
+
+            Primers with overhangs
+                           <--------
+               ------------------
+            -------->
+
+            Primers 'within' the template
+                    <-----
+               ------------------
+            -------->
+
+            And so on...
+
+    """
+
+    def __init__(
+        self,
+        fwd: Union[None, Alignment],
+        template: Alignment,
+        rev: Union[None, Alignment],
+        group_type: str,
+        meta: dict = None,
+    ):
+        """Initialize a new PCRProductAlignmentGroup. Represents a PCR product.
+        Query region end points are determined from the first non-None
+        alignment and the last non-None alignment. Produces *one new
+        alignment*, the template alignment, which is the intersection of the
+        provided template alignment and the query_region, which represents the
+        exact region for which PCR primers ought to align in a PCR reaction.
+
+        :param fwd: the forward primer alignment. Can be 'inside' the template or have an overhang.
+        :param template: template alignment
+        :param rev: the reverse primer alignment. Can be 'within' the template or have an overhang.
+        :param group_type: group type name
+        :param meta: extra meta data
+        """
+        if fwd is None and rev is None:
+            raise AlignmentException("Must provide either a fwd and/or rev alignments")
+        alignments = [x for x in [fwd, template, rev] if x is not None]
+        a = alignments[0].query_region.a
+        b = alignments[-1].query_region.b
+
+        query_region = template.query_region.new(a, b)
+        intersection = template.query_region.intersection(query_region)
+        self.template = template.sub_region(intersection.a, intersection.b)
+        self.fwd = fwd
+        self.rev = rev
+
+        alignments = [x for x in [self.fwd, self.template, self.rev] if x is not None]
+        super().__init__(
+            alignments=alignments,
+            group_type=group_type,
+            query_region=query_region,
+            meta=meta,
+        )
+
+    @property
+    def subject_keys(self):
+        raise AlignmentException(
+            "Use subject keys directly, as in `self.fwd.subject_key`"
         )

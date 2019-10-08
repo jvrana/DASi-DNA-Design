@@ -11,7 +11,7 @@ from more_itertools import partition
 
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentGroup
-from dasi.alignments import ComplexAlignmentGroup
+from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
@@ -86,7 +86,7 @@ class AssemblyGraphBuilder:
         )
 
     def iter_internal_edge_data(
-        self, align: Union[AlignmentGroup, ComplexAlignmentGroup]
+        self, align: Union[AlignmentGroup, PCRProductAlignmentGroup]
     ) -> dict:
         q = align.query_region
 
@@ -134,7 +134,7 @@ class AssemblyGraphBuilder:
         # return nodes, edges
 
     def add_internal_edges(
-        self, groups: List[Union[AlignmentGroup, ComplexAlignmentGroup]]
+        self, groups: List[Union[AlignmentGroup, PCRProductAlignmentGroup]]
     ):
         for g in groups:
             for a, b, ab_data in self.iter_internal_edge_data(g):

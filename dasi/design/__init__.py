@@ -30,7 +30,7 @@ from dasi.alignments import Alignment
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentContainerFactory
 from dasi.alignments import AlignmentGroup
-from dasi.alignments import ComplexAlignmentGroup
+from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
@@ -283,7 +283,7 @@ class Assembly(Iterable):
 
             if groups:
                 group = groups[0]
-                if isinstance(group, ComplexAlignmentGroup):
+                if isinstance(group, PCRProductAlignmentGroup):
                     alignments = group.alignments
                 else:
                     alignments = group.alignments[:1]
@@ -826,6 +826,7 @@ def design_primers(
     design.presets.use_overhangs()
     design.presets.long_ok()
 
+    design.logger.set_level("INFO")
     pairs, explain = design.run_and_optimize(15)
     if index is not None:
         for pair in pairs.values():
@@ -958,27 +959,29 @@ def _design_pcr_product_primers(
             rregion.get_slice(qrecord.seq, as_type=str)
         )
 
+    # TODO: complex alignment groups have re-adjusted subject regions
+
     # collect template, left primer, and right primer keys
+
     lkey, rkey = None, None
-    if design == (1, 0):
-        roverhang = ""
-        tkey, rkey = group.subject_keys
-        region = group.alignments[0].subject_region
-    elif design == (0, 1):
-        loverhang = ""
-        lkey, tkey = group.subject_keys
-        region = group.alignments[1].subject_region
-    elif design == (1, 1):
+    if design == (1, 1):
         assert isinstance(group, AlignmentGroup)
         tkey = group.subject_keys[0]
         region = group.alignments[0].subject_region
-    elif design == (0, 0):
-        lkey, tkey, rkey = group.subject_keys
-        region = group.alignments[1].subject_region
-        loverhang = ""
-        roverhang = ""
     else:
-        raise ValueError("Design {} is invalid".format(design))
+        if group.fwd:
+            lkey = group.fwd.subject_key
+        if group.rev:
+            rkey = group.rev.subject_key
+        tkey = group.template.subject_key
+        region = group.template.subject_region
+
+    if not design[1]:
+        roverhang = ""
+
+    if not design[0]:
+        loverhang = ""
+
     trecord = seqdb[tkey]
     tseq = str(trecord.seq)
     if rkey:

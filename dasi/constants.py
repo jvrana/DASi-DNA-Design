@@ -7,33 +7,33 @@ class Constants:
 
     FRAGMENT = (
         "PRE-MADE DNA FRAGMENT"
-    )  # an alignment that is generate from an already existing PCR product or fragment
+    )  #: an alignment that is generate from an already existing PCR product or fragment
     PCR_PRODUCT = (
         "PCR_PRODUCT"
-    )  # an alignment that is to be generated from a PCR product
+    )  #: an alignment that is to be generated from a PCR product
     PCR_PRODUCT_WITH_PRIMERS = (
         "PCR_PRODUCT_WITH_PRIMERS"
-    )  # PCR product that can be produces from existing primers
+    )  #: PCR product that can be produces from existing primers
     PCR_PRODUCT_WITH_LEFT_PRIMER = (
         "PCR_PRODUCT_WITH_LEFT_PRIMER"
-    )  # PCR product with existing left primer
+    )  #: PCR product with existing left primer
     PCR_PRODUCT_WITH_RIGHT_PRIMER = (
         "PCR_PRODUCT_WITH_RIGHT_PRIMER"
-    )  # PCR product with existing right primer
+    )  #: PCR product with existing right primer
     SHARED_FRAGMENT = (
         "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
-    )  # A fragment alignment that is shared with other queries for potential reuse
+    )  #: A fragment alignment that is shared with other queries for potential reuse
+    TEMPLATE = "TEMPLATE"  #: A template alignment group. Not an actual molecule.
+    GAP = "GAP"  #: region that represents a gap that must be synthesized
+    OVERLAP = "OVERLAP"  #: region that represents overlapping molecules
+    MISSING = "__MISSING"  #: missing region
 
-    GAP = "GAP"
-    OVERLAP = "OVERLAP"
-    MISSING = "__MISSING"
+    PRIMER = "PRIMER"  #: a primer binding alignment
 
-    PRIMER = "PRIMER"  # a primer binding alignment
-
-    PRIMER_MIN_BIND = 15
-    MIN_OVERLAP = 20
-    MAX_HOMOLOGY = 100
-    INF = 10.0 ** 6
+    PRIMER_MIN_BIND = 14  #: minimum primer binding for searching for primer alignments
+    MIN_OVERLAP = 15  #: minimum overlap for searching for overlapping alignments
+    MAX_HOMOLOGY = 100  #: maximum overlap for searching for overlapping alignments
+    INF = 10.0 ** 6  #: almost infinity
 
 
 class MoleculeType:

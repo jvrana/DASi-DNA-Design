@@ -313,6 +313,9 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
 
 
 class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
+    """A PCR Product Alignment with redundant forward primer, reverse primer,
+    and template alignments."""
+
     def __init__(self, fwds, templates, revs, query_region, group_type):
         self.fwds = fwds
         self.revs = revs

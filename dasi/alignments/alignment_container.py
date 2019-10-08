@@ -226,6 +226,7 @@ class AlignmentContainer(Sized):
                 atype=alignment_type,
             )
             self._new_multi_pcr_grouping_tag(product_group)
+            groups.append(product_group)
         return groups
 
     def expand_primer_pairs(

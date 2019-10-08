@@ -86,7 +86,6 @@ class AssemblyGraphBuilder:
             type=atype.name,
             type_def=atype,
             internal_or_external=internal_or_external,
-            condition=condition,
         )
 
     def iter_internal_edge_data(
@@ -292,7 +291,7 @@ class AssemblyGraphBuilder:
         edge_dict = {}
         for n1, n2, edata in self.G.edges(data=True):
             if edata["cost"] is None:
-                condition = edata["condition"]
+                condition = edata["type_def"].design
                 edge_dict.setdefault(condition, []).append(
                     ((n1, n2), edata, edata["span"])
                 )

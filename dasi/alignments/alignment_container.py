@@ -18,7 +18,6 @@ from .alignment import Alignment
 from .alignment import AlignmentGroup
 from .alignment import PCRProductAlignmentGroup
 from dasi.constants import Constants
-from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
 from dasi.utils import bisect_slice_between

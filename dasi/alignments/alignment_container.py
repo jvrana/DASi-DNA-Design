@@ -377,7 +377,7 @@ class AlignmentContainer(Sized):
         #         key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
         complex_groups = []
         for (uuid, atype), alist in self.grouping_tags.items():
-            # sorted_alist = [x[-1] for x in sorted(alist)]
+            # alist = [Alignment._registry[uid] for uid in auid_list]
             complex_groups.append(ComplexAlignmentGroup(alist, atype))
         return complex_groups
 
@@ -485,7 +485,6 @@ class AlignmentContainerFactory:
         self._alignments = (
             {}
         )  # dictionary of query_key to alignment; Dict[str, List[Alignment]]
-        self._grouping_tags = {}
         self._containers = None
         self.logger = logger(self)
         self.seqdb = seqdb
@@ -535,7 +534,11 @@ class AlignmentContainerFactory:
             container_dict = {}
             for key, alignments in self.alignments.items():
                 container_dict[key] = AlignmentContainer(
-                    self.seqdb, alignments=alignments, grouping_tags=self._grouping_tags
+                    self.seqdb, alignments=alignments
                 )
             self._containers = container_dict
         return frozendict(self._containers)
+
+    def set_alignments(self, alignments):
+        self._alignments = alignments
+        self._containers = None

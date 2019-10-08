@@ -2,19 +2,13 @@
 from __future__ import annotations
 
 from collections.abc import Sized
+from itertools import count
 from typing import List
+from uuid import uuid4
+from weakref import WeakValueDictionary
 
 from dasi.exceptions import AlignmentException
 from dasi.utils import Region
-
-ALIGNMENT_SLOTS = [
-    "query_region",
-    "subject_region",
-    "type",
-    "query_key",
-    "subject_key",
-    "grouping_tags",
-]
 
 
 class Alignment(Sized):
@@ -24,7 +18,14 @@ class Alignment(Sized):
     A subregion of both regions may be taken.
     """
 
-    __slots__ = ALIGNMENT_SLOTS[:]
+    __slots__ = [
+        "query_region",
+        "subject_region",
+        "type",
+        "query_key",
+        "subject_key",
+        "uid",
+    ]
 
     def __init__(
         self,
@@ -116,6 +117,9 @@ class Alignment(Sized):
         return "<{} {} {} {}>".format(
             self.__class__.__name__, self.type, self.query_region, self.subject_region
         )
+
+    # def __setstate__(self, state):
+    #     self._registry[self.uid] = self
 
     def __repr__(self) -> str:
         return str(self)

@@ -67,6 +67,8 @@ def test_same_groups(here, paths, span_cost):
     design1.compile()
     design2.compile()
 
+    a = design1.container_factory._alignments
+
     group_lens1 = sorted([len(c.groups()) for c in design1.containers.values()])
     group_lens2 = sorted([len(c.groups()) for c in design2.containers.values()])
 

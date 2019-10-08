@@ -95,6 +95,7 @@ class AlignmentContainer(Sized):
         self._alignments = []
         self._frozen = False
         self._frozen_groups = None
+        self._grouping_tags = {}
         if alignments is not None:
             self.alignments = alignments
         self.seqdb = seqdb
@@ -361,9 +362,12 @@ class AlignmentContainer(Sized):
             expanded = self.expand_overlaps(templates)
             self.alignments += expanded
 
-    @classmethod
     def _new_grouping_tag(
-        cls, alignments: List[Alignment], atype: str, key: Any = None, meta: dict = None
+        self,
+        alignments: List[Alignment],
+        atype: str,
+        key: Any = None,
+        meta: dict = None,
     ):
         """Make a new ordered grouping by type and a uuid.
 
@@ -385,31 +389,27 @@ class AlignmentContainer(Sized):
         group_key = (key, atype)
         for i, a in enumerate(alignments):
             if a is not None:
-                if key in a.grouping_tags:
+                if key in self._grouping_tags:
                     raise AlignmentContainerException(
                         "Key '{}' already exists in grouping tag".format(key)
                     )
-                a.grouping_tags[group_key] = i, meta
+                self._grouping_tags.setdefault(group_key, list())
+                self._grouping_tags[group_key].append((i, a))
 
     @staticmethod
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
-    @classmethod
     def pcr_alignment_groups(
-        cls, alignments: List[Alignment]
+        self, alignments: List[Alignment]
     ) -> List[Union[AlignmentGroup, PCRProductAlignmentGroup]]:
-        key_to_alignments = {}
         for a in alignments:
             if not isinstance(a, Alignment):
                 raise Exception
-        for a in alignments:
-            for (uuid, atype), (i, meta) in a.grouping_tags.items():
-                key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
         complex_groups = []
-        for (uuid, atype), alist in key_to_alignments.items():
-            alist_dict = dict(x for x in alist)
+        for (uuid, atype), alignments in self._grouping_tags.items():
+            alist_dict = dict(x for x in alignments)
             complex_groups.append(
                 PCRProductAlignmentGroup(
                     fwd=alist_dict.get(0, None),

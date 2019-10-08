@@ -1004,3 +1004,25 @@ class Region(Span):
             return self.a
         else:
             return self.b
+
+    def new(self, a: Union[None, int], b: Union[None, int]):
+        _new = super().new(a, b)
+        _new.direction = self.direction
+        return _new
+
+    def __str__(self):
+        return (
+            "<{cls} {a} {b} ({c}) context_len={context_len} len={length} "
+            "cyclic={cyclic} direction={direction} index={index}, nwraps={n}>".format(
+                cls=self.__class__.__name__,
+                a=self._a,
+                b=self._b,
+                c=self._c,
+                context_len=self._context_length,
+                cyclic=self._cyclic,
+                index=self._index,
+                length=len(self),
+                n=self._nwraps,
+                direction=self.direction,
+            )
+        )

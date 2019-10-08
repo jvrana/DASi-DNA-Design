@@ -23,3 +23,12 @@ def test_flip_cyclic_region():
     print(r2)
 
     assert r1.get_slice(s1) == r2.get_slice(s2)[::-1]
+
+
+def test_copy_preserves_direction():
+    s1 = "TGTAAAGCCTGGGGTGCCTAATGAGTGAGCTAACTCACATTAATTGCGTTG"
+    r1 = Region(len(s1) - 10, 10, len(s1), cyclic=True, direction=-1)
+
+    r2 = r1[:]
+
+    assert r2.direction == -1

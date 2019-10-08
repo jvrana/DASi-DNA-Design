@@ -73,6 +73,7 @@ class AssemblyGraphBuilder:
         :param kwargs: additional kwargs for the edge data
         :return:
         """
+        assert condition == atype.design
         self.G.add_edge(
             n1,
             n2,
@@ -82,8 +83,8 @@ class AssemblyGraphBuilder:
             time=time,
             efficiency=efficiency,
             span=span,
-            type=atype,
-            type_def=MoleculeType.types[atype],
+            type=atype.name,
+            type_def=atype,
             internal_or_external=internal_or_external,
             condition=condition,
         )
@@ -127,7 +128,7 @@ class AssemblyGraphBuilder:
                             time=0.1,
                             internal_or_external="internal",
                             span=len(align.query_region),
-                            atype=align.type,
+                            atype=MoleculeType.types[align.type],
                             efficiency=internal_efficiency,
                             condition=(a_expand, b_expand),
                         ),
@@ -255,7 +256,7 @@ class AssemblyGraphBuilder:
                     efficiency=None,
                     internal_or_external="external",
                     name=Constants.OVERLAP,
-                    atype=Constants.OVERLAP,
+                    atype=MoleculeType.types[Constants.OVERLAP](condition),
                     condition=condition,
                     span=span,
                 )
@@ -277,7 +278,7 @@ class AssemblyGraphBuilder:
                 efficiency=None,
                 internal_or_external="external",
                 name=Constants.GAP,
-                atype=Constants.GAP,
+                atype=MoleculeType.types[Constants.GAP](condition),
                 span=span,
                 condition=condition,
             )

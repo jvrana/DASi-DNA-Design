@@ -77,20 +77,17 @@ class Alignment(Sized):
         :return:
         """
         query_copy = self.query_region.sub(qstart, qend)
+
         i = self.query_region.i(qstart)
         if i < 0:
             i = self.query_region.i(qstart + self.query_region.context_length)
         if i == len(self.subject_region):
             i = 0
 
-        if self.subject_region.direction == 1:
-            subject_copy = self.subject_region[i : i + len(query_copy)]
-        elif self.subject_region.direction == -1:
-            subject_copy = self.subject_region[-i - len(query_copy) : -i]
+        if self.subject_region.direction == -1:
+            subject_copy = self.subject_region[-(i + len(query_copy)) : -i]
         else:
-            raise AlignmentException(
-                "Direction {} not understood".format(self.subject_region.direction)
-            )
+            subject_copy = self.subject_region[i : i + len(query_copy)]
 
         if atype is None:
             atype = self.type
@@ -353,6 +350,20 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         super().__init__(
             alignments=alignments, query_region=query_region, group_type=group_type
         )
+
+    def group_by_template_key(self):
+        fwd_dict = {f.subject_key: f for f in self.fwds}
+        rev_dict = {r.subject_key: r for r in self.revs}
+        data = {}
+        for template in self.raw_templates:
+            k = template.subject_key
+            fwd = fwd_dict.get(k, None)
+            rev = rev_dict.get(k, None)
+            if fwd is None and fwd_dict:
+                raise ValueError
+            if rev is None and rev_dict:
+                raise ValueError
+            data[template.subject_key] = {"fwd": fwd, "rev": rev, "template": template}
 
     def get_template(self, index):
         if self._templates[index] is None:

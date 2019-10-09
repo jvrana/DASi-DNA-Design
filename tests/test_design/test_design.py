@@ -44,28 +44,28 @@ def test_real_design(here, paths, query, span_cost):
         result.design_sequences()
 
 
-@pytest.mark.parametrize("query", ["plko-pef1a-frt-tdtomato-wpre.gb"])
-def test_real_design(here, paths, query, span_cost):
-    primers = make_linear(load_fasta_glob(paths["primers"]))
-    templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
-        paths["registry"]
-    )
-
-    query_path = join(here, "data/test_data/genbank/designs", query)
-    queries = make_circular(load_genbank_glob(query_path))
-
-    design = Design(span_cost=span_cost)
-
-    design.add_materials(primers=primers, templates=templates, queries=queries)
-
-    design.compile()
-
-    assert len(design.graphs) == len(queries)
-    assert len(design.graphs) == 1
-
-    results = design.optimize()
-
-    for qk, result in results.items():
-        for a in result.assemblies:
-            print(a.to_df())
-        result.design_sequences()
+# @pytest.mark.parametrize("query", ["plko-pef1a-frt-tdtomato-wpre.gb"])
+# def test_real_design(here, paths, query, span_cost):
+#     primers = make_linear(load_fasta_glob(paths["primers"]))
+#     templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
+#         paths["registry"]
+#     )
+#
+#     query_path = join(here, "data/test_data/genbank/designs", query)
+#     queries = make_circular(load_genbank_glob(query_path))
+#
+#     design = Design(span_cost=span_cost)
+#
+#     design.add_materials(primers=primers, templates=templates, queries=queries)
+#
+#     design.compile()
+#
+#     assert len(design.graphs) == len(queries)
+#     assert len(design.graphs) == 1
+#
+#     results = design.optimize()
+#
+#     for qk, result in results.items():
+#         for a in result.assemblies:
+#             print(a.to_df())
+#         result.design_sequences()

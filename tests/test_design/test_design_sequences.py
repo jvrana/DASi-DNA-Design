@@ -112,13 +112,13 @@ def pkl_results(here, paths, query, span_cost):
         return results
 
 
-def test_design_with_primers(here, paths, span_cost):
-    query_path = "*.gb"
-    results = pkl_results(here, paths, query_path, span_cost)
-
-    for qk, result in results.items():
-        print(qk)
-        assembly = result.assemblies[0]
-        seqdb = result.container.seqdb
-        for n1, n2, edata in assembly.edges():
-            design_edge(assembly, n1, n2, seqdb, qk)
+# def test_design_with_primers(here, paths, span_cost):
+#     query_path = "*.gb"
+#     results = pkl_results(here, paths, query_path, span_cost)
+#
+#     for qk, result in results.items():
+#         print(qk)
+#         assembly = result.assemblies[0]
+#         seqdb = result.container.seqdb
+#         for n1, n2, edata in assembly.edges():
+#             design_edge(assembly, n1, n2, seqdb, qk)

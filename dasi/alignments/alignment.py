@@ -267,6 +267,7 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         fwd: Union[None, Alignment],
         template: Alignment,
         rev: Union[None, Alignment],
+        query_region: Region,
         group_type: str,
         meta: dict = None,
     ):
@@ -289,7 +290,7 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         a = alignments[0].query_region.a
         b = alignments[-1].query_region.b
 
-        query_region = template.query_region.new(a, b)
+        query_region = query_region.new(a, b)
         self.raw_template = template
         self._template = None
         self.fwd = fwd
@@ -304,16 +305,6 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
             query_region=query_region,
             meta=meta,
         )
-
-    def get_template(self):
-        if self._template is None:
-            intersection = self.raw_template.query_region.intersection(
-                self.query_region
-            )
-            self._template = self.raw_template.sub_region(
-                intersection.a, intersection.b
-            )
-        return self._template
 
     @property
     def subject_keys(self):

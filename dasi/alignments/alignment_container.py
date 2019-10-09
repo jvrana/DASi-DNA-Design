@@ -87,6 +87,9 @@ class AlignmentContainer(Sized):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
         Constants.GAP,
         Constants.OVERLAP,
@@ -214,11 +217,15 @@ class AlignmentContainer(Sized):
         """
         groups = []
         for a in template_group.alignments:
-            # TODO: here, you should take a subregion and set it as a new type
-            #       that is not evaluated in other contexts
             product_group = PCRProductAlignmentGroup(
-                fwd=fwd, template=a, rev=rev, group_type=alignment_type
+                fwd=fwd,
+                template=a,
+                rev=rev,
+                query_region=a.query_region,
+                group_type=alignment_type,
             )
+            # TODO: min and max pcr product sizes
+            # TODO: implement PRIMER DIMER molecule type
             self._new_pcr_grouping_tag(
                 product_group.fwd,
                 product_group.raw_template,
@@ -228,6 +235,59 @@ class AlignmentContainer(Sized):
             self._new_multi_pcr_grouping_tag(product_group)
             groups.append(product_group)
         return groups
+
+    def _create_primer_extension_alignment(
+        self, fwd: Alignment, rev: Alignment, alignment_type: str
+    ):
+        if fwd is None:
+            query_region = rev.query_region
+        else:
+            query_region = fwd.query_region
+        product_group = PCRProductAlignmentGroup(
+            fwd=fwd,
+            template=None,
+            rev=rev,
+            query_region=query_region,
+            group_type=alignment_type,
+        )
+        self._new_multi_pcr_grouping_tag(product_group)
+        return [product_group]
+
+    def expand_primer_extension_products(self):
+        primers = self.get_alignments_by_types(Constants.PRIMER)
+
+        rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
+        pairs = []
+        for f in fwd:
+            rev_bind_region = f.query_region[: -Constants.PRIMER_MIN_BIND]
+            rev_bind = self.filter_alignments_by_span(
+                rev, rev_bind_region, key=lambda p: p.query_region.a
+            )
+            rev_bind, rkeys = sort_with_keys(rev_bind, key=lambda p: p.query_region.a)
+
+            for r in rev_bind:
+                if r.query_region.b in f.query_region:
+                    if r.query_region.b == f.query_region.b:
+                        pass
+                    else:
+                        continue
+                pairs += self._create_primer_extension_alignment(
+                    f, r, Constants.PRIMER_EXTENSION_PRODUCT
+                )
+        for f in fwd:
+            # existing fwd primer
+            pairs += self._create_primer_extension_alignment(
+                f, None, Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER
+            )
+
+        for r in rev:
+            # existing fwd primer
+            pairs += self._create_primer_extension_alignment(
+                None, r, Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER
+            )
+        return pairs
 
     def expand_primer_pairs(
         self, alignment_groups: List[AlignmentGroup]
@@ -362,7 +422,9 @@ class AlignmentContainer(Sized):
         return alignments
 
     # TODO: break apart long alignments
-    def expand(self, expand_overlaps=True, expand_primers=True):
+    def expand(
+        self, expand_overlaps=True, expand_primers=True, expand_primer_dimers=True
+    ):
         """Expand the number of alignments in this container using overlaps or
         primers.
 
@@ -378,9 +440,18 @@ class AlignmentContainer(Sized):
         if expand_primers:
             self.expand_primer_pairs(templates)
 
+        if expand_primer_dimers:
+            self.expand_primer_extension_products()
+
+        # TODO: why not expand overlaps using the primer pairs???
         if expand_overlaps:
             expanded = self.expand_overlaps(templates)
             self.alignments += expanded
+
+        # TODO: trim min and max products, ignoring primer dimers, which other other properties.
+        #       maybe MoleculeType possess this property?
+
+        # TODO: make a 'set' of all alignments
 
     def _new_pcr_grouping_tag(self, fwd, template, rev, atype: str, key=None):
         if key is None:
@@ -404,19 +475,6 @@ class AlignmentContainer(Sized):
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
-
-    def old_pcr_alignment_groups(self):
-        groups = []
-        for (uuid, atype), adict in self.grouping_tags.items():
-            groups.append(
-                PCRProductAlignmentGroup(
-                    fwd=adict["fwd"],
-                    template=adict["template"],
-                    rev=adict["rev"],
-                    group_type=atype,
-                )
-            )
-        return groups
 
     # TODO: multi pcr groups???
     def pcr_alignment_groups(self):
@@ -535,6 +593,9 @@ class AlignmentContainerFactory:
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
+        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):

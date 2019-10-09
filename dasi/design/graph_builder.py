@@ -322,6 +322,9 @@ class AssemblyGraphBuilder:
                     Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.PCR_PRODUCT_WITH_PRIMERS,
+                    Constants.PRIMER_EXTENSION_PRODUCT,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.FRAGMENT,
                 ]
             ),

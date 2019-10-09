@@ -25,6 +25,16 @@ class Constants:
     SHARED_FRAGMENT = (
         "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
     )  #: A fragment alignment that is shared with other queries for potential reuse
+    PRIMER_EXTENSION_PRODUCT = (
+        "PRIMER_EXTENSION_PRODUCT"
+    )  #: a pcr product that uses no template, but extends two primers
+    PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER = (
+        "PRIMER_EXTENSION_PRODUCT"
+    )  #: a pcr product that uses no template, but extends an existing fwd primer.
+    PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER = (
+        "PRIMER_EXTENSION_PRODUCT"
+    )  #: a pcr product that uses no template, but extends an existing rev primer.
+
     TEMPLATE = "TEMPLATE"  #: A template alignment group. Not an actual molecule.
     GAP = "GAP"  #: region that represents a gap that must be synthesized
     OVERLAP = "OVERLAP"  #: region that represents overlapping molecules
@@ -116,6 +126,18 @@ InternalType(Constants.PCR_PRODUCT, (True, True), False, 10.0, 0.95)
 InternalType(Constants.PCR_PRODUCT_WITH_PRIMERS, (False, False), False, 10.0, 0.95)
 InternalType(Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, (True, False), False, 10.0, 0.95)
 InternalType(Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 10.0, 0.95)
+InternalType(Constants.PRIMER_EXTENSION_PRODUCT, (False, False), False, 9.0, 0.95)
+InternalType(
+    Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 9.0, 0.95
+)
+InternalType(
+    Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+    (True, False),
+    False,
+    9.0,
+    0.95,
+)
+# TODO: implement primer dimer product with left and right primers
 
 ExternalType(
     name=Constants.OVERLAP, use_direct=False, cost=0.0, efficiency=1.0, synthesize=False

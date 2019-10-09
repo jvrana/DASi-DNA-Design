@@ -36,6 +36,8 @@ from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
+from dasi.exceptions import DasiNoPrimerPairsException
+from dasi.exceptions import DasiSequenceDesignException
 from dasi.log import logger
 from dasi.utils import NumpyDataFrame
 from dasi.utils import perfect_subject
@@ -792,9 +794,9 @@ def design_primers(
         template = rc(template)
 
     if lseq and left_overhang:
-        raise Exception
+        raise DasiSequenceDesignException
     if rseq and right_overhang:
-        raise Exception
+        raise DasiSequenceDesignException
 
     if region.spans_origin():
         adjusted_template = region.get_slice(template) + region.invert()[0].get_slice(
@@ -857,7 +859,7 @@ def get_primer_extensions(
         r2 = sedge["right_ext"]
         right_ext = no_none_or_nan(r2, r1)
     elif cyclic:
-        raise Exception
+        raise DasiSequenceDesignException
     else:
         right_ext = 0
 
@@ -869,7 +871,7 @@ def get_primer_extensions(
         l2 = pedge["left_ext"]
         left_ext = no_none_or_nan(l2, l1)
     elif cyclic:
-        raise Exception
+        raise DasiSequenceDesignException
     else:
         left_ext = 0
     return int(left_ext), int(right_ext)
@@ -900,7 +902,8 @@ def design_edge(
     else:
         pairs, explain = _design_pcr_product_primers(edge, graph, moltype.design, seqdb)
         print(explain)
-        assert pairs
+        if not pairs:
+            raise DasiNoPrimerPairsException("No primer pairs were found.")
 
 
 def _use_direct(
@@ -965,7 +968,9 @@ def _design_pcr_product_primers(
         )
 
     # TODO: complex alignment groups have re-adjusted subject regions
-
+    # TODO: ensure fwd and rev primers have same template
+    # TODO: the 'fwd' primer of a template in reverse direction is its reverse primer,
+    #       so get_template needs to be adjusted.
     # collect template, left primer, and right primer keys
 
     lkey, rkey = None, None

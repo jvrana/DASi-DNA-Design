@@ -45,6 +45,7 @@ class Alignment(Sized):
         :param subject_key: The record identifier for the subject
         """
         self.query_region = query_region
+        assert query_region.direction == 1
         self.subject_region = subject_region
         self.validate()
         self.type = atype
@@ -65,6 +66,7 @@ class Alignment(Sized):
     def is_perfect_subject(self):
         return len(self.subject_region) == self.subject_region.context_length
 
+    # TODO: subregion must be broken due to no considering direction of the region
     def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
         """Returns a copy of the alignment between the inclusive start and end
         relative to the query region.
@@ -80,7 +82,15 @@ class Alignment(Sized):
             i = self.query_region.i(qstart + self.query_region.context_length)
         if i == len(self.subject_region):
             i = 0
-        subject_copy = self.subject_region[i : i + len(query_copy)]
+
+        if self.subject_region.direction == 1:
+            subject_copy = self.subject_region[i : i + len(query_copy)]
+        elif self.subject_region.direction == -1:
+            subject_copy = self.subject_region[-i - len(query_copy) : -i]
+        else:
+            raise AlignmentException(
+                "Direction {} not understood".format(self.subject_region.direction)
+            )
 
         if atype is None:
             atype = self.type

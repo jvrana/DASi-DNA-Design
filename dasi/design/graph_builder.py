@@ -49,7 +49,6 @@ class AssemblyGraphBuilder:
         self,
         n1: AssemblyNode,
         n2: AssemblyNode,
-        name,
         cost: Union[float, None],
         material: Union[float, None],
         time: Union[float, None],
@@ -78,13 +77,11 @@ class AssemblyGraphBuilder:
         self.G.add_edge(
             n1,
             n2,
-            name=name,
             cost=cost,
             material=material,
             time=time,
             efficiency=efficiency,
             span=span,
-            type=atype.name,
             type_def=atype,
         )
 
@@ -123,7 +120,6 @@ class AssemblyGraphBuilder:
                         dict(
                             material=internal_cost,
                             cost=internal_cost / internal_efficiency,
-                            name="",
                             time=0.1,
                             internal_or_external="internal",
                             span=len(align.query_region),
@@ -254,7 +250,6 @@ class AssemblyGraphBuilder:
                     time=None,
                     efficiency=None,
                     internal_or_external="external",
-                    name=Constants.OVERLAP,
                     atype=MoleculeType.types[Constants.OVERLAP](condition),
                     condition=condition,
                     span=span,
@@ -276,7 +271,6 @@ class AssemblyGraphBuilder:
                 time=None,
                 efficiency=None,
                 internal_or_external="external",
-                name=Constants.GAP,
                 atype=MoleculeType.types[Constants.GAP](condition),
                 span=span,
                 condition=condition,

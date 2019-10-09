@@ -156,10 +156,8 @@ class Assembly(Iterable):
             "weight": np.inf,
             "material": np.inf,
             "efficiency": 0.0,
-            "type": Constants.MISSING,
             "type_def": MoleculeType.types[Constants.MISSING],
             "span": np.inf,
-            "name": "missing",
         }
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
@@ -197,7 +195,7 @@ class Assembly(Iterable):
             groups = self.container.find_groups_by_pos(
                 query_region.a,
                 query_region.b,
-                group_type=edata["type"],
+                group_type=edata["type_def"].name,
                 groups=self.groups,
             )
             if edata["type_def"].int_or_ext == "internal" and not groups:
@@ -306,8 +304,7 @@ class Assembly(Iterable):
                     "cost": edata["cost"],
                     "material": edata["material"],
                     "span": edata["span"],
-                    "type": edata["type"],
-                    "name": edata["name"],
+                    "type": edata["type_def"].name,
                     "internal_or_external": edata["type_def"].int_or_ext,
                     "efficiency": edata.get("efficiency", np.nan),
                 }

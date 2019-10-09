@@ -6,11 +6,30 @@ from typing import Dict
 from typing import List
 from typing import Union
 
+from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentException
 from dasi.utils import Region
 
 
-class Alignment(Sized):
+class RepresentsMolecule:
+    """Mixin for molecular sized alignments or alignment groups."""
+
+    def __init__(self, query_region: Region, atype: str):
+        self.query_region = query_region
+        self.type = atype
+        assert atype in MoleculeType.types
+
+    def size_ok(self):
+        size = len(self.query_region)
+        mol_type = MoleculeType.types[self.type]
+        if mol_type.min_size is not None and size < mol_type.min_size:
+            return False
+        if mol_type.max_size is not None and size > mol_type.max_size:
+            return False
+        return True
+
+
+class Alignment(RepresentsMolecule, Sized):
     """A pair of Regions that 'aligns' two regions of DNA sequences. All
     regions must always be the same length.
 
@@ -43,11 +62,10 @@ class Alignment(Sized):
         :param query_key: The record identifier for the query
         :param subject_key: The record identifier for the subject
         """
-        self.query_region = query_region
+        super().__init__(query_region, atype)
         assert query_region.direction == 1
         self.subject_region = subject_region
         self.validate()
-        self.type = atype
         self.query_key = query_key
         self.subject_key = subject_key
 
@@ -135,7 +153,7 @@ class Alignment(Sized):
         return str(self)
 
 
-class AlignmentGroupBase:
+class AlignmentGroupBase(RepresentsMolecule):
     """A representative Alignment representing a group of alignments."""
 
     __slots__ = ["query_region", "alignments", "name", "type", "meta"]
@@ -156,10 +174,9 @@ class AlignmentGroupBase:
         :param query_region:
         :param meta:
         """
-        self.query_region = query_region
+        super().__init__(query_region, group_type)
         self.alignments = alignments
         self.name = name
-        self.type = group_type
         self.meta = meta
 
     @property

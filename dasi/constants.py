@@ -60,6 +60,8 @@ class MoleculeType:
         cost: float,
         efficiency=1.0,
         synthesize=False,
+        min_size: int = None,
+        max_size: int = None,
     ):
         self.name = name
         self.cost = cost
@@ -69,6 +71,8 @@ class MoleculeType:
         self.efficiency = efficiency
         self.design = design
         self.int_or_ext = None
+        self.min_size = min_size
+        self.max_size = max_size
 
     def __repr__(self):
         return "<{} name='{}'>".format(self.__class__.__name__, self.name)
@@ -83,6 +87,8 @@ class InternalType(MoleculeType):
         cost: float,
         efficiency=1.0,
         synthesize: bool = False,
+        min_size: int = None,
+        max_size: int = None,
     ):
         super().__init__(
             name,
@@ -91,6 +97,8 @@ class InternalType(MoleculeType):
             cost=cost,
             efficiency=efficiency,
             synthesize=synthesize,
+            min_size=min_size,
+            max_size=max_size,
         )
         self.design = design
         self.int_or_ext = "internal"
@@ -104,6 +112,8 @@ class ExternalType(MoleculeType):
         cost: float,
         efficiency=1.0,
         synthesize: bool = False,
+        min_size: int = None,
+        max_size: int = None,
     ):
         super().__init__(
             name,
@@ -112,6 +122,8 @@ class ExternalType(MoleculeType):
             cost=cost,
             efficiency=efficiency,
             synthesize=synthesize,
+            min_size=min_size,
+            max_size=max_size,
         )
         self.int_or_ext = "external"
 
@@ -122,10 +134,26 @@ class ExternalType(MoleculeType):
 
 
 InternalType(Constants.FRAGMENT, (False, False), True, 0.0, 0.98)
-InternalType(Constants.PCR_PRODUCT, (True, True), False, 10.0, 0.95)
-InternalType(Constants.PCR_PRODUCT_WITH_PRIMERS, (False, False), False, 10.0, 0.95)
-InternalType(Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER, (True, False), False, 10.0, 0.95)
-InternalType(Constants.PCR_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 10.0, 0.95)
+InternalType(Constants.PCR_PRODUCT, (True, True), False, 10.0, 0.95, min_size=100)
+InternalType(
+    Constants.PCR_PRODUCT_WITH_PRIMERS, (False, False), False, 10.0, 0.95, min_size=100
+)
+InternalType(
+    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+    (True, False),
+    False,
+    10.0,
+    0.95,
+    min_size=100,
+)
+InternalType(
+    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+    (False, True),
+    False,
+    10.0,
+    0.95,
+    min_size=100,
+)
 InternalType(Constants.PRIMER_EXTENSION_PRODUCT, (False, False), False, 9.0, 0.95)
 InternalType(
     Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 9.0, 0.95

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview &#8212; dasi 0.0.1 documentation</title>
+    <title>Overview &#8212; dasi 0.0.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -13,6 +13,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="developer/api_reference.html" />
@@ -26,29 +28,48 @@
 <script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
-    
-        <div class="container">
-            <div class="jumbotron">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h1>DASi</h1>
-                    </div>
-                    <div class="col-md-7">
-                    </div>
-                </div>
-                <p><a href="https://www.aquarium.bio/">Aquarium's</a> Python API for
-                    planning, executing, and analyzing scientific experiments.
-                </p>
-                <hr class="my-4">
-                <span>
-                  <a class="btn btn-primary btn-lg" href=basics/getting_started.html role="button">Get started with DASi</a>
 
-              </span>
-
+    <script>
+    $(function(){
+      $("#includedContent").load("index.html");
+    });
+    </script>
+<div class="container">
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-3">
+                <h1>DASi</h1>
+            </div>
+            <div class="col-md-7">
             </div>
         </div>
-        
-    
+        <p>A Python toolkit for automated <b>D</b>NA <b>AS</b>sembly.
+        </p>
+        <hr class="my-4">
+        <div class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab">Homology Cloning</a></li>
+                <li><a href="#tab2" data-toggle="tab">Golden-Gate</a></li>
+                <li><a href="#tab2" data-toggle="tab">Library Design</a></li>
+                <li><a href="#tab2" data-toggle="tab">Combinatorial Design</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab1">
+                    <code>
+    from dasi import Design
+
+    design = Design()
+</code>
+                </div>
+                <div class="tab-pane" id="tab2">
+                    <p>I'm section 2</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
@@ -62,7 +83,7 @@
         </button>
         <a class="navbar-brand" href="#">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -79,7 +100,17 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

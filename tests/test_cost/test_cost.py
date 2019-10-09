@@ -4,21 +4,21 @@ import numpy as np
 import pylab as plt
 import pytest
 
-from dasi.cost import PrimerCostBuilder
+from dasi.cost import PrimerCostModel
 from dasi.cost import PrimerParams
 from dasi.cost import SpanCost
-from dasi.cost import SynthesisCostBuilder
+from dasi.cost import SynthesisCostModel
 from dasi.cost import SynthesisParams
 
 
 @pytest.fixture(scope="module")
 def primer_cost():
-    return PrimerCostBuilder.from_params(PrimerParams)
+    return PrimerCostModel.from_params(PrimerParams)
 
 
 @pytest.fixture(scope="module")
 def syn_cost(primer_cost):
-    return SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
+    return SynthesisCostModel.from_params(SynthesisParams, primer_cost)
 
 
 @pytest.fixture(scope="module")

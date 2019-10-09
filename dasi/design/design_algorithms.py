@@ -164,7 +164,7 @@ def multiprocessing_optimize_graph(
     graphs: List[nx.DiGraph],
     query_lengths: List[int],
     cyclics: List[bool],
-    n_paths: List[List[tuple]],
+    n_paths: int,
     n_jobs: int,
 ):
     """Optimize graphs using multiprocessing."""
@@ -180,6 +180,7 @@ def assemble_graph(
 ) -> Tuple[nx.DiGraph, AlignmentContainer]:
     """Build an assembly graph for a specified query."""
     container.expand(expand_overlaps=True, expand_primers=True)
+    container.groups()
     container.freeze()
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
     graph = graph_builder.build_assembly_graph()
@@ -209,9 +210,12 @@ def multiprocessing_assemble_graph(
         )
 
     # update container_factory alignments
-    new_alignments = {
-        key: container.alignments
-        for key, container in zip(query_keys, expanded_containers)
-    }
-    container_factory.set_alignments(new_alignments)
+
+    new_containers = dict(zip(query_keys, expanded_containers))
+    # new_alignments = {key: c.alignments for key, c in new_containers.items()}
+    # container_factory.set_alignments
+    for key, container in container_factory.containers().items():
+        container_factory._alignments[key] = new_containers[key].alignments
+        container_factory._containers[key] = new_containers[key]
+        container.seqdb = container_factory.seqdb
     return graphs

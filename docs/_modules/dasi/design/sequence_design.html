@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.sequence_design &#8212; dasi 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design.sequence_design</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;sequence_design.py.
+
+A module for converting DASi designs into actual DNA sequences.
+&quot;&quot;&quot;
+from typing import Any
+from typing import Dict
+from typing import Tuple
+from typing import Union
+
+import primer3plus
+
+from dasi.utils import Region
+from dasi.design import Assembly, AssemblyNode
+from dasi.cost import SpanCost
+import networkx as nx
+from dasi.utils import NumpyDataFrame
+
+
+<div class="viewcode-block" id="design_primers"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.sequence_design.design_primers">[docs]</a>def design_primers(
+    template: str, region: Region, lseq: Union[None, str], rseq: Union[None, str]
+) -&gt; Tuple[Dict[int, dict], Dict[str, Any]]:
+    &quot;&quot;&quot;Design primers flanking the specified :class:`Region.&lt;dasi.utils.Region&gt;`.
+    If the region is cyclic and spans the origin, this
+    method will handle the appropriate manipulations to design primers around
+    the origin and restore the locations of the resulting primer pairs.
+
+    :param template: the template string to design primers
+    :param region: region specified to design primers around. Regions are exclusive at
+                    their end points (`.b` parameter)
+    :param lseq: optionally provided left sequence
+    :param rseq: optionally provided right sequence
+    :return: tuple of pairs and the &#39;explain&#39; dictionary.
+    &quot;&quot;&quot;
+    design = primer3plus.new()
+    design.presets.as_cloning_task()
+
+    if region.spans_origin():
+        adjusted_template = region.get_slice(template) + region.invert()[0].get_slice(
+            template
+        )
+        design.presets.template(adjusted_template)
+        design.presets.included((0, len(region)))
+        index = list(region) + list(region.invert()[0])
+    else:
+        design.presets.template(template)
+        design.presets.included((region.a, len(region)))
+        index = None
+    if lseq:
+        design.presets.left_sequence(lseq)
+    if rseq:
+        design.presets.right_sequence(rseq)
+    pairs, explain = design.run_and_optimize(5)
+    if index is not None:
+        for pair in pairs.values():
+            loc = pair[&quot;LEFT&quot;][&quot;location&quot;]
+            pair[&quot;LEFT&quot;][&quot;location&quot;] = (index[loc[0]], loc[1])
+
+            loc = pair[&quot;RIGHT&quot;][&quot;location&quot;]
+            pair[&quot;RIGHT&quot;][&quot;location&quot;] = (index[loc[0]], loc[1])
+    return pairs, explain</div>
+
+
+def edata_to_npdf(edata: dict, span_cost: SpanCost) -&gt; NumpyDataFrame:
+    return span_cost.cost(edata[&#39;span&#39;], edata[&#39;type_def&#39;])
+
+
+def design_pcr_product_primers(assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode,
+                               span_cost: SpanCost):
+    graph = assembly.graph
+    successors = graph.successors(n1)
+    predecessors = graph.predecessors(n2)
+
+    edge = graph[n1][n2]
+    sedge = graph[n2][successors[0]]
+    pedge = graph[predecessors[0]][n1]
+
+    # the left and right extensions are determined by the pred and succ edges.
+    left = edata_to_npdf(pedge, span_cost)
+    right = edata_to_npdf(sedge, span_cost)
+
+
+
+
+
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

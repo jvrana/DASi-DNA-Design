@@ -1,23 +1,12 @@
-"""Primer and synthesis design.
-
-.. module:: dasi.design
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    graph_builder
-    plotter
-    design_algorithms
-"""
+"""Primer and synthesis design."""
 from __future__ import annotations
 
 import bisect
 from collections.abc import Iterable
 from itertools import zip_longest
+from typing import Any
 from typing import Dict
+from typing import Generator
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -25,8 +14,10 @@ from typing import Union
 import networkx as nx
 import numpy as np
 import pandas as pd
+import primer3plus
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
+from primer3plus.utils import reverse_complement as rc
 from pyblast import BioBlastFactory
 from pyblast.utils import is_circular
 
@@ -38,13 +29,19 @@ from .graph_builder import AssemblyGraphBuilder
 from dasi.alignments import Alignment
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentContainerFactory
-from dasi.alignments import ComplexAlignmentGroup
+from dasi.alignments import AlignmentGroup
+from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
+from dasi.constants import MoleculeType
+from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
 from dasi.log import logger
+from dasi.utils import NumpyDataFrame
 from dasi.utils import perfect_subject
+from dasi.utils import Region
 from dasi.utils import sort_cycle
+
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 
@@ -55,7 +52,9 @@ class DesignResult(Iterable):
     Maintains a list of top assemblies.
     """
 
-    def __init__(self, container, graph, query_key):
+    def __init__(
+        self, container: AlignmentContainer, graph: nx.DiGraph, query_key: str
+    ):
         self.container = container
         self.graph = graph
         self.query_key = query_key
@@ -64,13 +63,22 @@ class DesignResult(Iterable):
         self._keys = []
 
     @property
-    def assemblies(self):
+    def assemblies(self) -> Tuple[Assembly, ...]:
+        """Return a tuple of all assemblies.
+
+        :return: tuple of all assemblies.
+        """
         return tuple(self._assemblies)
 
     def _new(self, path: List[AssemblyNode]):
         return Assembly(path, self.container, self.graph, self.query_key, self.query)
 
     def add_assembly(self, path: List[AssemblyNode]):
+        """Add an assembly from a list of nodes.
+
+        :param path: list of nodes
+        :return: None
+        """
         assembly = self._new(path)
         cost = assembly.cost()
         n_nodes = len(assembly._nodes)
@@ -80,14 +88,32 @@ class DesignResult(Iterable):
         self._keys.insert(i, k)
 
     def add_assemblies(self, paths: List[List[AssemblyNode]]):
+        """Adds a list of assemblies.
+
+        :param paths: list of list of paths
+        :return: None
+        """
         for path in paths:
             self.add_assembly(path)
 
-    def __iter__(self):
+    def _design_sequences_for_assembly(self, assembly):
+        seqdb = self.container.seqdb
+        for n1, n2, edata in assembly.edges():
+            design_edge(assembly, n1, n2, seqdb, self.query_key)
+
+    def design_sequences(self):
+        for a in self.assemblies:
+            self._design_sequences_for_assembly(a)
+
+    def __iter__(self) -> Generator[Assembly]:
+        """Yield assemblies.
+
+        :yield: assembly
+        """
         for assembly in self.assemblies:
             yield assembly
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> Assembly:
         return list(self)[item]
 
     def __str__(self):
@@ -130,10 +156,8 @@ class Assembly(Iterable):
             "weight": np.inf,
             "material": np.inf,
             "efficiency": 0.0,
-            "type": Constants.MISSING,
+            "type_def": MoleculeType.types[Constants.MISSING],
             "span": np.inf,
-            "name": "missing",
-            "internal_or_external": "missing",
         }
 
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
@@ -162,7 +186,7 @@ class Assembly(Iterable):
             if edata is None:
                 edata = self._missing_edata()
             else:
-                assert "internal_or_external" in edata
+                assert edata["type_def"].int_or_ext
 
             # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(
@@ -171,10 +195,10 @@ class Assembly(Iterable):
             groups = self.container.find_groups_by_pos(
                 query_region.a,
                 query_region.b,
-                group_type=edata["type"],
+                group_type=edata["type_def"].name,
                 groups=self.groups,
             )
-            if edata["internal_or_external"] == "internal" and not groups:
+            if edata["type_def"].int_or_ext == "internal" and not groups:
                 raise DasiDesignException(
                     "Missing groups for edge between {} and {}".format(n1, n2)
                 )
@@ -209,7 +233,7 @@ class Assembly(Iterable):
 
     def edit_distance(
         self, other: Assembly, explain=False
-    ) -> Union[int, List[Tuple[int, str]]]:
+    ) -> Union[int, Tuple[int, List[Tuple[int, str]]]]:
         differences = []
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))
@@ -258,7 +282,7 @@ class Assembly(Iterable):
 
             if groups:
                 group = groups[0]
-                if isinstance(group, ComplexAlignmentGroup):
+                if isinstance(group, PCRProductAlignmentGroup):
                     alignments = group.alignments
                 else:
                     alignments = group.alignments[:1]
@@ -280,9 +304,8 @@ class Assembly(Iterable):
                     "cost": edata["cost"],
                     "material": edata["material"],
                     "span": edata["span"],
-                    "type": edata["type"],
-                    "name": edata["name"],
-                    "internal_or_external": edata["internal_or_external"],
+                    "type": edata["type_def"].name,
+                    "internal_or_external": edata["type_def"].int_or_ext,
                     "efficiency": edata.get("efficiency", np.nan),
                 }
             )
@@ -293,7 +316,7 @@ class Assembly(Iterable):
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[AssemblyNode]:
         for n in self.nodes(data=False):
             yield n
 
@@ -358,7 +381,7 @@ class Design:
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS
 
     @property
-    def seqdb(self):
+    def seqdb(self) -> Dict[str, SeqRecord]:
         return self._seqdb
 
     def add_materials(
@@ -398,12 +421,12 @@ class Design:
         # self.blast_factory.add_records(fragments, self.TEMPLATES)
 
     @classmethod
-    def filter_linear_records(cls, records):
+    def filter_linear_records(cls, records: List[SeqRecord]) -> List[SeqRecord]:
         """Return only linear records."""
         return [r for r in records if not is_circular(r)]
 
     @classmethod
-    def filter_perfect_subject(cls, results):
+    def filter_perfect_subject(cls, results: dict) -> List[dict]:
         """return only results whose subject is 100% aligned to query."""
         return [r for r in results if perfect_subject(r["subject"])]
 
@@ -451,15 +474,15 @@ class Design:
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
 
     @property
-    def containers(self):
+    def containers(self) -> Dict[str, AlignmentContainer]:
         """Iterable of alignment containers in this design."""
         return self.container_factory.containers()
 
-    def container_list(self):
+    def container_list(self) -> List[AlignmentContainer]:
         """List of alignment containers in this design."""
         return list(self.container_factory.containers().values())
 
-    def query_keys(self):
+    def query_keys(self) -> List[str]:
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
@@ -519,20 +542,22 @@ class Design:
     # sns.heatmap(plot_matrix[::step, ::step], ax=ax)
 
     @staticmethod
-    def _find_iter_alignment(a, b, alignments):
+    def _find_iter_alignment(a: int, b: int, alignments: Iterable[Alignment]):
         for align in alignments:
             if a == align.query_region.a and b == align.query_region.b:
                 yield align
 
     @staticmethod
-    def path_to_edge_costs(path, graph):
+    def path_to_edge_costs(
+        path: List[AssemblyNode], graph: nx.DiGraph
+    ) -> List[Tuple[AssemblyNode, AssemblyNode, dict]]:
         arr = []
         for n1, n2 in pairwise(path):
             edata = graph[n1][n2]
             arr.append((n1, n2, edata))
         return arr
 
-    def optimize(self, n_paths=3, n_jobs=None):
+    def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
         n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
             with self.logger.timeit(
@@ -546,7 +571,7 @@ class Design:
             return self._optimize_without_threads(n_paths)
 
     # TODO: n_paths to class attribute
-    def _optimize_without_threads(self, n_paths) -> Dict[str, List[List[AssemblyNode]]]:
+    def _optimize_without_threads(self, n_paths) -> Dict[str, DesignResult]:
         """Finds the optimal paths for each query in the design."""
         results_dict = {}
         for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
@@ -570,7 +595,7 @@ class Design:
             result.add_assemblies(paths)
         return results_dict
 
-    def _optimize_with_threads(self, n_paths=5, n_jobs=10):
+    def _optimize_with_threads(self, n_paths=5, n_jobs=10) -> Dict[str, DesignResult]:
         results_dict = {}
         query_keys, graphs, query_lengths, cyclics, results = zip(
             *list(self._collect_optimize_args(self.graphs))
@@ -588,7 +613,9 @@ class Design:
             results_dict[qk] = result
         return results_dict
 
-    def _collect_optimize_args(self, graphs):
+    def _collect_optimize_args(
+        self, graphs: Dict[str, nx.DiGraph]
+    ) -> Tuple[str, nx.DiGraph, bool, dict]:
         for query_key, graph in self.logger.tqdm(
             graphs.items(), "INFO", desc="optimizing graphs"
         ):
@@ -621,7 +648,7 @@ class LibraryDesign(Design):
 
     # TODO: why?
     @staticmethod
-    def _get_iter_non_repeats(alignments: List[Alignment]):
+    def _get_iter_non_repeats(alignments: List[Alignment]) -> Tuple[str, int, int]:
         """Return repeat regions of alignments. These are alignments that align
         to themselves.
 
@@ -731,3 +758,249 @@ class LibraryDesign(Design):
     def optimize_library(self):
         """Optimize the assembly graph for library assembly."""
         raise NotImplementedError
+
+
+# TODO: handle rc templates, the given Region is top strand only but sequences chould be flipped.
+def design_primers(
+    template: str,
+    region: Region,
+    lseq: Union[None, str],
+    rseq: Union[None, str],
+    left_overhang: Union[None, str] = None,
+    right_overhang: Union[None, str] = None,
+) -> Tuple[Dict[int, dict], Dict[str, Any]]:
+    """Design primers flanking the specified.
+
+    :class:`Region.<dasi.utils.Region>`. If the region is cyclic and spans the
+    origin, this method will handle the appropriate manipulations to design
+    primers around the origin and restore the locations of the resulting primer
+    pairs.
+
+    :param template: the template string to design primers
+    :param region: region specified to design primers around. Regions are exclusive at
+                    their end points (`.b` parameter)
+    :param lseq: optionally provided left sequence
+    :param rseq: optionally provided right sequence
+    :param loverhang: optionally provided left overhang sequence of the primer
+    :param roverhang: optionally provided right overhang sequence of the primer
+    :return: tuple of pairs and the 'explain' dictionary.
+    """
+    design = primer3plus.new()
+    design.presets.as_cloning_task()
+    if region.direction == -1:
+        region = region.flip()
+        template = rc(template)
+
+    if lseq and left_overhang:
+        raise Exception
+    if rseq and right_overhang:
+        raise Exception
+
+    if region.spans_origin():
+        adjusted_template = region.get_slice(template) + region.invert()[0].get_slice(
+            template
+        )
+        design.presets.template(adjusted_template)
+        design.presets.included((0, len(region)))
+        index = list(region) + list(region.invert()[0])
+    else:
+        design.presets.template(template)
+        design.presets.included((region.a, len(region)))
+        index = None
+    if lseq:
+        design.presets.left_sequence(lseq)
+    if rseq:
+        design.presets.right_sequence(rseq)
+
+    if left_overhang is None:
+        left_overhang = ""
+    if right_overhang is None:
+        right_overhang = ""
+
+    design.presets.product_size((len(region), len(region)))
+    design.presets.left_overhang(left_overhang)
+    design.presets.right_overhang(right_overhang)
+    design.PRIMER_PICK_ANYWAY = True
+    design.presets.use_overhangs()
+    design.presets.long_ok()
+
+    design.logger.set_level("INFO")
+    pairs, explain = design.run_and_optimize(15)
+    if index is not None:
+        for pair in pairs.values():
+            loc = pair["LEFT"]["location"]
+            pair["LEFT"]["location"] = (index[loc[0]], loc[1])
+
+            loc = pair["RIGHT"]["location"]
+            pair["RIGHT"]["location"] = (index[loc[0]], loc[1])
+    return pairs, explain
+
+
+def edata_to_npdf(edata: dict, span_cost: SpanCost) -> NumpyDataFrame:
+    return span_cost.cost(edata["span"], edata["type_def"])
+
+
+def no_none_or_nan(*i):
+    for _i in i:
+        if _i is not None and not np.isnan(_i):
+            return _i
+
+
+def get_primer_extensions(
+    graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
+):
+    successors = list(graph.successors(n2))
+    if successors:
+        sedge = graph[n2][successors[0]]
+        print(sedge)
+        r1 = sedge["rprimer_right_ext"]
+        r2 = sedge["right_ext"]
+        right_ext = no_none_or_nan(r2, r1)
+    elif cyclic:
+        raise Exception
+    else:
+        right_ext = 0
+
+    predecessors = list(graph.predecessors(n1))
+    if predecessors:
+        pedge = graph[predecessors[0]][n1]
+        print(pedge)
+        l1 = pedge["lprimer_left_ext"]
+        l2 = pedge["left_ext"]
+        left_ext = no_none_or_nan(l2, l1)
+    elif cyclic:
+        raise Exception
+    else:
+        left_ext = 0
+    return int(left_ext), int(right_ext)
+
+
+def design_edge(
+    assembly: Assembly,
+    n1: AssemblyNode,
+    n2: AssemblyNode,
+    seqdb: Dict[str, SeqRecord],
+    query_key: str,
+):
+    graph = assembly.graph
+
+    edge = n1, n2, graph[n1][n2]
+
+    moltype = edge[2]["type_def"]
+    qrecord = seqdb[query_key]
+    # contains information about templates and queries
+
+    if edge[-1]["type_def"].int_or_ext == "external":
+        if moltype.use_direct:
+            # this is a fragment used directly in an assembly
+            return _use_direct(edge, seqdb)
+        elif moltype.synthesize:
+            # this is either a gene synthesis fragment or already covered by the primers.
+            return _design_gap(edge, qrecord)
+    else:
+        pairs, explain = _design_pcr_product_primers(edge, graph, moltype.design, seqdb)
+        print(explain)
+        assert pairs
+
+
+def _use_direct(
+    edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
+):
+    groups = edge["groups"]
+    group = groups[0]
+    sk = group.subject_keys[0]
+    srecord = seqdb[sk]
+    return srecord
+
+
+def _skip():
+    return {}, {}
+
+
+def _design_gap(edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord):
+    n1, _, edge_data = edge
+    gene_size = edge_data["gene_size"]
+    if not np.isnan(gene_size):
+        lshift = edge_data["lshift"]
+        assert not np.isnan(lshift)
+        a = n1.index + lshift
+        b = a + gene_size
+        gene_region = edge_data["query_region"].new(a, b)
+        gene_seq = gene_region.get_slice(qrecord.seq, as_type=str)
+
+        return gene_region, gene_seq
+    else:
+        return {}, {}
+
+
+def _design_pcr_product_primers(
+    edge: Tuple[AssemblyNode, AssemblyNode, dict],
+    graph: nx.DiGraph,
+    design: Tuple[bool, bool],
+    seqdb: Dict[str, SeqRecord],
+):
+    if edge[-1]["type_def"].int_or_ext == "external":
+        raise Exception()
+
+    # this is a new PCR product
+    n1, n2, edata = edge
+    lext, rext = get_primer_extensions(graph, n1, n2)
+    alignment_groups = edata["groups"]
+    group = alignment_groups[0]
+
+    qkey = group.query_key
+    qrecord = seqdb[qkey]
+    qregion = group.query_region
+
+    # set overhangs
+    loverhang = ""
+    roverhang = ""
+    if design[0]:
+        lregion = qregion.new(qregion.a - lext, qregion.a)
+        loverhang = lregion.get_slice(qrecord.seq, as_type=str)
+    if design[1]:
+        rregion = qregion.new(qregion.b, qregion.b + rext)
+        roverhang = primer3plus.utils.reverse_complement(
+            rregion.get_slice(qrecord.seq, as_type=str)
+        )
+
+    # TODO: complex alignment groups have re-adjusted subject regions
+
+    # collect template, left primer, and right primer keys
+
+    lkey, rkey = None, None
+    if design == (1, 1):
+        assert isinstance(group, AlignmentGroup)
+        tkey = group.subject_keys[0]
+        region = group.alignments[0].subject_region
+    else:
+        if group.fwds:
+            lkey = group.fwds[0].subject_key
+        if group.revs:
+            rkey = group.revs[0].subject_key
+        tkey = group.get_template(0).subject_key
+        region = group.get_template(0).subject_region
+
+    if not design[1]:
+        roverhang = ""
+
+    if not design[0]:
+        loverhang = ""
+
+    trecord = seqdb[tkey]
+    tseq = str(trecord.seq)
+    if rkey:
+        rrecord = seqdb[rkey]
+        rseq = str(rrecord.seq)
+    else:
+        rseq = None
+    if lkey:
+        lrecord = seqdb[lkey]
+        lseq = str(lrecord.seq)
+    else:
+        lseq = None
+    # design primers
+    pairs, explain = design_primers(
+        tseq, region, lseq, rseq, left_overhang=loverhang, right_overhang=roverhang
+    )
+    return pairs, explain

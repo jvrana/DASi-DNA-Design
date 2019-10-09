@@ -367,14 +367,14 @@ class TestExpandPrimers:
         new_alignment_in_container(container, 200, 230, Constants.PRIMER)
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, -1)
 
-        groups = container.complex_alignment_groups(container.alignments)
+        groups = container.pcr_alignment_groups()
         assert len(groups) == 0
 
         container.expand_primer_pairs(
             container.get_groups_by_types(Constants.PCR_PRODUCT)
         )
 
-        groups = container.complex_alignment_groups(container.alignments)
+        groups = container.pcr_alignment_groups()
         assert len(groups) == 3
 
     def test_expand_pair_over_origin(self, container):
@@ -390,7 +390,7 @@ class TestExpandPrimers:
             container.get_groups_by_types(Constants.PCR_PRODUCT)
         )
 
-        groups = container.complex_alignment_groups(container.alignments)
+        groups = container.pcr_alignment_groups()
         for g in groups:
             print(g)
 
@@ -426,19 +426,6 @@ class TestExpandOverlaps:
             indices.append((a.query_region.a, a.query_region.b))
         indices.sort()
         assert indices == sorted([(x[0], x[2]), (x[2], x[1])])
-
-
-def test_tag_alignments(container):
-    a1 = new_alignment_in_container(container, 100, 1000, Constants.PCR_PRODUCT)
-    a2 = new_alignment_in_container(container, 970, 1100, Constants.PCR_PRODUCT)
-
-    AlignmentContainer._new_grouping_tag([a1, a2], "TYPE1")
-    assert a1.grouping_tags
-    assert a2.grouping_tags
-    assert len(container.complex_alignment_groups(container.alignments)) == 1
-
-    AlignmentContainer._new_grouping_tag([a1, a2], "TYPE2")
-    assert len(container.complex_alignment_groups(container.alignments)) == 2
 
 
 def test_find_alignments(container):

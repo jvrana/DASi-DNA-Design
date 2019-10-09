@@ -1,19 +1,7 @@
-"""Alignments are representative regions between two sequences.
-
-.. module:: dasi.alignments
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    alignment
-    alignment_container
-"""
+"""Alignments are representative regions between two sequences."""
 from .alignment import Alignment
 from .alignment import AlignmentGroup
 from .alignment import AlignmentGroupBase
-from .alignment import ComplexAlignmentGroup
+from .alignment import PCRProductAlignmentGroup
 from .alignment_container import AlignmentContainer
 from .alignment_container import AlignmentContainerFactory

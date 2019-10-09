@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Python Module Index &#8212; dasi 0.0.1 documentation</title>
+    <title>Python Module Index &#8212; dasi 0.0.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -13,6 +13,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -42,13 +44,13 @@
         </button>
         <a class="navbar-brand" href="index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
-
-
+            
+            
               <li class="dropdown globaltoc-container">
   <a role="button"
      id="dLabelGlobalToc"
@@ -59,28 +61,38 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </ul>
 </li>
-
-
-
-
-
-
-
-
-
-
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
               <li class="hidden-sm"></li>
-
+            
           </ul>
 
-
-
+          
+            
 <form class="navbar-form navbar-right" action="search.html" method="get">
  <div class="form-group">
   <input type="text" name="q" class="form-control" placeholder="Search" />
@@ -88,7 +100,7 @@
   <input type="hidden" name="check_keywords" value="yes" />
   <input type="hidden" name="area" value="default" />
 </form>
-
+          
         </div>
     </div>
   </div>
@@ -96,7 +108,7 @@
 <div class="container">
   <div class="row">
     <div class="body col-md-12 content" role="main">
-
+      
 
    <h1>Python Module Index</h1>
 
@@ -112,25 +124,65 @@
        <td><img src="_static/minus.png" class="toggler"
               id="toggle-1" style="display: none" alt="-" /></td>
        <td>
-       <code class="xref">dasi</code></td><td>
+       <a href="developer/api_reference.html#module-dasi"><code class="xref">dasi</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi."><code class="xref">dasi.</code></a></td><td>
+       <a href="developer/api_reference.html#module-dasi.alignments"><code class="xref">dasi.alignments</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.cost"><code class="xref">dasi.cost</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.cost.params"><code class="xref">dasi.cost.params</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.cost.utils"><code class="xref">dasi.cost.utils</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.design"><code class="xref">dasi.design</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.design.design_algorithms"><code class="xref">dasi.design.design_algorithms</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.design.sequence_design"><code class="xref">dasi.design.sequence_design</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.utils"><code class="xref">dasi.utils</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="developer/api_reference.html#module-dasi.utils.networkx"><code class="xref">dasi.utils.networkx</code></a></td><td>
        <em></em></td></tr>
    </table>
 
 
     </div>
-
+      
   </div>
 </div>
 <footer class="footer">
   <div class="container">
     <p class="pull-right">
       <a href="#">Back to top</a>
-
+      
     </p>
     <p>
         &copy; Copyright 2017-2019, University of Washington.<br/>

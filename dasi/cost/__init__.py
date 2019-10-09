@@ -1,20 +1,9 @@
-"""Cost.
-
-.. module:: dasi.cost
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    params
-    utils
-"""
+"""Classes and methods for estimating assembly costs."""
 from abc import ABC
 from abc import abstractmethod
 from functools import partial
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 import msgpack
@@ -75,13 +64,21 @@ def decoder(obj):
 
 
 class CostBuilder(ABC):
-    def __init__(self, span):
+    """Abstract base class for building a cost model."""
+
+    def __init__(self, span: np.ndarray):
+        """Initialize cost builder from a 'span', or a list of indices for
+        which the model is valid.
+
+        :param span: the list of indices (span) for which this cost model is evaluated.
+        """
         self.cost_dict = {}
         self.span = span
 
     @classmethod
     @abstractmethod
     def from_params(cls, *args):
+        """Initialize from parameters."""
         pass
 
     @abstractmethod
@@ -110,12 +107,20 @@ class CostBuilder(ABC):
     def cost(
         self, bp: Union[np.ndarray, int], ext: Tuple[int, int], invalidate=False
     ) -> NumpyDataFrame:
-        """
+        """Return the :class:`NumpyDataFrame <dasi.usil.NumpyDataFrame>` across
+        the provided span.
 
-        :param bp:
-        :param ext:
-        :param invalidate:
-        :return:
+        :param bp: either a integer or np.ndarray of integers to compute.
+        :param ext: The extension design parameters (bool, bool) that represent
+                    whether the left or right primer is 'extendable'. Primers
+                    that have been provided are not extendable. If we had,
+                    for example, an existing right primer and flexibility to
+                    design the left primer, this would be `(1, 0)`.
+        :param invalidate: Whether to invalidate indicies that go beyond the provided
+                            span for the cost builder (`CostModelBase.span`). Any
+                            invalid indices cost will be set to `np.inf` and efficiency
+                            to `0.0`
+        :return: NumpyDataFrame representing the cost of from the input span.
         """
         if isinstance(bp, int):
             bp = np.array([bp])
@@ -124,6 +129,8 @@ class CostBuilder(ABC):
 
         # clipped index
         clipped = np.clip(index, 0, len(_span) - 1)
+        if isinstance(clipped, int):
+            index = np.array([clipped])
 
         # get junction
         jxn = self.cost_dict[ext][clipped]
@@ -139,16 +146,17 @@ class CostBuilder(ABC):
                 jxn.data["efficiency"][invalid] = 0.0
 
         # add span
-        jxn.col["span"] = bp
+        jxn.col["span"] = np.array(bp)
         return jxn
 
     def __call__(
         self, bp: Union[int, np.ndarray], ext: Tuple[int, int]
     ) -> NumpyDataFrame:
+        """Short hand for calling :meth:`cost`"""
         return self.cost(bp, ext)
 
 
-class PrimerCostBuilder(CostBuilder):
+class PrimerCostModel(CostBuilder):
     def __init__(
         self,
         pdf: pd.DataFrame,
@@ -158,6 +166,19 @@ class PrimerCostBuilder(CostBuilder):
         material_mod: float,
         min_span: int,
     ):
+        """Initialize the cost model for primer designs.
+
+        :param pdf: a pandas DataFrame representing costs for primers.
+                    Example parameters found at
+                    :attr:`dasi.cost.params.PrimerParams.primer_df`
+        :param edf: a pandas DataFrame representing efficiencies for spans.
+                    Example parameters found at
+                    :attr:`dasi.cost.params.PrimerParams.eff_df`
+        :param min_anneal: the number of bases to consider for annealing a primer.
+        :param time_cost: the cost to produce a primer
+        :param material_mod:
+        :param min_span:
+        """
         self.primer_df = pdf
         self.eff_df = edf
         self.time_cost = time_cost
@@ -169,7 +190,12 @@ class PrimerCostBuilder(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, primer_params: PrimerParams):
+    def from_params(cls, primer_params: Type[PrimerParams]) -> "PrimerCostModel":
+        """Load from :class:`dasi.cost.params.PrimerParams`.
+
+        :param primer_params: parameters
+        :return: PrimerCostModel
+        """
         return cls(
             pdf=primer_params.primer_df,
             edf=primer_params.eff_df,
@@ -233,16 +259,27 @@ class PrimerCostBuilder(CostBuilder):
             )
 
 
-class SynthesisCostBuilder(CostBuilder):
+class SynthesisCostModel(CostBuilder):
     def __init__(
         self,
         sdf: pd.DataFrame,
-        primer_cost: PrimerCostBuilder,
+        primer_cost: PrimerCostModel,
         time_cost: float,
         material_modifier: float,
         step_size=10,
         left_span_range=(-500, 500),
     ):
+        """
+
+        :param sdf: synthesis parameter pandas dataframe. Example parameters found
+                    at :attr:`dasi.cost.params.SynthesisParams.synthesis_df`
+        :param primer_cost: primer cost builder
+        :param time_cost: time cost per day
+        :param material_modifier: material multiplier (default: 1.0)
+        :param step_size: step size to consider (default: 10)
+        :param left_span_range: span range for left primer to consider
+                (default: -500, 500)
+        """
         self.synthesis_df = sdf
         self.step_size = step_size
         self.material_modifier = (material_modifier,)
@@ -254,7 +291,7 @@ class SynthesisCostBuilder(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostBuilder):
+    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostModel):
         return cls(
             sdf=syn_params.synthesis_df,
             primer_cost=primer_cost,
@@ -377,8 +414,8 @@ class SpanCost(CostBuilder):
 
     @classmethod
     def default(cls):
-        primer_cost = PrimerCostBuilder.from_params(PrimerParams)
-        syn_cost = SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
+        primer_cost = PrimerCostModel.from_params(PrimerParams)
+        syn_cost = SynthesisCostModel.from_params(SynthesisParams, primer_cost)
         return cls(syn_cost)
 
     def compute(self):

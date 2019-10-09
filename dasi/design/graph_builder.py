@@ -3,6 +3,7 @@ import itertools
 from collections import namedtuple
 from typing import Iterable
 from typing import List
+from typing import Tuple
 from typing import Union
 
 import networkx as nx
@@ -11,13 +12,12 @@ from more_itertools import partition
 
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentGroup
-from dasi.alignments import ComplexAlignmentGroup
+from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.log import logger
 from dasi.utils import bisect_between
-from dasi.utils import bisect_slice_between
 from dasi.utils import sort_with_keys
 
 AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
@@ -49,14 +49,14 @@ class AssemblyGraphBuilder:
         self,
         n1: AssemblyNode,
         n2: AssemblyNode,
-        name,
         cost: Union[float, None],
         material: Union[float, None],
         time: Union[float, None],
         efficiency: Union[float, None],
         span: int,
         atype: str,
-        **kwargs,
+        internal_or_external: str,
+        condition: Tuple[bool, bool],
     ):
         """Add an edge between two assembly nodes.
 
@@ -72,22 +72,21 @@ class AssemblyGraphBuilder:
         :param kwargs: additional kwargs for the edge data
         :return:
         """
+        assert condition == atype.design
+        assert internal_or_external == atype.int_or_ext
         self.G.add_edge(
             n1,
             n2,
-            name=name,
             cost=cost,
             material=material,
             time=time,
             efficiency=efficiency,
             span=span,
-            type=atype,
-            type_def=MoleculeType.types[atype],
-            **kwargs,
+            type_def=atype,
         )
 
     def iter_internal_edge_data(
-        self, align: Union[AlignmentGroup, ComplexAlignmentGroup]
+        self, align: Union[AlignmentGroup, PCRProductAlignmentGroup]
     ) -> dict:
         q = align.query_region
 
@@ -119,23 +118,21 @@ class AssemblyGraphBuilder:
                         anode,
                         bnode,
                         dict(
-                            weight=internal_cost / internal_efficiency,
                             material=internal_cost,
                             cost=internal_cost / internal_efficiency,
-                            name="",
                             time=0.1,
                             internal_or_external="internal",
                             span=len(align.query_region),
-                            condition=(a_expand, b_expand),
-                            atype=align.type,
+                            atype=MoleculeType.types[align.type],
                             efficiency=internal_efficiency,
+                            condition=(a_expand, b_expand),
                         ),
                     )
                     # edges.append(edge)
         # return nodes, edges
 
     def add_internal_edges(
-        self, groups: List[Union[AlignmentGroup, ComplexAlignmentGroup]]
+        self, groups: List[Union[AlignmentGroup, PCRProductAlignmentGroup]]
     ):
         for g in groups:
             for a, b, ab_data in self.iter_internal_edge_data(g):
@@ -248,14 +245,12 @@ class AssemblyGraphBuilder:
                 self.add_edge(
                     bnode,
                     anode,
-                    weight=None,
                     cost=None,
                     material=None,
                     time=None,
                     efficiency=None,
                     internal_or_external="external",
-                    name=Constants.OVERLAP,
-                    atype=Constants.OVERLAP,
+                    atype=MoleculeType.types[Constants.OVERLAP](condition),
                     condition=condition,
                     span=span,
                 )
@@ -271,16 +266,14 @@ class AssemblyGraphBuilder:
             self.add_edge(
                 bnode,
                 anode,
-                weight=None,
                 cost=None,
                 material=None,
                 time=None,
                 efficiency=None,
                 internal_or_external="external",
-                name=Constants.GAP,
-                atype=Constants.GAP,
-                condition=condition,
+                atype=MoleculeType.types[Constants.GAP](condition),
                 span=span,
+                condition=condition,
             )
 
     def _batch_add_edge_costs(self):
@@ -292,7 +285,7 @@ class AssemblyGraphBuilder:
         edge_dict = {}
         for n1, n2, edata in self.G.edges(data=True):
             if edata["cost"] is None:
-                condition = edata["condition"]
+                condition = edata["type_def"].design
                 edge_dict.setdefault(condition, []).append(
                     ((n1, n2), edata, edata["span"])
                 )

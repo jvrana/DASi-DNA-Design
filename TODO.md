@@ -8,6 +8,8 @@
 * force parts
 * avoid repeats
 * consider design flexibility in optimization algorithm
+* primers for amplification of synthesis fragments
+* contrived tests with primer and gene designs
 
 **Possible Failure Modes**
 

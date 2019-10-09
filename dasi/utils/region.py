@@ -4,6 +4,8 @@ from collections.abc import Container
 from collections.abc import Iterable
 from collections.abc import Sized
 from itertools import chain
+from typing import Any
+from typing import Generator
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -318,8 +320,9 @@ class Span(Container, Iterable, Sized):
                             are valid. If False and the starting wrap is greater than
                             the ending wrap, an IndexError is thrown.
         """
-
-        self._context_length = l
+        a = int(a)
+        b = int(b)
+        self._context_length = int(l)
         self._index = index
         self._cyclic = cyclic
         self._strict = strict
@@ -501,6 +504,29 @@ class Span(Container, Iterable, Sized):
         """
         return [slice(*r) for r in self.ranges()]
 
+    def get_slice_iter(self, x: List):
+        """Use the region to slice the iterable, returning another generator.
+
+        :param x: the iterable to slice
+        :return: iterable
+        """
+        return chain(*[x[s] for s in self.slices()])
+
+    def get_slice(self, x: List, as_type=None) -> Any:
+        """Use the region to slice the iterable, returning a iterable of the
+        same type as 'x'. If as_type is provided, the iterable will be
+        typecast.
+
+        :param x: the iterable to slice
+        :param as_type: type to convert the iterable into
+        :return: Any
+        """
+        if as_type is None:
+            as_type = type(x)
+        if as_type is str:
+            return "".join(self.get_slice_iter(x))
+        return as_type(self.get_slice_iter(x))
+
     def reindex(self, i, strict=None, ignore_wrap=None):
         """Return a new span with positions reindexed.
 
@@ -651,7 +677,7 @@ class Span(Container, Iterable, Sized):
         elif self in other:
             return (self.new(self._a, self._a),)
         else:
-            return ((self[:]),)
+            return (self[:],)
 
     def intersection(self, other: Span) -> Span:
         """Return the span inersection between this span and the other span."""
@@ -736,9 +762,9 @@ class Span(Container, Iterable, Sized):
         :rtype: tuple
         """
         if len(self) >= self._context_length:
-            return (self[self._a, self._a], None)
+            return self[self._a, self._a], None
         if self._cyclic:
-            return (self[self._b, self._a], None)
+            return self[self._b, self._a], None
         else:
             return self[:, self._a], self[self._b, :]
 
@@ -789,10 +815,10 @@ class Span(Container, Iterable, Sized):
         elif issubclass(type(other), Span):
             return self.contains_span(other)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return sum([r[1] - r[0] for r in self.ranges()])
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[int]:
         for i in chain(*[range(*x) for x in self.ranges()]):
             yield i
 
@@ -890,7 +916,7 @@ class Span(Container, Iterable, Sized):
 
 
 class EmptySpan(Span):
-    def ranges(self):
+    def ranges(self, *args) -> List[Tuple[int, int]]:
         return [(self.bounds()[0], self.bounds()[0])]
 
 
@@ -901,6 +927,8 @@ class Direction:
 
 
 class Region(Span):
+    """A direction span."""
+
     __slots__ = ["name", "id", "direction"]
 
     FORWARD = Direction.FORWARD
@@ -909,18 +937,39 @@ class Region(Span):
 
     def __init__(
         self,
-        start,
-        end,
-        length,
-        cyclic=False,
-        index=0,
-        direction=FORWARD,
-        name=None,
-        region_id=None,
-        ignore_wrap=False,
-        abs_wrap=True,
-        strict=None,
+        start: int,
+        end: int,
+        length: int,
+        cyclic: bool = False,
+        index: int = 0,
+        direction: int = FORWARD,
+        name: Union[None, str] = None,
+        region_id: Union[None, str] = None,
+        ignore_wrap: bool = False,
+        abs_wrap: bool = True,
+        strict: bool = None,
     ):
+        """Initialize a new Region.
+
+        :param start: start position
+        :param end: end position (exclusive)
+        :param length: length of context
+        :param cyclic: topology of context
+        :param index: starting index of context
+        :param direction: direction of the region
+        :param name: name of the region
+        :param region_id: id of the region
+        :param strict: if True, positions outside of context bounds are disallowed.
+        :type strict: bool
+        :param ignore_wrap: if True (default False), initialization indicies that wrap
+                            around multiple times will
+                            simply be mapped directly to the context (no wrapping used).
+        :type ignore_wrap: bool
+        :param abs_wrap:    if True, the abs difference between start and end wrappings
+                            are used. Starting wraps that are greater than ending wraps
+                            are valid. If False and the starting wrap is greater than
+                            the ending wrap, an IndexError is thrown.
+        """
         self.name = name
         self.id = region_id
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
@@ -936,6 +985,12 @@ class Region(Span):
             abs_wrap=abs_wrap,
         )
 
+    def flip(self) -> Region:
+        """Flip the indices of the region."""
+        flipped = self.new(self.context_length - self.b, self.context_length - self.a)
+        flipped.direction *= -1
+        return flipped
+
     @property
     def start(self):
         if self.direction == self.REVERSE:
@@ -949,3 +1004,25 @@ class Region(Span):
             return self.a
         else:
             return self.b
+
+    def new(self, a: Union[None, int], b: Union[None, int]):
+        _new = super().new(a, b)
+        _new.direction = self.direction
+        return _new
+
+    def __str__(self):
+        return (
+            "<{cls} {a} {b} ({c}) context_len={context_len} len={length} "
+            "cyclic={cyclic} direction={direction} index={index}, nwraps={n}>".format(
+                cls=self.__class__.__name__,
+                a=self._a,
+                b=self._b,
+                c=self._c,
+                context_len=self._context_length,
+                cyclic=self._cyclic,
+                index=self._index,
+                length=len(self),
+                n=self._nwraps,
+                direction=self.direction,
+            )
+        )

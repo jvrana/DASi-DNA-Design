@@ -1,5 +1,9 @@
 from collections import OrderedDict
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 import networkx as nx
@@ -19,47 +23,41 @@ def sympy_floyd_warshall(
     g: Union[nx.DiGraph, nx.Graph],
     f: str,
     accumulators: dict,
-    nonedge=None,
-    nodelist=None,
-    multigraph_weight=None,
-    identity_subs=None,
-    return_all=False,
-    dtype=None,
+    nonedge: dict = None,
+    nodelist: list = None,
+    multigraph_weight: Callable = None,
+    identity_subs: Dict[str, Any] = None,
+    return_all: bool = False,
+    dtype: Type = None,
 ) -> Union[np.ndarray, Tuple[np.ndarray, dict]]:
-    """
-    Implementation of all pairs shortest path length using a modified floyd-warshall
-    algorithm with arbitrary path
-    length functions. The following path length function is valid:
+    """Implementation of algorithm:
 
-    $$
-    C = \frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
-    $$
+    .. math::
 
-    Where $a_i$ and $b_i$ is the weight 'a' and 'b' of the *ith* edge in the path
+       C = \\frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
+
+    Where :math:`a_i` and :math:`b_i` is the weight 'a' and 'b' of the *ith* edge in the path
     respectively.
-    $\\sum_{i}^{n}{a_i}$ is the accumulated sum of weights 'a' and $\\prod_{i}^{n}{b_i}$
-     is the accumulated product of weights 'b'. Arbitrarily complex path functions with
-      arbitrary numbers of weights
-     ($a, b, c,...$) can be used in the algorithm.
+    :math:`\\sum_{i}^{n}{a_i}` is the accumulated sum of weights 'a' and
+    :math:`\\prod_{i}^{n}{b_i}` is the accumulated product of weights 'b'.
+    Arbitrarily complex path functions with arbitrary numbers of weights
+    (:math:`a, b, c,...`) can be used in the algorithm.
 
     Because arbitrary functions are used, the shortest path between ij and jk does not
-    necessarily mean the shortest
-    path nodes ijk is the concatenation of these two paths. In other words, for the
-    shortest path $p_{ik}$ between
-    nodes $i$ $j$ and $k$:
+    necessarily mean the shortest path nodes ijk is the concatenation of these two
+    paths. In other words, for the shortest path :math:`p_{ik}` between
+    nodes :math:`i` :math:`j` and :math:`k`:
 
-    $$
-    p_{ij} + p_{jk} \neq p_{ijk}
-    $$
+    .. math::
 
-    This means a predecessor dictionary cannot be used to reconstruct the paths easily.
-    To do so, use the modified
-    Dijkstra's algorithm below which handles arbitrary path functions.
+        p_{ij} + p_{jk} \\neq p_{ijk}
 
     :param g: the graph
     :param f: the function string that represents SymPy function to compute the weights
     :param accumulators: diciontary of symbols to accumulator functions (choose from
-                         ["PRODUCT", "SUM"] to use for accumulation of weights through
+                         ["PRODUCT" - :math:`\\prod`,
+                         "SUM" - :math:`\\sum`]
+                         to use for accumulation of weights through
                          a path. If missing "SUM" is used.
     :param nonedge: dictionary of symbol to value to use for nonedges
                     (e.g. {'weight': np.inf})
@@ -164,9 +162,9 @@ def floyd_warshall_with_efficiency(
     g: Union[nx.DiGraph, nx.Graph],
     weight_key: str,
     eff_key: str,
-    nodelist=None,
-    return_all=False,
-    dtype=None,
+    nodelist: list = None,
+    return_all: bool = False,
+    dtype: Type = None,
 ) -> np.ndarray:
     """Computes the shortest path between all pairs using the cost function:
     SUM(w) / PROD(e)

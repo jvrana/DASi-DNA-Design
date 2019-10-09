@@ -49,6 +49,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
+    "autodocsumm",
     "nbsphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.doctest",
@@ -57,6 +58,8 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "recommonmark",
 ]
+
+autodoc_default_options = {"autosummary": True}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -137,7 +140,7 @@ html_theme_options = {
     "navbar_pagenav": False,
     # Tab name for the current pages TOC. (Default: "Page")
     "navbar_pagenav_name": "Page",
-    "globaltoc_depth": 2,
+    "globaltoc_depth": 3,
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
     "source_link_position": "nav",
@@ -163,10 +166,7 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 
-# html_sidebars = {
-#     'index':    ['sidebar.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'],
-#     '**':       ['sidebar.html', 'localtoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']
-# }
+html_sidebars = {"developer/api_reference": ["localtoc.html"]}
 # html_sidebars = {
 #     'index':    ['sidebar.html'],
 #     '**':       ['sidebar.html']

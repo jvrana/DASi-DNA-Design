@@ -442,6 +442,7 @@ class AlignmentContainer(Sized):
         return alignments
 
     # TODO: break apart long alignments
+    # TODO: size_lim
     def expand(
         self,
         expand_overlaps=True,

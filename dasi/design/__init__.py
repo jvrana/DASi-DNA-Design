@@ -854,7 +854,6 @@ def get_primer_extensions(
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
-        print(sedge)
         r1 = sedge["rprimer_right_ext"]
         r2 = sedge["right_ext"]
         right_ext = no_none_or_nan(r2, r1)
@@ -866,7 +865,6 @@ def get_primer_extensions(
     predecessors = list(graph.predecessors(n1))
     if predecessors:
         pedge = graph[predecessors[0]][n1]
-        print(pedge)
         l1 = pedge["lprimer_left_ext"]
         l2 = pedge["left_ext"]
         left_ext = no_none_or_nan(l2, l1)
@@ -979,17 +977,19 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         region = group.alignments[0].subject_region
     else:
-        template = group.raw_templates[0]
+        grouping = group.groupings[0]
+        template = grouping["template"]
+        fwd = grouping["fwd"]
+        rev = grouping["rev"]
+
         tkey = template.subject_key
-        d = group.group_by_template[tkey]
-        fwd = d.get("fwd", None)
-        rev = d.get("rev", None)
         if fwd:
             lkey = fwd.subject_key
         if rev:
             rkey = rev.subject_key
-        region = group.get_template(0)
-        assert region.subject_key == tkey
+        _t = group.get_template(0)
+        assert _t.subject_key == tkey
+        region = _t.subject_region
 
     if not design[1]:
         roverhang = ""

@@ -1,4 +1,5 @@
 """DASi exceptions and warnings."""
+from .log import logger
 
 
 class DASiWarning(Warning):
@@ -19,3 +20,11 @@ class AlignmentContainerException(DASiException):
 
 class DasiDesignException(DASiException):
     """A design exception."""
+
+
+class DasiSequenceDesignException(DASiException):
+    """Sequence design exception."""
+
+
+class DasiNoPrimerPairsException(DASiException):
+    """Sequence design exception."""

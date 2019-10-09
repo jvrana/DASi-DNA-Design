@@ -277,6 +277,16 @@ class AlignmentContainer(Sized):
                     for a, b in _rev_span.ranges():
                         _rev_bind += bisect_slice_between(rev_bind, rkeys, a, b)
                 for r in _rev_bind:
+                    if f.query_region.a in r.query_region:
+                        if f.query_region.a == r.query_region.a:
+                            pass
+                        else:
+                            continue
+                    if r.query_region.b in f.query_region:
+                        if r.query_region.b == f.query_region.b:
+                            pass
+                        else:
+                            continue
                     pairs += self._create_pcr_product_alignment(
                         g, f, r, Constants.PCR_PRODUCT_WITH_PRIMERS
                     )
@@ -412,21 +422,17 @@ class AlignmentContainer(Sized):
     def pcr_alignment_groups(self):
         groups = []
         for (a, b, group_type), adict_list in self.multi_grouping_tags.items():
-            fwds, templates, revs, regions = [], [], [], []
-            for d in adict_list:
-                if d["fwd"] is not None:
-                    fwds.append(d["fwd"])
-                if d["rev"] is not None:
-                    revs.append(d["rev"])
-                templates.append(d["template"])
-                regions.append(d["query_region"])
+            g = [
+                {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
+                for d in adict_list
+            ]
+
+            regions = [d["query_region"] for d in adict_list]
+            assert len({(q.a, q.b) for q in regions}) == 1
+
             groups.append(
                 MultiPCRProductAlignmentGroup(
-                    fwds=fwds,
-                    templates=templates,
-                    revs=revs,
-                    query_region=regions[0],
-                    group_type=group_type,
+                    g, query_region=adict_list[0]["query_region"], group_type=group_type
                 )
             )
         return groups

@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 from collections.abc import Sized
-from itertools import count
+from typing import Dict
 from typing import List
 from typing import Union
 
-from dasi.constants import Constants
 from dasi.exceptions import AlignmentException
 from dasi.utils import Region
 
@@ -85,7 +84,11 @@ class Alignment(Sized):
             i = 0
 
         if self.subject_region.direction == -1:
-            subject_copy = self.subject_region[-(i + len(query_copy)) : -i]
+            b = len(self.subject_region) - i
+            a = b - len(query_copy)
+            if a == b == len(self.subject_region):
+                a = b = 0
+            subject_copy = self.subject_region[a:b]
         else:
             subject_copy = self.subject_region[i : i + len(query_copy)]
 
@@ -326,9 +329,7 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
 
     def __init__(
         self,
-        fwds: List[Alignment],
-        templates: List[Alignment],
-        revs: List[Alignment],
+        groupings: List[Dict[str:Alignment]],
         query_region: Region,
         group_type: str,
     ):
@@ -340,37 +341,19 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         :param query_region:
         :param group_type:
         """
-        self.fwds = fwds
-        self.revs = revs
-        self.raw_templates = templates
-        self._templates = [None] * len(self.raw_templates)
-        alignments = [
-            x for x in self.fwds + self.raw_templates + self.revs if x is not None
-        ]
+        self.groupings = groupings
+        self._templates = [None] * len(self.groupings)
+        fwds = [d["fwd"] for d in self.groupings]
+        revs = [d["rev"] for d in self.groupings]
+        templates = [d["template"] for d in self.groupings]
+        alignments = [a for a in fwds + revs + templates if a is not None]
         super().__init__(
             alignments=alignments, query_region=query_region, group_type=group_type
         )
 
-    def group_by_template_key(self):
-        fwd_dict = {f.subject_key: f for f in self.fwds}
-        rev_dict = {r.subject_key: r for r in self.revs}
-        data = {}
-        for template in self.raw_templates:
-            k = template.subject_key
-            fwd = fwd_dict.get(k, None)
-            rev = rev_dict.get(k, None)
-            if fwd is None and fwd_dict:
-                raise ValueError
-            if rev is None and rev_dict:
-                raise ValueError
-            data[template.subject_key] = {"fwd": fwd, "rev": rev, "template": template}
-
     def get_template(self, index):
         if self._templates[index] is None:
-            intersection = self.raw_templates[index].query_region.intersection(
-                self.query_region
-            )
-            self._templates[index] = self.raw_templates[index].sub_region(
-                intersection.a, intersection.b
-            )
+            template = self.groupings[index]["template"]
+            intersection = template.query_region.intersection(self.query_region)
+            self._templates[index] = template.sub_region(intersection.a, intersection.b)
         return self._templates[index]

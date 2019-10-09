@@ -191,6 +191,82 @@ class TestExpandPrimers:
         assert len(alignments) == 2
 
     @pytest.mark.parametrize(
+        "x", [(200, 240, 190, 220), (200, 240, 199, 240), (200, 240, 200, 239)]
+    )
+    def test_invalid_pair(self, container, x):
+        """
+        These DO NOT produce PCR products.
+        ::
+
+                ---------->
+            <--------
+        :param container:
+        :return:
+        """
+        new_alignment_in_container(container, 110, 900, Constants.PCR_PRODUCT)
+        assert len(container) == 2
+
+        # add primers
+        new_alignment_in_container(container, x[0], x[1], Constants.PRIMER)
+        new_alignment_in_container(container, x[2], x[3], Constants.PRIMER, -1)
+        assert len(container) == 4
+
+        # expand and check
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
+        assert len(alignments) == 4
+
+    # TODO: THESE SHOULD BE THEIR OWN TYPE...
+    def test_primer_overlap(self, container):
+        """
+        These DO produce PCR products.
+        ::
+
+            ---------->
+                   <--------
+        :param container:
+        :return:
+        """
+        new_alignment_in_container(container, 110, 900, Constants.PCR_PRODUCT)
+        assert len(container) == 2
+
+        # add primers
+        new_alignment_in_container(container, 200, 240, Constants.PRIMER)
+        new_alignment_in_container(container, 220, 260, Constants.PRIMER, -1)
+        assert len(container) == 4
+
+        # expand and check
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
+        assert len(alignments) == 6
+
+    def test_primer_dimer(self, container):
+        """
+        These DO produce PCR products.
+        ::
+
+            ---------->
+            <----------
+        :param container:
+        :return:
+        """
+        new_alignment_in_container(container, 110, 900, Constants.PCR_PRODUCT)
+        assert len(container) == 2
+
+        # add primers
+        new_alignment_in_container(container, 200, 240, Constants.PRIMER)
+        new_alignment_in_container(container, 200, 240, Constants.PRIMER, -1)
+        assert len(container) == 4
+
+        # expand and check
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT)
+        )
+        assert len(alignments) == 6
+
+    @pytest.mark.parametrize(
         "x",
         [
             ([(200, 230), (220, 250)], [(750, 800), (800, 830)], 8),

@@ -21,6 +21,7 @@ from .alignment import AlignmentGroup
 from .alignment import MultiPCRProductAlignmentGroup
 from .alignment import PCRProductAlignmentGroup
 from dasi.constants import Constants
+from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
 from dasi.utils import bisect_slice_between
@@ -253,7 +254,7 @@ class AlignmentContainer(Sized):
         self._new_multi_pcr_grouping_tag(product_group)
         return [product_group]
 
-    def expand_primer_extension_products(self):
+    def expand_primer_extension_products(self, only_one_required=False):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
         rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
@@ -276,17 +277,19 @@ class AlignmentContainer(Sized):
                 pairs += self._create_primer_extension_alignment(
                     f, r, Constants.PRIMER_EXTENSION_PRODUCT
                 )
-        for f in fwd:
-            # existing fwd primer
-            pairs += self._create_primer_extension_alignment(
-                f, None, Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER
-            )
 
-        for r in rev:
-            # existing fwd primer
-            pairs += self._create_primer_extension_alignment(
-                None, r, Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER
-            )
+        if only_one_required:
+            for f in fwd:
+                # existing fwd primer
+                pairs += self._create_primer_extension_alignment(
+                    f, None, Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER
+                )
+
+            for r in rev:
+                # existing fwd primer
+                pairs += self._create_primer_extension_alignment(
+                    None, r, Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER
+                )
         return pairs
 
     def expand_primer_pairs(
@@ -350,7 +353,6 @@ class AlignmentContainer(Sized):
                     pairs += self._create_pcr_product_alignment(
                         g, f, r, Constants.PCR_PRODUCT_WITH_PRIMERS
                     )
-
             # left primer
             for f in fwd_bind:
                 pairs += self._create_pcr_product_alignment(
@@ -423,7 +425,7 @@ class AlignmentContainer(Sized):
 
     # TODO: break apart long alignments
     def expand(
-        self, expand_overlaps=True, expand_primers=True, expand_primer_dimers=True
+        self, expand_overlaps=True, expand_primers=True, expand_primer_dimers=False
     ):
         """Expand the number of alignments in this container using overlaps or
         primers.
@@ -445,7 +447,7 @@ class AlignmentContainer(Sized):
 
         # TODO: why not expand overlaps using the primer pairs???
         if expand_overlaps:
-            expanded = self.expand_overlaps(templates)
+            expanded = self.expand_overlaps(templates, atype=Constants.PCR_PRODUCT)
             self.alignments += expanded
 
         # TODO: trim min and max products, ignoring primer dimers, which other other properties.

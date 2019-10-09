@@ -154,3 +154,13 @@ MoleculeType(
     efficiency=0.0,
     synthesize=False,
 )
+
+
+MoleculeType(
+    name=Constants.PRIMER,
+    design=None,
+    use_direct=False,
+    cost=inf,
+    efficiency=0.0,
+    synthesize=False,
+)

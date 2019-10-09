@@ -476,9 +476,16 @@ class TestExpandPrimers:
         assert not groups
 
 
-class TestExpandPrimerDimers:
+class TestExpandPrimerExtensions:
     @pytest.mark.parametrize(
-        "x", [(200, 240, 190, 220), (200, 240, 199, 240), (200, 240, 200, 239)]
+        "x",
+        [
+            (200, 240, 190, 220),
+            (200, 240, 199, 240),
+            (200, 240, 200, 239),
+            (200, 240, 230, 260),
+            (200, 240, 300, 330),
+        ],
     )
     def test_invalid_pair(self, container, x):
         """

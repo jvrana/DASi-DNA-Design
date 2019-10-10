@@ -150,18 +150,27 @@ def design_edge(
     qrecord = seqdb[query_key]
     # contains information about templates and queries
 
+    sequence_result = {}
     if edge[-1]["type_def"].int_or_ext == "external":
         if moltype.use_direct:
             # this is a fragment used directly in an assembly
-            return _use_direct(edge, seqdb)
+            sequence = _use_direct(edge, seqdb)
         elif moltype.synthesize:
             # this is either a gene synthesis fragment or already covered by the primers.
-            return _design_gap(edge, qrecord)
+            sequence = _design_gap(edge, qrecord)
+        else:
+            sequence = ""
+        sequence_result["sequence"] = sequence
     else:
         pairs, explain = _design_pcr_product_primers(edge, graph, moltype.design, seqdb)
-        print(explain)
+        if pairs:
+            sequence_result["primers"] = pairs
+        else:
+            sequence_result["primers"] = pairs
+        sequence_result["primer_explain"] = explain
         if not pairs:
             raise DasiNoPrimerPairsException("No primer pairs were found.")
+    return sequence_result
 
 
 def _use_direct(
@@ -171,7 +180,11 @@ def _use_direct(
     group = groups[0]
     sk = group.subject_keys[0]
     srecord = seqdb[sk]
-    return srecord
+    return {
+        "SUBJECT_KEY": sk,
+        "QUERY_REGION": (group.query_region.a, group.query_region.b),
+        "SEQUENCE": str(srecord.seq),
+    }
 
 
 def _skip():
@@ -188,10 +201,13 @@ def _design_gap(edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecor
         b = a + gene_size
         gene_region = edge_data["query_region"].new(a, b)
         gene_seq = gene_region.get_slice(qrecord.seq, as_type=str)
-
-        return gene_region, gene_seq
+        return {
+            "SUBJECT_KEY": None,
+            "QUERY_REGION": (gene_region.a, gene_region.b),
+            "SEQUENCE": str(gene_seq.seq),
+        }
     else:
-        return {}, {}
+        return {"SUBJECT_KEY": None, "QUERY_REGION": None, "SEQUENCE": None}
 
 
 def _design_pcr_product_primers(
@@ -269,8 +285,14 @@ def _design_pcr_product_primers(
         lseq = str(lrecord.seq)
     else:
         lseq = None
+
     # design primers
     pairs, explain = design_primers(
         tseq, region, lseq, rseq, left_overhang=loverhang, right_overhang=roverhang
     )
+    for pair in pairs:
+        pair["LEFT"]["SUBJECT_KEY"] = lkey
+
+        pair["RIGHT"]["SUBJECT_KEY"] = rkey
+        pair["PAIR"]["SUBJECT_KEY"] = tkey
     return pairs, explain

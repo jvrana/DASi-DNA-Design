@@ -86,11 +86,36 @@ class DesignResult(Iterable):
     def _design_sequences_for_assembly(self, assembly):
         seqdb = self.container.seqdb
         for n1, n2, edata in assembly.edges():
-            design_edge(assembly, n1, n2, seqdb, self.query_key)
+            seq_result = design_edge(assembly, n1, n2, seqdb, self.query_key)
+            edata["sequence_result"] = seq_result
 
     def design_sequences(self):
         for a in self.assemblies:
             self._design_sequences_for_assembly(a)
+
+    def design_sequence_output(self):
+        pass
+
+    #
+    #
+    #     for a in self.assemblies:
+    #         for n1, n2, edata in a.edges():
+    #             result = edata["sequence_result"]
+    #             mol_type = edata["type_def"]
+    #             if mol_type.int_or_ext == "internal":
+    #                 pass
+    #                 # add a new reaction
+    #                 # add template
+    #                 # add primers
+    #             elif mol_type.use_direct:
+    #                 pass
+    #                 # add fragment
+    #             elif mol_type.synthesize:
+    #                 pass
+    #                 # add synthesize
+    #             else:
+    #                 pass
+    #                 # raise Exception
 
     def __iter__(self) -> Generator[Assembly]:
         """Yield assemblies.

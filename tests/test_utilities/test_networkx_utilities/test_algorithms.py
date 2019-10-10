@@ -188,7 +188,6 @@ class TestSymPyAllPairsShortestPath:
             G,
             f="weight * eff",
             accumulators={"weight": "sum", "eff": "product"},
-            nonedge={"weight": np.inf, "eff": 0.0},
             nodelist=nodelist,
         )
         for n1, n2, edata in G.edges(data=True):

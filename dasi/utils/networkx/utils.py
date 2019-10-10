@@ -21,9 +21,9 @@ def select_from_arrs(A, B, condition):
 
 
 def replace_nan_with_inf(m):
-    return np.nan_to_num(m, nan=np.inf, copy=False, posinf=np.inf, neginf=None)
-    # m[np.isnan(m)] = np.inf
-    # return m
+    np.putmask(m, np.isnan(m), np.full_like(m, np.inf))
+    return m
+    # return np.nan_to_num(m, nan=np.inf, copy=False, posinf=np.inf, neginf=None)
 
 
 def divide(mata, matb):

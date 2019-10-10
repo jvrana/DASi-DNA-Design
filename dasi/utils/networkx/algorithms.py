@@ -139,7 +139,7 @@ def sympy_floyd_warshall(
         m_arr = [np.asarray(m) for m in matrix_dict.values()]
         p_arr = [np.asarray(m) for m in parts_dict.values()]
         C = replace_nan_with_inf(func(*m_arr))
-        C_part = replace_nan_with_inf(func(*p_arr))
+        C_part = func(*p_arr)
 
         # update
         for key, M in matrix_dict.items():
@@ -147,9 +147,8 @@ def sympy_floyd_warshall(
             c = C > C_part
 
             if np.any(c):
-                assert M.shape == part.shape
-                # matrix_dict[key] = np.asmatrix(np.choose(c, (M, part)))
-                matrix_dict[key] = np.asmatrix(select_from_arrs(part, M, C < C_part))
+                # assert M.shape == part.shape
+                np.putmask(M, c, part)
 
     m_arr = [np.asarray(m) for m in matrix_dict.values()]
     C = replace_nan_with_inf(func(*m_arr))

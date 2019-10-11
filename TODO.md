@@ -17,6 +17,7 @@ this same instance should be shared among other members of the coalition.
 
 *Sequences*
 * [IN PROGRESS] costs should be saved to Reactions
+* self blast to eliminate potential overhangs for mis-assembly
 
 *Tests*
 * add tests for checking gibson assembly and PCR products

@@ -17,7 +17,8 @@ class RepresentsMolecule:
     def __init__(self, query_region: Region, atype: str):
         self.query_region = query_region
         self.type = atype
-        assert atype in MoleculeType.types
+        if atype not in MoleculeType.types:
+            raise ValueError("atype '{}' not in MoleculeTypes".format(atype))
 
     def size_ok(self):
         size = len(self.query_region)

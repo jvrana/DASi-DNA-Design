@@ -86,8 +86,8 @@ class DesignResult(Iterable):
     def _design_sequences_for_assembly(self, assembly):
         seqdb = self.container.seqdb
         for n1, n2, edata in assembly.edges():
-            seq_result = design_edge(assembly, n1, n2, seqdb)
-            edata["sequence_result"] = seq_result
+            design_edge(assembly, n1, n2, seqdb)
+            # edata["sequence_result"] = seq_result
 
     def design_sequences(self):
         for a in self.assemblies:
@@ -177,15 +177,15 @@ class Design:
         # graph by query_key
         if seqdb is None:
             seqdb = {}
-        self._seqdb = seqdb
-        self.span_cost = span_cost
-        self.graphs = {}
-        self.results = {}
+        self._seqdb = seqdb  #: Sequence dict registry
+        self.span_cost = span_cost  #: span cost df
+        self.graphs = {}  #: Dict[str, nx.DiGraph]
+        self.results = {}  #: Dict[str, DesignResult]
         self.template_results = []
         self.fragment_results = []
         self.primer_results = []
         self.container_factory = AlignmentContainerFactory(self.seqdb)
-        self.n_jobs = n_jobs or self.DEFAULT_N_JOBS
+        self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
 
     @property
     def seqdb(self) -> Dict[str, SeqRecord]:
@@ -196,7 +196,7 @@ class Design:
         primers: List[SeqRecord],
         templates: List[SeqRecord],
         queries: List[SeqRecord],
-        fragments=None,
+        fragments: List[SeqRecord] = None,
     ):
         if fragments is None:
             fragments = []

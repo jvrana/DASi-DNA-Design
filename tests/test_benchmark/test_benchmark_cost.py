@@ -18,7 +18,7 @@ class TestBenchmarkCosts:
 @pytest.mark.parametrize(
     "query", ["pmodkan-ho-pact1-z4-er-vpr.gb", "plko-pef1a-frt-tdtomato-wpre.gb"]
 )
-def test_num_groups_vs_endpoints(benchmark, here, paths, query):
+def test_benchmark_blast(benchmark, here, paths, query):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 

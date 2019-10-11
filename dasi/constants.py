@@ -29,10 +29,10 @@ class Constants:
         "PRIMER_EXTENSION_PRODUCT"
     )  #: a pcr product that uses no template, but extends two primers
     PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER = (
-        "PRIMER_EXTENSION_PRODUCT"
+        "PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER"
     )  #: a pcr product that uses no template, but extends an existing fwd primer.
     PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER = (
-        "PRIMER_EXTENSION_PRODUCT"
+        "PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER"
     )  #: a pcr product that uses no template, but extends an existing rev primer.
 
     TEMPLATE = "TEMPLATE"  #: A template alignment group. Not an actual molecule.

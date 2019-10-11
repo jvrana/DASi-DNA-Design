@@ -1,8 +1,11 @@
 **10/10/19**
 
+*interface*
+* add a basic CLI
+* expose parameters to input file
+
 *logging/debugging*
 * add a level inbetween INFO and ERROR for logger for status update to CLI
-* add a basic CLI
 * add log to text file
 
 *Sequence Database*
@@ -18,9 +21,11 @@ this same instance should be shared among other members of the coalition.
 *Sequences*
 * [IN PROGRESS] costs should be saved to Reactions
 * self blast to eliminate potential overhangs for mis-assembly
+* max size lim and tests?
 
 *Tests*
 * add tests for checking gibson assembly and PCR products
+* [IN PROGRESS] tests for size limitations
 
 *Refactoring*
 * rename `sequence_design` to `sequence_designer`

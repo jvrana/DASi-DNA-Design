@@ -1,9 +1,17 @@
+"""molecule.py.
+
+classes representing *molecules* and types of *molecules*
+"""
 from copy import copy
+from typing import Dict
+from typing import List
 from typing import Tuple
+from typing import Union
 
 from numpy import inf
 
 from .constants import Constants
+from dasi.utils import Region
 
 
 class MoleculeType:
@@ -27,6 +35,7 @@ class MoleculeType:
         self.use_direct = use_direct
         self.synthesize = synthesize
         if name in self.types:
+            print(self.types)
             raise ValueError("Cannot re-define molecule type '{}'".format(name))
         self.types[name] = self
         self.efficiency = efficiency
@@ -40,10 +49,13 @@ class MoleculeType:
 
 
 class InternalType(MoleculeType):
+    """Molecule representing physical molecule that can be provided by the
+    lab."""
+
     def __init__(
         self,
-        name,
-        design,
+        name: str,
+        design: Tuple[bool, bool],
         use_direct: bool,
         cost: float,
         efficiency=1.0,
@@ -66,9 +78,11 @@ class InternalType(MoleculeType):
 
 
 class ExternalType(MoleculeType):
+    """Molecule to be designed."""
+
     def __init__(
         self,
-        name,
+        name: str,
         use_direct: bool,
         cost: float,
         efficiency=1.0,
@@ -144,7 +158,6 @@ MoleculeType(
     synthesize=False,
 )
 
-
 MoleculeType(
     name=Constants.PRIMER,
     design=None,
@@ -169,7 +182,12 @@ class Molecule:
     assigned to it."""
 
     def __init__(
-        self, molecule_type, alignment_group, sequence, query_region=None, metadata=None
+        self,
+        molecule_type: MoleculeType,
+        alignment_group: Union["Alignment", "AlignmentGroup"],
+        sequence: str,
+        query_region: Region = None,
+        metadata: Dict = None,
     ):
         self.type = molecule_type
         self.alignment_group = alignment_group
@@ -187,10 +205,10 @@ class Reaction:
     """An activity that takes in several Molecules and produces other
     Molecules."""
 
-    def __init__(self, name, inputs, outputs):
+    def __init__(self, name: str, inputs: List[Molecule], outputs: List[Molecule]):
         self.name = name
-        self.inputs = inputs
-        self.outputs = outputs
+        self.inputs = inputs  #: input molecules to the reaction
+        self.outputs = outputs  #: output molecule of the reaction
 
     def __repr__(self):
         return "<{cls} name='{name}' outputs={products} regions={outputs}>".format(

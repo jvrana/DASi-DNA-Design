@@ -1,5 +1,6 @@
 from os.path import join
 
+import dictdiffer
 import pytest
 from pyblast.utils import load_fasta_glob
 from pyblast.utils import load_genbank_glob
@@ -84,13 +85,31 @@ class TestMultivsSingleProcessedResults:
 
 
 class TestMultiProcessing:
-    def assembly_equiavlent(self, a1, a2):
+    def groups_equivalent(self, g1, g2):
+        assert g1.query_region == g2.query_region
+        assert g1.subject_region == g2.subject_region
+
+    def eq_assemblies(self, a1, a2):
         for e1, e2 in zip(a1.edges(), a2.edges()):
+            # check assembly nodes
             assert e1[0] == e2[0]
             assert e1[1] == e2[1]
-            assert e1[2] == e2[2]
+
+            d1 = dict(e1[2])
+            d2 = dict(e2[2])
+            del d1["groups"]
+            del d2["groups"]
+
+            d1["type_def"] = d1["type_def"].__dict__
+            d2["type_def"] = d2["type_def"].__dict__
+            diff = list(dictdiffer.diff(d1, d2))
+
+            assert not diff
 
     def test_same_results(self, single_processed_results, multi_processed_results):
+        """The output results from single and multiprocessed results should be
+        exactly the same (minus the difference in query_keys."""
+
         design1, results1 = single_processed_results
         design2, results2 = multi_processed_results
 
@@ -110,4 +129,4 @@ class TestMultiProcessing:
             r2 = results2[k2]
 
             for a1, a2 in zip(r1.assemblies, r2.assemblies):
-                self.assembly_equiavlent(a1, a2)
+                self.eq_assemblies(a1, a2)

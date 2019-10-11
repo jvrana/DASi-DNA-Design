@@ -1,5 +1,8 @@
 import json
 import os
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import dill
 import jdna
@@ -143,34 +146,52 @@ class TestExpectedSequences:
         for r in reactions:
             sequence = r.outputs[0].sequence
             group = r.outputs[0].alignment_group
-            cyclic = group.subject_region.cyclic
-            seqs.append(jdna.Sequence(sequence, cyclic=cyclic))
-
+            seqs.append(jdna.Sequence(sequence, cyclic=False))
+        for s in seqs:
+            print(str(s))
+            print()
         assemblies = jdna.Reaction.cyclic_assemblies(seqs)
+
+        g = jdna.Reaction.interaction_graph(seqs)
+        jdna.Reaction.interaction_report(g)
 
         assemblies[0].print()
 
     @pytest.fixture(scope="module")
-    def reactions_dict(self, multi_processed_results):
+    def reactions_dict(
+        self, multi_processed_results
+    ) -> Dict[str, List[List[Reaction]]]:
         design, results = multi_processed_results
         reaction_dict = {}
         for qk, result in results.items():
+            reaction_dict[qk] = []
             for assembly in result.assemblies:
-                reaction_dict[qk] = self.design_for_assembly(design, assembly)
+                reaction_dict[qk].append(self.design_for_assembly(design, assembly))
         return reaction_dict
 
     @pytest.mark.parametrize("length_only", [True, False])
     def test_check_pcr_product(
         self, multi_processed_results, reactions_dict, length_only
     ):
+        """Tests expected product length and/or product sequence."""
         tested = False
-        for qk, reactions in reactions_dict.items():
-            for r in reactions:
-                if r.name == "PCR":
-                    self.validate_pcr(r, length_only=length_only)
-                    tested = True
+        for qk, reactions_list_of_lists in reactions_dict.items():
+            for reactions_list in reactions_list_of_lists:
+                for r in reactions_list:
+                    if r.name == "PCR":
+                        self.validate_pcr(r, length_only=length_only)
+                        tested = True
         assert tested
 
     def test_gibson_assembly(self, multi_processed_results, reactions_dict):
-        for qk, reactions in reactions_dict.items():
-            self.validate_assembly(reactions)
+        design, results = multi_processed_results
+        for qk, reaction_list_of_lists in reactions_dict.items():
+            assemblies = results[qk].assemblies
+            for i, reaction_list in enumerate(reaction_list_of_lists):
+                assembly = assemblies[i]
+                print(assembly.to_df())
+                print("*" * 100)
+                print("REACTIONS:")
+                for r in reaction_list:
+                    print(r)
+                self.validate_assembly(reaction_list)

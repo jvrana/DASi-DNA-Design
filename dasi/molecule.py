@@ -26,6 +26,8 @@ class MoleculeType:
         self.cost = cost
         self.use_direct = use_direct
         self.synthesize = synthesize
+        if name in self.types:
+            raise ValueError("Cannot re-define molecule type '{}'".format(name))
         self.types[name] = self
         self.efficiency = efficiency
         self.design = design

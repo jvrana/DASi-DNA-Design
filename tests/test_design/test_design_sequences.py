@@ -1,10 +1,7 @@
 import json
 import os
-from typing import Dict
 
 import dill
-import pytest
-from Bio import SeqRecord
 from primer3plus.utils import anneal
 from primer3plus.utils import reverse_complement as rc
 from pyblast.utils import load_fasta_glob
@@ -12,11 +9,8 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
-from dasi.alignments import AlignmentGroup
-from dasi.cost import SpanCost
 from dasi.design import Design
-from dasi.design import design_edge
-from dasi.design import design_primers
+from dasi.design.sequence_design import design_primers
 from dasi.utils import Region
 
 gfp = "ATGGTCTCTAAGGGTGAAGAATTGTTCACCGGTGTCGTCCCAATCTTGGTCGAATTGGACGGGGACGTCAACGGTCACAAGTTCTCTGTCTCTGGTGAAGGTGAAGGTGACGCTACCTACGGTAAGTTGACCTTGAAGTTCATCTGTACCACCGGTAAGTTGCCAGTCCCATGGCCAACCTTGGTCACCACCTTCGGTTACGGTGTCCAATGTTTCGCTAGATACCCAGACCACATGAAGCAACACGACTTCTTCAAGTCTGCTATGCCAGAAGGTTACGTCCAAGAAAGAACCATCTTCTTCAAGGACGACGGTAACTACAAGACCAGAGCTGAAGTCAAGTTCGAAGGTGACACCTTGGTCAACAGAATCGAATTGAAGGGTATCGACTTCAAGGAAGACGGTAACATCTTGGGTCACAAGTTGGAATACAACTACAACTCTCACAACGTCTACATCATGGCTGACAAGCAAAAGAACGGTATCAAGGTCAACTTCAAGATCAGACACAACATCGAAGACGGTTCTGTCCAATTGGCTGACCACTACCAACAAAACACCCCAATCGGTGACGGTCCAGTCTTGTTGCCAGACAACCACTACTTGTCTACCCAATCTGCTTTGTCTAAGGACCCAAACGAAAAGAGAGACCACATGGTCTTGTTGGAATTCGTCACCGCTGCTGGTATCACCCACGGTATGGACGAATTGTACAAGTAA"
@@ -112,13 +106,6 @@ def pkl_results(here, paths, query, span_cost):
         return results
 
 
-# def test_design_with_primers(here, paths, span_cost):
-#     query_path = "*.gb"
-#     results = pkl_results(here, paths, query_path, span_cost)
-#
-#     for qk, result in results.items():
-#         print(qk)
-#         assembly = result.assemblies[0]
-#         seqdb = result.container.seqdb
-#         for n1, n2, edata in assembly.edges():
-#             design_edge(assembly, n1, n2, seqdb, qk)
+class TestExpectedSequences:
+    def test_check_pcr_product_lengths(self, multi_processed_results):
+        pass

@@ -265,8 +265,8 @@ def _design_pcr_product_primers(
     print(lext, rext)
     print(loverhang, roverhang)
     query_region = group.query_region.new(
-        group.query_region.a - lext + group.query_region.context_length,
-        group.query_region.c + rext + group.query_region.context_length,
+        group.query_region.a - len(loverhang) + group.query_region.context_length,
+        group.query_region.c + len(roverhang) + group.query_region.context_length,
     )
     #     print(group.query_region)
     #     print(template.query_region)

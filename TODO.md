@@ -3,6 +3,7 @@
 *interface*
 * add a basic CLI
 * expose parameters to input file
+* convert assembly to jdna and print assembly to print to file.
 
 *logging/debugging*
 * add a level inbetween INFO and ERROR for logger for status update to CLI
@@ -30,6 +31,7 @@ this same instance should be shared among other members of the coalition.
 *Refactoring*
 * rename `sequence_design` to `sequence_designer`
 * rename `design_algorithms` to `design_optimization` or `utils`
+* replace jdna with something faster
 
 **Other**
 * Resolve TODOs

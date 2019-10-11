@@ -2,6 +2,8 @@ import json
 import os
 
 import dill
+import jdna
+import pytest
 from primer3plus.utils import anneal
 from primer3plus.utils import reverse_complement as rc
 from pyblast.utils import load_fasta_glob
@@ -10,8 +12,12 @@ from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
 from dasi.design import Design
+from dasi.design.sequence_design import design_edge
 from dasi.design.sequence_design import design_primers
+from dasi.molecule import Molecule
+from dasi.molecule import Reaction
 from dasi.utils import Region
+
 
 gfp = "ATGGTCTCTAAGGGTGAAGAATTGTTCACCGGTGTCGTCCCAATCTTGGTCGAATTGGACGGGGACGTCAACGGTCACAAGTTCTCTGTCTCTGGTGAAGGTGAAGGTGACGCTACCTACGGTAAGTTGACCTTGAAGTTCATCTGTACCACCGGTAAGTTGCCAGTCCCATGGCCAACCTTGGTCACCACCTTCGGTTACGGTGTCCAATGTTTCGCTAGATACCCAGACCACATGAAGCAACACGACTTCTTCAAGTCTGCTATGCCAGAAGGTTACGTCCAAGAAAGAACCATCTTCTTCAAGGACGACGGTAACTACAAGACCAGAGCTGAAGTCAAGTTCGAAGGTGACACCTTGGTCAACAGAATCGAATTGAAGGGTATCGACTTCAAGGAAGACGGTAACATCTTGGGTCACAAGTTGGAATACAACTACAACTCTCACAACGTCTACATCATGGCTGACAAGCAAAAGAACGGTATCAAGGTCAACTTCAAGATCAGACACAACATCGAAGACGGTTCTGTCCAATTGGCTGACCACTACCAACAAAACACCCCAATCGGTGACGGTCCAGTCTTGTTGCCAGACAACCACTACTTGTCTACCCAATCTGCTTTGTCTAAGGACCCAAACGAAAAGAGAGACCACATGGTCTTGTTGGAATTCGTCACCGCTGCTGGTATCACCCACGGTATGGACGAATTGTACAAGTAA"
 
@@ -107,5 +113,64 @@ def pkl_results(here, paths, query, span_cost):
 
 
 class TestExpectedSequences:
-    def test_check_pcr_product_lengths(self, multi_processed_results):
-        pass
+    def design_for_assembly(self, design, assembly):
+        reactions = []
+        for n1, n2, edata in assembly.edges():
+            reaction = design_edge(assembly, n1, n2, design.seqdb)
+            if reaction:
+                reactions.append(reaction)
+        return reactions
+
+    def validate_pcr(self, reaction: Reaction, length_only=False):
+        primers = [m for m in reaction.inputs if m.type.name == "PRIMER"]
+        template = [m for m in reaction.inputs if m.type.name == "TEMPLATE"][0]
+        template_seq = jdna.Sequence(
+            template.sequence, cyclic=template.alignment_group.subject_region.cyclic
+        )
+        if template.alignment_group.subject_region.direction == -1:
+            template_seq = template_seq.reverse_complement()
+        primer_seqs = [jdna.Sequence(p.sequence, cyclic=False) for p in primers]
+
+        product = jdna.Reaction.pcr(template_seq, primer_seqs)[0]
+
+        if length_only:
+            assert len(product) == len(reaction.outputs[0].query_region)
+            return
+        assert str(product).upper() == reaction.outputs[0].sequence.upper()
+
+    def validate_assembly(self, reactions):
+        seqs = []
+        for r in reactions:
+            sequence = r.outputs[0].sequence
+            group = r.outputs[0].alignment_group
+            cyclic = group.subject_region.cyclic
+            seqs.append(jdna.Sequence(sequence, cyclic=cyclic))
+
+        assemblies = jdna.Reaction.cyclic_assemblies(seqs)
+
+        assemblies[0].print()
+
+    @pytest.fixture(scope="module")
+    def reactions_dict(self, multi_processed_results):
+        design, results = multi_processed_results
+        reaction_dict = {}
+        for qk, result in results.items():
+            for assembly in result.assemblies:
+                reaction_dict[qk] = self.design_for_assembly(design, assembly)
+        return reaction_dict
+
+    @pytest.mark.parametrize("length_only", [True, False])
+    def test_check_pcr_product(
+        self, multi_processed_results, reactions_dict, length_only
+    ):
+        tested = False
+        for qk, reactions in reactions_dict.items():
+            for r in reactions:
+                if r.name == "PCR":
+                    self.validate_pcr(r, length_only=length_only)
+                    tested = True
+        assert tested
+
+    def test_gibson_assembly(self, multi_processed_results, reactions_dict):
+        for qk, reactions in reactions_dict.items():
+            self.validate_assembly(reactions)

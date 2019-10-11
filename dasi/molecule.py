@@ -22,7 +22,7 @@ class MoleculeType:
     def __init__(
         self,
         name: str,
-        design: Tuple[bool, bool],
+        design: Union[None, Tuple[bool, bool]],
         use_direct: bool,
         cost: float,
         efficiency=1.0,
@@ -35,7 +35,6 @@ class MoleculeType:
         self.use_direct = use_direct
         self.synthesize = synthesize
         if name in self.types:
-            print(self.types)
             raise ValueError("Cannot re-define molecule type '{}'".format(name))
         self.types[name] = self
         self.efficiency = efficiency
@@ -184,7 +183,7 @@ class Molecule:
     def __init__(
         self,
         molecule_type: MoleculeType,
-        alignment_group: Union["Alignment", "AlignmentGroup"],
+        alignment_group,
         sequence: str,
         query_region: Region = None,
         metadata: Dict = None,

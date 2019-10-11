@@ -143,11 +143,11 @@ def get_primer_extensions(
 def _use_direct(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
 ) -> Tuple[str, AlignmentGroup]:
-    groups = edge["groups"]
-    group = groups[0]
-    sk = group.subject_keys[0]
+    group = edge[2]["groups"][0]
+    alignment = group.alignments[0]
+    sk = alignment.subject_keys
     srecord = seqdb[sk]
-    return str(srecord.seq), group
+    return str(srecord.seq), alignment
 
 
 def _design_gap(
@@ -260,10 +260,6 @@ def _design_pcr_product_primers(
         pair["PAIR"]["SUBJECT_KEY"] = tkey
         pair["PAIR"]["GROUP"] = template
 
-    print(template.query_region)
-    print(template.subject_region.direction)
-    print(lext, rext)
-    print(loverhang, roverhang)
     query_region = group.query_region.new(
         group.query_region.a - len(loverhang) + group.query_region.context_length,
         group.query_region.c + len(roverhang) + group.query_region.context_length,
@@ -273,7 +269,7 @@ def _design_pcr_product_primers(
     #     print(group)
     #     print(len(query_region), len(group.query_region) + lext + rext, lext, rext)
     #     assert len(query_region) == len(group.query_region) + lext + rext
-    return pairs, explain, group, query_region
+    return pairs, explain, template, query_region
 
 
 def design_edge(
@@ -291,8 +287,8 @@ def design_edge(
     if edge[-1]["type_def"].int_or_ext == "external":
         if moltype.use_direct:
             # this is a fragment used directly in an assembly
-            frag_seq, frag_group = _use_direct(edge, seqdb)
-            frag_mol = Molecule(moltype, frag_group, frag_seq)
+            frag_seq, frag_alignment = _use_direct(edge, seqdb)
+            frag_mol = Molecule(moltype, frag_alignment, frag_seq)
             return Reaction("Use Direct", inputs=[], outputs=[frag_mol])
         elif moltype.synthesize:
             # this is either a gene synthesis fragment or already covered by the primers.
@@ -301,12 +297,12 @@ def design_edge(
                 subject_region = Region(
                     0, len(synthesis_region), len(synthesis_region), direction=1
                 )
-                synthesis_group = Alignment(
-                    synthesis_region, subject_region, moltype.name, query_key, None
+                synthesis_alignment = Alignment(
+                    synthesis_region, subject_region, moltype.name, query_key, ""
                 )
                 synthesis_mol = Molecule(
                     moltype,
-                    synthesis_group,
+                    synthesis_alignment,
                     synthesis_seq,
                     query_region=synthesis_region,
                 )
@@ -336,7 +332,7 @@ def design_edge(
         template = Molecule(
             MoleculeType.types[Constants.TEMPLATE],
             pair["PAIR"]["GROUP"],
-            seqdb[pair["PAIR"]["SUBJECT_KEY"]],
+            str(seqdb[pair["PAIR"]["SUBJECT_KEY"]].seq),
         )
 
         product = Molecule(

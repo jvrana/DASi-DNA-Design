@@ -16,12 +16,14 @@ from primer3plus.utils import reverse_complement as rc
 from dasi.alignments import Alignment
 from dasi.alignments import AlignmentGroup
 from dasi.constants import Constants
-from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.design.assembly import Assembly
 from dasi.design.assembly import AssemblyNode
 from dasi.exceptions import DasiNoPrimerPairsException
 from dasi.exceptions import DasiSequenceDesignException
+from dasi.molecule import Molecule
+from dasi.molecule import MoleculeType
+from dasi.molecule import Reaction
 from dasi.utils import NumpyDataFrame
 from dasi.utils import Region
 
@@ -46,8 +48,8 @@ def design_primers(
                     their end points (`.b` parameter)
     :param lseq: optionally provided left sequence
     :param rseq: optionally provided right sequence
-    :param loverhang: optionally provided left overhang sequence of the primer
-    :param roverhang: optionally provided right overhang sequence of the primer
+    :param left_overhang: optionally provided left overhang sequence of the primer
+    :param right_overhang: optionally provided right overhang sequence of the primer
     :return: tuple of pairs and the 'explain' dictionary.
     """
     design = primer3plus.new()
@@ -113,7 +115,7 @@ def no_none_or_nan(*i):
 
 def get_primer_extensions(
     graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
-):
+) -> Tuple[int, int]:
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
@@ -140,7 +142,7 @@ def get_primer_extensions(
 
 def _use_direct(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
-):
+) -> Tuple[str, AlignmentGroup]:
     groups = edge["groups"]
     group = groups[0]
     sk = group.subject_keys[0]
@@ -148,11 +150,9 @@ def _use_direct(
     return str(srecord.seq), group
 
 
-def _skip():
-    return {}, {}
-
-
-def _design_gap(edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord):
+def _design_gap(
+    edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord
+) -> Union[Tuple[str, Region], Tuple[None, None]]:
     n1, _, edge_data = edge
     gene_size = edge_data["gene_size"]
     if not np.isnan(gene_size):
@@ -172,7 +172,7 @@ def _design_pcr_product_primers(
     graph: nx.DiGraph,
     design: Tuple[bool, bool],
     seqdb: Dict[str, SeqRecord],
-):
+) -> Tuple[Dict, Dict, AlignmentGroup, Region]:
     if edge[-1]["type_def"].int_or_ext == "external":
         raise Exception()
 
@@ -276,53 +276,9 @@ def _design_pcr_product_primers(
     return pairs, explain, group, query_region
 
 
-MoleculeType(
-    name=Constants.TEMPLATE,
-    design=None,
-    use_direct=False,
-    cost=0.0,
-    efficiency=0.0,
-    synthesize=False,
-)
-
-
-class Molecule:
-    """An instance of a molecule type, with a sequence and which alignments are
-    assigned to it."""
-
-    def __init__(
-        self, molecule_type, alignment_group, sequence, query_region=None, metadata=None
-    ):
-        self.type = molecule_type
-        self.alignment_group = alignment_group
-        self.sequence = sequence
-        self.metadata = metadata or {}
-        self.query_region = query_region
-
-    def __repr__(self):
-        return "<{cls} name='{name}' group='{group}'>".format(
-            cls=self.__class__.__name__, name=self.type.name, group=self.alignment_group
-        )
-
-
-class Reaction:
-    def __init__(self, name, inputs, outputs):
-        self.name = name
-        self.inputs = inputs
-        self.outputs = outputs
-
-    def __repr__(self):
-        return "<{cls} name='{name}' outputs={products} regions={outputs}>".format(
-            cls=self.__class__.__name__,
-            name=self.name,
-            products=[m.type.name for m in self.outputs],
-            outputs=[m.query_region for m in self.outputs],
-        )
-
-
 def design_edge(
     assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
-) -> Molecule:
+) -> Union[Reaction, None]:
     query_key = assembly.query_key
     graph = assembly.graph
 
@@ -336,11 +292,8 @@ def design_edge(
         if moltype.use_direct:
             # this is a fragment used directly in an assembly
             frag_seq, frag_group = _use_direct(edge, seqdb)
-            return Reaction(
-                "Use Direct",
-                inputs=[],
-                outputs=[Molecule(moltype, frag_group, frag_seq)],
-            )
+            frag_mol = Molecule(moltype, frag_group, frag_seq)
+            return Reaction("Use Direct", inputs=[], outputs=[frag_mol])
         elif moltype.synthesize:
             # this is either a gene synthesis fragment or already covered by the primers.
             synthesis_seq, synthesis_region = _design_gap(edge, qrecord)
@@ -348,24 +301,16 @@ def design_edge(
                 subject_region = Region(
                     0, len(synthesis_region), len(synthesis_region), direction=1
                 )
-                return Reaction(
-                    "Synthesize",
-                    inputs=[],
-                    outputs=[
-                        Molecule(
-                            moltype,
-                            Alignment(
-                                synthesis_region,
-                                subject_region,
-                                moltype.name,
-                                query_key,
-                                None,
-                            ),
-                            synthesis_seq,
-                            query_region=synthesis_region,
-                        )
-                    ],
+                synthesis_group = Alignment(
+                    synthesis_region, subject_region, moltype.name, query_key, None
                 )
+                synthesis_mol = Molecule(
+                    moltype,
+                    synthesis_group,
+                    synthesis_seq,
+                    query_region=synthesis_region,
+                )
+                return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
             else:
                 return None
         else:

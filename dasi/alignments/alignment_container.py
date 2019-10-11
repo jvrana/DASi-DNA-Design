@@ -21,9 +21,9 @@ from .alignment import AlignmentGroup
 from .alignment import MultiPCRProductAlignmentGroup
 from .alignment import PCRProductAlignmentGroup
 from dasi.constants import Constants
-from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
+from dasi.molecule import MoleculeType
 from dasi.utils import bisect_slice_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys

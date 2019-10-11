@@ -14,9 +14,9 @@ from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentGroup
 from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
-from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.log import logger
+from dasi.molecule import MoleculeType
 from dasi.utils import bisect_between
 from dasi.utils import sort_with_keys
 

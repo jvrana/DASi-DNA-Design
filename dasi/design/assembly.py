@@ -18,10 +18,10 @@ from pyblast.utils import is_circular
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
-from dasi.constants import MoleculeType
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
 from dasi.log import logger
+from dasi.molecule import MoleculeType
 from dasi.utils import sort_cycle
 
 

@@ -6,8 +6,8 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentException
+from dasi.molecule import MoleculeType
 from dasi.utils import Region
 
 

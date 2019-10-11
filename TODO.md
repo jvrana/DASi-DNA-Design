@@ -15,8 +15,15 @@
 * AlignmentGroups should be shared directly. When a sequence is designed,
 this same instance should be shared among other members of the coalition.
 
+*Sequences*
+* costs should be saved to Reactions
+
 *Tests*
 * add tests for checking gibson assembly and PCR products
+
+*Refactoring*
+* rename `sequence_design` to `sequence_designer`
+* rename `design_algorithms` to `design_optimization` or `utils`
 
 **Other**
 

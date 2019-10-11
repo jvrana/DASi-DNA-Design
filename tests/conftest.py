@@ -29,7 +29,7 @@ pd.set_option("display.width", desired_width)
 pd.set_option("display.max_columns", 20)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def here():
     return dirname(abspath(__file__))
 
@@ -40,7 +40,7 @@ QUERIES = "queries"
 REGISTRY = "registry"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def paths(here):
     return {
         PRIMERS: join(here, "data/test_data/primers/primers.fasta"),
@@ -52,7 +52,7 @@ def paths(here):
     }
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def blast_factory(paths):
     factory = BioBlastFactory()
 
@@ -65,3 +65,8 @@ def blast_factory(paths):
     factory.add_records(queries, QUERIES)
 
     return factory
+
+
+def pytest_assertrepr_compare(config, op, left, right):
+    if op in ("==", "!="):
+        return ["{} {} {}".format(left, op, right)]

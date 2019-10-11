@@ -86,7 +86,7 @@ class DesignResult(Iterable):
     def _design_sequences_for_assembly(self, assembly):
         seqdb = self.container.seqdb
         for n1, n2, edata in assembly.edges():
-            seq_result = design_edge(assembly, n1, n2, seqdb, self.query_key)
+            seq_result = design_edge(assembly, n1, n2, seqdb)
             edata["sequence_result"] = seq_result
 
     def design_sequences(self):

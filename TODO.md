@@ -1,3 +1,25 @@
+**10/10/19**
+
+*logging/debugging*
+* add a level inbetween INFO and ERROR for logger for status update to CLI
+* add a basic CLI
+* add log to text file
+
+*Sequence Database*
+* save filename and path for SeqRecord on load
+
+*Coalition optimization*
+* shared templates? select from same templates, if possible
+* shared sequences and fragments?
+* shared primers?
+* AlignmentGroups should be shared directly. When a sequence is designed,
+this same instance should be shared among other members of the coalition.
+
+*Tests*
+* add tests for checking gibson assembly and PCR products
+
+**Other**
+
 * Basic design of sequences
 * Bayesian optimization to design junctions
 * Back convert assemblies to a plan

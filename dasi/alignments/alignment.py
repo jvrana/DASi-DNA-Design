@@ -304,18 +304,17 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         if fwd is None and rev is None:
             raise AlignmentException("Must provide either a fwd and/or rev alignments")
         alignments = [x for x in [fwd, template, rev] if x is not None]
+
         a = alignments[0].query_region.a
         b = alignments[-1].query_region.b
 
         query_region = query_region.new(a, b)
+
         self.raw_template = template
         self._template = None
         self.fwd = fwd
         self.rev = rev
 
-        alignments = [
-            x for x in [self.fwd, self.raw_template, self.rev] if x is not None
-        ]
         super().__init__(
             alignments=alignments,
             group_type=group_type,

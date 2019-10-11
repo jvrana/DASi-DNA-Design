@@ -230,12 +230,7 @@ class AlignmentContainer(Sized):
             if lim_size and not product_group.size_ok():
                 continue
 
-            self._new_pcr_grouping_tag(
-                product_group.fwd,
-                product_group.raw_template,
-                product_group.rev,
-                atype=alignment_type,
-            )
+            self._new_pcr_grouping_tag(fwd, a, rev, atype=alignment_type)
             self._new_multi_pcr_grouping_tag(product_group)
             groups.append(product_group)
         return groups
@@ -488,7 +483,7 @@ class AlignmentContainer(Sized):
         group_key = (key, atype)
         self.grouping_tags[group_key] = {"fwd": fwd, "template": template, "rev": rev}
 
-    def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup, key=None):
+    def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
         group_key = (group.query_region.a, group.query_region.b, group.type)
         self.multi_grouping_tags.setdefault(group_key, list())
         self.multi_grouping_tags[group_key].append(

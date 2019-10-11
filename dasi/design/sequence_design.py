@@ -13,7 +13,10 @@ import primer3plus
 from Bio.SeqRecord import SeqRecord
 from primer3plus.utils import reverse_complement as rc
 
+from dasi.alignments import Alignment
 from dasi.alignments import AlignmentGroup
+from dasi.constants import Constants
+from dasi.constants import MoleculeType
 from dasi.cost import SpanCost
 from dasi.design.assembly import Assembly
 from dasi.design.assembly import AssemblyNode
@@ -135,44 +138,6 @@ def get_primer_extensions(
     return int(left_ext), int(right_ext)
 
 
-def design_edge(
-    assembly: Assembly,
-    n1: AssemblyNode,
-    n2: AssemblyNode,
-    seqdb: Dict[str, SeqRecord],
-    query_key: str,
-):
-    graph = assembly.graph
-
-    edge = n1, n2, graph[n1][n2]
-
-    moltype = edge[2]["type_def"]
-    qrecord = seqdb[query_key]
-    # contains information about templates and queries
-
-    sequence_result = {}
-    if edge[-1]["type_def"].int_or_ext == "external":
-        if moltype.use_direct:
-            # this is a fragment used directly in an assembly
-            sequence = _use_direct(edge, seqdb)
-        elif moltype.synthesize:
-            # this is either a gene synthesis fragment or already covered by the primers.
-            sequence = _design_gap(edge, qrecord)
-        else:
-            sequence = ""
-        sequence_result["sequence"] = sequence
-    else:
-        pairs, explain = _design_pcr_product_primers(edge, graph, moltype.design, seqdb)
-        if pairs:
-            sequence_result["primers"] = pairs
-        else:
-            sequence_result["primers"] = pairs
-        sequence_result["primer_explain"] = explain
-        if not pairs:
-            raise DasiNoPrimerPairsException("No primer pairs were found.")
-    return sequence_result
-
-
 def _use_direct(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
 ):
@@ -180,11 +145,7 @@ def _use_direct(
     group = groups[0]
     sk = group.subject_keys[0]
     srecord = seqdb[sk]
-    return {
-        "SUBJECT_KEY": sk,
-        "QUERY_REGION": (group.query_region.a, group.query_region.b),
-        "SEQUENCE": str(srecord.seq),
-    }
+    return str(srecord.seq), group
 
 
 def _skip():
@@ -201,13 +162,9 @@ def _design_gap(edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecor
         b = a + gene_size
         gene_region = edge_data["query_region"].new(a, b)
         gene_seq = gene_region.get_slice(qrecord.seq, as_type=str)
-        return {
-            "SUBJECT_KEY": None,
-            "QUERY_REGION": (gene_region.a, gene_region.b),
-            "SEQUENCE": str(gene_seq.seq),
-        }
+        return gene_seq, gene_region
     else:
-        return {"SUBJECT_KEY": None, "QUERY_REGION": None, "SEQUENCE": None}
+        return None, None
 
 
 def _design_pcr_product_primers(
@@ -248,24 +205,24 @@ def _design_pcr_product_primers(
     # collect template, left primer, and right primer keys
 
     lkey, rkey = None, None
+    fwd, template, rev = None, None, None
     if design == (1, 1):
         assert isinstance(group, AlignmentGroup)
         tkey = group.subject_keys[0]
-        region = group.alignments[0].subject_region
+        template = group.alignments[0]
     else:
         grouping = group.groupings[0]
-        template = grouping["template"]
+        template = group.get_template(0)
+        assert grouping["template"].subject_key == template.subject_key
+
+        # get primer keys
         fwd = grouping["fwd"]
         rev = grouping["rev"]
-
         tkey = template.subject_key
         if fwd:
             lkey = fwd.subject_key
         if rev:
             rkey = rev.subject_key
-        _t = group.get_template(0)
-        assert _t.subject_key == tkey
-        region = _t.subject_region
 
     if not design[1]:
         roverhang = ""
@@ -288,11 +245,160 @@ def _design_pcr_product_primers(
 
     # design primers
     pairs, explain = design_primers(
-        tseq, region, lseq, rseq, left_overhang=loverhang, right_overhang=roverhang
+        tseq,
+        template.subject_region,
+        lseq,
+        rseq,
+        left_overhang=loverhang,
+        right_overhang=roverhang,
     )
-    for pair in pairs:
+    for pair in pairs.values():
         pair["LEFT"]["SUBJECT_KEY"] = lkey
-
+        pair["LEFT"]["GROUP"] = fwd
         pair["RIGHT"]["SUBJECT_KEY"] = rkey
+        pair["RIGHT"]["GROUP"] = rev
         pair["PAIR"]["SUBJECT_KEY"] = tkey
-    return pairs, explain
+        pair["PAIR"]["GROUP"] = template
+
+    print(template.query_region)
+    print(template.subject_region.direction)
+    print(lext, rext)
+    print(loverhang, roverhang)
+    query_region = group.query_region.new(
+        group.query_region.a - lext + group.query_region.context_length,
+        group.query_region.c + rext + group.query_region.context_length,
+    )
+    #     print(group.query_region)
+    #     print(template.query_region)
+    #     print(group)
+    #     print(len(query_region), len(group.query_region) + lext + rext, lext, rext)
+    #     assert len(query_region) == len(group.query_region) + lext + rext
+    return pairs, explain, group, query_region
+
+
+MoleculeType(
+    name=Constants.TEMPLATE,
+    design=None,
+    use_direct=False,
+    cost=0.0,
+    efficiency=0.0,
+    synthesize=False,
+)
+
+
+class Molecule:
+    """An instance of a molecule type, with a sequence and which alignments are
+    assigned to it."""
+
+    def __init__(
+        self, molecule_type, alignment_group, sequence, query_region=None, metadata=None
+    ):
+        self.type = molecule_type
+        self.alignment_group = alignment_group
+        self.sequence = sequence
+        self.metadata = metadata or {}
+        self.query_region = query_region
+
+    def __repr__(self):
+        return "<{cls} name='{name}' group='{group}'>".format(
+            cls=self.__class__.__name__, name=self.type.name, group=self.alignment_group
+        )
+
+
+class Reaction:
+    def __init__(self, name, inputs, outputs):
+        self.name = name
+        self.inputs = inputs
+        self.outputs = outputs
+
+    def __repr__(self):
+        return "<{cls} name='{name}' outputs={products} regions={outputs}>".format(
+            cls=self.__class__.__name__,
+            name=self.name,
+            products=[m.type.name for m in self.outputs],
+            outputs=[m.query_region for m in self.outputs],
+        )
+
+
+def design_edge(
+    assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
+) -> Molecule:
+    query_key = assembly.query_key
+    graph = assembly.graph
+
+    edge = n1, n2, graph[n1][n2]
+
+    moltype = edge[2]["type_def"]
+    qrecord = seqdb[query_key]
+    # contains information about templates and queries
+
+    if edge[-1]["type_def"].int_or_ext == "external":
+        if moltype.use_direct:
+            # this is a fragment used directly in an assembly
+            frag_seq, frag_group = _use_direct(edge, seqdb)
+            return Reaction(
+                "Use Direct",
+                inputs=[],
+                outputs=[Molecule(moltype, frag_group, frag_seq)],
+            )
+        elif moltype.synthesize:
+            # this is either a gene synthesis fragment or already covered by the primers.
+            synthesis_seq, synthesis_region = _design_gap(edge, qrecord)
+            if synthesis_seq:
+                subject_region = Region(
+                    0, len(synthesis_region), len(synthesis_region), direction=1
+                )
+                return Reaction(
+                    "Synthesize",
+                    inputs=[],
+                    outputs=[
+                        Molecule(
+                            moltype,
+                            Alignment(
+                                synthesis_region,
+                                subject_region,
+                                moltype.name,
+                                query_key,
+                                None,
+                            ),
+                            synthesis_seq,
+                            query_region=synthesis_region,
+                        )
+                    ],
+                )
+            else:
+                return None
+        else:
+            return None
+    else:
+        pairs, explain, group, query_region = _design_pcr_product_primers(
+            edge, graph, moltype.design, seqdb
+        )
+        if not pairs:
+            raise DasiNoPrimerPairsException("No primer pairs were found.")
+        pair = pairs[0]
+        primers = []
+        for x in ["LEFT", "RIGHT"]:
+            primer_seq = pair[x]["OVERHANG"] + pair[x]["SEQUENCE"]
+            primer_group = pair[x]["GROUP"]
+            primer = Molecule(
+                MoleculeType.types[Constants.PRIMER],
+                primer_group,
+                primer_seq,
+                metadata=pair[x],
+            )
+            primers.append(primer)
+        template = Molecule(
+            MoleculeType.types[Constants.TEMPLATE],
+            pair["PAIR"]["GROUP"],
+            seqdb[pair["PAIR"]["SUBJECT_KEY"]],
+        )
+
+        product = Molecule(
+            moltype,
+            group,
+            query_region.get_slice(seqdb[query_key], as_type=str),
+            query_region=query_region,
+        )
+
+        return Reaction("PCR", inputs=primers + [template], outputs=[product])

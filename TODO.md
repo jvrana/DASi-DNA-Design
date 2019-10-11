@@ -16,7 +16,7 @@
 this same instance should be shared among other members of the coalition.
 
 *Sequences*
-* costs should be saved to Reactions
+* [IN PROGRESS] costs should be saved to Reactions
 
 *Tests*
 * add tests for checking gibson assembly and PCR products
@@ -26,7 +26,7 @@ this same instance should be shared among other members of the coalition.
 * rename `design_algorithms` to `design_optimization` or `utils`
 
 **Other**
-
+* Resolve TODOs
 * Basic design of sequences
 * Bayesian optimization to design junctions
 * Back convert assemblies to a plan

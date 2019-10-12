@@ -85,6 +85,8 @@ def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -> List[tuple]:
     def bisect_iterator(nlist, nkeys):
         _i = bisect.bisect_right(nkeys, length)
         for i, A in enumerate(nlist[:_i]):
+            if A.type != "A":
+                continue
             _j = bisect.bisect_left(nkeys, A.index + length)
             for B in nlist[_j:]:
                 if B.type == "B":

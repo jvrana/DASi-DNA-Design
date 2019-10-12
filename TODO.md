@@ -48,6 +48,17 @@ this same instance should be shared among other members of the coalition.
 * primers for amplification of synthesis fragments
 * contrived tests with primer and gene designs
 
+*algorithm improvements*
+* eliminating non-sensical cycles. (e.g. 1000 -> 500 -> 501 -> 1000)
+* black-listed homology edges during modified floyd-warshall algorithm.
+During the computation of shortest path lengths between pairs. Blacklisted
+edges maintained separately. Would need keep an up-to-date matrix
+of blacklisted node as in floyd-warshall. Considered path would
+be normal cost + blacklisted (0 or inf). Blacklisted edges determined
+by blast searching goal plasmids with themselves and finding alignment
+groups whose ends fall within these blacklisted region.
+
+
 **Possible Failure Modes**
 
 * overhang are homologous to other overhangs. This could be translated to some global score.

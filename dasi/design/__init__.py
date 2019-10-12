@@ -57,7 +57,7 @@ class DesignResult(Iterable):
         """
         return tuple(self._assemblies)
 
-    def _new(self, path: List[AssemblyNode]):
+    def _add_assembly_from_path(self, path: List[AssemblyNode]):
         return Assembly(path, self.container, self.graph, self.query_key, self.query)
 
     def add_assembly(self, path: List[AssemblyNode]):
@@ -66,7 +66,7 @@ class DesignResult(Iterable):
         :param path: list of nodes
         :return: None
         """
-        assembly = self._new(path)
+        assembly = self._add_assembly_from_path(path)
         cost = assembly.cost()
         n_nodes = len(assembly._nodes)
         k = (cost, n_nodes)

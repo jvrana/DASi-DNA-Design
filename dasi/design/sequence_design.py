@@ -116,23 +116,32 @@ def no_none_or_nan(*i):
 def get_primer_extensions(
     graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
 ) -> Tuple[int, int]:
+    """Return the left and right primer extensions for the given *internal*
+    fragment. To get the extensions, we look for the left predecessor edge and
+    get its `right_ext` or `rprimer_right_ext` and on the other side the right
+    successor edge and its `left_ext` or `lprimer_left_ext`.
+
+    :param graph: assembly graph
+    :param n1: source node on the graph
+    :param n2: end node on the graph
+    :param cyclic: whether the
+    :return: tuple of left and right extensions
+    """
+    # the successors 'left' primer is the fragments 'right' primer extension
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
-        r1 = sedge["rprimer_right_ext"]
-        r2 = sedge["right_ext"]
-        right_ext = no_none_or_nan(r2, r1)
+        right_ext = no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
         raise DasiSequenceDesignException
     else:
         right_ext = 0
 
+    # the predecessors 'right' primer is the fragments 'left' primer extension
     predecessors = list(graph.predecessors(n1))
     if predecessors:
         pedge = graph[predecessors[0]][n1]
-        l1 = pedge["lprimer_left_ext"]
-        l2 = pedge["left_ext"]
-        left_ext = no_none_or_nan(l2, l1)
+        left_ext = no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
         raise DasiSequenceDesignException
     else:

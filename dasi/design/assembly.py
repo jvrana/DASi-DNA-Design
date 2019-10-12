@@ -143,9 +143,9 @@ class Assembly(Iterable):
 
             # TODO: add this check
             # if rn1 in subgraph:
-            #     raise ValueError("Node already exists in subgraph")
+            #     raise DasiDesignException("Node already exists in subgraph")
             # if rn2 in subgraph:
-            #     raise ValueError("Node already exists in subgraph")
+            #     raise DasiDesignException("Node already exists in subgraph")
 
             subgraph.add_edge(rn1, rn2, **edata)
         return subgraph

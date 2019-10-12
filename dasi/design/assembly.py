@@ -39,17 +39,23 @@ class Assembly(Iterable):
         query: SeqRecord,
     ):
         self.logger = logger(self)
+        self._nodes = tuple(nodes)
+        self.validate_input_nodes()
+
+        self.query_key = query_key
+        self.query = query
+        self._full_graph = full_assembly_graph
+
         self.container = container
         self.groups = container.groups()
         if len(self.groups) == 0:
             raise DasiDesignException("No groups were found in container.")
-        self.query_key = query_key
-        self.query = query
-        self._nodes = tuple(nodes)
-        self._full_graph = full_assembly_graph
         self.graph = self._subgraph(self._full_graph, nodes)
         nx.freeze(self.graph)
-        self.validate()
+
+        for n1, n2, edata in self.edges():
+            if n1.type == n2.type:
+                raise ValueError("Invalid assembly graph")
 
     def _head(self):
         """Get the 'first' 'A' node."""
@@ -59,33 +65,21 @@ class Assembly(Iterable):
     def _sorted_edges(self):
         head = self._head()
         edges = list(nx.bfs_edges(self.graph, head))
+        print([(n.index, n.type) for n in self._nodes])
         edges += [
             (t[1], t[0])
             for t in nx.bfs_edges(self.graph, head, reverse=True, depth_limit=1)
         ]
+        print([(t[0].index, t[1].index, t[0].type, t[1].type) for t in edges])
+
         return edges
 
-    def validate(self):
+    def validate_input_nodes(self):
         # rule 1 A -> B -> A -> B -> ...
-        print("INPUT NODES")
         types = [n.type for n in self._nodes]
         groups = [list(g) for _, g in groupby(types)]
-        print(self._nodes)
-        print(groups)
         if len(types) != len(groups):
             raise ValueError("There invalid edges input nodes")
-
-        nodes = []
-        for n1, n2 in self.graph.edges():
-            if not nodes:
-                nodes.append(n1)
-            nodes.append(n2)
-        print(nodes)
-        types = [n.type for n in nodes]
-        groups = [list(g) for _, g in groupby(types)]
-        print(groups)
-        if len(types) != len(groups):
-            raise ValueError("There invalid edges in the subgraph")
 
     @staticmethod
     def _missing_edata():
@@ -143,11 +137,17 @@ class Assembly(Iterable):
 
             edata["groups"] = groups
             edata["query_region"] = query_region
-            print(n1, n2)
 
-            subgraph.add_edge(
-                _resolve(n1, query_region)[0], _resolve(n2, query_region)[0], **edata
-            )
+            rn1 = _resolve(n1, query_region)[0]
+            rn2 = _resolve(n2, query_region)[0]
+
+            # TODO: add this check
+            # if rn1 in subgraph:
+            #     raise ValueError("Node already exists in subgraph")
+            # if rn2 in subgraph:
+            #     raise ValueError("Node already exists in subgraph")
+
+            subgraph.add_edge(rn1, rn2, **edata)
         return subgraph
 
     @property

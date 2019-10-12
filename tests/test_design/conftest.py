@@ -20,6 +20,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 do_save = True
 
 
+LIM_NUM_DESIGNS = None
+
+
 @pytest.fixture(scope="session")
 def span_cost() -> SpanCost:
     """Saves the span cost as bytes; reloads when called."""
@@ -48,7 +51,7 @@ def _processed_results(here, paths, span_cost) -> Callable:
             templates = load_genbank_glob(paths["templates"])
 
             query_path = join(here, "data/test_data/genbank/designs/*.gb")
-            queries = make_circular(load_genbank_glob(query_path))[:3]
+            queries = make_circular(load_genbank_glob(query_path))[:LIM_NUM_DESIGNS]
 
             design = Design(span_cost=span_cost)
             design.add_materials(primers=primers, templates=templates, queries=queries)

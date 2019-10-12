@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import groupby
 from itertools import zip_longest
 from typing import Dict
 from typing import Generator
@@ -48,6 +49,43 @@ class Assembly(Iterable):
         self._full_graph = full_assembly_graph
         self.graph = self._subgraph(self._full_graph, nodes)
         nx.freeze(self.graph)
+        self.validate()
+
+    def _head(self):
+        """Get the 'first' 'A' node."""
+        x = sorted(list(self.graph.nodes), key=lambda n: (n.type == "B", n.index))
+        return x[0]
+
+    def _sorted_edges(self):
+        head = self._head()
+        edges = list(nx.bfs_edges(self.graph, head))
+        edges += [
+            (t[1], t[0])
+            for t in nx.bfs_edges(self.graph, head, reverse=True, depth_limit=1)
+        ]
+        return edges
+
+    def validate(self):
+        # rule 1 A -> B -> A -> B -> ...
+        print("INPUT NODES")
+        types = [n.type for n in self._nodes]
+        groups = [list(g) for _, g in groupby(types)]
+        print(self._nodes)
+        print(groups)
+        if len(types) != len(groups):
+            raise ValueError("There invalid edges input nodes")
+
+        nodes = []
+        for n1, n2 in self.graph.edges():
+            if not nodes:
+                nodes.append(n1)
+            nodes.append(n2)
+        print(nodes)
+        types = [n.type for n in nodes]
+        groups = [list(g) for _, g in groupby(types)]
+        print(groups)
+        if len(types) != len(groups):
+            raise ValueError("There invalid edges in the subgraph")
 
     @staticmethod
     def _missing_edata():
@@ -105,6 +143,8 @@ class Assembly(Iterable):
 
             edata["groups"] = groups
             edata["query_region"] = query_region
+            print(n1, n2)
+
             subgraph.add_edge(
                 _resolve(n1, query_region)[0], _resolve(n2, query_region)[0], **edata
             )
@@ -126,7 +166,12 @@ class Assembly(Iterable):
         return material / efficiency
 
     def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
-        return self.graph.edges(data=data)
+        for n1, n2 in self._sorted_edges():
+            if data:
+                edata = self.graph[n1][n2]
+                yield n1, n2, edata
+            else:
+                yield n1, n2
 
     def nodes(self, data=True) -> Iterable[Tuple[AssemblyNode, Dict]]:
         return self.graph.nodes(data=data)

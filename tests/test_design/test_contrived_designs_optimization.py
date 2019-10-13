@@ -258,13 +258,15 @@ def test_design_with_overlaps_with_templates(span_cost):
     make_circular([goal])
 
     r1 = goal[-40:] + goal[:1000]
-    r2 = goal[950:2000]
+    r2 = goal[970:2000]
     r3 = goal[1950:]
-    make_linear([r1, r2, r3])
+    p1 = goal[-40:]
+
+    make_linear([r1, r2, r3, p1])
 
     design = Design(span_cost)
     design.add_materials(
-        primers=[], fragments=[], queries=[goal], templates=[r1, r2, r3]
+        primers=[p1], fragments=[], queries=[goal], templates=[r1, r2, r3]
     )
 
     expected_path = [
@@ -276,7 +278,7 @@ def test_design_with_overlaps_with_templates(span_cost):
         (4000, True, "B", True),
     ]
 
-    check_design_result(design, expected_path, check_path=False)
+    check_design_result(design, expected_path, check_path=True)
 
 
 def test_design_task_with_gaps(span_cost):

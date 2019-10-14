@@ -509,3 +509,15 @@ def test_ranges_ignore_wraps():
     s2 = Span(8, 22, 10, cyclic=True)
     assert s2.ranges() == [(8, 10), (0, 10), (0, 10), (0, 2)]
     assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
+
+
+def test_get_slice():
+    span = Span(8, 22, 10, cyclic=True)
+    x = list(range(20, 140))
+    y = span.get_slice(x)
+    assert y == [x[_s] for _s in list(span)]
+
+    span = Span(8, 22, 10, cyclic=True)
+    x = tuple(range(20, 140))
+    y = span.get_slice(x)
+    assert y == tuple([x[_s] for _s in list(span)])

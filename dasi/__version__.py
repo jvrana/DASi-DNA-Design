@@ -6,4 +6,4 @@ __title__ = "dasi"
 __authors__ = ["jvrana <justin.vrana@gmail.com>"]
 __repo__ = None
 __homepage__ = None
-__description__ = ""
+__description__ = "automated dna assembly design"

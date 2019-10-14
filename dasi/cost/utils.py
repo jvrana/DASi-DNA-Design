@@ -51,7 +51,6 @@ def flatten_axis(a, axis=None, copy=True):
     if isinstance(axis, int):
         axis = (axis,)
     to_axis = tuple(range(len(axis)))
-    print(unshape(a.shape, axis))
     g = np.prod(unshape(a.shape, axis))
     view = np.moveaxis(a, axis, to_axis).reshape(-1, g)
     if copy:

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.utils.networkx.algorithms &#8212; dasi 0.0.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.utils.networkx.algorithms</h1><div class="highlight"><pre>
+<span></span>from collections import OrderedDict
+from typing import Tuple
+from typing import Union, Callable, Dict, Any, Type
+
+import networkx as nx
+import numpy as np
+from sympy import lambdify
+from sympy import sympify
+
+from .exceptions import TerrariumNetworkxError
+from .utils import replace_nan_with_inf
+from .utils import select_from_arrs
+
+PRODUCT = &quot;product&quot;
+SUM = &quot;sum&quot;
+
+
+<div class="viewcode-block" id="sympy_floyd_warshall"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.networkx.sympy_floyd_warshall">[docs]</a>def sympy_floyd_warshall(
+    g: Union[nx.DiGraph, nx.Graph],
+    f: str,
+    accumulators: dict,
+    nonedge: dict=None,
+    nodelist: list=None,
+    multigraph_weight: Callable=None,
+    identity_subs: Dict[str, Any]=None,
+    return_all: bool=False,
+    dtype: Type=None,
+) -&gt; Union[np.ndarray, Tuple[np.ndarray, dict]]:
+    &quot;&quot;&quot;
+    Implementation of algorithm:
+
+    .. math::
+
+       C = \\frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
+
+    Where :math:`a_i` and :math:`b_i` is the weight &#39;a&#39; and &#39;b&#39; of the *ith* edge in the path
+    respectively.
+    :math:`\\sum_{i}^{n}{a_i}` is the accumulated sum of weights &#39;a&#39; and
+    :math:`\\prod_{i}^{n}{b_i}` is the accumulated product of weights &#39;b&#39;.
+    Arbitrarily complex path functions with arbitrary numbers of weights
+    (:math:`a, b, c,...`) can be used in the algorithm.
+
+    Because arbitrary functions are used, the shortest path between ij and jk does not
+    necessarily mean the shortest path nodes ijk is the concatenation of these two
+    paths. In other words, for the shortest path :math:`p_{ik}` between
+    nodes :math:`i` :math:`j` and :math:`k`:
+
+    .. math::
+
+        p_{ij} + p_{jk} \\neq p_{ijk}
+
+    :param g: the graph
+    :param f: the function string that represents SymPy function to compute the weights
+    :param accumulators: diciontary of symbols to accumulator functions (choose from
+                         [&quot;PRODUCT&quot; - :math:`\\prod`,
+                         &quot;SUM&quot; - :math:`\\sum`]
+                         to use for accumulation of weights through
+                         a path. If missing &quot;SUM&quot; is used.
+    :param nonedge: dictionary of symbol to value to use for nonedges
+                    (e.g. {&#39;weight&#39;: np.inf})
+    :param nodelist: optional nodelist to use
+    :param multigraph_weight: optional (default: min) function to use for multigraphs
+    :param identity_subs: the dictionary of values to set along the diagonal axis
+    :param return_all: if True, return both the resulting weight matrix and the
+            individual components broken down by symbol strings.
+    :param dtype: the dtype of the resulting np.ndarrays used and returned
+    :return: either just the weight matrix or, if return_all is True, the weight_matrix
+                and the dictionary of the weight components.
+    &quot;&quot;&quot;
+    if dtype is None:
+        dtype = np.float64
+
+    if identity_subs is None:
+        identity_subs = {}
+
+    if multigraph_weight is None:
+        multigraph_weight = {}
+
+    if nonedge is None:
+        nonedge = {}
+
+    expr = sympify(f)
+    symbols = tuple(expr.free_symbols)
+    func = lambdify(symbols, expr)
+
+    matrix_dict = OrderedDict()
+
+    for sym in symbols:
+        matrix_dict[sym.name] = nx.to_numpy_matrix(
+            g,
+            nodelist=nodelist,
+            multigraph_weight=multigraph_weight.get(sym.name, min),
+            weight=sym.name,
+            nonedge=nonedge.get(sym.name, np.inf),
+            dtype=dtype,
+        )
+
+    n, m = list(matrix_dict.values())[0].shape
+
+    # replace diagonals
+    identity = np.identity(n)
+    for key, matrix in matrix_dict.items():
+        # set accumulators
+        if accumulators.get(key, SUM) == SUM:
+            d = 0.0
+        elif accumulators[key] == PRODUCT:
+            d = 1.0
+        else:
+            raise TerrariumNetworkxError(
+                &quot;Accumulator key {} must either be &#39;{}&#39; or &#39;{}&#39; or a callable with two &quot;
+                &quot;arguments (&#39;M&#39; a numpy matrix and &#39;i&#39; a node index as an int)&quot;.format(
+                    key, SUM, PRODUCT
+                )
+            )
+
+        # set diagonal
+        matrix[identity == 1] = identity_subs.get(key, d)
+
+    for i in np.arange(n):
+        # get costs if using node &#39;i&#39;
+        parts_dict = OrderedDict()
+        for key, M in matrix_dict.items():
+            M = matrix_dict[key]
+            if accumulators.get(key, SUM) == SUM:
+                parts_dict[key] = M[i, :] + M[:, i]
+            elif accumulators[key] == PRODUCT:
+                parts_dict[key] = np.multiply(M[i, :], M[:, i])
+            else:
+                raise TerrariumNetworkxError(
+                    &quot;Key &#39;{}&#39; not in accumulator dictionary. Options are &#39;{}&#39; or &#39;{}&#39;&quot;.format(
+                        key, PRODUCT, SUM
+                    )
+                )
+
+        # get total cost
+        m_arr = [np.asarray(m) for m in matrix_dict.values()]
+        p_arr = [np.asarray(m) for m in parts_dict.values()]
+        C = replace_nan_with_inf(func(*m_arr))
+        C_part = replace_nan_with_inf(func(*p_arr))
+
+        # update
+        for key, M in matrix_dict.items():
+            part = parts_dict[key]
+            c = C &gt; C_part
+
+            if np.any(c):
+                assert M.shape == part.shape
+                # matrix_dict[key] = np.asmatrix(np.choose(c, (M, part)))
+                matrix_dict[key] = np.asmatrix(select_from_arrs(part, M, C &lt; C_part))
+
+    m_arr = [np.asarray(m) for m in matrix_dict.values()]
+    C = replace_nan_with_inf(func(*m_arr))
+    if return_all:
+        return C, matrix_dict
+    return C</div>
+
+
+<div class="viewcode-block" id="floyd_warshall_with_efficiency"><a class="viewcode-back" href="../../../../developer/api_reference.html#dasi.utils.networkx.floyd_warshall_with_efficiency">[docs]</a>def floyd_warshall_with_efficiency(
+    g: Union[nx.DiGraph, nx.Graph],
+    weight_key: str,
+    eff_key: str,
+    nodelist=None,
+    return_all=False,
+    dtype=None,
+) -&gt; np.ndarray:
+    &quot;&quot;&quot;Computes the shortest path between all pairs using the cost function:
+    SUM(w) / PROD(e)
+
+    Warning: This is *not guaranteed* to return precise values due to floating point
+    rounding errors.
+
+    :param g: the graph
+    :param weight_key: the weight key
+    :param eff_key: the efficiency key
+    :param nodelist: optional list of nodes
+    :param return_all: whether to return the weight matrix and weight dictionary
+    :param dtype: dtype of the np.array matrix
+    :return: the weight matrix
+    &quot;&quot;&quot;
+    f = &quot;{} / {}&quot;.format(weight_key, eff_key)
+    return sympy_floyd_warshall(
+        g,
+        f,
+        accumulators={weight_key: SUM, eff_key: PRODUCT},
+        nonedge={weight_key: np.inf, eff_key: 0.0},
+        nodelist=nodelist,
+        return_all=return_all,
+        dtype=dtype,
+    )</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

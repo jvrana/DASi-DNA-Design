@@ -1,3 +1,40 @@
+**10/10/19**
+
+*interface*
+* add a basic CLI
+* expose parameters to input file
+* convert assembly to jdna and print assembly to print to file.
+
+*logging/debugging*
+* add a level inbetween INFO and ERROR for logger for status update to CLI
+* add log to text file
+
+*Sequence Database*
+* save filename and path for SeqRecord on load
+
+*Coalition optimization*
+* shared templates? select from same templates, if possible
+* shared sequences and fragments?
+* shared primers?
+* AlignmentGroups should be shared directly. When a sequence is designed,
+this same instance should be shared among other members of the coalition.
+
+*Sequences*
+* [IN PROGRESS] costs should be saved to Reactions
+* self blast to eliminate potential overhangs for mis-assembly
+* max size lim and tests?
+
+*Tests*
+* add tests for checking gibson assembly and PCR products
+* [IN PROGRESS] tests for size limitations
+
+*Refactoring*
+* rename `sequence_design` to `sequence_designer`
+* rename `design_algorithms` to `design_optimization` or `utils`
+* replace jdna with something faster
+
+**Other**
+* Resolve TODOs
 * Basic design of sequences
 * Bayesian optimization to design junctions
 * Back convert assemblies to a plan
@@ -8,6 +45,19 @@
 * force parts
 * avoid repeats
 * consider design flexibility in optimization algorithm
+* primers for amplification of synthesis fragments
+* contrived tests with primer and gene designs
+
+*algorithm improvements*
+* eliminating non-sensical cycles. (e.g. 1000 -> 500 -> 501 -> 1000)
+* black-listed homology edges during modified floyd-warshall algorithm.
+During the computation of shortest path lengths between pairs. Blacklisted
+edges maintained separately. Would need keep an up-to-date matrix
+of blacklisted node as in floyd-warshall. Considered path would
+be normal cost + blacklisted (0 or inf). Blacklisted edges determined
+by blast searching goal plasmids with themselves and finding alignment
+groups whose ends fall within these blacklisted region.
+
 
 **Possible Failure Modes**
 

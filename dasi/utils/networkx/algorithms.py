@@ -1,5 +1,9 @@
 from collections import OrderedDict
+from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 import networkx as nx
@@ -7,59 +11,72 @@ import numpy as np
 from sympy import lambdify
 from sympy import sympify
 
-from .exceptions import TerrariumNetworkxError
+from .exceptions import NetworkxUtilsException
 from .utils import replace_nan_with_inf
-from .utils import select_from_arrs
 
 PRODUCT = "product"
 SUM = "sum"
+
+
+def str_to_symbols_and_func(f):
+    expr = sympify(f)
+    symbols = tuple(expr.free_symbols)
+    func = lambdify(symbols, expr)
+    return symbols, func
+
+
+def accumulate_helper(key, m1, m2):
+    if key == SUM:
+        return m1 + m2
+    elif key == PRODUCT:
+        return np.multiply(m1, m2)
+    else:
+        raise NetworkxUtilsException(
+            "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
+                key, PRODUCT, SUM
+            )
+        )
 
 
 def sympy_floyd_warshall(
     g: Union[nx.DiGraph, nx.Graph],
     f: str,
     accumulators: dict,
-    nonedge=None,
-    nodelist=None,
-    multigraph_weight=None,
-    identity_subs=None,
-    return_all=False,
-    dtype=None,
-) -> Union[np.ndarray, Tuple[np.ndarray, dict]]:
-    """
-    Implementation of all pairs shortest path length using a modified floyd-warshall
-    algorithm with arbitrary path
-    length functions. The following path length function is valid:
+    nonedge: dict = None,
+    nodelist: list = None,
+    multigraph_weight: Callable = None,
+    identity_subs: Dict[str, Any] = None,
+    return_all: bool = False,
+    dtype: Type = None,
+) -> Union[np.ndarray, Tuple[np.ndarray, Dict[str, np.matrix], Dict[str, np.matrix]]]:
+    """Implementation of algorithm:
 
-    $$
-    C = \frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
-    $$
+    .. math::
 
-    Where $a_i$ and $b_i$ is the weight 'a' and 'b' of the *ith* edge in the path
+       C = \\frac{\\sum_{i}^{n}{a_i}}{\\prod_{i}^{n}{b_i}}
+
+    Where :math:`a_i` and :math:`b_i` is the weight 'a' and 'b' of the *ith* edge in the path
     respectively.
-    $\\sum_{i}^{n}{a_i}$ is the accumulated sum of weights 'a' and $\\prod_{i}^{n}{b_i}$
-     is the accumulated product of weights 'b'. Arbitrarily complex path functions with
-      arbitrary numbers of weights
-     ($a, b, c,...$) can be used in the algorithm.
+    :math:`\\sum_{i}^{n}{a_i}` is the accumulated sum of weights 'a' and
+    :math:`\\prod_{i}^{n}{b_i}` is the accumulated product of weights 'b'.
+    Arbitrarily complex path functions with arbitrary numbers of weights
+    (:math:`a, b, c,...`) can be used in the algorithm.
 
     Because arbitrary functions are used, the shortest path between ij and jk does not
-    necessarily mean the shortest
-    path nodes ijk is the concatenation of these two paths. In other words, for the
-    shortest path $p_{ik}$ between
-    nodes $i$ $j$ and $k$:
+    necessarily mean the shortest path nodes ijk is the concatenation of these two
+    paths. In other words, for the shortest path :math:`p_{ik}` between
+    nodes :math:`i` :math:`j` and :math:`k`:
 
-    $$
-    p_{ij} + p_{jk} \neq p_{ijk}
-    $$
+    .. math::
 
-    This means a predecessor dictionary cannot be used to reconstruct the paths easily.
-    To do so, use the modified
-    Dijkstra's algorithm below which handles arbitrary path functions.
+        p_{ij} + p_{jk} \\neq p_{ijk}
 
     :param g: the graph
     :param f: the function string that represents SymPy function to compute the weights
     :param accumulators: diciontary of symbols to accumulator functions (choose from
-                         ["PRODUCT", "SUM"] to use for accumulation of weights through
+                         ["PRODUCT" - :math:`\\prod`,
+                         "SUM" - :math:`\\sum`]
+                         to use for accumulation of weights through
                          a path. If missing "SUM" is used.
     :param nonedge: dictionary of symbol to value to use for nonedges
                     (e.g. {'weight': np.inf})
@@ -84,9 +101,7 @@ def sympy_floyd_warshall(
     if nonedge is None:
         nonedge = {}
 
-    expr = sympify(f)
-    symbols = tuple(expr.free_symbols)
-    func = lambdify(symbols, expr)
+    symbols, func = str_to_symbols_and_func(f)
 
     matrix_dict = OrderedDict()
 
@@ -100,6 +115,9 @@ def sympy_floyd_warshall(
             dtype=dtype,
         )
 
+    if return_all:
+        ori_matrix_dict = {k: v.copy() for k, v in matrix_dict.items()}
+
     n, m = list(matrix_dict.values())[0].shape
 
     # replace diagonals
@@ -111,7 +129,7 @@ def sympy_floyd_warshall(
         elif accumulators[key] == PRODUCT:
             d = 1.0
         else:
-            raise TerrariumNetworkxError(
+            raise NetworkxUtilsException(
                 "Accumulator key {} must either be '{}' or '{}' or a callable with two "
                 "arguments ('M' a numpy matrix and 'i' a node index as an int)".format(
                     key, SUM, PRODUCT
@@ -126,22 +144,15 @@ def sympy_floyd_warshall(
         parts_dict = OrderedDict()
         for key, M in matrix_dict.items():
             M = matrix_dict[key]
-            if accumulators.get(key, SUM) == SUM:
-                parts_dict[key] = M[i, :] + M[:, i]
-            elif accumulators[key] == PRODUCT:
-                parts_dict[key] = np.multiply(M[i, :], M[:, i])
-            else:
-                raise TerrariumNetworkxError(
-                    "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
-                        key, PRODUCT, SUM
-                    )
-                )
+            parts_dict[key] = accumulate_helper(
+                accumulators.get(key, SUM), M[i, :], M[:, i]
+            )
 
         # get total cost
         m_arr = [np.asarray(m) for m in matrix_dict.values()]
         p_arr = [np.asarray(m) for m in parts_dict.values()]
         C = replace_nan_with_inf(func(*m_arr))
-        C_part = replace_nan_with_inf(func(*p_arr))
+        C_part = func(*p_arr)
 
         # update
         for key, M in matrix_dict.items():
@@ -149,14 +160,13 @@ def sympy_floyd_warshall(
             c = C > C_part
 
             if np.any(c):
-                assert M.shape == part.shape
-                # matrix_dict[key] = np.asmatrix(np.choose(c, (M, part)))
-                matrix_dict[key] = np.asmatrix(select_from_arrs(part, M, C < C_part))
+                # assert M.shape == part.shape
+                np.putmask(M, c, part)
 
     m_arr = [np.asarray(m) for m in matrix_dict.values()]
     C = replace_nan_with_inf(func(*m_arr))
     if return_all:
-        return C, matrix_dict
+        return C, matrix_dict, ori_matrix_dict
     return C
 
 
@@ -164,9 +174,9 @@ def floyd_warshall_with_efficiency(
     g: Union[nx.DiGraph, nx.Graph],
     weight_key: str,
     eff_key: str,
-    nodelist=None,
-    return_all=False,
-    dtype=None,
+    nodelist: list = None,
+    return_all: bool = False,
+    dtype: Type = None,
 ) -> np.ndarray:
     """Computes the shortest path between all pairs using the cost function:
     SUM(w) / PROD(e)

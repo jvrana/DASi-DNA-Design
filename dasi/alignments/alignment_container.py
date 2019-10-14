@@ -1,4 +1,6 @@
 """Alignment container."""
+from __future__ import annotations
+
 from bisect import bisect_left
 from collections.abc import Sized
 from typing import Any
@@ -16,10 +18,12 @@ from more_itertools import unique_everseen
 
 from .alignment import Alignment
 from .alignment import AlignmentGroup
-from .alignment import ComplexAlignmentGroup
+from .alignment import MultiPCRProductAlignmentGroup
+from .alignment import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
+from dasi.molecule import MoleculeType
 from dasi.utils import bisect_slice_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
@@ -84,6 +88,9 @@ class AlignmentContainer(Sized):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
         Constants.GAP,
         Constants.OVERLAP,
@@ -93,10 +100,12 @@ class AlignmentContainer(Sized):
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
         self._alignments = []
         self._frozen = False
+        self._frozen_groups = None
         if alignments is not None:
             self.alignments = alignments
         self.seqdb = seqdb
         self.logger = logger(self)
+        self.multi_grouping_tags = {}
 
     @property
     def alignments(self):
@@ -134,7 +143,7 @@ class AlignmentContainer(Sized):
 
     def find_groups_by_pos(
         self, a: int, b: int, group_type: str, groups=None
-    ) -> List[Union[AlignmentGroup, ComplexAlignmentGroup]]:
+    ) -> List[Union[AlignmentGroup, PCRProductAlignmentGroup]]:
         """Return a list of groups that have the same positions (a, b) and same
         group_type.
 
@@ -169,16 +178,120 @@ class AlignmentContainer(Sized):
         fwd: Union[Alignment, None],
         rev: Union[Alignment, None],
         alignment_type: str,
+        lim_size: bool,
     ):
+        """
+        Create a new alignment group for a PCR product.
+
+        ::
+
+            Situations the PCRProductAlignmentGroup represents:
+
+                        <--------
+            ------------------
+            ---->
+
+                           <--------
+               ------------------
+            -------->
+
+
+                    <-----
+               ------------------
+            -------->
+
+
+                          <------
+               ------------------
+            -------->
+
+        :param template_group:
+        :param fwd:
+        :param rev:
+        :param alignment_type:
+        :return:
+        """
         groups = []
         for a in template_group.alignments:
-            alignments = [x for x in [fwd, a, rev] if x is not None]
-            self._new_grouping_tag(alignments, alignment_type)
-            groups.append(ComplexAlignmentGroup(alignments, alignment_type))
+            product_group = PCRProductAlignmentGroup(
+                fwd=fwd,
+                template=a,
+                rev=rev,
+                query_region=a.query_region,
+                group_type=alignment_type,
+            )
+
+            if lim_size and not product_group.size_ok():
+                continue
+            self._new_multi_pcr_grouping_tag(product_group)
+            groups.append(product_group)
         return groups
 
+    def _create_primer_extension_alignment(
+        self, fwd: Alignment, rev: Alignment, alignment_type: str, lim_size: bool
+    ):
+        if fwd is None:
+            query_region = rev.query_region
+        else:
+            query_region = fwd.query_region
+        product_group = PCRProductAlignmentGroup(
+            fwd=fwd,
+            template=None,
+            rev=rev,
+            query_region=query_region,
+            group_type=alignment_type,
+        )
+        if lim_size and not product_group.size_ok():
+            return []
+        self._new_multi_pcr_grouping_tag(product_group)
+        return [product_group]
+
+    def expand_primer_extension_products(self, only_one_required=False, lim_size=True):
+        primers = self.get_alignments_by_types(Constants.PRIMER)
+
+        rev, fwd = partition(lambda p: p.subject_region.direction == 1, primers)
+        fwd, fwd_keys = sort_with_keys(fwd, key=lambda p: p.query_region.b)
+        rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
+        pairs = []
+        for f in fwd:
+            rev_bind_region = f.query_region[: -Constants.PRIMER_MIN_BIND]
+            rev_bind = self.filter_alignments_by_span(
+                rev, rev_bind_region, key=lambda p: p.query_region.a
+            )
+            rev_bind, rkeys = sort_with_keys(rev_bind, key=lambda p: p.query_region.a)
+
+            for r in rev_bind:
+                if r.query_region.b in f.query_region:
+                    if r.query_region.b == f.query_region.b:
+                        pass
+                    else:
+                        continue
+                pairs += self._create_primer_extension_alignment(
+                    f, r, Constants.PRIMER_EXTENSION_PRODUCT, lim_size=lim_size
+                )
+
+        if only_one_required:
+            for f in fwd:
+                # existing fwd primer
+                pairs += self._create_primer_extension_alignment(
+                    f,
+                    None,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+                    lim_size=lim_size,
+                )
+
+            for r in rev:
+                # existing fwd primer
+                pairs += self._create_primer_extension_alignment(
+                    None,
+                    r,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+                    lim_size=lim_size,
+                )
+        return pairs
+
     def expand_primer_pairs(
-        self, alignment_groups: List[AlignmentGroup]
+        self, alignment_groups: List[AlignmentGroup], lim_size: bool = True
     ) -> List[Alignment]:
         """Creates new alignments for all possible primer pairs. Searches for
         fwd and rev primer pairs that exist within other alignments and
@@ -225,25 +338,45 @@ class AlignmentContainer(Sized):
                     for a, b in _rev_span.ranges():
                         _rev_bind += bisect_slice_between(rev_bind, rkeys, a, b)
                 for r in _rev_bind:
+                    if f.query_region.a in r.query_region:
+                        if f.query_region.a == r.query_region.a:
+                            pass
+                        else:
+                            continue
+                    if r.query_region.b in f.query_region:
+                        if r.query_region.b == f.query_region.b:
+                            pass
+                        else:
+                            continue
                     pairs += self._create_pcr_product_alignment(
-                        g, f, r, Constants.PCR_PRODUCT_WITH_PRIMERS
+                        g, f, r, Constants.PCR_PRODUCT_WITH_PRIMERS, lim_size=lim_size
                     )
-
             # left primer
             for f in fwd_bind:
                 pairs += self._create_pcr_product_alignment(
-                    g, f, None, Constants.PCR_PRODUCT_WITH_LEFT_PRIMER
+                    g,
+                    f,
+                    None,
+                    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+                    lim_size=lim_size,
                 )
 
             # right primer
             for r in rev_bind:
                 pairs += self._create_pcr_product_alignment(
-                    g, None, r, Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER
+                    g,
+                    None,
+                    r,
+                    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+                    lim_size=lim_size,
                 )
         return pairs
 
     def expand_overlaps(
-        self, alignment_groups: List[AlignmentGroup], atype=Constants.PCR_PRODUCT
+        self,
+        alignment_groups: List[AlignmentGroup],
+        atype=Constants.PCR_PRODUCT,
+        lim_size: bool = True,
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -297,10 +430,18 @@ class AlignmentContainer(Sized):
 
                     if len(overlap.query_region) > min_overlap:
                         alignments += overlap.alignments
+        if lim_size:
+            alignments = [a for a in alignments if a.size_ok()]
         return alignments
 
     # TODO: break apart long alignments
-    def expand(self, expand_overlaps=True, expand_primers=True):
+    def expand(
+        self,
+        expand_overlaps=True,
+        expand_primers=True,
+        expand_primer_dimers=False,
+        lim_size: bool = True,
+    ):
         """Expand the number of alignments in this container using overlaps or
         primers.
 
@@ -309,71 +450,61 @@ class AlignmentContainer(Sized):
         :return:
         """
 
-        self.logger.info("=== Expanding alignments ===")
-        # We annotate any original PCR_PRODUCT with FRAGMENT if they are
-        # 'perfect_subjects'
-        # This means they already exist as pre-made fragments
-        self.logger.info("Number of alignments: {}".format(len(self.alignments)))
-
         templates = self.get_groups_by_types(
             [Constants.PCR_PRODUCT, Constants.FRAGMENT]
         )
+        if lim_size:
+            templates = [t for t in templates if t.size_ok()]
 
         if expand_primers:
-            pairs = self.expand_primer_pairs(templates)
-            self.logger.info("Number of pairs: {}".format(len(pairs)))
+            self.expand_primer_pairs(templates, lim_size=lim_size)
 
+        if expand_primer_dimers:
+            self.expand_primer_extension_products(lim_size=lim_size)
+
+        # TODO: why not expand overlaps using the primer pairs???
         if expand_overlaps:
-            expanded = self.expand_overlaps(templates)
+            expanded = self.expand_overlaps(
+                templates, atype=Constants.PCR_PRODUCT, lim_size=lim_size
+            )
             self.alignments += expanded
-            self.logger.info("Number of new alignments: {}".format(len(expanded)))
-        self.logger.info("Number of total alignments: {}".format(len(self.alignments)))
-        self.logger.info("Number of total groups: {}".format(len(self.groups())))
 
-    @classmethod
-    def _new_grouping_tag(cls, alignments, atype: str, key=None):
-        """Make a new ordered grouping by type and a uuid.
+        # TODO: make a 'set' of all alignments
 
-        :param alignments:
-        :type alignments:
-        :param atype:
-        :type atype:
-        :param key:
-        :type key:
-        :return:
-        :rtype:
-        """
-        if key is None:
-            key = str(uuid4())
-        group_key = (key, atype)
-        for i, a in enumerate(alignments):
-            if key in a.grouping_tags:
-                raise AlignmentContainerException(
-                    "Key '{}' already exists in grouping tag".format(key)
-                )
-            a.grouping_tags[group_key] = i
+    def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
+        group_key = (group.query_region.a, group.query_region.b, group.type)
+        self.multi_grouping_tags.setdefault(group_key, list())
+        self.multi_grouping_tags[group_key].append(
+            {
+                "fwd": group.fwd,
+                "template": group.raw_template,
+                "rev": group.rev,
+                "query_region": group.query_region,
+            }
+        )
 
     @staticmethod
     def _alignment_hash(a):
         """A hashable representation of an alignment for grouping."""
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
-    @classmethod
-    def complex_alignment_groups(
-        cls, alignments: List[Alignment]
-    ) -> List[Union[AlignmentGroup, ComplexAlignmentGroup]]:
-        key_to_alignments = {}
-        for a in alignments:
-            if not isinstance(a, Alignment):
-                raise Exception
-        for a in alignments:
-            for (uuid, atype), i in a.grouping_tags.items():
-                key_to_alignments.setdefault((uuid, atype), list()).append((i, a))
-        complex_groups = []
-        for (uuid, atype), alist in key_to_alignments.items():
-            sorted_alist = [x[-1] for x in sorted(alist)]
-            complex_groups.append(ComplexAlignmentGroup(sorted_alist, atype))
-        return complex_groups
+    def pcr_alignment_groups(self):
+        groups = []
+        for (a, b, group_type), adict_list in self.multi_grouping_tags.items():
+            g = [
+                {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
+                for d in adict_list
+            ]
+
+            regions = [d["query_region"] for d in adict_list]
+            assert len({(q.a, q.b) for q in regions}) == 1
+
+            groups.append(
+                MultiPCRProductAlignmentGroup(
+                    g, query_region=adict_list[0]["query_region"], group_type=group_type
+                )
+            )
+        return groups
 
     @classmethod
     def redundent_alignment_groups(
@@ -392,14 +523,18 @@ class AlignmentContainer(Sized):
             alignment_groups.append(AlignmentGroup(group, group[0].type))
         return alignment_groups
 
-    def groups(self) -> List[AlignmentGroup]:
-        allgroups = []
-        allgroups += self.redundent_alignment_groups(self.alignments)
-        allgroups += self.complex_alignment_groups(self.alignments)
-        return allgroups
+    def groups(self) -> List[Union[AlignmentGroup, MultiPCRProductAlignmentGroup]]:
+        if self._frozen:
+            return self._frozen_groups
+        else:
+            allgroups = []
+            allgroups += self.redundent_alignment_groups(self.alignments)
+            allgroups += self.pcr_alignment_groups()
+            self._frozen_groups = allgroups
+            return allgroups
 
     @property
-    def types(self) -> Tuple[Any]:
+    def types(self) -> Tuple[Any, ...]:
         """Return all valid types.
 
         :return:
@@ -426,7 +561,7 @@ class AlignmentContainer(Sized):
 
     def groups_by_type(
         self
-    ) -> Dict[str, List[Union[AlignmentGroup, ComplexAlignmentGroup]]]:
+    ) -> Dict[str, List[Union[AlignmentGroup, PCRProductAlignmentGroup]]]:
         """Return alignment groups according to their alignment 'type'.
 
         :return: dict
@@ -469,6 +604,9 @@ class AlignmentContainerFactory:
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
+        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
@@ -490,15 +628,6 @@ class AlignmentContainerFactory:
         :return:
         """
         return frozendict(self._alignments)
-
-    def set_alignments(self, alignments: Dict[str, List[Alignment]]) -> None:
-        """Set the alignments.
-
-        :param alignments: new iterable of alignments
-        :return:
-        """
-        self._alignments = alignments
-        self._containers = None
 
     def load_blast_json(self, data: List[Dict], atype: str):
         """Create alignments from a formatted BLAST JSON result.
@@ -541,3 +670,7 @@ class AlignmentContainerFactory:
                 )
             self._containers = container_dict
         return frozendict(self._containers)
+
+    def set_alignments(self, alignments):
+        self._alignments = alignments
+        self._containers = None

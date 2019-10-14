@@ -1,18 +1,13 @@
-import pickle
 from os.path import join
 
-import networkx as nx
+import dictdiffer
 import pytest
-from more_itertools import pairwise
 from pyblast.utils import load_fasta_glob
 from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
-from dasi.alignments import AlignmentContainer
-from dasi.cost import SpanCost
-from dasi.design import Design
-from dasi.design import DesignResult
+from dasi import Design
 
 
 @pytest.mark.parametrize(
@@ -47,110 +42,94 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     print(len(a_arr) * len(b_arr))
 
 
-def print_edge_cost(path, graph):
-    total = 0
-    path = path[:] + path[:1]
-    for n1, n2 in pairwise(path):
-        try:
-            edata = graph[n1][n2]
-            total += edata["weight"]
-            print((n1, n2, edata["weight"]))
-        except KeyError:
-            print((n1, n2, "MISSING EDGE"))
+class TestDesignResult:
+    def test_expected_span_length(self, single_processed_results):
+        design, results = single_processed_results
+        for qk, result in results.items():
+            assembly = result.assemblies[0]
+            assembly.print()
 
-    print("TOTAL: {}".format(total))
+            assert len(result.query) == sum(assembly.to_df()["span"])
 
+    def test_multi_expected_span_length(self, multi_processed_results):
+        design, results = multi_processed_results
+        for qk, result in results.items():
+            assembly = result.assemblies[0]
+            assembly.print()
 
-@pytest.mark.parametrize(
-    "query",
-    [
-        "pins-0a-psv40-citrine-wpre.gb",
-        "pmodkan-ho-pact1-z4-er-vpr.gb",
-        "plko-pef1a-frt-tdtomato-wpre.gb",
-        "pins-01-hu6-sv40-nt1-optgrna.gb",
-        "pins-01-hu6-r1-optgrna.gb",
-        "pins-01-hu6-r5-optgrna.gb",
-    ],
-)
-def test_real_design(here, paths, query, span_cost):
-    primers = make_linear(load_fasta_glob(paths["primers"]))
-    templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
-        paths["registry"]
-    )
-
-    query_path = join(here, "data/test_data/genbank/designs", query)
-    queries = make_circular(load_genbank_glob(query_path))
-
-    design = Design(span_cost=span_cost)
-
-    design.add_materials(primers=primers, templates=templates, queries=queries)
-
-    design.compile()
-
-    assert len(design.graphs) == len(queries)
-    assert len(design.graphs) == 1
-
-    results = design.optimize()
-
-    for query_key, result in results.items():
-        assembly = result.assemblies[0]
-        assembly.print()
-
-        # df = assembly.to_df()
-        # filename = "{}__{}__test__.csv".format(assembly.query_key, assembly.query.name)
-        # df.to_csv(filename)
-
-        assert len(result.query) == sum(assembly.to_df()["span"])
+            assert len(result.query) == sum(assembly.to_df()["span"])
 
 
-@pytest.mark.parametrize("query", ["pmodkan-ho-pact1-z4-er-vpr.gb"])
-def test_profile_compile(here, paths, query, span_cost):
-    primers = make_linear(load_fasta_glob(paths["primers"]))
-    templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
-        paths["registry"]
-    )
+class TestSequenceDesign:
+    def test_single_design_sequences(self, single_processed_results):
+        design, results = single_processed_results
+        for qk, result in results.items():
+            result.design_sequences()
+            result.design_sequence_output()
 
-    query_path = join(here, "data/test_data/genbank/designs", query)
-    queries = make_circular(load_genbank_glob(query_path))
-
-    design = Design(span_cost=span_cost)
-
-    design.add_materials(primers=primers, templates=templates, queries=queries)
-    design.compile()
+    def test_multi_design_sequences(self, multi_processed_results):
+        design, results = multi_processed_results
+        for qk, result in results.items():
+            result.design_sequences()
+            result.design_sequence_output()
 
 
-def test_real_design2(here, paths, span_cost):
-    query = "goal1.gb"
-    primers = make_linear(load_fasta_glob(paths["primers"]))
-    templates = load_genbank_glob(paths["registry"])
+class TestMultiProcessing:
+    def groups_equivalent(self, g1, g2):
+        assert g1.query_region == g2.query_region
+        assert g1.subject_region == g2.subject_region
 
-    fragments = [
-        f for f in templates if f.annotations.get("topology", None) == "linear"
-    ]
-    plasmids = [
-        f for f in templates if f.annotations.get("topology", None) == "circular"
-    ]
+    def eq_assemblies(self, a1, a2):
+        for e1, e2 in zip(a1.edges(), a2.edges()):
+            # check assembly nodes
+            assert e1[0] == e2[0]
+            assert e1[1] == e2[1]
 
-    query_path = join(here, "data/test_data/genbank/designs", query)
-    queries = make_circular(load_genbank_glob(query_path))
+            d1 = dict(e1[2])
+            d2 = dict(e2[2])
+            del d1["groups"]
+            del d2["groups"]
 
-    design = Design(span_cost=span_cost)
+            d1["type_def"] = d1["type_def"].__dict__
+            d2["type_def"] = d2["type_def"].__dict__
+            diff = list(dictdiffer.diff(d1, d2))
 
-    design.add_fragments(fragments)
-    design.add_templates(fragments + plasmids)
-    design.add_primers(primers)
-    design.add_queries(queries)
+            assert not diff
 
-    design.compile()
+    def test_same_results(self, single_processed_results, multi_processed_results):
+        """The output results from single and multiprocessed results should be
+        exactly the same (minus the difference in query_keys."""
 
-    assert len(design.graphs) == len(queries)
-    assert len(design.graphs) == 1
+        design1, results1 = single_processed_results
+        design2, results2 = multi_processed_results
 
-    results = design.optimize()
+        assert len(results1) == len(results2), "Number of results should be the same"
 
-    for query_key, result in results.items():
-        assembly = result.assemblies[0]
+        name_to_key = {design2.seqdb[k].name: k for k in results2}
+        key_to_name = {k: design1.seqdb[k].name for k in results1}
 
-        assert len(result.query) == sum(assembly.to_df()["span"])
+        paired_keys = []
+        for key1 in results1:
+            name1 = key_to_name[key1]
+            key2 = name_to_key[name1]
+            paired_keys.append((key1, key2))
 
-        assembly.print()
+        for k1, k2 in paired_keys:
+            r1 = results1[k1]
+            r2 = results2[k2]
+
+            for a1, a2 in zip(r1.assemblies, r2.assemblies):
+                a1.print()
+                self.eq_assemblies(a1, a2)
+
+
+class TestHasAssemblies:
+    def test_multi_has_assemblies(self, multi_processed_results):
+        design, results = multi_processed_results
+        for result in results.values():
+            assert result.assemblies
+
+    def test_single_has_assemblies(self, single_processed_results):
+        design, results = single_processed_results
+        for result in results.values():
+            assert result.assemblies

@@ -9,7 +9,7 @@ from more_itertools import pairwise
 from sympy import lambdify
 from sympy import sympify
 
-from .exceptions import TerrariumNetworkxError
+from .exceptions import NetworkxUtilsException
 from .utils import sort_cycle
 
 
@@ -116,7 +116,7 @@ def _multisource_dijkstra(
         elif accumulators.get(sym, "product"):
             init.setdefault(sym, 1.0)
         else:
-            raise TerrariumNetworkxError("Accumulator '{}' not recognized".format(sym))
+            raise NetworkxUtilsException("Accumulator '{}' not recognized".format(sym))
     init = np.array([init[x] for x in symbols])
 
     # accumulator functions to each for each symbol

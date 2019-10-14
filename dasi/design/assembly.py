@@ -52,7 +52,7 @@ class Assembly(Iterable):
         self.groups = container.groups()
         if len(self.groups) == 0:
             raise DasiDesignException("No groups were found in container.")
-        self.graph = self._subgraph(self._full_graph, nodes)
+        self.graph = self._subgraph(self._full_graph, nodes, do_raise=do_raise)
         nx.freeze(self.graph)
 
         if do_raise:
@@ -104,7 +104,9 @@ class Assembly(Iterable):
             "span": np.inf,
         }
 
-    def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
+    def _subgraph(
+        self, graph: nx.DiGraph, nodes: List[AssemblyNode], do_raise: bool = True
+    ):
         def _resolve(node: AssemblyNode, qregion) -> Tuple[AssemblyNode, dict]:
             new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
             return new_node
@@ -157,10 +159,15 @@ class Assembly(Iterable):
             rn2 = _resolve(n2, query_region)
 
             # TODO: add this check
-            if rn1 in subgraph:
-                raise DasiDesignException("Node already exists in subgraph")
-            if rn2 in subgraph:
-                raise DasiDesignException("Node already exists in subgraph")
+            if do_raise:
+                if rn1 in subgraph:
+                    raise DasiInvalidMolecularAssembly(
+                        "Node already exists in subgraph"
+                    )
+                if rn2 in subgraph:
+                    raise DasiInvalidMolecularAssembly(
+                        "Node already exists in subgraph"
+                    )
 
             subgraph.add_edge(rn1, rn2, **edata)
         return subgraph

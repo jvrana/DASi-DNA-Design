@@ -129,4 +129,5 @@ class TestMultiProcessing:
             r2 = results2[k2]
 
             for a1, a2 in zip(r1.assemblies, r2.assemblies):
+                a1.print()
                 self.eq_assemblies(a1, a2)

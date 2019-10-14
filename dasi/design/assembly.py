@@ -53,9 +53,19 @@ class Assembly(Iterable):
         self.graph = self._subgraph(self._full_graph, nodes)
         nx.freeze(self.graph)
 
+        self.post_validate()
+
+    def post_validate(self):
+        total_span = 0
         for n1, n2, edata in self.edges():
             if n1.type == n2.type:
                 raise ValueError("Invalid assembly graph")
+            total_span += edata["span"]
+        if not total_span == len(self.query):
+            raise DasiDesignException(
+                "Assembly length '{}' is different from expected"
+                " length '{}'".format(total_span, len(self.query))
+            )
 
     def _head(self):
         """Get the 'first' 'A' node."""
@@ -65,12 +75,10 @@ class Assembly(Iterable):
     def _sorted_edges(self):
         head = self._head()
         edges = list(nx.bfs_edges(self.graph, head))
-        print([(n.index, n.type) for n in self._nodes])
         edges += [
             (t[1], t[0])
             for t in nx.bfs_edges(self.graph, head, reverse=True, depth_limit=1)
         ]
-        print([(t[0].index, t[1].index, t[0].type, t[1].type) for t in edges])
 
         return edges
 

@@ -48,7 +48,7 @@ def sympy_floyd_warshall(
     identity_subs: Dict[str, Any] = None,
     return_all: bool = False,
     dtype: Type = None,
-) -> Union[np.ndarray, Tuple[np.ndarray, dict]]:
+) -> Union[np.ndarray, Tuple[np.ndarray, Dict[str, np.matrix], Dict[str, np.matrix]]]:
     """Implementation of algorithm:
 
     .. math::
@@ -115,6 +115,9 @@ def sympy_floyd_warshall(
             dtype=dtype,
         )
 
+    if return_all:
+        ori_matrix_dict = {k: v.copy() for k, v in matrix_dict.items()}
+
     n, m = list(matrix_dict.values())[0].shape
 
     # replace diagonals
@@ -163,7 +166,7 @@ def sympy_floyd_warshall(
     m_arr = [np.asarray(m) for m in matrix_dict.values()]
     C = replace_nan_with_inf(func(*m_arr))
     if return_all:
-        return C, matrix_dict
+        return C, matrix_dict, ori_matrix_dict
     return C
 
 

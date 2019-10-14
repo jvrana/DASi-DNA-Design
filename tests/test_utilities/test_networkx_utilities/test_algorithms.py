@@ -173,7 +173,7 @@ class TestAllPairShortestPath:
     def test_return_all(self):
         G = nx.path_graph(10)
         add_edata(G)
-        C, B = floyd_warshall_with_efficiency(
+        C, B, D = floyd_warshall_with_efficiency(
             G, weight_key="weight", eff_key="efficiency", return_all=True
         )
         assert np.all(B["weight"] >= C)

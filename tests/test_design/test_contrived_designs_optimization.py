@@ -447,7 +447,7 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1177, False, "A", False), (1300, True, "B", False)]
+    expected_path = [(1100, True, "A", False), (1225, False, "B", False)]
 
     check_design_result(design, expected_path)
 

@@ -391,7 +391,7 @@ class Design:
             query = container.seqdb[query_key]
             cyclic = is_circular(query)
             results_dict[query_key] = result
-            paths = optimize_graph(graph, len(query), cyclic, n_paths)
+            paths, costs = optimize_graph(graph, len(query), cyclic, n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
                 self.logger.error(

@@ -61,14 +61,15 @@ class Assembly(Iterable):
             if n1.type == n2.type:
                 raise ValueError("Invalid assembly graph")
             total_span += edata["span"]
-        if not total_span == len(self.query):
-            raise DasiDesignException(
-                "Assembly length '{}' is different from expected"
-                " length '{}'".format(total_span, len(self.query))
-            )
+        # if not total_span == len(self.query):
+        #     raise DasiDesignException(
+        #         "Assembly length '{}' is different from expected"
+        #         " length '{}'".format(total_span, len(self.query))
+        #     )
 
     def _head(self):
         """Get the 'first' 'A' node."""
+        print(list(self.graph.nodes))
         x = sorted(list(self.graph.nodes), key=lambda n: (n.type == "B", n.index))
         return x[0]
 
@@ -103,7 +104,7 @@ class Assembly(Iterable):
     def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
         def _resolve(node: AssemblyNode, qregion) -> Tuple[AssemblyNode, dict]:
             new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
-            return new_node, {}
+            return new_node
 
         subgraph = nx.OrderedDiGraph()
         nodes = [AssemblyNode(*n) for n in nodes]
@@ -112,19 +113,25 @@ class Assembly(Iterable):
         resolved_nodes = [_resolve(node, example_query_region) for node in nodes]
         if self.cyclic:
             resolved_nodes = sort_cycle(
-                resolved_nodes, key=lambda n: (n[0].type, n[0].index, n)
+                resolved_nodes, key=lambda n: (n.type, n.index, n)
             )
         subgraph.add_nodes_from(resolved_nodes)
 
+        pair_iter = list(pairwise(nodes))
+
+        # TODO: adding last 'edge' here is kinda clunky
         if self.cyclic:
-            pair_iter = list(pairwise(nodes + nodes[:1]))
-        else:
-            pair_iter = list(pairwise(nodes))
+            pair_iter.append((nodes[-1], nodes[0]))
 
         for n1, n2 in pair_iter:
             edata = graph.get_edge_data(n1, n2)
             if edata is None:
-                edata = self._missing_edata()
+                if n1.index > len(self.query):
+                    # TODO fix clunky if then statement
+                    n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
+                    edata = graph.get_edge_data(n3, n2)
+                if edata is None:
+                    edata = self._missing_edata()
             else:
                 assert edata["type_def"].int_or_ext
 
@@ -146,8 +153,8 @@ class Assembly(Iterable):
             edata["groups"] = groups
             edata["query_region"] = query_region
 
-            rn1 = _resolve(n1, query_region)[0]
-            rn2 = _resolve(n2, query_region)[0]
+            rn1 = _resolve(n1, query_region)
+            rn2 = _resolve(n2, query_region)
 
             # TODO: add this check
             # if rn1 in subgraph:

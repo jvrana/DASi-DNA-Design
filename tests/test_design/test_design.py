@@ -42,11 +42,6 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     print(len(a_arr) * len(b_arr))
 
 
-class TestCompile:
-
-    pass
-
-
 class TestDesignResult:
     def test_expected_span_length(self, single_processed_results):
         design, results = single_processed_results
@@ -77,11 +72,6 @@ class TestSequenceDesign:
         for qk, result in results.items():
             result.design_sequences()
             result.design_sequence_output()
-
-
-class TestMultivsSingleProcessedResults:
-
-    pass
 
 
 class TestMultiProcessing:
@@ -131,3 +121,15 @@ class TestMultiProcessing:
             for a1, a2 in zip(r1.assemblies, r2.assemblies):
                 a1.print()
                 self.eq_assemblies(a1, a2)
+
+
+class TestHasAssemblies:
+    def test_multi_has_assemblies(self, multi_processed_results):
+        design, results = multi_processed_results
+        for result in results.values():
+            assert result.assemblies
+
+    def test_single_has_assemblies(self, single_processed_results):
+        design, results = single_processed_results
+        for result in results.values():
+            assert result.assemblies

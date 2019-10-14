@@ -26,10 +26,10 @@ from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.design.assembly import Assembly
 from dasi.design.graph_builder import AssemblyNode
-from dasi.design.sequence_design import design_edge
 from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
 from dasi.utils import perfect_subject
+
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 
@@ -51,6 +51,10 @@ class DesignResult(Iterable):
         self._keys = []
 
     @property
+    def seqdb(self):
+        return self.container.seqdb
+
+    @property
     def assemblies(self) -> Tuple[Assembly, ...]:
         """Return a tuple of all assemblies.
 
@@ -60,7 +64,13 @@ class DesignResult(Iterable):
 
     def _add_assembly_from_path(self, path: List[AssemblyNode]):
         return Assembly(
-            path, self.container, self.graph, self.query_key, self.query, do_raise=False
+            path,
+            self.container,
+            self.graph,
+            self.query_key,
+            self.query,
+            seqdb=self.seqdb,
+            do_raise=False,
         )
 
     def add_assembly(
@@ -108,19 +118,6 @@ class DesignResult(Iterable):
             self.add_assembly(
                 path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
             )
-
-    def _design_sequences_for_assembly(self, assembly):
-        seqdb = self.container.seqdb
-        for n1, n2, edata in assembly.edges():
-            design_edge(assembly, n1, n2, seqdb)
-            # edata["sequence_result"] = seq_result
-
-    def design_sequences(self):
-        for a in self.assemblies:
-            self._design_sequences_for_assembly(a)
-
-    def design_sequence_output(self):
-        pass
 
     #
     #
@@ -399,9 +396,10 @@ class Design:
                     len(self.graphs), n_jobs
                 ),
             ):
-                return self._optimize_with_threads(n_paths, n_jobs)
+                self._results = self._optimize_with_threads(n_paths, n_jobs)
         else:
-            return self._optimize_without_threads(n_paths)
+            self._results = self._optimize_without_threads(n_paths)
+        return self._results
 
     def _optimize_without_threads(self, n_paths) -> Dict[str, DesignResult]:
         """Finds the optimal paths for each query in the design."""

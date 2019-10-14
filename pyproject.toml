@@ -27,14 +27,14 @@ biopython = "^1.74"
 seaborn = "^0.9.0"
 matplotlib = "^3.1"
 frozendict = "^1.2"
-pyblastbio = "=0.4.0a1"
 primer3plus = "^1.0.5"
+pyblastbio = "^0.4.1"
+fire = "^0.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^18.3-alpha.0", allows-prereleases = true}
 pytest = "^5.0"
 pre-commit = "^1.17"
-keats = "^0.2.26"
 pytest-benchmark = "^3.2"
 pygal = "^2.4"
 pygaljs = "^1.0"
@@ -48,6 +48,7 @@ flake8 = "^3.7"
 autodocsumm = "^0.1.11"
 jdna = "^0.1.4"
 dictdiffer = "^0.8.0"
+keats = "0.2.26"
 
 [tool.black]
 line-length = 88
@@ -76,3 +77,5 @@ exclude = '''
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
+[tool.poetry.scripts]
+dasi = 'dasi:cli.main'

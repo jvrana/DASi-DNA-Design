@@ -133,3 +133,17 @@ class TestHasAssemblies:
         design, results = single_processed_results
         for result in results.values():
             assert result.assemblies
+
+
+class TestReactions:
+    def test_multi_reactions(self, multi_processed_results):
+        design, results = multi_processed_results
+        for result in results.values():
+            for a in result.assemblies:
+                a.reactions
+
+    def test_single_reactions(self, single_processed_results):
+        design, results = single_processed_results
+        for result in results.values():
+            for a in result.assemblies:
+                a.reactions

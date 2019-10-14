@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.cost.params &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.cost.params &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -118,9 +118,7 @@ import pandas as pd
 
 
 <div class="viewcode-block" id="PrimerParams"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.params.PrimerParams">[docs]</a>class PrimerParams:
-    &quot;&quot;&quot;
-    Primer parameters for the :class:`dasi.cost.PrimerCostBuilder`.
-    &quot;&quot;&quot;
+    &quot;&quot;&quot;Primer parameters for the :class:`dasi.cost.PrimerCostModel`.&quot;&quot;&quot;
 
     time_cost = Globals.time_cost  #: cost of a day of &#39;waiting&#39;
     material_modifier = Globals.material_modifier  #: multiplier for materials cost
@@ -162,9 +160,7 @@ import pandas as pd
 
 
 <div class="viewcode-block" id="SynthesisParams"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.params.SynthesisParams">[docs]</a>class SynthesisParams:
-    &quot;&quot;&quot;
-    Synthesis parameters for the :class:`dasi.cost.SynthesisCostBuilder`.
-    &quot;&quot;&quot;
+    &quot;&quot;&quot;Synthesis parameters for the :class:`dasi.cost.SynthesisCostModel`.&quot;&quot;&quot;
 
     synthesis_df = pd.DataFrame(
         [
@@ -183,9 +179,9 @@ import pandas as pd
     )  #: synthesis cost table
 
     time_cost = Globals.time_cost  #: time cost for a day of &#39;waiting&#39;
-    material_modifier = Globals.material_modifier   #: material cost multiplier
+    material_modifier = Globals.material_modifier  #: material cost multiplier
     step_size = 10  #: step size to consider during calculations. Lowering significantly
-                    #: increases computation time
+    #: increases computation time
     left_span_range = (-300, 300)  #: left span range to consider. Used with syn table.</div>
 </pre></div>
 

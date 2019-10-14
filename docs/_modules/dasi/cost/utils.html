@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.cost.utils &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.cost.utils &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -160,7 +160,6 @@ def unshape(shape, axis):
     if isinstance(axis, int):
         axis = (axis,)
     to_axis = tuple(range(len(axis)))
-    print(unshape(a.shape, axis))
     g = np.prod(unshape(a.shape, axis))
     view = np.moveaxis(a, axis, to_axis).reshape(-1, g)
     if copy:

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.utils &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.utils &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -110,18 +110,21 @@
 <span></span>&quot;&quot;&quot;Utilities.&quot;&quot;&quot;
 import bisect
 import functools
+from typing import Any
+from typing import Callable
+from typing import Iterable
+from typing import List
+from typing import Tuple
 
 from .networkx.shortest_path import multipoint_shortest_path
 from .networkx.utils import sort_cycle
 from .npdf import NumpyDataFrame
 from .npdf import NumpyDataFrameException
 from .region import Region
-from typing import Iterable, Any, Callable, Tuple, List
 
 
 <div class="viewcode-block" id="sort_with_keys"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.sort_with_keys">[docs]</a>def sort_with_keys(a: Iterable[Any], key: Callable) -&gt; Tuple[List, List]:
-    &quot;&quot;&quot;
-    Sort an iterable, returning both the sorted array and the sorted keys.
+    &quot;&quot;&quot;Sort an iterable, returning both the sorted array and the sorted keys.
 
     :param a: the iterable
     :param key: key function to use for sorting
@@ -147,9 +150,8 @@ from typing import Iterable, Any, Callable, Tuple, List
 
 
 <div class="viewcode-block" id="bisect_slice_between"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.bisect_slice_between">[docs]</a>def bisect_slice_between(a: Iterable, keys: Iterable, low: Any, high: Any) -&gt; Iterable:
-    &quot;&quot;&quot;
-    Slice the iterable using inclusive bisection. Assumes
-    both the iterable and keys are sorted. Bisect at specified `low` and `high`.
+    &quot;&quot;&quot;Slice the iterable using inclusive bisection. Assumes both the iterable
+    and keys are sorted. Bisect at specified `low` and `high`.
 
     :param a: pre-sorted iterable to slice
     :param keys: pre-sorted keys to bisect

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>API Reference &#8212; dasi 0.0.2 documentation</title>
+    <title>API Reference &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -147,28 +147,17 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Assembly" title="dasi.design.Assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code></a>(nodes, container, …)</p></td>
-<td><p>Should take in a path, graph, container, seqdb to produce relevant information.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design" title="dasi.design.Design"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Design</span></code></a>([span_cost, seqdb, n_jobs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design" title="dasi.design.Design"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Design</span></code></a>([span_cost, seqdb, n_jobs])</p></td>
 <td><p>Design class that returns optimal assemblies from a set of materials.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.DesignResult" title="dasi.design.DesignResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DesignResult</span></code></a>(container, graph, query_key)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.DesignResult" title="dasi.design.DesignResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DesignResult</span></code></a>(container, graph, query_key)</p></td>
 <td><p>DesignResult container.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign" title="dasi.design.LibraryDesign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LibraryDesign</span></code></a>([span_cost, n_jobs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign" title="dasi.design.LibraryDesign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LibraryDesign</span></code></a>([span_cost, n_jobs])</p></td>
 <td><p>Design class for producing assemblies for libraries.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="class">
-<dt id="dasi.design.Assembly">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.design.</code><code class="sig-name descname">Assembly</code><span class="sig-paren">(</span><em class="sig-param">nodes</em>, <em class="sig-param">container</em>, <em class="sig-param">full_assembly_graph</em>, <em class="sig-param">query_key</em>, <em class="sig-param">query</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#Assembly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.Assembly" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></p>
-<p>Should take in a path, graph, container, seqdb to produce relevant
-information.</p>
-</dd></dl>
-
 <dl class="class">
 <dt id="dasi.design.Design">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.design.</code><code class="sig-name descname">Design</code><span class="sig-paren">(</span><em class="sig-param">span_cost=None</em>, <em class="sig-param">seqdb=None</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#Design"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.Design" title="Permalink to this definition">¶</a></dt>
@@ -232,8 +221,23 @@ information.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.containers" title="dasi.design.Design.containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">containers</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design._seqdb" title="dasi.design.Design._seqdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_seqdb</span></code></a></p></td>
+<td><p>Sequence dict registry</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.containers" title="dasi.design.Design.containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">containers</span></code></a></p></td>
 <td><p>Iterable of alignment containers in this design.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.graphs" title="dasi.design.Design.graphs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphs</span></code></a></p></td>
+<td><p>Dict[str, nx.DiGraph]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.n_jobs" title="dasi.design.Design.n_jobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_jobs</span></code></a></p></td>
+<td><p>number of multiprocessing jobs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.results" title="dasi.design.Design.results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">results</span></code></a></p></td>
+<td><p>Dict[str, DesignResult]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.span_cost" title="dasi.design.Design.span_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">span_cost</span></code></a></p></td>
+<td><p>span cost df</p></td>
 </tr>
 </tbody>
 </table>
@@ -249,9 +253,15 @@ information.</p>
 <dd><p>Finds the optimal paths for each query in the design.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>]]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#dasi.design.DesignResult" title="dasi.design.DesignResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DesignResult</span></code></a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.Design._seqdb">
+<code class="sig-name descname">_seqdb</code><em class="property"> = None</em><a class="headerlink" href="#dasi.design.Design._seqdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sequence dict registry</p>
 </dd></dl>
 
 <dl class="method">
@@ -328,6 +338,18 @@ information.</p>
 </dl>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="dasi.design.Design.graphs">
+<code class="sig-name descname">graphs</code><em class="property"> = None</em><a class="headerlink" href="#dasi.design.Design.graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dict[str, nx.DiGraph]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.Design.n_jobs">
+<code class="sig-name descname">n_jobs</code><em class="property"> = None</em><a class="headerlink" href="#dasi.design.Design.n_jobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of multiprocessing jobs</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dasi.design.Design.query_keys">
 <code class="sig-name descname">query_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#Design.query_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.Design.query_keys" title="Permalink to this definition">¶</a></dt>
@@ -337,6 +359,18 @@ information.</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.Design.results">
+<code class="sig-name descname">results</code><em class="property"> = None</em><a class="headerlink" href="#dasi.design.Design.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dict[str, DesignResult]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.Design.span_cost">
+<code class="sig-name descname">span_cost</code><em class="property"> = None</em><a class="headerlink" href="#dasi.design.Design.span_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>span cost df</p>
 </dd></dl>
 
 </dd></dl>
@@ -354,10 +388,10 @@ information.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assemblies" title="dasi.design.DesignResult.add_assemblies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assemblies</span></code></a>(paths)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assemblies" title="dasi.design.DesignResult.add_assemblies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assemblies</span></code></a>(paths[, ignore_invalid, …])</p></td>
 <td><p>Adds a list of assemblies.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assembly" title="dasi.design.DesignResult.add_assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assembly</span></code></a>(path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assembly" title="dasi.design.DesignResult.add_assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assembly</span></code></a>(path[, ignore_invalid, …])</p></td>
 <td><p>Add an assembly from a list of nodes.</p></td>
 </tr>
 </tbody>
@@ -376,7 +410,7 @@ information.</p>
 </table>
 <dl class="method">
 <dt id="dasi.design.DesignResult.add_assemblies">
-<code class="sig-name descname">add_assemblies</code><span class="sig-paren">(</span><em class="sig-param">paths</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assemblies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.DesignResult.add_assemblies" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_assemblies</code><span class="sig-paren">(</span><em class="sig-param">paths</em>, <em class="sig-param">ignore_invalid=False</em>, <em class="sig-param">allow_invalid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assemblies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.DesignResult.add_assemblies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a list of assemblies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -390,7 +424,7 @@ information.</p>
 
 <dl class="method">
 <dt id="dasi.design.DesignResult.add_assembly">
-<code class="sig-name descname">add_assembly</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assembly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.DesignResult.add_assembly" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_assembly</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">ignore_invalid=False</em>, <em class="sig-param">allow_invalid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assembly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.DesignResult.add_assembly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an assembly from a list of nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -408,7 +442,7 @@ information.</p>
 <dd><p>Return a tuple of all assemblies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference internal" href="#dasi.design.Assembly" title="dasi.design.Assembly"><code class="xref py py-class docutils literal notranslate"><span class="pre">Assembly</span></code></a>, …]</p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Assembly</span></code>, …]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>tuple of all assemblies.</p>
@@ -528,7 +562,7 @@ to themselves.</p>
 <dd><p>Finds the optimal paths for each query in the design.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>]]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#dasi.design.DesignResult" title="dasi.design.DesignResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DesignResult</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -706,8 +740,23 @@ to themselves.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.containers" title="dasi.design.Design.containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">containers</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design._seqdb" title="dasi.design.Design._seqdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_seqdb</span></code></a></p></td>
+<td><p>Sequence dict registry</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.containers" title="dasi.design.Design.containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">containers</span></code></a></p></td>
 <td><p>Iterable of alignment containers in this design.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.graphs" title="dasi.design.Design.graphs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphs</span></code></a></p></td>
+<td><p>Dict[str, nx.DiGraph]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.n_jobs" title="dasi.design.Design.n_jobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_jobs</span></code></a></p></td>
+<td><p>number of multiprocessing jobs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.results" title="dasi.design.Design.results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">results</span></code></a></p></td>
+<td><p>Dict[str, DesignResult]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.span_cost" title="dasi.design.Design.span_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">span_cost</span></code></a></p></td>
+<td><p>span cost df</p></td>
 </tr>
 </tbody>
 </table>
@@ -723,9 +772,15 @@ to themselves.</p>
 <dd><p>Finds the optimal paths for each query in the design.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>]]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#dasi.design.DesignResult" title="dasi.design.DesignResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DesignResult</span></code></a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">_seqdb</code><em class="property"> = None</em></dt>
+<dd><p>Sequence dict registry</p>
 </dd></dl>
 
 <dl class="method">
@@ -802,6 +857,18 @@ to themselves.</p>
 </dl>
 </dd></dl>
 
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">graphs</code><em class="property"> = None</em></dt>
+<dd><p>Dict[str, nx.DiGraph]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">n_jobs</code><em class="property"> = None</em></dt>
+<dd><p>number of multiprocessing jobs</p>
+</dd></dl>
+
 <dl class="method">
 <dt>
 <code class="sig-name descname">query_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#Design.query_keys"><span class="viewcode-link">[source]</span></a></dt>
@@ -811,6 +878,18 @@ to themselves.</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">results</code><em class="property"> = None</em></dt>
+<dd><p>Dict[str, DesignResult]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">span_cost</code><em class="property"> = None</em></dt>
+<dd><p>span cost df</p>
 </dd></dl>
 
 </dd></dl>
@@ -830,7 +909,7 @@ to themselves.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.AssemblyGraphBuilder._batch_add_edge_costs" title="dasi.design.AssemblyGraphBuilder._batch_add_edge_costs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_batch_add_edge_costs</span></code></a>()</p></td>
 <td><p>Add costs to all edges at once batch.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.AssemblyGraphBuilder.add_edge" title="dasi.design.AssemblyGraphBuilder.add_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_edge</span></code></a>(n1, n2, name, cost, material, time, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.AssemblyGraphBuilder.add_edge" title="dasi.design.AssemblyGraphBuilder.add_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_edge</span></code></a>(n1, n2, cost, material, time, …)</p></td>
 <td><p>Add an edge between two assembly nodes.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.AssemblyGraphBuilder.add_node" title="dasi.design.AssemblyGraphBuilder.add_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_node</span></code></a>(node)</p></td>
@@ -851,7 +930,7 @@ to themselves.</p>
 
 <dl class="method">
 <dt id="dasi.design.AssemblyGraphBuilder.add_edge">
-<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">name</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.AssemblyGraphBuilder.add_edge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">internal_or_external</em>, <em class="sig-param">condition</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.AssemblyGraphBuilder.add_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an edge between two assembly nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -894,11 +973,29 @@ to themselves.</p>
 </dd></dl>
 
 <dl class="class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">dasi.design.</code><code class="sig-name descname">Assembly</code><span class="sig-paren">(</span><em class="sig-param">nodes</em>, <em class="sig-param">container</em>, <em class="sig-param">full_assembly_graph</em>, <em class="sig-param">query_key</em>, <em class="sig-param">query</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#Assembly"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></p>
+<dt id="dasi.design.Assembly">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.design.</code><code class="sig-name descname">Assembly</code><span class="sig-paren">(</span><em class="sig-param">nodes</em>, <em class="sig-param">container</em>, <em class="sig-param">full_assembly_graph</em>, <em class="sig-param">query_key</em>, <em class="sig-param">query</em>, <em class="sig-param">do_raise=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/assembly.html#Assembly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.Assembly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Generic</span></code></p>
 <p>Should take in a path, graph, container, seqdb to produce relevant
 information.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Assembly._head" title="dasi.design.Assembly._head"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_head</span></code></a>()</p></td>
+<td><p>Get the ‘first’ ‘A’ node.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.design.Assembly._head">
+<code class="sig-name descname">_head</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/assembly.html#Assembly._head"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.Assembly._head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ‘first’ ‘A’ node.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -914,10 +1011,10 @@ information.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assemblies" title="dasi.design.DesignResult.add_assemblies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assemblies</span></code></a>(paths)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assemblies" title="dasi.design.DesignResult.add_assemblies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assemblies</span></code></a>(paths[, ignore_invalid, …])</p></td>
 <td><p>Adds a list of assemblies.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assembly" title="dasi.design.DesignResult.add_assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assembly</span></code></a>(path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.DesignResult.add_assembly" title="dasi.design.DesignResult.add_assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_assembly</span></code></a>(path[, ignore_invalid, …])</p></td>
 <td><p>Add an assembly from a list of nodes.</p></td>
 </tr>
 </tbody>
@@ -936,7 +1033,7 @@ information.</p>
 </table>
 <dl class="method">
 <dt>
-<code class="sig-name descname">add_assemblies</code><span class="sig-paren">(</span><em class="sig-param">paths</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assemblies"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">add_assemblies</code><span class="sig-paren">(</span><em class="sig-param">paths</em>, <em class="sig-param">ignore_invalid=False</em>, <em class="sig-param">allow_invalid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assemblies"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Adds a list of assemblies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -950,7 +1047,7 @@ information.</p>
 
 <dl class="method">
 <dt>
-<code class="sig-name descname">add_assembly</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assembly"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">add_assembly</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">ignore_invalid=False</em>, <em class="sig-param">allow_invalid=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design.html#DesignResult.add_assembly"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Add an assembly from a list of nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -968,7 +1065,7 @@ information.</p>
 <dd><p>Return a tuple of all assemblies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference internal" href="#dasi.design.Assembly" title="dasi.design.Assembly"><code class="xref py py-class docutils literal notranslate"><span class="pre">Assembly</span></code></a>, …]</p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Assembly</span></code>, …]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>tuple of all assemblies.</p>
@@ -1088,7 +1185,7 @@ to themselves.</p>
 <dd><p>Finds the optimal paths for each query in the design.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>]]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#dasi.design.DesignResult" title="dasi.design.DesignResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">DesignResult</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1210,126 +1307,17 @@ to themselves.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms._check_paths" title="dasi.design.design_algorithms._check_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_paths</span></code></a>(paths)</p></td>
-<td><p>Validates a path to check for duplicate nodes.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms._collect_cycle_endpoints" title="dasi.design.design_algorithms._collect_cycle_endpoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_collect_cycle_endpoints</span></code></a>(graph, length)</p></td>
-<td><p>Use the floyd-warshall algorithm to compute the shortest path endpoints.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms._collect_optimized_paths" title="dasi.design.design_algorithms._collect_optimized_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_collect_optimized_paths</span></code></a>(graph, length, cyclic)</p></td>
-<td><p>Collect minimum cycles or linear paths from a graph.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms._multinode_to_shortest_path" title="dasi.design.design_algorithms._multinode_to_shortest_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_multinode_to_shortest_path</span></code></a>(graph, nodes, cyclic)</p></td>
-<td><p>Estimate the shortest path that touches the specified nodes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms._nodes_to_fullpaths" title="dasi.design.design_algorithms._nodes_to_fullpaths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_nodes_to_fullpaths</span></code></a>(graph, cycle_endpoints, …)</p></td>
-<td><p>Recover full paths from cycle endpoints.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.assemble_graph" title="dasi.design.design_algorithms.assemble_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_graph</span></code></a>(container, span_cost)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.assemble_graph" title="dasi.design.design_algorithms.assemble_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_graph</span></code></a>(container, span_cost)</p></td>
 <td><p>Build an assembly graph for a specified query.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.multiprocessing_assemble_graph" title="dasi.design.design_algorithms.multiprocessing_assemble_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_assemble_graph</span></code></a>(…)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.multiprocessing_assemble_graph" title="dasi.design.design_algorithms.multiprocessing_assemble_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_assemble_graph</span></code></a>(…)</p></td>
 <td><p>Assemble graphs using multiprocessing.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.multiprocessing_optimize_graph" title="dasi.design.design_algorithms.multiprocessing_optimize_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_optimize_graph</span></code></a>(graphs, …)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.multiprocessing_optimize_graph" title="dasi.design.design_algorithms.multiprocessing_optimize_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing_optimize_graph</span></code></a>(graphs, …)</p></td>
 <td><p>Optimize graphs using multiprocessing.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.design_algorithms.optimize_graph" title="dasi.design.design_algorithms.optimize_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_graph</span></code></a>(graph, query_length, cyclic, …)</p></td>
-<td><p>Optimize the graph associated with the specified query_key.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="function">
-<dt id="dasi.design.design_algorithms._check_paths">
-<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">_check_paths</code><span class="sig-paren">(</span><em class="sig-param">paths</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#_check_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms._check_paths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validates a path to check for duplicate nodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]]) – </p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="dasi.design.design_algorithms._collect_cycle_endpoints">
-<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">_collect_cycle_endpoints</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#_collect_cycle_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms._collect_cycle_endpoints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use the floyd-warshall algorithm to compute the shortest path endpoints.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>graph</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code>) – the networkx graph</p></li>
-<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the size of the query sequence</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="dasi.design.design_algorithms._collect_optimized_paths">
-<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">_collect_optimized_paths</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">length</em>, <em class="sig-param">cyclic</em>, <em class="sig-param">n_paths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#_collect_optimized_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms._collect_optimized_paths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Collect minimum cycles or linear paths from a graph.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>graph</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code>) – the networkx graph representing the assembly graph</p></li>
-<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – length of the query</p></li>
-<li><p><strong>cyclic</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to search for a cyclic assembly</p></li>
-<li><p><strong>n_paths</strong> – maximum number of paths to return</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="dasi.design.design_algorithms._multinode_to_shortest_path">
-<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">_multinode_to_shortest_path</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">nodes</em>, <em class="sig-param">cyclic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#_multinode_to_shortest_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms._multinode_to_shortest_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimate the shortest path that touches the specified nodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="dasi.design.design_algorithms._nodes_to_fullpaths">
-<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">_nodes_to_fullpaths</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">cycle_endpoints</em>, <em class="sig-param">cyclic</em>, <em class="sig-param">n_paths=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#_nodes_to_fullpaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms._nodes_to_fullpaths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recover full paths from cycle endpoints.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>graph</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code>) – </p></li>
-<li><p><strong>cycle_endpoints</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>) – </p></li>
-<li><p><strong>n_paths</strong> – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>]]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="function">
 <dt id="dasi.design.design_algorithms.assemble_graph">
 <code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">assemble_graph</code><span class="sig-paren">(</span><em class="sig-param">container</em>, <em class="sig-param">span_cost</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#assemble_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms.assemble_graph" title="Permalink to this definition">¶</a></dt>
@@ -1358,17 +1346,6 @@ to themselves.</p>
 <dd><p>Optimize graphs using multiprocessing.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="dasi.design.design_algorithms.optimize_graph">
-<code class="sig-prename descclassname">dasi.design.design_algorithms.</code><code class="sig-name descname">optimize_graph</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">query_length</em>, <em class="sig-param">cyclic</em>, <em class="sig-param">n_paths</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design_algorithms.html#optimize_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.design_algorithms.optimize_graph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optimize the graph associated with the specified query_key.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]]</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="class">
 <dt id="dasi.design.plotter.Plotter">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.design.plotter.</code><code class="sig-name descname">Plotter</code><span class="sig-paren">(</span><em class="sig-param">length</em>, <em class="sig-param">starts</em>, <em class="sig-param">ends</em>, <em class="sig-param">types</em>, <em class="sig-param">names</em>, <em class="sig-param">costs</em>, <em class="sig-param">title=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/plotter.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.plotter.Plotter" title="Permalink to this definition">¶</a></dt>
@@ -1376,7 +1353,7 @@ to themselves.</p>
 </dd></dl>
 
 <span class="target" id="module-dasi.design.sequence_design"></span><p>sequence_design.py.</p>
-<p>A module for converting DASi designs into actual DNA sequences.</p>
+<p>Methods for designing DNA sequences from the result of the Design module</p>
 <p><strong>Functions</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -1385,17 +1362,21 @@ to themselves.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.sequence_design.design_primers" title="dasi.design.sequence_design.design_primers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">design_primers</span></code></a>(template, region, lseq, rseq)</p></td>
-<td><p>Design primers flanking the specified <a class="reference internal" href="#dasi.utils.Region" title="dasi.utils.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region.</span></code></a>.</p></td>
+<td><p>Design primers flanking the specified.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.sequence_design.get_primer_extensions" title="dasi.design.sequence_design.get_primer_extensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_primer_extensions</span></code></a>(graph, n1, n2[, cyclic])</p></td>
+<td><p>Return the left and right primer extensions for the given <em>internal</em> fragment.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="function">
 <dt id="dasi.design.sequence_design.design_primers">
-<code class="sig-prename descclassname">dasi.design.sequence_design.</code><code class="sig-name descname">design_primers</code><span class="sig-paren">(</span><em class="sig-param">template</em>, <em class="sig-param">region</em>, <em class="sig-param">lseq</em>, <em class="sig-param">rseq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/sequence_design.html#design_primers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.sequence_design.design_primers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Design primers flanking the specified <a class="reference internal" href="#dasi.utils.Region" title="dasi.utils.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region.</span></code></a>.
-If the region is cyclic and spans the origin, this
-method will handle the appropriate manipulations to design primers around
-the origin and restore the locations of the resulting primer pairs.</p>
+<code class="sig-prename descclassname">dasi.design.sequence_design.</code><code class="sig-name descname">design_primers</code><span class="sig-paren">(</span><em class="sig-param">template</em>, <em class="sig-param">region</em>, <em class="sig-param">lseq</em>, <em class="sig-param">rseq</em>, <em class="sig-param">left_overhang=None</em>, <em class="sig-param">right_overhang=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/sequence_design.html#design_primers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.sequence_design.design_primers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Design primers flanking the specified.</p>
+<p><a class="reference internal" href="#dasi.utils.Region" title="dasi.utils.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region.</span></code></a>. If the region is cyclic and spans the
+origin, this method will handle the appropriate manipulations to design
+primers around the origin and restore the locations of the resulting primer
+pairs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1404,6 +1385,8 @@ the origin and restore the locations of the resulting primer pairs.</p>
 their end points (<cite>.b</cite> parameter)</p></li>
 <li><p><strong>lseq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – optionally provided left sequence</p></li>
 <li><p><strong>rseq</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – optionally provided right sequence</p></li>
+<li><p><strong>left_overhang</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – optionally provided left overhang sequence of the primer</p></li>
+<li><p><strong>right_overhang</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – optionally provided right overhang sequence of the primer</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -1411,6 +1394,31 @@ their end points (<cite>.b</cite> parameter)</p></li>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>tuple of pairs and the ‘explain’ dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="dasi.design.sequence_design.get_primer_extensions">
+<code class="sig-prename descclassname">dasi.design.sequence_design.</code><code class="sig-name descname">get_primer_extensions</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cyclic=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/sequence_design.html#get_primer_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.sequence_design.get_primer_extensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the left and right primer extensions for the given <em>internal</em>
+fragment. To get the extensions, we look for the left predecessor edge and
+get its <cite>right_ext</cite> or <cite>rprimer_right_ext</cite> and on the other side the right
+successor edge and its <cite>left_ext</cite> or <cite>lprimer_left_ext</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code>) – assembly graph</p></li>
+<li><p><strong>n1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>) – source node on the graph</p></li>
+<li><p><strong>n2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>) – end node on the graph</p></li>
+<li><p><strong>cyclic</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether the</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple of left and right extensions</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1435,21 +1443,24 @@ their end points (<cite>.b</cite> parameter)</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainerFactory" title="dasi.alignments.AlignmentContainerFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlignmentContainerFactory</span></code></a>(seqdb)</p></td>
 <td><p>Class that maintains a shared list of alignments and shared sequence database.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentGroup" title="dasi.alignments.AlignmentGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>(alignments, group_type[, name])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentGroup" title="dasi.alignments.AlignmentGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>(alignments, group_type[, …])</p></td>
 <td><p>A representative Alignment representing a group of alignments sharing the same starting and ending position for a query sequence.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentGroupBase" title="dasi.alignments.AlignmentGroupBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AlignmentGroupBase</span></code></a>(alignments, group_type[, …])</p></td>
 <td><p>A representative Alignment representing a group of alignments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.ComplexAlignmentGroup" title="dasi.alignments.ComplexAlignmentGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComplexAlignmentGroup</span></code></a>(alignments, group_type)</p></td>
-<td><p>A representation of an alignment in which the query region is the concatenation of the underlying alignments provided.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.MultiPCRProductAlignmentGroup" title="dasi.alignments.MultiPCRProductAlignmentGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiPCRProductAlignmentGroup</span></code></a>(groupings, …)</p></td>
+<td><p>A PCR Product Alignment with redundant forward primer, reverse primer, and template alignments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.PCRProductAlignmentGroup" title="dasi.alignments.PCRProductAlignmentGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code></a>(fwd, template, rev, …)</p></td>
+<td><p>Represents a PCR product alignment from a template alignment and forward and reverse alignments.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="class">
 <dt id="dasi.alignments.Alignment">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">Alignment</code><span class="sig-paren">(</span><em class="sig-param">query_region</em>, <em class="sig-param">subject_region</em>, <em class="sig-param">atype</em>, <em class="sig-param">query_key</em>, <em class="sig-param">subject_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#Alignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.Alignment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sized</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.alignments.alignment.RepresentsMolecule</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sized</span></code></p>
 <p>A pair of Regions that ‘aligns’ two regions of DNA sequences. All
 regions must always be the same length.</p>
 <p>A subregion of both regions may be taken.</p>
@@ -1557,16 +1568,16 @@ relative to the query region.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer._alignment_hash" title="dasi.alignments.AlignmentContainer._alignment_hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_alignment_hash</span></code></a>(a)</p></td>
 <td><p>A hashable representation of an alignment for grouping.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer._new_grouping_tag" title="dasi.alignments.AlignmentContainer._new_grouping_tag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_new_grouping_tag</span></code></a>(alignments, atype[, key])</p></td>
-<td><p>Make a new ordered grouping by type and a uuid.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer._create_pcr_product_alignment" title="dasi.alignments.AlignmentContainer._create_pcr_product_alignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_create_pcr_product_alignment</span></code></a>(…)</p></td>
+<td><p>Create a new alignment group for a PCR product.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.expand" title="dasi.alignments.AlignmentContainer.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>([expand_overlaps, expand_primers])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.expand" title="dasi.alignments.AlignmentContainer.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>([expand_overlaps, expand_primers, …])</p></td>
 <td><p>Expand the number of alignments in this container using overlaps or primers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.expand_overlaps" title="dasi.alignments.AlignmentContainer.expand_overlaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_overlaps</span></code></a>(alignment_groups[, atype])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.expand_overlaps" title="dasi.alignments.AlignmentContainer.expand_overlaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_overlaps</span></code></a>(alignment_groups[, atype, …])</p></td>
 <td><p>Expand the list of alignments from existing regions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.expand_primer_pairs" title="dasi.alignments.AlignmentContainer.expand_primer_pairs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_primer_pairs</span></code></a>(alignment_groups)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.expand_primer_pairs" title="dasi.alignments.AlignmentContainer.expand_primer_pairs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_primer_pairs</span></code></a>(alignment_groups[, lim_size])</p></td>
 <td><p>Creates new alignments for all possible primer pairs.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainer.find_groups_by_pos" title="dasi.alignments.AlignmentContainer.find_groups_by_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_groups_by_pos</span></code></a>(a, b, group_type[, groups])</p></td>
@@ -1608,29 +1619,48 @@ relative to the query region.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.alignments.AlignmentContainer._new_grouping_tag">
-<em class="property">classmethod </em><code class="sig-name descname">_new_grouping_tag</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">atype</em>, <em class="sig-param">key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer._new_grouping_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer._new_grouping_tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a new ordered grouping by type and a uuid.</p>
+<dt id="dasi.alignments.AlignmentContainer._create_pcr_product_alignment">
+<code class="sig-name descname">_create_pcr_product_alignment</code><span class="sig-paren">(</span><em class="sig-param">template_group</em>, <em class="sig-param">fwd</em>, <em class="sig-param">rev</em>, <em class="sig-param">alignment_type</em>, <em class="sig-param">lim_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer._create_pcr_product_alignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer._create_pcr_product_alignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new alignment group for a PCR product.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Situations the PCRProductAlignmentGroup represents:
+
+            &lt;--------
+------------------
+----&gt;
+
+               &lt;--------
+   ------------------
+--------&gt;
+
+
+        &lt;-----
+   ------------------
+--------&gt;
+
+
+              &lt;------
+   ------------------
+--------&gt;
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alignments</strong> – </p></li>
-<li><p><strong>atype</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
-<li><p><strong>key</strong> – </p></li>
+<li><p><strong>template_group</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>) – </p></li>
+<li><p><strong>fwd</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
+<li><p><strong>rev</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
+<li><p><strong>alignment_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="dasi.alignments.AlignmentContainer.expand">
-<code class="sig-name descname">expand</code><span class="sig-paren">(</span><em class="sig-param">expand_overlaps=True</em>, <em class="sig-param">expand_primers=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer.expand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer.expand" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expand</code><span class="sig-paren">(</span><em class="sig-param">expand_overlaps=True</em>, <em class="sig-param">expand_primers=True</em>, <em class="sig-param">expand_primer_dimers=False</em>, <em class="sig-param">lim_size=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer.expand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer.expand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expand the number of alignments in this container using overlaps or
 primers.</p>
 <dl class="field-list simple">
@@ -1648,7 +1678,7 @@ primers.</p>
 
 <dl class="method">
 <dt id="dasi.alignments.AlignmentContainer.expand_overlaps">
-<code class="sig-name descname">expand_overlaps</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em>, <em class="sig-param">atype='PCR_PRODUCT'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer.expand_overlaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer.expand_overlaps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expand_overlaps</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em>, <em class="sig-param">atype='PCR_PRODUCT'</em>, <em class="sig-param">lim_size=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer.expand_overlaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer.expand_overlaps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expand the list of alignments from existing regions. Produces new fragments in
 the following three situations:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>|--------|          alignment 1
@@ -1684,7 +1714,7 @@ the following three situations:</p>
 
 <dl class="method">
 <dt id="dasi.alignments.AlignmentContainer.expand_primer_pairs">
-<code class="sig-name descname">expand_primer_pairs</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer.expand_primer_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer.expand_primer_pairs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expand_primer_pairs</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em>, <em class="sig-param">lim_size=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainer.expand_primer_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainer.expand_primer_pairs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates new alignments for all possible primer pairs. Searches for
 fwd and rev primer pairs that exist within other alignments and
 produces all combinations of alignments that can form from these primer
@@ -1714,7 +1744,7 @@ group_type.</p>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexAlignmentGroup</span></code>]]</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code>]]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of groups</p>
@@ -1752,7 +1782,7 @@ alignments.</p>
 <dd><p>Return alignment groups according to their alignment ‘type’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexAlignmentGroup</span></code>]]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code>]]]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict</p>
@@ -1838,9 +1868,6 @@ query via <cite>.containers()</cite></p>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainerFactory.load_blast_json" title="dasi.alignments.AlignmentContainerFactory.load_blast_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_blast_json</span></code></a>(data, atype)</p></td>
 <td><p>Create alignments from a formatted BLAST JSON result.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.AlignmentContainerFactory.set_alignments" title="dasi.alignments.AlignmentContainerFactory.set_alignments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_alignments</span></code></a>(alignments)</p></td>
-<td><p>Set the alignments.</p></td>
-</tr>
 </tbody>
 </table>
 <dl class="method">
@@ -1888,31 +1915,25 @@ query via <cite>.containers()</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="dasi.alignments.AlignmentContainerFactory.set_alignments">
-<code class="sig-name descname">set_alignments</code><span class="sig-paren">(</span><em class="sig-param">alignments</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment_container.html#AlignmentContainerFactory.set_alignments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentContainerFactory.set_alignments" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the alignments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]]) – new iterable of alignments</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="dasi.alignments.AlignmentGroup">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">AlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">group_type</em>, <em class="sig-param">name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#AlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">AlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">group_type</em>, <em class="sig-param">name=None</em>, <em class="sig-param">meta=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#AlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.alignments.alignment.AlignmentGroupBase</span></code></p>
 <p>A representative Alignment representing a group of alignments sharing
 the same starting and ending position for a query sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
+<li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
+<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p></li>
+<li><p><strong>query_region</strong> – </p></li>
+<li><p><strong>meta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – </p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -1992,9 +2013,20 @@ and subject regions at the specified new indicies.</p>
 
 <dl class="class">
 <dt id="dasi.alignments.AlignmentGroupBase">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">AlignmentGroupBase</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">group_type</em>, <em class="sig-param">name=None</em>, <em class="sig-param">query_region=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#AlignmentGroupBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentGroupBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">AlignmentGroupBase</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">group_type</em>, <em class="sig-param">name=None</em>, <em class="sig-param">query_region=None</em>, <em class="sig-param">meta=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#AlignmentGroupBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.AlignmentGroupBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.alignments.alignment.RepresentsMolecule</span></code></p>
 <p>A representative Alignment representing a group of alignments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
+<li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
+<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p></li>
+<li><p><strong>query_region</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code>]) – </p></li>
+<li><p><strong>meta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – </p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -2073,11 +2105,23 @@ and subject regions at the specified new indicies.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="dasi.alignments.ComplexAlignmentGroup">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">ComplexAlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">group_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#ComplexAlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.ComplexAlignmentGroup" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.alignments.MultiPCRProductAlignmentGroup">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">MultiPCRProductAlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">groupings</em>, <em class="sig-param">query_region</em>, <em class="sig-param">group_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#MultiPCRProductAlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.MultiPCRProductAlignmentGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.alignments.alignment.AlignmentGroupBase</span></code></p>
-<p>A representation of an alignment in which the query region is the
-concatenation of the underlying alignments provided.</p>
+<p>A PCR Product Alignment with redundant forward primer, reverse primer,
+and template alignments.</p>
+<p>Initializes a new MultiPCRProductAlignmentGroup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fwds</strong> – </p></li>
+<li><p><strong>templates</strong> – </p></li>
+<li><p><strong>revs</strong> – </p></li>
+<li><p><strong>query_region</strong> – </p></li>
+<li><p><strong>group_type</strong> – </p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -2085,13 +2129,13 @@ concatenation of the underlying alignments provided.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.ComplexAlignmentGroup.query_key" title="dasi.alignments.ComplexAlignmentGroup.query_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_key</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.MultiPCRProductAlignmentGroup.query_key" title="dasi.alignments.MultiPCRProductAlignmentGroup.query_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_key</span></code></a></p></td>
 <td><p>Return the query key associated with the query region.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.ComplexAlignmentGroup.subject_keys" title="dasi.alignments.ComplexAlignmentGroup.subject_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_keys</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.MultiPCRProductAlignmentGroup.subject_keys" title="dasi.alignments.MultiPCRProductAlignmentGroup.subject_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_keys</span></code></a></p></td>
 <td><p>Return the list of subject keys in this alignment group.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.ComplexAlignmentGroup.subject_regions" title="dasi.alignments.ComplexAlignmentGroup.subject_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_regions</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.MultiPCRProductAlignmentGroup.subject_regions" title="dasi.alignments.MultiPCRProductAlignmentGroup.subject_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_regions</span></code></a></p></td>
 <td><p>Return the list of subject regions in this alignment group.</p></td>
 </tr>
 </tbody>
@@ -2103,14 +2147,14 @@ concatenation of the underlying alignments provided.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.ComplexAlignmentGroup.sub_region" title="dasi.alignments.ComplexAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.MultiPCRProductAlignmentGroup.sub_region" title="dasi.alignments.MultiPCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dasi.alignments.ComplexAlignmentGroup.query_key">
-<em class="property">property </em><code class="sig-name descname">query_key</code><a class="headerlink" href="#dasi.alignments.ComplexAlignmentGroup.query_key" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.alignments.MultiPCRProductAlignmentGroup.query_key">
+<em class="property">property </em><code class="sig-name descname">query_key</code><a class="headerlink" href="#dasi.alignments.MultiPCRProductAlignmentGroup.query_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the query key associated with the query region.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -2120,8 +2164,8 @@ concatenation of the underlying alignments provided.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.alignments.ComplexAlignmentGroup.sub_region">
-<code class="sig-name descname">sub_region</code><span class="sig-paren">(</span><em class="sig-param">qstart</em>, <em class="sig-param">qend</em>, <em class="sig-param">atype</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.alignments.ComplexAlignmentGroup.sub_region" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.alignments.MultiPCRProductAlignmentGroup.sub_region">
+<code class="sig-name descname">sub_region</code><span class="sig-paren">(</span><em class="sig-param">qstart</em>, <em class="sig-param">qend</em>, <em class="sig-param">atype</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.alignments.MultiPCRProductAlignmentGroup.sub_region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce a new alignment group with sub-regions of the query region
 and subject regions at the specified new indicies.</p>
 <dl class="field-list simple">
@@ -2132,8 +2176,8 @@ and subject regions at the specified new indicies.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.alignments.ComplexAlignmentGroup.subject_keys">
-<em class="property">property </em><code class="sig-name descname">subject_keys</code><a class="headerlink" href="#dasi.alignments.ComplexAlignmentGroup.subject_keys" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.alignments.MultiPCRProductAlignmentGroup.subject_keys">
+<em class="property">property </em><code class="sig-name descname">subject_keys</code><a class="headerlink" href="#dasi.alignments.MultiPCRProductAlignmentGroup.subject_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of subject keys in this alignment group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -2143,8 +2187,123 @@ and subject regions at the specified new indicies.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.alignments.ComplexAlignmentGroup.subject_regions">
-<em class="property">property </em><code class="sig-name descname">subject_regions</code><a class="headerlink" href="#dasi.alignments.ComplexAlignmentGroup.subject_regions" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.alignments.MultiPCRProductAlignmentGroup.subject_regions">
+<em class="property">property </em><code class="sig-name descname">subject_regions</code><a class="headerlink" href="#dasi.alignments.MultiPCRProductAlignmentGroup.subject_regions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of subject regions in this alignment group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.alignments.PCRProductAlignmentGroup">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.alignments.</code><code class="sig-name descname">PCRProductAlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">fwd</em>, <em class="sig-param">template</em>, <em class="sig-param">rev</em>, <em class="sig-param">query_region</em>, <em class="sig-param">group_type</em>, <em class="sig-param">meta=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/alignments/alignment.html#PCRProductAlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.alignments.PCRProductAlignmentGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.alignments.alignment.AlignmentGroupBase</span></code></p>
+<p>Represents a PCR product alignment from a template alignment and
+forward and reverse alignments. Represents several situations:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Situations the PCRProductAlignmentGroup represents:
+
+Rev primer with overhang
+            &lt;--------
+------------------
+----&gt;
+
+Primers with overhangs
+               &lt;--------
+   ------------------
+--------&gt;
+
+Primers &#39;within&#39; the template
+        &lt;-----
+   ------------------
+--------&gt;
+
+And so on...
+</pre></div>
+</div>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.PCRProductAlignmentGroup.query_key" title="dasi.alignments.PCRProductAlignmentGroup.query_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_key</span></code></a></p></td>
+<td><p>Return the query key associated with the query region.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.alignments.PCRProductAlignmentGroup.subject_keys" title="dasi.alignments.PCRProductAlignmentGroup.subject_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_keys</span></code></a></p></td>
+<td><p>Return the list of subject keys in this alignment group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.PCRProductAlignmentGroup.subject_regions" title="dasi.alignments.PCRProductAlignmentGroup.subject_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_regions</span></code></a></p></td>
+<td><p>Return the list of subject regions in this alignment group.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.alignments.PCRProductAlignmentGroup.sub_region" title="dasi.alignments.PCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Initialize a new PCRProductAlignmentGroup. Represents a PCR product.
+Query region end points are determined from the first non-None
+alignment and the last non-None alignment. Produces <em>one new
+alignment</em>, the template alignment, which is the intersection of the
+provided template alignment and the query_region, which represents the
+exact region for which PCR primers ought to align in a PCR reaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fwd</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – the forward primer alignment. Can be ‘inside’ the template or have an overhang.</p></li>
+<li><p><strong>template</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>) – template alignment</p></li>
+<li><p><strong>rev</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – the reverse primer alignment. Can be ‘within’ the template or have an overhang.</p></li>
+<li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – group type name</p></li>
+<li><p><strong>meta</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – extra meta data</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="dasi.alignments.PCRProductAlignmentGroup.query_key">
+<em class="property">property </em><code class="sig-name descname">query_key</code><a class="headerlink" href="#dasi.alignments.PCRProductAlignmentGroup.query_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the query key associated with the query region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.alignments.PCRProductAlignmentGroup.sub_region">
+<code class="sig-name descname">sub_region</code><span class="sig-paren">(</span><em class="sig-param">qstart</em>, <em class="sig-param">qend</em>, <em class="sig-param">atype</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.alignments.PCRProductAlignmentGroup.sub_region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a new alignment group with sub-regions of the query region
+and subject regions at the specified new indicies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroupBase</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.alignments.PCRProductAlignmentGroup.subject_keys">
+<em class="property">property </em><code class="sig-name descname">subject_keys</code><a class="headerlink" href="#dasi.alignments.PCRProductAlignmentGroup.subject_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of subject keys in this alignment group.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.alignments.PCRProductAlignmentGroup.subject_regions">
+<em class="property">property </em><code class="sig-name descname">subject_regions</code><a class="headerlink" href="#dasi.alignments.PCRProductAlignmentGroup.subject_regions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the list of subject regions in this alignment group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -2169,13 +2328,13 @@ and subject regions at the specified new indicies.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CostBuilder</span></code></a>(span)</p></td>
 <td><p>Abstract base class for building a cost model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder" title="dasi.cost.PrimerCostBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimerCostBuilder</span></code></a>(pdf, edf, min_anneal, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimerCostModel</span></code></a>(pdf, edf, min_anneal, …)</p></td>
 <td><p>Initialize the cost model for primer designs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SpanCost" title="dasi.cost.SpanCost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpanCost</span></code></a>(syn_cost)</p></td>
 <td><p>Initialize cost builder from a ‘span’, or a list of indices for which the model is valid.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostBuilder" title="dasi.cost.SynthesisCostBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SynthesisCostBuilder</span></code></a>(sdf, primer_cost, …)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SynthesisCostModel</span></code></a>(sdf, primer_cost, …[, …])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">type sdf</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
@@ -2205,8 +2364,8 @@ and subject regions at the specified new indicies.</p>
 <em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">CostBuilder</code><span class="sig-paren">(</span><em class="sig-param">span</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#CostBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Abstract base class for building a cost model.</p>
-<p>Initialize cost builder from a ‘span’, or a list of indices for which
-the model is valid.</p>
+<p>Initialize cost builder from a ‘span’, or a list of indices for
+which the model is valid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>span</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – the list of indices (span) for which this cost model is evaluated.</p>
@@ -2226,7 +2385,7 @@ the model is valid.</p>
 <td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.from_params" title="dasi.cost.CostBuilder.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(*args)</p></td>
-<td><p>Initialize from parameters</p></td>
+<td><p>Initialize from parameters.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.to_df" title="dasi.cost.CostBuilder.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
 <td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
@@ -2254,8 +2413,8 @@ the model is valid.</p>
 <dl class="method">
 <dt id="dasi.cost.CostBuilder.cost">
 <code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#CostBuilder.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder.cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the
-provided span.</p>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2266,7 +2425,7 @@ that have been provided are not extendable. If we had,
 for example, an existing right primer and flexibility to
 design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
 <li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
-span for the cost builder (<cite>CostBuilder.span</cite>). Any
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
 invalid indices cost will be set to <cite>np.inf</cite> and efficiency
 to <cite>0.0</cite></p></li>
 </ul>
@@ -2283,7 +2442,7 @@ to <cite>0.0</cite></p></li>
 <dl class="method">
 <dt id="dasi.cost.CostBuilder.from_params">
 <em class="property">abstract classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#CostBuilder.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder.from_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize from parameters</p>
+<dd><p>Initialize from parameters.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2301,8 +2460,8 @@ to <cite>0.0</cite></p></li>
 </dd></dl>
 
 <dl class="class">
-<dt id="dasi.cost.PrimerCostBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">PrimerCostBuilder</code><span class="sig-paren">(</span><em class="sig-param">pdf</em>, <em class="sig-param">edf</em>, <em class="sig-param">min_anneal</em>, <em class="sig-param">time_cost</em>, <em class="sig-param">material_mod</em>, <em class="sig-param">min_span</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#PrimerCostBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostBuilder" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.PrimerCostModel">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">PrimerCostModel</code><span class="sig-paren">(</span><em class="sig-param">pdf</em>, <em class="sig-param">edf</em>, <em class="sig-param">min_anneal</em>, <em class="sig-param">time_cost</em>, <em class="sig-param">material_mod</em>, <em class="sig-param">min_span</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#PrimerCostModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.CostBuilder</span></code></a></p>
 <p>Initialize the cost model for primer designs.</p>
 <dl class="field-list simple">
@@ -2328,16 +2487,16 @@ Example parameters found at
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder.compute" title="dasi.cost.PrimerCostBuilder.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.compute" title="dasi.cost.PrimerCostModel.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
 <td><p>Before the numpy-based cost calculations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder.cost" title="dasi.cost.PrimerCostBuilder.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.cost" title="dasi.cost.PrimerCostModel.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
 <td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder.from_params" title="dasi.cost.PrimerCostBuilder.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(primer_params)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.from_params" title="dasi.cost.PrimerCostModel.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(primer_params)</p></td>
 <td><p>Load from <a class="reference internal" href="#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.params.PrimerParams</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder.to_df" title="dasi.cost.PrimerCostBuilder.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.to_df" title="dasi.cost.PrimerCostModel.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
 <td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
 </tr>
 </tbody>
@@ -2349,22 +2508,22 @@ Example parameters found at
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder.plot" title="dasi.cost.PrimerCostBuilder.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.plot" title="dasi.cost.PrimerCostModel.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
 <td><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dasi.cost.PrimerCostBuilder.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#PrimerCostBuilder.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostBuilder.compute" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.PrimerCostModel.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#PrimerCostModel.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostModel.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Before the numpy-based cost calculations.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.PrimerCostBuilder.cost">
-<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.PrimerCostBuilder.cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the
-provided span.</p>
+<dt id="dasi.cost.PrimerCostModel.cost">
+<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.PrimerCostModel.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2375,7 +2534,7 @@ that have been provided are not extendable. If we had,
 for example, an existing right primer and flexibility to
 design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
 <li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
-span for the cost builder (<cite>CostBuilder.span</cite>). Any
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
 invalid indices cost will be set to <cite>np.inf</cite> and efficiency
 to <cite>0.0</cite></p></li>
 </ul>
@@ -2390,31 +2549,31 @@ to <cite>0.0</cite></p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.PrimerCostBuilder.from_params">
-<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">primer_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#PrimerCostBuilder.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostBuilder.from_params" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.PrimerCostModel.from_params">
+<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">primer_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#PrimerCostModel.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostModel.from_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load from <a class="reference internal" href="#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.params.PrimerParams</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>primer_params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerParams</span></code></a>]) – parameters</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#dasi.cost.PrimerCostBuilder" title="dasi.cost.PrimerCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerCostBuilder</span></code></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerCostModel</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>PrimerCostBuilder</p>
+<dd class="field-odd"><p>PrimerCostModel</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.PrimerCostBuilder.plot">
-<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.PrimerCostBuilder.plot" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.PrimerCostModel.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.PrimerCostModel.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.PrimerCostBuilder.to_df">
-<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.PrimerCostBuilder.to_df" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.PrimerCostModel.to_df">
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.PrimerCostModel.to_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the cost builder to a pandas.DataFrame.</p>
 </dd></dl>
 
@@ -2424,8 +2583,8 @@ to <cite>0.0</cite></p></li>
 <dt id="dasi.cost.SpanCost">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">SpanCost</code><span class="sig-paren">(</span><em class="sig-param">syn_cost</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SpanCost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.CostBuilder</span></code></a></p>
-<p>Initialize cost builder from a ‘span’, or a list of indices for which
-the model is valid.</p>
+<p>Initialize cost builder from a ‘span’, or a list of indices for
+which the model is valid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>span</strong> – the list of indices (span) for which this cost model is evaluated.</p>
@@ -2445,7 +2604,7 @@ the model is valid.</p>
 <td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.from_params" title="dasi.cost.SpanCost.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>()</p></td>
-<td><p>Initialize from parameters</p></td>
+<td><p>Initialize from parameters.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.to_df" title="dasi.cost.SpanCost.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
 <td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
@@ -2473,8 +2632,8 @@ the model is valid.</p>
 <dl class="method">
 <dt id="dasi.cost.SpanCost.cost">
 <code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SpanCost.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost.cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the
-provided span.</p>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2485,7 +2644,7 @@ that have been provided are not extendable. If we had,
 for example, an existing right primer and flexibility to
 design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
 <li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
-span for the cost builder (<cite>CostBuilder.span</cite>). Any
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
 invalid indices cost will be set to <cite>np.inf</cite> and efficiency
 to <cite>0.0</cite></p></li>
 </ul>
@@ -2502,7 +2661,7 @@ to <cite>0.0</cite></p></li>
 <dl class="method">
 <dt id="dasi.cost.SpanCost.from_params">
 <em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SpanCost.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost.from_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize from parameters</p>
+<dd><p>Initialize from parameters.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2520,15 +2679,15 @@ to <cite>0.0</cite></p></li>
 </dd></dl>
 
 <dl class="class">
-<dt id="dasi.cost.SynthesisCostBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">SynthesisCostBuilder</code><span class="sig-paren">(</span><em class="sig-param">sdf</em>, <em class="sig-param">primer_cost</em>, <em class="sig-param">time_cost</em>, <em class="sig-param">material_modifier</em>, <em class="sig-param">step_size=10</em>, <em class="sig-param">left_span_range=(-500</em>, <em class="sig-param">500)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostBuilder" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.SynthesisCostModel">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">SynthesisCostModel</code><span class="sig-paren">(</span><em class="sig-param">sdf</em>, <em class="sig-param">primer_cost</em>, <em class="sig-param">time_cost</em>, <em class="sig-param">material_modifier</em>, <em class="sig-param">step_size=10</em>, <em class="sig-param">left_span_range=(-500</em>, <em class="sig-param">500)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.CostBuilder</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sdf</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – synthesis parameter pandas dataframe. Example parameters found
 at <a class="reference internal" href="#dasi.cost.params.SynthesisParams.synthesis_df" title="dasi.cost.params.SynthesisParams.synthesis_df"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dasi.cost.params.SynthesisParams.synthesis_df</span></code></a></p></li>
-<li><p><strong>primer_cost</strong> (<a class="reference internal" href="#dasi.cost.PrimerCostBuilder" title="dasi.cost.PrimerCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerCostBuilder</span></code></a>) – primer cost builder</p></li>
+<li><p><strong>primer_cost</strong> (<a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerCostModel</span></code></a>) – primer cost builder</p></li>
 <li><p><strong>time_cost</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – time cost per day</p></li>
 <li><p><strong>material_modifier</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – material multiplier (default: 1.0)</p></li>
 <li><p><strong>step_size</strong> – step size to consider (default: 10)</p></li>
@@ -2544,16 +2703,16 @@ at <a class="reference internal" href="#dasi.cost.params.SynthesisParams.synthes
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostBuilder.compute" title="dasi.cost.SynthesisCostBuilder.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.compute" title="dasi.cost.SynthesisCostModel.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
 <td><p>Before the numpy-based cost calculations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostBuilder.cost" title="dasi.cost.SynthesisCostBuilder.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.cost" title="dasi.cost.SynthesisCostModel.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
 <td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostBuilder.from_params" title="dasi.cost.SynthesisCostBuilder.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(syn_params, primer_cost)</p></td>
-<td><p>Initialize from parameters</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.from_params" title="dasi.cost.SynthesisCostModel.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(syn_params, primer_cost)</p></td>
+<td><p>Initialize from parameters.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostBuilder.to_df" title="dasi.cost.SynthesisCostBuilder.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.to_df" title="dasi.cost.SynthesisCostModel.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
 <td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
 </tr>
 </tbody>
@@ -2565,22 +2724,22 @@ at <a class="reference internal" href="#dasi.cost.params.SynthesisParams.synthes
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostBuilder.plot" title="dasi.cost.SynthesisCostBuilder.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.plot" title="dasi.cost.SynthesisCostModel.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
 <td><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dasi.cost.SynthesisCostBuilder.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostBuilder.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostBuilder.compute" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.SynthesisCostModel.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostModel.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Before the numpy-based cost calculations.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.SynthesisCostBuilder.cost">
-<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostBuilder.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostBuilder.cost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the
-provided span.</p>
+<dt id="dasi.cost.SynthesisCostModel.cost">
+<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostModel.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2591,7 +2750,7 @@ that have been provided are not extendable. If we had,
 for example, an existing right primer and flexibility to
 design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
 <li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
-span for the cost builder (<cite>CostBuilder.span</cite>). Any
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
 invalid indices cost will be set to <cite>np.inf</cite> and efficiency
 to <cite>0.0</cite></p></li>
 </ul>
@@ -2606,20 +2765,20 @@ to <cite>0.0</cite></p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.SynthesisCostBuilder.from_params">
-<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">syn_params</em>, <em class="sig-param">primer_cost</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostBuilder.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostBuilder.from_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize from parameters</p>
+<dt id="dasi.cost.SynthesisCostModel.from_params">
+<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">syn_params</em>, <em class="sig-param">primer_cost</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/cost.html#SynthesisCostModel.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel.from_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize from parameters.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.SynthesisCostBuilder.plot">
-<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.SynthesisCostBuilder.plot" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.SynthesisCostModel.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.SynthesisCostModel.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="dasi.cost.SynthesisCostBuilder.to_df">
-<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.SynthesisCostBuilder.to_df" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.cost.SynthesisCostModel.to_df">
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.SynthesisCostModel.to_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the cost builder to a pandas.DataFrame.</p>
 </dd></dl>
 
@@ -2664,10 +2823,10 @@ to <cite>0.0</cite></p></li>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimerParams</span></code></a></p></td>
-<td><p>Primer parameters for the <a class="reference internal" href="#dasi.cost.PrimerCostBuilder" title="dasi.cost.PrimerCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostBuilder</span></code></a>.</p></td>
+<td><p>Primer parameters for the <a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostModel</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams" title="dasi.cost.params.SynthesisParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SynthesisParams</span></code></a></p></td>
-<td><p>Synthesis parameters for the <a class="reference internal" href="#dasi.cost.SynthesisCostBuilder" title="dasi.cost.SynthesisCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostBuilder</span></code></a>.</p></td>
+<td><p>Synthesis parameters for the <a class="reference internal" href="#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostModel</span></code></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2675,7 +2834,7 @@ to <cite>0.0</cite></p></li>
 <dt id="dasi.cost.params.PrimerParams">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.cost.params.</code><code class="sig-name descname">PrimerParams</code><a class="reference internal" href="../_modules/dasi/cost/params.html#PrimerParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.params.PrimerParams" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Primer parameters for the <a class="reference internal" href="#dasi.cost.PrimerCostBuilder" title="dasi.cost.PrimerCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostBuilder</span></code></a>.</p>
+<p>Primer parameters for the <a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostModel</span></code></a>.</p>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -2745,7 +2904,7 @@ to <cite>0.0</cite></p></li>
 <dt id="dasi.cost.params.SynthesisParams">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.cost.params.</code><code class="sig-name descname">SynthesisParams</code><a class="reference internal" href="../_modules/dasi/cost/params.html#SynthesisParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.params.SynthesisParams" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Synthesis parameters for the <a class="reference internal" href="#dasi.cost.SynthesisCostBuilder" title="dasi.cost.SynthesisCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostBuilder</span></code></a>.</p>
+<p>Synthesis parameters for the <a class="reference internal" href="#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostModel</span></code></a>.</p>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -2839,7 +2998,7 @@ to <cite>0.0</cite></p></li>
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">dasi.cost.params.</code><code class="sig-name descname">PrimerParams</code><a class="reference internal" href="../_modules/dasi/cost/params.html#PrimerParams"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Primer parameters for the <a class="reference internal" href="#dasi.cost.PrimerCostBuilder" title="dasi.cost.PrimerCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostBuilder</span></code></a>.</p>
+<p>Primer parameters for the <a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostModel</span></code></a>.</p>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -2909,7 +3068,7 @@ to <cite>0.0</cite></p></li>
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">dasi.cost.params.</code><code class="sig-name descname">SynthesisParams</code><a class="reference internal" href="../_modules/dasi/cost/params.html#SynthesisParams"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Synthesis parameters for the <a class="reference internal" href="#dasi.cost.SynthesisCostBuilder" title="dasi.cost.SynthesisCostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostBuilder</span></code></a>.</p>
+<p>Synthesis parameters for the <a class="reference internal" href="#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostModel</span></code></a>.</p>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -2982,7 +3141,7 @@ to <cite>0.0</cite></p></li>
 <td><p>The NumpyDataFrame is a class halfway between pandas and numpy.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region" title="dasi.utils.Region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Region</span></code></a>(start, end, length[, cyclic, index, …])</p></td>
-<td><p>Constructs a new Span.</p></td>
+<td><p>A direction span.</p></td>
 </tr>
 </tbody>
 </table>
@@ -3115,8 +3274,8 @@ df[np.array([0, 1])]
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.NumpyDataFrame.suffix" title="dasi.utils.NumpyDataFrame.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a>(s[, cols, inplace])</p></td>
 <td><p>Adds a prefix to all of the column names and returns a new dataframe.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.NumpyDataFrame.to_df" title="dasi.utils.NumpyDataFrame.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>([squeeze])</p></td>
-<td><p>Attempt to convert the df to a pandas.DataFrame.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.NumpyDataFrame.to_df" title="dasi.utils.NumpyDataFrame.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>([force])</p></td>
+<td><p>Force the NumpyDataFrame into a pandas.DataFrame.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.NumpyDataFrame.update" title="dasi.utils.NumpyDataFrame.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(data[, apply])</p></td>
 <td><p>Update the df from a dict or another df.</p></td>
@@ -3533,8 +3692,8 @@ dataframe.</p>
 
 <dl class="method">
 <dt id="dasi.utils.NumpyDataFrame.to_df">
-<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><em class="sig-param">squeeze=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/npdf.html#NumpyDataFrame.to_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.NumpyDataFrame.to_df" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attempt to convert the df to a pandas.DataFrame.</p>
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><em class="sig-param">force=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/npdf.html#NumpyDataFrame.to_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.NumpyDataFrame.to_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force the NumpyDataFrame into a pandas.DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
@@ -3585,16 +3744,30 @@ set self.__traceback__ to tb and return self.</p>
 <dt id="dasi.utils.Region">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.utils.</code><code class="sig-name descname">Region</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em>, <em class="sig-param">length</em>, <em class="sig-param">cyclic=False</em>, <em class="sig-param">index=0</em>, <em class="sig-param">direction=1</em>, <em class="sig-param">name=None</em>, <em class="sig-param">region_id=None</em>, <em class="sig-param">ignore_wrap=False</em>, <em class="sig-param">abs_wrap=True</em>, <em class="sig-param">strict=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/region.html#Region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.Region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.utils.region.Span</span></code></p>
-<p>Constructs a new Span. There are several options to customize the
-initialization procedure.</p>
-<p><strong>strict=True</strong></p>
-<p>When strict, any index outside the valid bounds of the context raises an
-IndexError.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Span(1, 10, 10, cyclic=True, strict=True) # no raise
-Span(1, 11, 10, cyclic=True, strict=True) # raises IndexError
-Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
-</pre></div>
-</div>
+<p>A direction span.</p>
+<p>Initialize a new Region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – start position</p></li>
+<li><p><strong>end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – end position (exclusive)</p></li>
+<li><p><strong>length</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – length of context</p></li>
+<li><p><strong>cyclic</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – topology of context</p></li>
+<li><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – starting index of context</p></li>
+<li><p><strong>direction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – direction of the region</p></li>
+<li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – name of the region</p></li>
+<li><p><strong>region_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – id of the region</p></li>
+<li><p><strong>strict</strong> (<em>bool</em>) – if True, positions outside of context bounds are disallowed.</p></li>
+<li><p><strong>ignore_wrap</strong> (<em>bool</em>) – if True (default False), initialization indicies that wrap
+around multiple times will
+simply be mapped directly to the context (no wrapping used).</p></li>
+<li><p><strong>abs_wrap</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, the abs difference between start and end wrappings
+are used. Starting wraps that are greater than ending wraps
+are valid. If False and the starting wrap is greater than
+the ending wrap, an IndexError is thrown.</p></li>
+</ul>
+</dd>
+</dl>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -3641,120 +3814,53 @@ Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.differences" title="dasi.utils.Region.differences"><code class="xref py py-obj docutils literal notranslate"><span class="pre">differences</span></code></a>(other)</p></td>
 <td><p>Return a tuple of differences between this span and the other span.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.force_context" title="dasi.utils.Region.force_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">force_context</span></code></a>(other)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.flip" title="dasi.utils.Region.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip</span></code></a>()</p></td>
+<td><p>Flip the indices of the region.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.force_context" title="dasi.utils.Region.force_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">force_context</span></code></a>(other)</p></td>
 <td><p>Raise error if another Span has different context.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.get_slice" title="dasi.utils.Region.get_slice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slice</span></code></a>(x[, as_type])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.get_slice" title="dasi.utils.Region.get_slice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slice</span></code></a>(x[, as_type])</p></td>
 <td><p>Use the region to slice the iterable, returning a iterable of the same type as ‘x’.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.get_slice_iter" title="dasi.utils.Region.get_slice_iter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slice_iter</span></code></a>(x)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.get_slice_iter" title="dasi.utils.Region.get_slice_iter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slice_iter</span></code></a>(x)</p></td>
 <td><p>Use the region to slice the iterable, returning another generator.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.i" title="dasi.utils.Region.i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">i</span></code></a>(p)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.i" title="dasi.utils.Region.i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">i</span></code></a>(p)</p></td>
 <td><p>Find index of position.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.intersection" title="dasi.utils.Region.intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code></a>(other)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.intersection" title="dasi.utils.Region.intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code></a>(other)</p></td>
 <td><p>Return the span inersection between this span and the other span.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.invert" title="dasi.utils.Region.invert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.invert" title="dasi.utils.Region.invert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invert</span></code></a>()</p></td>
 <td><p>Invert the region, returning a tuple of the remaining spans from the context.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.new" title="dasi.utils.Region.new"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new</span></code></a>(a, b[, ignore_wrap, index, strict, abs_wrap])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.new" title="dasi.utils.Region.new"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new</span></code></a>(a, b)</p></td>
 <td><p>Create a new span using the same context.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.overlaps_with" title="dasi.utils.Region.overlaps_with"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlaps_with</span></code></a>(other)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.overlaps_with" title="dasi.utils.Region.overlaps_with"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlaps_with</span></code></a>(other)</p></td>
 <td><p>Returns True if other span has an overlap with this span.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.ranges" title="dasi.utils.Region.ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ranges</span></code></a>([ignore_wraps])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.ranges" title="dasi.utils.Region.ranges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ranges</span></code></a>([ignore_wraps])</p></td>
 <td><p>Return the valid ranges for this span.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.reindex" title="dasi.utils.Region.reindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reindex</span></code></a>(i[, strict, ignore_wrap])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.reindex" title="dasi.utils.Region.reindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reindex</span></code></a>(i[, strict, ignore_wrap])</p></td>
 <td><p>Return a new span with positions reindexed.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.same_context" title="dasi.utils.Region.same_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">same_context</span></code></a>(other)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.same_context" title="dasi.utils.Region.same_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">same_context</span></code></a>(other)</p></td>
 <td><p>Return if another Span as an equivalent context.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.slices" title="dasi.utils.Region.slices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slices</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.slices" title="dasi.utils.Region.slices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">slices</span></code></a>()</p></td>
 <td><p>Return list of slices.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.sub" title="dasi.utils.Region.sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub</span></code></a>(a, b)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.sub" title="dasi.utils.Region.sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub</span></code></a>(a, b)</p></td>
 <td><p>Create a sub region starting from a to b.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.Region.t" title="dasi.utils.Region.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t</span></code></a>(p[, throw_error])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.Region.t" title="dasi.utils.Region.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t</span></code></a>(p[, throw_error])</p></td>
 <td><p>Translates a position ‘p’ to an index within the context bounds.</p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>ignore_wrap=True</strong></p>
-<p>When wrapping is ignored, indices are simply mapped to the context with no
-consideration
-of the number of times the absolute position would wrap around the context.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all of the following are equivalent with ignore_wrap == True
-Span(1, 10, 10, cyclic=True, ignore_wrap=True)
-Span(1+10, 10, 10, cyclic=True, ignore_wrap=True)
-Span(1, 10-100, 10, cyclic=True, ignore_wrap=True)
-Span(1+20, 10-100, 10, cyclic=True, ignore_wrap=True)
-</pre></div>
-</div>
-<p><strong>abs_wrap=True</strong></p>
-<p>When absolute wrapping is used, the absolute difference between starting and
-ending index wrappings
-is calculated, the starting index is to the context while the ending index is
-adjusted such
-that the length will reflect the abs difference between starting and ending
-index wrappings.
-This can be unintuitive
-is best shown with the following example:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all of the following initializations result in equivalent spans
-
-# starts at 1, wraps around one full time, ends at 5.
-# Length is 15 - 1
-s1 = Span(1, 15, 10, cyclic=True, abs_wrap=True)
-assert len(s1) == 14
-
-# starts at 11, wraps around one full time, ends at 15.
-# Then positions are mapped back to context at 1 and 5.
-# Length is still 25 - 11 == 14
-s2 = Span(11, 25, 10, cyclic=True, abs_wrap=True)
-assert len(s2) == 14
-
-# starts at 11, wraps around one full time, ends at 15.
-# Then positions are mapped back to context at 1 and 5.
-# Length is now 11 + 5 = 14
-s3 = Span(11, 5, 10, cyclic=True, abs_wrap=True)
-assert len(s3) == 14
-
-# the lengths change with the abs diff in number of times wrapped
-_s = Span(21, 5, 10, cyclic=True, abs_wrap=True)
-assert len(_s) == 24
-
-_s = Span(21, 15, 10, cyclic=True, abs_wrap=True)
-assert len(_s) == 14
-
-# all
-assert s1 == s2
-assert s2 == s3
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>int</em>) – start of the span (inclusive)</p></li>
-<li><p><strong>b</strong> (<em>int</em>) – end of the span (exclusive)</p></li>
-<li><p><strong>l</strong> (<em>int</em>) – context length of the region</p></li>
-<li><p><strong>cyclic</strong> (<em>bool</em>) – whether the underlying context is cyclic</p></li>
-<li><p><strong>index</strong> (<em>int</em>) – the starting index of the region</p></li>
-<li><p><strong>strict</strong> (<em>bool</em>) – if True, positions outside of context bounds are disallowed.</p></li>
-<li><p><strong>ignore_wrap</strong> (<em>bool</em>) – if True (default False), initialization indicies that wrap
-around multiple times will
-simply be mapped directly to the context (no wrapping used).</p></li>
-<li><p><strong>abs_wrap</strong> – if True, the abs difference between start and end wrappings
-are used. Starting wraps that are greater than ending wraps
-are valid. If False and the starting wrap is greater than
-the ending wrap, an IndexError is thrown.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="method">
 <dt id="dasi.utils.Region.a">
 <em class="property">property </em><code class="sig-name descname">a</code><a class="headerlink" href="#dasi.utils.Region.a" title="Permalink to this definition">¶</a></dt>
@@ -3833,6 +3939,17 @@ span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.Region.flip">
+<code class="sig-name descname">flip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/region.html#Region.flip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.Region.flip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip the indices of the region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3945,13 +4062,8 @@ a (span, span) is returned.</p>
 
 <dl class="method">
 <dt id="dasi.utils.Region.new">
-<code class="sig-name descname">new</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">b</em>, <em class="sig-param">ignore_wrap=None</em>, <em class="sig-param">index=None</em>, <em class="sig-param">strict=None</em>, <em class="sig-param">abs_wrap=None</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.Region.new" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">new</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/region.html#Region.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.Region.new" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new span using the same context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="method">
@@ -4098,8 +4210,8 @@ array using a key function.</p>
 <dl class="function">
 <dt id="dasi.utils.bisect_slice_between">
 <code class="sig-prename descclassname">dasi.utils.</code><code class="sig-name descname">bisect_slice_between</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">keys</em>, <em class="sig-param">low</em>, <em class="sig-param">high</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils.html#bisect_slice_between"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.bisect_slice_between" title="Permalink to this definition">¶</a></dt>
-<dd><p>Slice the iterable using inclusive bisection. Assumes
-both the iterable and keys are sorted. Bisect at specified <cite>low</cite> and <cite>high</cite>.</p>
+<dd><p>Slice the iterable using inclusive bisection. Assumes both the iterable
+and keys are sorted. Bisect at specified <cite>low</cite> and <cite>high</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -4243,7 +4355,7 @@ assert a[17] == [17., 100.]
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.networkx.TerrariumNetworkxError" title="dasi.utils.networkx.TerrariumNetworkxError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TerrariumNetworkxError</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.networkx.NetworkxUtilsException" title="dasi.utils.networkx.NetworkxUtilsException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NetworkxUtilsException</span></code></a></p></td>
 <td><p>Generic error for terrarium networkx utilities.</p></td>
 </tr>
 </tbody>
@@ -4270,13 +4382,13 @@ assert a[17] == [17., 100.]
 </tbody>
 </table>
 <dl class="exception">
-<dt id="dasi.utils.networkx.TerrariumNetworkxError">
-<em class="property">exception </em><code class="sig-prename descclassname">dasi.utils.networkx.</code><code class="sig-name descname">TerrariumNetworkxError</code><a class="reference internal" href="../_modules/dasi/utils/networkx/exceptions.html#TerrariumNetworkxError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.networkx.TerrariumNetworkxError" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.utils.networkx.NetworkxUtilsException">
+<em class="property">exception </em><code class="sig-prename descclassname">dasi.utils.networkx.</code><code class="sig-name descname">NetworkxUtilsException</code><a class="reference internal" href="../_modules/dasi/utils/networkx/exceptions.html#NetworkxUtilsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.networkx.NetworkxUtilsException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Generic error for terrarium networkx utilities.</p>
 <dl class="method">
-<dt id="dasi.utils.networkx.TerrariumNetworkxError.with_traceback">
-<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.networkx.TerrariumNetworkxError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.utils.networkx.NetworkxUtilsException.with_traceback">
+<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.networkx.NetworkxUtilsException.with_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>
@@ -4303,9 +4415,9 @@ rounding errors.</p>
 <li><p><strong>g</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code>]) – the graph</p></li>
 <li><p><strong>weight_key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the weight key</p></li>
 <li><p><strong>eff_key</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the efficiency key</p></li>
-<li><p><strong>nodelist</strong> – optional list of nodes</p></li>
-<li><p><strong>return_all</strong> – whether to return the weight matrix and weight dictionary</p></li>
-<li><p><strong>dtype</strong> – dtype of the np.array matrix</p></li>
+<li><p><strong>nodelist</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – optional list of nodes</p></li>
+<li><p><strong>return_all</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to return the weight matrix and weight dictionary</p></li>
+<li><p><strong>dtype</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[+CT_co]]) – dtype of the np.array matrix</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -4379,7 +4491,7 @@ individual components broken down by symbol strings.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]]</p>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">matrix</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">matrix</span></code>]]]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>either just the weight matrix or, if return_all is True, the weight_matrix

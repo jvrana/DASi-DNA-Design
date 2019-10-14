@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.utils.region &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.utils.region &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -429,8 +429,9 @@ class Span(Container, Iterable, Sized):
                             are valid. If False and the starting wrap is greater than
                             the ending wrap, an IndexError is thrown.
         &quot;&quot;&quot;
-
-        self._context_length = l
+        a = int(a)
+        b = int(b)
+        self._context_length = int(l)
         self._index = index
         self._cyclic = cyclic
         self._strict = strict
@@ -1035,6 +1036,8 @@ class Direction:
 
 
 <div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.Region">[docs]</a>class Region(Span):
+    &quot;&quot;&quot;A direction span.&quot;&quot;&quot;
+
     __slots__ = [&quot;name&quot;, &quot;id&quot;, &quot;direction&quot;]
 
     FORWARD = Direction.FORWARD
@@ -1043,18 +1046,39 @@ class Direction:
 
     def __init__(
         self,
-        start,
-        end,
-        length,
-        cyclic=False,
-        index=0,
-        direction=FORWARD,
-        name=None,
-        region_id=None,
-        ignore_wrap=False,
-        abs_wrap=True,
-        strict=None,
+        start: int,
+        end: int,
+        length: int,
+        cyclic: bool = False,
+        index: int = 0,
+        direction: int = FORWARD,
+        name: Union[None, str] = None,
+        region_id: Union[None, str] = None,
+        ignore_wrap: bool = False,
+        abs_wrap: bool = True,
+        strict: bool = None,
     ):
+        &quot;&quot;&quot;Initialize a new Region.
+
+        :param start: start position
+        :param end: end position (exclusive)
+        :param length: length of context
+        :param cyclic: topology of context
+        :param index: starting index of context
+        :param direction: direction of the region
+        :param name: name of the region
+        :param region_id: id of the region
+        :param strict: if True, positions outside of context bounds are disallowed.
+        :type strict: bool
+        :param ignore_wrap: if True (default False), initialization indicies that wrap
+                            around multiple times will
+                            simply be mapped directly to the context (no wrapping used).
+        :type ignore_wrap: bool
+        :param abs_wrap:    if True, the abs difference between start and end wrappings
+                            are used. Starting wraps that are greater than ending wraps
+                            are valid. If False and the starting wrap is greater than
+                            the ending wrap, an IndexError is thrown.
+        &quot;&quot;&quot;
         self.name = name
         self.id = region_id
         assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
@@ -1070,6 +1094,12 @@ class Direction:
             abs_wrap=abs_wrap,
         )
 
+<div class="viewcode-block" id="Region.flip"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.Region.flip">[docs]</a>    def flip(self) -&gt; Region:
+        &quot;&quot;&quot;Flip the indices of the region.&quot;&quot;&quot;
+        flipped = self.new(self.context_length - self.b, self.context_length - self.a)
+        flipped.direction *= -1
+        return flipped</div>
+
     @property
     def start(self):
         if self.direction == self.REVERSE:
@@ -1082,7 +1112,32 @@ class Direction:
         if self.direction == self.REVERSE:
             return self.a
         else:
-            return self.b</div>
+            return self.b
+
+<div class="viewcode-block" id="Region.new"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.Region.new">[docs]</a>    def new(self, a: Union[None, int], b: Union[None, int]):
+        _new = super().new(a, b)
+        _new.direction = self.direction
+        return _new</div>
+
+    def __eq__(self, other: &quot;Region&quot;) -&gt; bool:
+        return super().__eq__(other) and self.direction == other.direction
+
+    def __str__(self):
+        return (
+            &quot;&lt;{cls} {a} {b} ({c}) context_len={context_len} len={length} &quot;
+            &quot;cyclic={cyclic} direction={direction} index={index}, nwraps={n}&gt;&quot;.format(
+                cls=self.__class__.__name__,
+                a=self._a,
+                b=self._b,
+                c=self._c,
+                context_len=self._context_length,
+                cyclic=self._cyclic,
+                index=self._index,
+                length=len(self),
+                n=self._nwraps,
+                direction=self.direction,
+            )
+        )</div>
 </pre></div>
 
     </div>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.assembly &#8212; dasi 0.0.3 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design.assembly</h1><div class="highlight"><pre>
+<span></span>from __future__ import annotations
+
+from itertools import groupby
+from itertools import zip_longest
+from typing import Dict
+from typing import Generator
+from typing import Iterable
+from typing import List
+from typing import Tuple
+from typing import Union
+
+import networkx as nx
+import numpy as np
+import pandas as pd
+from Bio.SeqRecord import SeqRecord
+from more_itertools import pairwise
+from pyblast.utils import is_circular
+
+from dasi.alignments import AlignmentContainer
+from dasi.alignments import PCRProductAlignmentGroup
+from dasi.constants import Constants
+from dasi.design.graph_builder import AssemblyNode
+from dasi.exceptions import DasiDesignException
+from dasi.exceptions import DasiInvalidMolecularAssembly
+from dasi.log import logger
+from dasi.molecule import MoleculeType
+from dasi.utils import sort_cycle
+
+
+<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.Assembly">[docs]</a>class Assembly(Iterable):
+    &quot;&quot;&quot;Should take in a path, graph, container, seqdb to produce relevant
+    information.&quot;&quot;&quot;
+
+    def __init__(
+        self,
+        nodes: List[AssemblyNode],
+        container: AlignmentContainer,
+        full_assembly_graph: nx.DiGraph,
+        query_key: str,
+        query: SeqRecord,
+        do_raise: bool = True,
+    ):
+        self.logger = logger(self)
+        self._nodes = tuple(nodes)
+        self.validate_input_nodes()
+
+        self.query_key = query_key
+        self.query = query
+        self._full_graph = full_assembly_graph
+
+        self.container = container
+        self.groups = container.groups()
+        if len(self.groups) == 0:
+            raise DasiDesignException(&quot;No groups were found in container.&quot;)
+        self.graph = self._subgraph(self._full_graph, nodes, do_raise=do_raise)
+        nx.freeze(self.graph)
+
+        if do_raise:
+            self.post_validate(do_raise)
+
+    def post_validate(self):
+        total_span = 0
+        for n1, n2, edata in self.edges():
+            if n1.type == n2.type:
+                raise DasiInvalidMolecularAssembly(&quot;Invalid assembly graph&quot;)
+            total_span += edata[&quot;span&quot;]
+        if not total_span == len(self.query):
+            raise DasiInvalidMolecularAssembly(
+                &quot;Assembly length &#39;{}&#39; is different from expected&quot;
+                &quot; length &#39;{}&#39;&quot;.format(total_span, len(self.query))
+            )
+
+<div class="viewcode-block" id="Assembly._head"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.Assembly._head">[docs]</a>    def _head(self):
+        &quot;&quot;&quot;Get the &#39;first&#39; &#39;A&#39; node.&quot;&quot;&quot;
+        print(list(self.graph.nodes))
+        x = sorted(list(self.graph.nodes), key=lambda n: (n.type == &quot;B&quot;, n.index))
+        return x[0]</div>
+
+    def _sorted_edges(self):
+        head = self._head()
+        edges = list(nx.bfs_edges(self.graph, head))
+        edges += [
+            (t[1], t[0])
+            for t in nx.bfs_edges(self.graph, head, reverse=True, depth_limit=1)
+        ]
+
+        return edges
+
+    def validate_input_nodes(self):
+        # rule 1 A -&gt; B -&gt; A -&gt; B -&gt; ...
+        types = [n.type for n in self._nodes]
+        groups = [list(g) for _, g in groupby(types)]
+        if len(types) != len(groups):
+            raise ValueError(&quot;There invalid edges input nodes&quot;)
+
+    @staticmethod
+    def _missing_edata():
+        return {
+            &quot;cost&quot;: np.inf,
+            &quot;weight&quot;: np.inf,
+            &quot;material&quot;: np.inf,
+            &quot;efficiency&quot;: 0.0,
+            &quot;type_def&quot;: MoleculeType.types[Constants.MISSING],
+            &quot;span&quot;: np.inf,
+        }
+
+    def _subgraph(
+        self, graph: nx.DiGraph, nodes: List[AssemblyNode], do_raise: bool = True
+    ):
+        def _resolve(node: AssemblyNode, qregion) -&gt; Tuple[AssemblyNode, dict]:
+            new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
+            return new_node
+
+        subgraph = nx.OrderedDiGraph()
+        nodes = [AssemblyNode(*n) for n in nodes]
+        example_query_region = self.container.alignments[0].query_region
+
+        resolved_nodes = [_resolve(node, example_query_region) for node in nodes]
+        if self.cyclic:
+            resolved_nodes = sort_cycle(
+                resolved_nodes, key=lambda n: (n.type, n.index, n)
+            )
+        subgraph.add_nodes_from(resolved_nodes)
+
+        pair_iter = list(pairwise(nodes))
+
+        if self.cyclic:
+            pair_iter.append((nodes[-1], nodes[0]))
+
+        for n1, n2 in pair_iter:
+            edata = graph.get_edge_data(n1, n2)
+            if edata is None:
+                # if n1.index &gt; len(self.query):
+                #     n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
+                #     edata = graph.get_edge_data(n3, n2)
+                if edata is None:
+                    edata = self._missing_edata()
+            else:
+                assert edata[&quot;type_def&quot;].int_or_ext
+
+            query_region = self.container.alignments[0].query_region.new(
+                n1.index, n2.index
+            )
+            groups = self.container.find_groups_by_pos(
+                query_region.a,
+                query_region.b,
+                group_type=edata[&quot;type_def&quot;].name,
+                groups=self.groups,
+            )
+            if edata[&quot;type_def&quot;].int_or_ext == &quot;internal&quot; and not groups:
+                raise DasiDesignException(
+                    &quot;Missing groups for edge between {} and {}&quot;.format(n1, n2)
+                )
+
+            edata[&quot;groups&quot;] = groups
+            edata[&quot;query_region&quot;] = query_region
+
+            rn1 = _resolve(n1, query_region)
+            rn2 = _resolve(n2, query_region)
+
+            # TODO: add this check
+            if do_raise:
+                if rn1 in subgraph:
+                    raise DasiInvalidMolecularAssembly(
+                        &quot;Node already exists in subgraph&quot;
+                    )
+                if rn2 in subgraph:
+                    raise DasiInvalidMolecularAssembly(
+                        &quot;Node already exists in subgraph&quot;
+                    )
+
+            subgraph.add_edge(rn1, rn2, **edata)
+        return subgraph
+
+    @property
+    def cyclic(self):
+        return is_circular(self.query)
+
+    # TODO: consolidate this with shortest path utils in networkx
+    def cost(self):
+        material = 0
+        efficiency = 1.0
+        for _, _, edata in self.edges():
+            material += edata[&quot;material&quot;]
+            efficiency *= edata[&quot;efficiency&quot;]
+        if efficiency == 0:
+            return np.inf
+        return material / efficiency
+
+    def edges(self, data=True) -&gt; Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
+        for n1, n2 in self._sorted_edges():
+            if data:
+                edata = self.graph[n1][n2]
+                yield n1, n2, edata
+            else:
+                yield n1, n2
+
+    def nodes(self, data=True) -&gt; Iterable[Tuple[AssemblyNode, Dict]]:
+        return self.graph.nodes(data=data)
+
+    def edit_distance(
+        self, other: Assembly, explain=False
+    ) -&gt; Union[int, Tuple[int, List[Tuple[int, str]]]]:
+        differences = []
+        for i, (n1, n2) in enumerate(
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
+        ):
+            if n1 is None or n2 is None:
+                differences.append((i, &quot;{} != {}&quot;.format(n1, n2)))
+                continue
+            if n1.index != n2.index:
+                differences.append((i, &quot;Index: {} != {}&quot;.format(n1.index, n2.index)))
+            if n1.expandable != n2.expandable:
+                differences.append(
+                    (i, &quot;Expandable: {} != {}&quot;.format(n1.expandable, n2.expandable))
+                )
+            if n1.type != n2.type:
+                differences.append((i, &quot;Type: {} != {}&quot;.format(n1.type, n2.type)))
+            if n1.overhang != n2.overhang:
+                differences.append(
+                    (i, &quot;Overhang: {} != {}&quot;.format(n1.overhang, n2.overhang))
+                )
+        dist = len(differences)
+        if explain:
+            return dist, differences
+        return dist
+
+    def print(self):
+        print(&quot;query_name: {}&quot;.format(self.query.name))
+        print(&quot;query_key: {}&quot;.format(self.query_key))
+        print(&quot;Cost: {}&quot;.format(self.cost()))
+        df = self.to_df()
+        print(df)
+
+    def print_diff(self, other: Assembly):
+        for i, (n1, n2) in enumerate(
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
+        ):
+            if n1 != n2:
+                desc = False
+            else:
+                desc = True
+            print(&quot;{} {} {}&quot;.format(desc, n1, n2))
+
+    def to_df(self):
+        rows = []
+        for n1, n2, edata in self.edges():
+            groups = edata[&quot;groups&quot;]
+
+            if groups:
+                group = groups[0]
+                if isinstance(group, PCRProductAlignmentGroup):
+                    alignments = group.alignments
+                else:
+                    alignments = group.alignments[:1]
+            else:
+                alignments = []
+            subject_keys = [a.subject_key for a in alignments]
+            subject_names = [self.container.seqdb[key].name for key in subject_keys]
+            subject_starts = [a.subject_region.a for a in alignments]
+            subject_ends = [a.subject_region.b for a in alignments]
+
+            rows.append(
+                {
+                    &quot;query_start&quot;: edata[&quot;query_region&quot;].a,
+                    &quot;query_end&quot;: edata[&quot;query_region&quot;].b,
+                    &quot;subject_names&quot;: subject_names,
+                    &quot;subject_keys&quot;: subject_keys,
+                    &quot;subject_start&quot;: subject_starts,
+                    &quot;subject_ends&quot;: subject_ends,
+                    &quot;cost&quot;: edata[&quot;cost&quot;],
+                    &quot;material&quot;: edata[&quot;material&quot;],
+                    &quot;span&quot;: edata[&quot;span&quot;],
+                    &quot;type&quot;: edata[&quot;type_def&quot;].name,
+                    &quot;internal_or_external&quot;: edata[&quot;type_def&quot;].int_or_ext,
+                    &quot;efficiency&quot;: edata.get(&quot;efficiency&quot;, np.nan),
+                }
+            )
+
+        df = pd.DataFrame(rows)
+        return df
+
+    def __eq__(self, other: Assembly) -&gt; bool:
+        return self.edit_distance(other) == 0
+
+    def __iter__(self) -&gt; Generator[AssemblyNode]:
+        for n in self.nodes(data=False):
+            yield n</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

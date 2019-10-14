@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.cost &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.cost &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -173,14 +173,11 @@ slice_dict = {
 
 
 <div class="viewcode-block" id="CostBuilder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder">[docs]</a>class CostBuilder(ABC):
-    &quot;&quot;&quot;
-    Abstract base class for building a cost model.
-    &quot;&quot;&quot;
+    &quot;&quot;&quot;Abstract base class for building a cost model.&quot;&quot;&quot;
 
     def __init__(self, span: np.ndarray):
-        &quot;&quot;&quot;
-        Initialize cost builder from a &#39;span&#39;, or a list of indices for which
-        the model is valid.
+        &quot;&quot;&quot;Initialize cost builder from a &#39;span&#39;, or a list of indices for
+        which the model is valid.
 
         :param span: the list of indices (span) for which this cost model is evaluated.
         &quot;&quot;&quot;
@@ -190,7 +187,7 @@ slice_dict = {
 <div class="viewcode-block" id="CostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.from_params">[docs]</a>    @classmethod
     @abstractmethod
     def from_params(cls, *args):
-        &quot;&quot;&quot;Initialize from parameters&quot;&quot;&quot;
+        &quot;&quot;&quot;Initialize from parameters.&quot;&quot;&quot;
         pass</div>
 
 <div class="viewcode-block" id="CostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.compute">[docs]</a>    @abstractmethod
@@ -219,9 +216,8 @@ slice_dict = {
 <div class="viewcode-block" id="CostBuilder.cost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.cost">[docs]</a>    def cost(
         self, bp: Union[np.ndarray, int], ext: Tuple[int, int], invalidate=False
     ) -&gt; NumpyDataFrame:
-        &quot;&quot;&quot;
-        Return the :class:`NumpyDataFrame &lt;dasi.usil.NumpyDataFrame&gt;` across the
-        provided span.
+        &quot;&quot;&quot;Return the :class:`NumpyDataFrame &lt;dasi.usil.NumpyDataFrame&gt;` across
+        the provided span.
 
         :param bp: either a integer or np.ndarray of integers to compute.
         :param ext: The extension design parameters (bool, bool) that represent
@@ -230,7 +226,7 @@ slice_dict = {
                     for example, an existing right primer and flexibility to
                     design the left primer, this would be `(1, 0)`.
         :param invalidate: Whether to invalidate indicies that go beyond the provided
-                            span for the cost builder (`CostBuilder.span`). Any
+                            span for the cost builder (`CostModelBase.span`). Any
                             invalid indices cost will be set to `np.inf` and efficiency
                             to `0.0`
         :return: NumpyDataFrame representing the cost of from the input span.
@@ -242,6 +238,8 @@ slice_dict = {
 
         # clipped index
         clipped = np.clip(index, 0, len(_span) - 1)
+        if isinstance(clipped, int):
+            index = np.array([clipped])
 
         # get junction
         jxn = self.cost_dict[ext][clipped]
@@ -257,7 +255,7 @@ slice_dict = {
                 jxn.data[&quot;efficiency&quot;][invalid] = 0.0
 
         # add span
-        jxn.col[&quot;span&quot;] = bp
+        jxn.col[&quot;span&quot;] = np.array(bp)
         return jxn</div>
 
     def __call__(
@@ -267,7 +265,7 @@ slice_dict = {
         return self.cost(bp, ext)</div>
 
 
-<div class="viewcode-block" id="PrimerCostBuilder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostBuilder">[docs]</a>class PrimerCostBuilder(CostBuilder):
+<div class="viewcode-block" id="PrimerCostModel"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostModel">[docs]</a>class PrimerCostModel(CostBuilder):
     def __init__(
         self,
         pdf: pd.DataFrame,
@@ -277,8 +275,7 @@ slice_dict = {
         material_mod: float,
         min_span: int,
     ):
-        &quot;&quot;&quot;
-        Initialize the cost model for primer designs.
+        &quot;&quot;&quot;Initialize the cost model for primer designs.
 
         :param pdf: a pandas DataFrame representing costs for primers.
                     Example parameters found at
@@ -301,13 +298,12 @@ slice_dict = {
         self.material_modifier = material_mod
         self.compute()
 
-<div class="viewcode-block" id="PrimerCostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostBuilder.from_params">[docs]</a>    @classmethod
-    def from_params(cls, primer_params: Type[PrimerParams]) -&gt; &#39;PrimerCostBuilder&#39;:
-        &quot;&quot;&quot;
-        Load from :class:`dasi.cost.params.PrimerParams`.
+<div class="viewcode-block" id="PrimerCostModel.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostModel.from_params">[docs]</a>    @classmethod
+    def from_params(cls, primer_params: Type[PrimerParams]) -&gt; &quot;PrimerCostModel&quot;:
+        &quot;&quot;&quot;Load from :class:`dasi.cost.params.PrimerParams`.
 
         :param primer_params: parameters
-        :return: PrimerCostBuilder
+        :return: PrimerCostModel
         &quot;&quot;&quot;
         return cls(
             pdf=primer_params.primer_df,
@@ -318,7 +314,7 @@ slice_dict = {
             min_span=primer_params.min_span,
         )</div>
 
-<div class="viewcode-block" id="PrimerCostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostBuilder.compute">[docs]</a>    def compute(self):
+<div class="viewcode-block" id="PrimerCostModel.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostModel.compute">[docs]</a>    def compute(self):
         span = self.span
 
         # span, base cost, cost per bp, time (days)
@@ -372,11 +368,11 @@ slice_dict = {
             )</div></div>
 
 
-<div class="viewcode-block" id="SynthesisCostBuilder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostBuilder">[docs]</a>class SynthesisCostBuilder(CostBuilder):
+<div class="viewcode-block" id="SynthesisCostModel"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel">[docs]</a>class SynthesisCostModel(CostBuilder):
     def __init__(
         self,
         sdf: pd.DataFrame,
-        primer_cost: PrimerCostBuilder,
+        primer_cost: PrimerCostModel,
         time_cost: float,
         material_modifier: float,
         step_size=10,
@@ -403,8 +399,8 @@ slice_dict = {
         # self.logger = logger(self)
         self.compute()
 
-<div class="viewcode-block" id="SynthesisCostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostBuilder.from_params">[docs]</a>    @classmethod
-    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostBuilder):
+<div class="viewcode-block" id="SynthesisCostModel.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel.from_params">[docs]</a>    @classmethod
+    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostModel):
         return cls(
             sdf=syn_params.synthesis_df,
             primer_cost=primer_cost,
@@ -414,7 +410,7 @@ slice_dict = {
             left_span_range=syn_params.left_span_range,
         )</div>
 
-<div class="viewcode-block" id="SynthesisCostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostBuilder.compute">[docs]</a>    def compute(self):
+<div class="viewcode-block" id="SynthesisCostModel.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel.compute">[docs]</a>    def compute(self):
         syn = df_to_np_ranged(&quot;min&quot;, &quot;max&quot;, self.synthesis_df, dtype=np.float32)
         gene_sizes = syn[:, 0].reshape(-1, 1)[:: self.step_size, :].astype(np.int32)
         gene_costs = syn[:, 1][gene_sizes]
@@ -498,7 +494,7 @@ slice_dict = {
 
         return gap_df
 
-<div class="viewcode-block" id="SynthesisCostBuilder.cost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostBuilder.cost">[docs]</a>    def cost(
+<div class="viewcode-block" id="SynthesisCostModel.cost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel.cost">[docs]</a>    def cost(
         self, bp: Union[int, np.ndarray], ext: Tuple[int, int], invalidate=True
     ) -&gt; NumpyDataFrame:
         return super().cost(bp, ext, invalidate=invalidate)</div>
@@ -527,8 +523,8 @@ slice_dict = {
 
     @classmethod
     def default(cls):
-        primer_cost = PrimerCostBuilder.from_params(PrimerParams)
-        syn_cost = SynthesisCostBuilder.from_params(SynthesisParams, primer_cost)
+        primer_cost = PrimerCostModel.from_params(PrimerParams)
+        syn_cost = SynthesisCostModel.from_params(SynthesisParams, primer_cost)
         return cls(syn_cost)
 
 <div class="viewcode-block" id="SpanCost.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SpanCost.compute">[docs]</a>    def compute(self):

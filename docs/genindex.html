@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Index &#8212; dasi 0.0.2 documentation</title>
+    <title>Index &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -151,11 +151,7 @@
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.design.AssemblyGraphBuilder._batch_add_edge_costs">_batch_add_edge_costs() (dasi.design.AssemblyGraphBuilder method)</a>
 </li>
-      <li><a href="developer/api_reference.html#dasi.design.design_algorithms._check_paths">_check_paths() (in module dasi.design.design_algorithms)</a>
-</li>
-      <li><a href="developer/api_reference.html#dasi.design.design_algorithms._collect_cycle_endpoints">_collect_cycle_endpoints() (in module dasi.design.design_algorithms)</a>
-</li>
-      <li><a href="developer/api_reference.html#dasi.design.design_algorithms._collect_optimized_paths">_collect_optimized_paths() (in module dasi.design.design_algorithms)</a>
+      <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainer._create_pcr_product_alignment">_create_pcr_product_alignment() (dasi.alignments.AlignmentContainer method)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.design.LibraryDesign._get_iter_non_repeats">_get_iter_non_repeats() (dasi.design.LibraryDesign static method)</a>
 
@@ -165,11 +161,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="developer/api_reference.html#dasi.design.design_algorithms._multinode_to_shortest_path">_multinode_to_shortest_path() (in module dasi.design.design_algorithms)</a>
-</li>
-      <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainer._new_grouping_tag">_new_grouping_tag() (dasi.alignments.AlignmentContainer class method)</a>
-</li>
-      <li><a href="developer/api_reference.html#dasi.design.design_algorithms._nodes_to_fullpaths">_nodes_to_fullpaths() (in module dasi.design.design_algorithms)</a>
+      <li><a href="developer/api_reference.html#dasi.design.Assembly._head">_head() (dasi.design.Assembly method)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.design.Design._optimize_without_threads">_optimize_without_threads() (dasi.design.Design method)</a>, <a href="developer/api_reference.html#dasi.design.Design._optimize_without_threads">[1]</a>
 
@@ -179,6 +171,8 @@
         <li><a href="developer/api_reference.html#dasi.LibraryDesign._optimize_without_threads">(dasi.LibraryDesign method)</a>
 </li>
       </ul></li>
+      <li><a href="developer/api_reference.html#dasi.design.Design._seqdb">_seqdb (dasi.design.Design attribute)</a>, <a href="developer/api_reference.html#dasi.design.Design._seqdb">[1]</a>
+</li>
       <li><a href="developer/api_reference.html#dasi.design.LibraryDesign._share_query_blast">_share_query_blast() (dasi.design.LibraryDesign method)</a>
 
       <ul>
@@ -259,7 +253,7 @@
 </li>
       <li><a href="developer/api_reference.html#dasi.design.DesignResult.assemblies">assemblies() (dasi.design.DesignResult property)</a>, <a href="developer/api_reference.html#dasi.design.DesignResult.assemblies">[1]</a>
 </li>
-      <li><a href="developer/api_reference.html#dasi.design.Assembly">Assembly (class in dasi.design)</a>, <a href="developer/api_reference.html#dasi.design.Assembly">[1]</a>
+      <li><a href="developer/api_reference.html#dasi.design.Assembly">Assembly (class in dasi.design)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.design.AssemblyGraphBuilder">AssemblyGraphBuilder (class in dasi.design)</a>
 </li>
@@ -305,16 +299,14 @@
         <li><a href="developer/api_reference.html#dasi.LibraryDesign.compile_library">(dasi.LibraryDesign method)</a>
 </li>
       </ul></li>
-      <li><a href="developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup">ComplexAlignmentGroup (class in dasi.alignments)</a>
-</li>
       <li><a href="developer/api_reference.html#dasi.cost.CostBuilder.compute">compute() (dasi.cost.CostBuilder method)</a>
 
       <ul>
-        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostBuilder.compute">(dasi.cost.PrimerCostBuilder method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostModel.compute">(dasi.cost.PrimerCostModel method)</a>
 </li>
         <li><a href="developer/api_reference.html#dasi.cost.SpanCost.compute">(dasi.cost.SpanCost method)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostBuilder.compute">(dasi.cost.SynthesisCostBuilder method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostModel.compute">(dasi.cost.SynthesisCostModel method)</a>
 </li>
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.concat">concat() (dasi.utils.NumpyDataFrame class method)</a>
@@ -354,11 +346,11 @@
       <li><a href="developer/api_reference.html#dasi.cost.CostBuilder.cost">cost() (dasi.cost.CostBuilder method)</a>
 
       <ul>
-        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostBuilder.cost">(dasi.cost.PrimerCostBuilder method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostModel.cost">(dasi.cost.PrimerCostModel method)</a>
 </li>
         <li><a href="developer/api_reference.html#dasi.cost.SpanCost.cost">(dasi.cost.SpanCost method)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostBuilder.cost">(dasi.cost.SynthesisCostBuilder method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostModel.cost">(dasi.cost.SynthesisCostModel method)</a>
 </li>
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.cost.CostBuilder">CostBuilder (class in dasi.cost)</a>
@@ -457,11 +449,13 @@
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.utils.networkx.find_all_min_paths">find_all_min_paths() (in module dasi.utils.networkx)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainer.find_groups_by_pos">find_groups_by_pos() (dasi.alignments.AlignmentContainer method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.cost.utils.flatten_axis">flatten_axis() (in module dasi.cost.utils)</a>
+</li>
+      <li><a href="developer/api_reference.html#dasi.utils.Region.flip">flip() (dasi.utils.Region method)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.networkx.floyd_warshall_with_efficiency">floyd_warshall_with_efficiency() (in module dasi.utils.networkx)</a>
 </li>
@@ -472,11 +466,11 @@
       <li><a href="developer/api_reference.html#dasi.cost.CostBuilder.from_params">from_params() (dasi.cost.CostBuilder class method)</a>
 
       <ul>
-        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostBuilder.from_params">(dasi.cost.PrimerCostBuilder class method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostModel.from_params">(dasi.cost.PrimerCostModel class method)</a>
 </li>
         <li><a href="developer/api_reference.html#dasi.cost.SpanCost.from_params">(dasi.cost.SpanCost class method)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostBuilder.from_params">(dasi.cost.SynthesisCostBuilder class method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostModel.from_params">(dasi.cost.SynthesisCostModel class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -489,6 +483,8 @@
 </li>
       <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainer.get_groups_by_types">get_groups_by_types() (dasi.alignments.AlignmentContainer method)</a>
 </li>
+      <li><a href="developer/api_reference.html#dasi.design.sequence_design.get_primer_extensions">get_primer_extensions() (in module dasi.design.sequence_design)</a>
+</li>
       <li><a href="developer/api_reference.html#dasi.utils.Region.get_slice">get_slice() (dasi.utils.Region method)</a>
 </li>
   </ul></td>
@@ -496,6 +492,8 @@
       <li><a href="developer/api_reference.html#dasi.utils.Region.get_slice_iter">get_slice_iter() (dasi.utils.Region method)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.params.Globals">Globals (class in dasi.cost.params)</a>
+</li>
+      <li><a href="developer/api_reference.html#dasi.design.Design.graphs">graphs (dasi.design.Design attribute)</a>, <a href="developer/api_reference.html#dasi.design.Design.graphs">[1]</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.group_apply">group_apply() (dasi.utils.NumpyDataFrame class method)</a>
 </li>
@@ -573,11 +571,13 @@
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.merge">merge() (dasi.utils.NumpyDataFrame class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.cost.params.PrimerParams.min_anneal">min_anneal (dasi.cost.params.PrimerParams attribute)</a>, <a href="developer/api_reference.html#dasi.cost.params.PrimerParams.min_anneal">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.cost.params.PrimerParams.min_span">min_span (dasi.cost.params.PrimerParams attribute)</a>, <a href="developer/api_reference.html#dasi.cost.params.PrimerParams.min_span">[1]</a>
+</li>
+      <li><a href="developer/api_reference.html#dasi.alignments.MultiPCRProductAlignmentGroup">MultiPCRProductAlignmentGroup (class in dasi.alignments)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.multipoint_shortest_path">multipoint_shortest_path() (in module dasi.utils)</a>
 </li>
@@ -591,10 +591,14 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="developer/api_reference.html#dasi.utils.Region.new">new() (dasi.utils.Region method)</a>
+      <li><a href="developer/api_reference.html#dasi.design.Design.n_jobs">n_jobs (dasi.design.Design attribute)</a>, <a href="developer/api_reference.html#dasi.design.Design.n_jobs">[1]</a>
+</li>
+      <li><a href="developer/api_reference.html#dasi.utils.networkx.NetworkxUtilsException">NetworkxUtilsException</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developer/api_reference.html#dasi.utils.Region.new">new() (dasi.utils.Region method)</a>
+</li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame">NumpyDataFrame (class in dasi.utils)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrameException">NumpyDataFrameException</a>
@@ -605,8 +609,6 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="developer/api_reference.html#dasi.design.design_algorithms.optimize_graph">optimize_graph() (in module dasi.design.design_algorithms)</a>
-</li>
       <li><a href="developer/api_reference.html#dasi.design.LibraryDesign.optimize_library">optimize_library() (dasi.design.LibraryDesign method)</a>
 
       <ul>
@@ -623,16 +625,18 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="developer/api_reference.html#dasi.alignments.PCRProductAlignmentGroup">PCRProductAlignmentGroup (class in dasi.alignments)</a>
+</li>
       <li><a href="developer/api_reference.html#dasi.utils.perfect_subject">perfect_subject() (in module dasi.utils)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.CostBuilder.plot">plot() (dasi.cost.CostBuilder property)</a>
 
       <ul>
-        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostBuilder.plot">(dasi.cost.PrimerCostBuilder property)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostModel.plot">(dasi.cost.PrimerCostModel property)</a>
 </li>
         <li><a href="developer/api_reference.html#dasi.cost.SpanCost.plot">(dasi.cost.SpanCost property)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostBuilder.plot">(dasi.cost.SynthesisCostBuilder property)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostModel.plot">(dasi.cost.SynthesisCostModel property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -643,7 +647,7 @@
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.params.PrimerParams.primer_df">primer_df (dasi.cost.params.PrimerParams attribute)</a>, <a href="developer/api_reference.html#dasi.cost.params.PrimerParams.primer_df">[1]</a>
 </li>
-      <li><a href="developer/api_reference.html#dasi.cost.PrimerCostBuilder">PrimerCostBuilder (class in dasi.cost)</a>
+      <li><a href="developer/api_reference.html#dasi.cost.PrimerCostModel">PrimerCostModel (class in dasi.cost)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.params.PrimerParams">PrimerParams (class in dasi.cost.params)</a>, <a href="developer/api_reference.html#dasi.cost.params.PrimerParams">[1]</a>
 </li>
@@ -658,7 +662,9 @@
       <ul>
         <li><a href="developer/api_reference.html#dasi.alignments.AlignmentGroupBase.query_key">(dasi.alignments.AlignmentGroupBase property)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup.query_key">(dasi.alignments.ComplexAlignmentGroup property)</a>
+        <li><a href="developer/api_reference.html#dasi.alignments.MultiPCRProductAlignmentGroup.query_key">(dasi.alignments.MultiPCRProductAlignmentGroup property)</a>
+</li>
+        <li><a href="developer/api_reference.html#dasi.alignments.PCRProductAlignmentGroup.query_key">(dasi.alignments.PCRProductAlignmentGroup property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -681,13 +687,15 @@
 </li>
       <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainer.redundent_alignment_groups">redundent_alignment_groups() (dasi.alignments.AlignmentContainer class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.utils.Region">Region (class in dasi.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.utils.Region.reindex">reindex() (dasi.utils.Region method)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.reshape">reshape() (dasi.utils.NumpyDataFrame method)</a>
+</li>
+      <li><a href="developer/api_reference.html#dasi.design.Design.results">results (dasi.design.Design attribute)</a>, <a href="developer/api_reference.html#dasi.design.Design.results">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -697,8 +705,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.utils.Region.same_context">same_context() (dasi.utils.Region method)</a>
 </li>
-      <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainerFactory.set_alignments">set_alignments() (dasi.alignments.AlignmentContainerFactory method)</a>
-</li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.shape">shape() (dasi.utils.NumpyDataFrame property)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.Region.slices">slices() (dasi.utils.Region method)</a>
@@ -706,6 +712,8 @@
       <li><a href="developer/api_reference.html#dasi.utils.sort_cycle">sort_cycle() (in module dasi.utils)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.utils.sort_with_keys">sort_with_keys() (in module dasi.utils)</a>
+</li>
+      <li><a href="developer/api_reference.html#dasi.design.Design.span_cost">span_cost (dasi.design.Design attribute)</a>, <a href="developer/api_reference.html#dasi.design.Design.span_cost">[1]</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.SpanCost">SpanCost (class in dasi.cost)</a>
 </li>
@@ -724,7 +732,9 @@
 </li>
         <li><a href="developer/api_reference.html#dasi.alignments.AlignmentGroupBase.sub_region">(dasi.alignments.AlignmentGroupBase method)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup.sub_region">(dasi.alignments.ComplexAlignmentGroup method)</a>
+        <li><a href="developer/api_reference.html#dasi.alignments.MultiPCRProductAlignmentGroup.sub_region">(dasi.alignments.MultiPCRProductAlignmentGroup method)</a>
+</li>
+        <li><a href="developer/api_reference.html#dasi.alignments.PCRProductAlignmentGroup.sub_region">(dasi.alignments.PCRProductAlignmentGroup method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -734,7 +744,9 @@
       <ul>
         <li><a href="developer/api_reference.html#dasi.alignments.AlignmentGroupBase.subject_keys">(dasi.alignments.AlignmentGroupBase property)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup.subject_keys">(dasi.alignments.ComplexAlignmentGroup property)</a>
+        <li><a href="developer/api_reference.html#dasi.alignments.MultiPCRProductAlignmentGroup.subject_keys">(dasi.alignments.MultiPCRProductAlignmentGroup property)</a>
+</li>
+        <li><a href="developer/api_reference.html#dasi.alignments.PCRProductAlignmentGroup.subject_keys">(dasi.alignments.PCRProductAlignmentGroup property)</a>
 </li>
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.alignments.AlignmentGroup.subject_regions">subject_regions() (dasi.alignments.AlignmentGroup property)</a>
@@ -742,7 +754,9 @@
       <ul>
         <li><a href="developer/api_reference.html#dasi.alignments.AlignmentGroupBase.subject_regions">(dasi.alignments.AlignmentGroupBase property)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup.subject_regions">(dasi.alignments.ComplexAlignmentGroup property)</a>
+        <li><a href="developer/api_reference.html#dasi.alignments.MultiPCRProductAlignmentGroup.subject_regions">(dasi.alignments.MultiPCRProductAlignmentGroup property)</a>
+</li>
+        <li><a href="developer/api_reference.html#dasi.alignments.PCRProductAlignmentGroup.subject_regions">(dasi.alignments.PCRProductAlignmentGroup property)</a>
 </li>
       </ul></li>
       <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.suffix">suffix() (dasi.utils.NumpyDataFrame method)</a>
@@ -753,7 +767,7 @@
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.params.SynthesisParams.synthesis_df">synthesis_df (dasi.cost.params.SynthesisParams attribute)</a>, <a href="developer/api_reference.html#dasi.cost.params.SynthesisParams.synthesis_df">[1]</a>
 </li>
-      <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostBuilder">SynthesisCostBuilder (class in dasi.cost)</a>
+      <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostModel">SynthesisCostModel (class in dasi.cost)</a>
 </li>
       <li><a href="developer/api_reference.html#dasi.cost.params.SynthesisParams">SynthesisParams (class in dasi.cost.params)</a>, <a href="developer/api_reference.html#dasi.cost.params.SynthesisParams">[1]</a>
 </li>
@@ -765,8 +779,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.utils.Region.t">t() (dasi.utils.Region method)</a>
 </li>
-      <li><a href="developer/api_reference.html#dasi.utils.networkx.TerrariumNetworkxError">TerrariumNetworkxError</a>
-</li>
       <li><a href="developer/api_reference.html#dasi.cost.params.Globals.time_cost">time_cost (dasi.cost.params.Globals attribute)</a>
 
       <ul>
@@ -775,20 +787,20 @@
         <li><a href="developer/api_reference.html#dasi.cost.params.SynthesisParams.time_cost">(dasi.cost.params.SynthesisParams attribute)</a>, <a href="developer/api_reference.html#dasi.cost.params.SynthesisParams.time_cost">[1]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.cost.CostBuilder.to_df">to_df() (dasi.cost.CostBuilder method)</a>
 
       <ul>
-        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostBuilder.to_df">(dasi.cost.PrimerCostBuilder method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.PrimerCostModel.to_df">(dasi.cost.PrimerCostModel method)</a>
 </li>
         <li><a href="developer/api_reference.html#dasi.cost.SpanCost.to_df">(dasi.cost.SpanCost method)</a>
 </li>
-        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostBuilder.to_df">(dasi.cost.SynthesisCostBuilder method)</a>
+        <li><a href="developer/api_reference.html#dasi.cost.SynthesisCostModel.to_df">(dasi.cost.SynthesisCostModel method)</a>
 </li>
         <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrame.to_df">(dasi.utils.NumpyDataFrame method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="developer/api_reference.html#dasi.alignments.AlignmentContainer.types">types() (dasi.alignments.AlignmentContainer property)</a>
 </li>
   </ul></td>
@@ -823,7 +835,7 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="developer/api_reference.html#dasi.utils.networkx.TerrariumNetworkxError.with_traceback">with_traceback() (dasi.utils.networkx.TerrariumNetworkxError method)</a>
+      <li><a href="developer/api_reference.html#dasi.utils.networkx.NetworkxUtilsException.with_traceback">with_traceback() (dasi.utils.networkx.NetworkxUtilsException method)</a>
 
       <ul>
         <li><a href="developer/api_reference.html#dasi.utils.NumpyDataFrameException.with_traceback">(dasi.utils.NumpyDataFrameException method)</a>

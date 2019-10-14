@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.design_algorithms &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.design.design_algorithms &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -115,158 +115,18 @@ from typing import Tuple
 import networkx as nx
 import numpy as np
 
+from .optimize import optimize_graph
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentContainerFactory
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyGraphBuilder
-from dasi.exceptions import DasiDesignException
-from dasi.utils import sort_with_keys
-from dasi.utils.networkx import sympy_floyd_warshall
-from dasi.utils.networkx import sympy_multipoint_shortest_path
-
-# definition of how to compute path length
-# c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes &#39;material&#39;
-# and &#39;efficiency&#39; for a given path
-path_length_config = {
-    &quot;f&quot;: &quot;material / efficiency&quot;,
-    &quot;accumulators&quot;: {&quot;efficiency&quot;: &quot;product&quot;},
-}
-
-
-<div class="viewcode-block" id="_check_paths"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._check_paths">[docs]</a>def _check_paths(paths: List[List[tuple]]) -&gt; None:
-    &quot;&quot;&quot;Validates a path to check for duplicate nodes.
-
-    :param paths:
-    :return:
-    &quot;&quot;&quot;
-    invalid_paths = []
-    for path in paths:
-        lastseen = path[0][2]
-        for p in path[1:]:
-            if p[2] == lastseen:
-                invalid_paths.append(path)
-                break
-            lastseen = p[2]
-    if invalid_paths:
-        raise DasiDesignException(
-            &quot;There are {} invalid paths:\n{}\n...{} more&quot;.format(
-                len(invalid_paths),
-                &quot;\n&quot;.join([str(x) for x in invalid_paths[:5]]),
-                max(len(invalid_paths) - 5, 0),
-            )
-        )</div>
-
-
-def _all_pairs_shortest_path(graph, nodelist) -&gt; np.ndarray:
-    return sympy_floyd_warshall(
-        graph,
-        f=path_length_config[&quot;f&quot;],
-        accumulators=path_length_config[&quot;accumulators&quot;],
-        nodelist=nodelist,
-        dtype=np.float64,
-    )
-
-
-<div class="viewcode-block" id="_multinode_to_shortest_path"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._multinode_to_shortest_path">[docs]</a>def _multinode_to_shortest_path(graph, nodes, cyclic) -&gt; List[tuple]:
-    &quot;&quot;&quot;Estimate the shortest path that touches the specified nodes.&quot;&quot;&quot;
-    path_length, path = sympy_multipoint_shortest_path(
-        graph,
-        nodes,
-        f=path_length_config[&quot;f&quot;],
-        accumulators=path_length_config[&quot;accumulators&quot;],
-        cyclic=cyclic,
-    )
-    return path</div>
-
-
-<div class="viewcode-block" id="_collect_cycle_endpoints"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._collect_cycle_endpoints">[docs]</a>def _collect_cycle_endpoints(graph: nx.DiGraph, length: int) -&gt; List[tuple]:
-    &quot;&quot;&quot;Use the floyd-warshall algorithm to compute the shortest path endpoints.
-
-    :param graph: the networkx graph
-    :param length: the size of the query sequence
-    :return:
-    &quot;&quot;&quot;
-    nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
-    node_to_i = {v: i for i, v in enumerate(nodelist)}
-    weight_matrix = _all_pairs_shortest_path(graph, nodelist)
-    endpoints = []
-
-    def bisect_iterator(nlist, nkeys):
-        _i = bisect.bisect_right(nkeys, length)
-        for i, A in enumerate(nlist[:_i]):
-            _j = bisect.bisect_left(nkeys, A.index + length)
-            for B in nlist[_j:]:
-                if B.type == &quot;B&quot;:
-                    j = node_to_i[B]
-                    yield i, j, A, B
-
-    pair_iterator = bisect_iterator(nodelist, nodekeys)
-    for i, j, A, B in pair_iterator:
-        a = weight_matrix[i, j]
-        b = weight_matrix[j, i]
-        if a != np.inf and b != np.inf:
-            x = ((A, B), (a, b), a + b)
-            endpoints.append(x)
-
-    endpoints = sorted(endpoints, key=lambda x: (x[-1], x[0]))
-    return endpoints</div>
-
-
-<div class="viewcode-block" id="_nodes_to_fullpaths"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._nodes_to_fullpaths">[docs]</a>def _nodes_to_fullpaths(
-    graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
-) -&gt; List[List[Tuple]]:
-    &quot;&quot;&quot;Recover full paths from cycle endpoints.
-
-    :param graph:
-    :param cycle_endpoints:
-    :param n_paths:
-    :return:
-    &quot;&quot;&quot;
-    unique_cyclic_paths = []
-    for nodes in cycle_endpoints:
-        if n_paths is not None and len(unique_cyclic_paths) &gt;= n_paths:
-            break
-        path = _multinode_to_shortest_path(graph, nodes, cyclic)
-        if path not in unique_cyclic_paths:
-            unique_cyclic_paths.append(path)
-    return unique_cyclic_paths</div>
-
-
-<div class="viewcode-block" id="_collect_optimized_paths"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms._collect_optimized_paths">[docs]</a>def _collect_optimized_paths(
-    graph: nx.DiGraph, length: int, cyclic: bool, n_paths=None
-) -&gt; List[List[tuple]]:
-    &quot;&quot;&quot;Collect minimum cycles or linear paths from a graph.
-
-    :param graph: the networkx graph representing the assembly graph
-    :param length: length of the query
-    :param cyclic: whether to search for a cyclic assembly
-    :param n_paths: maximum number of paths to return
-    :return:
-    &quot;&quot;&quot;
-    if cyclic:
-        nodes = _collect_cycle_endpoints(graph, length=length)
-    else:
-        raise NotImplementedError(&quot;Linear assemblies are not yet implemented.&quot;)
-    paths = _nodes_to_fullpaths(
-        graph, tuple(n[0] for n in nodes), cyclic=cyclic, n_paths=n_paths
-    )
-    _check_paths(paths)
-    return paths</div>
-
-
-<div class="viewcode-block" id="optimize_graph"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms.optimize_graph">[docs]</a>def optimize_graph(
-    graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
-) -&gt; List[List[tuple]]:
-    &quot;&quot;&quot;Optimize the graph associated with the specified query_key.&quot;&quot;&quot;
-    # self.logger.info(&quot;Optimizing {}&quot;.format(query_key))
-    paths = _collect_optimized_paths(graph, query_length, cyclic, n_paths=n_paths)
-    return paths</div>
 
 
 def _multiprocessing_optimize_graph(
     args: Tuple[nx.DiGraph, int, bool, int]
 ) -&gt; List[List[tuple]]:
-    return optimize_graph(args[0], args[1], args[2], args[3])
+    paths, _ = optimize_graph(args[0], args[1], args[2], args[3])
+    return paths
 
 
 <div class="viewcode-block" id="multiprocessing_optimize_graph"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.design_algorithms.multiprocessing_optimize_graph">[docs]</a>def multiprocessing_optimize_graph(
@@ -289,6 +149,7 @@ def _multiprocessing_optimize_graph(
 ) -&gt; Tuple[nx.DiGraph, AlignmentContainer]:
     &quot;&quot;&quot;Build an assembly graph for a specified query.&quot;&quot;&quot;
     container.expand(expand_overlaps=True, expand_primers=True)
+    container.groups()
     container.freeze()
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
     graph = graph_builder.build_assembly_graph()
@@ -318,11 +179,14 @@ def _multiprocessing_assemble_graph(
         )
 
     # update container_factory alignments
-    new_alignments = {
-        key: container.alignments
-        for key, container in zip(query_keys, expanded_containers)
-    }
-    container_factory.set_alignments(new_alignments)
+
+    new_containers = dict(zip(query_keys, expanded_containers))
+    # new_alignments = {key: c.alignments for key, c in new_containers.items()}
+    # container_factory.set_alignments
+    for key, container in container_factory.containers().items():
+        container_factory._alignments[key] = new_containers[key].alignments
+        container_factory._containers[key] = new_containers[key]
+        container.seqdb = container_factory.seqdb
     return graphs</div>
 </pre></div>
 

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.utils.networkx.utils &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.utils.networkx.utils &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -130,9 +130,8 @@ def select_from_arrs(A, B, condition):
 
 
 def replace_nan_with_inf(m):
-    return np.nan_to_num(m, nan=np.inf, copy=False, posinf=np.inf, neginf=None)
-    # m[np.isnan(m)] = np.inf
-    # return m
+    np.putmask(m, np.isnan(m), np.full_like(m, np.inf))
+    return m
 
 
 def divide(mata, matb):

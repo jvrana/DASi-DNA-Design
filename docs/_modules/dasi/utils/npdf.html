@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.utils.npdf &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.utils.npdf &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -325,7 +325,14 @@ class Null:
                 &quot; to sqeeze all of the data, set &#39;apply=np.squeeze&#39;&quot;.format(
                     self.__class__, keys_and_shapes
                 )
-            )</div>
+            )
+        for k, v in self.data.items():
+            if not issubclass(type(v), np.ndarray):
+                raise NumpyDataFrameException(
+                    &quot;{cls} only supports {typ}, not {x}&quot;.format(
+                        cls=self.__class__.__name__, typ=np.ndarray, x=type(v)
+                    )
+                )</div>
 
 <div class="viewcode-block" id="NumpyDataFrame.prefix"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.prefix">[docs]</a>    def prefix(self, s: str, cols=None, inplace=False) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Adds a prefix to all of the column names and returns a new
@@ -537,11 +544,21 @@ class Null:
         &quot;&quot;&quot;Return the column indexer.&quot;&quot;&quot;
         return NumpyDataFrameIndexer(self)
 
-<div class="viewcode-block" id="NumpyDataFrame.to_df"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.to_df">[docs]</a>    def to_df(self, squeeze=True) -&gt; pd.DataFrame:
-        &quot;&quot;&quot;Attempt to convert the df to a pandas.DataFrame.&quot;&quot;&quot;
-        if squeeze:
-            return pd.DataFrame(self.apply(np.squeeze).data)
-        return pd.DataFrame(self.data)</div>
+<div class="viewcode-block" id="NumpyDataFrame.to_df"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.to_df">[docs]</a>    def to_df(self, force=True) -&gt; pd.DataFrame:
+        &quot;&quot;&quot;Force the NumpyDataFrame into a pandas.DataFrame.&quot;&quot;&quot;
+        print(self.shape)
+        x = self
+        if force:
+            if len(x.shape) &gt;= 2:
+                x = x.apply(np.squeeze)
+            elif len(x.shape) == 0:
+                x = x.apply(np.expand_dims, axis=0)
+        if len(x.shape) &gt; 1:
+            raise NumpyDataFrameException(
+                &quot;Unable to force dataframe of &quot;
+                &quot;shape {} into a pandas.DataFrame&quot;.format(self.shape)
+            )
+        return pd.DataFrame(x.data)</div>
 
 <div class="viewcode-block" id="NumpyDataFrame.update"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.update">[docs]</a>    def update(self, data: Union[NumpyDataFrame, Dict[str, np.ndarray]], apply=None):
         &quot;&quot;&quot;Update the df from a dict or another df.&quot;&quot;&quot;
@@ -585,9 +602,9 @@ class Null:
             data = {k.decode(): v for k, v in data.items()}
             return cls(data)</div>
 
-    def __getitem__(self, key: Union[int, np.ndarray]) -&gt; NumpyDataFrame:
+    def __getitem__(self, key: Union[int, slice, np.ndarray]) -&gt; NumpyDataFrame:
         new = self.__class__(self.data)
-        new.data = {k: v[key] for k, v in new.data.items()}
+        new.data = {k: np.array(v[key]) for k, v in new.data.items()}
         return new
 
     def __setitem__(self, key: int, val: Any):
@@ -595,7 +612,7 @@ class Null:
             v[key] = val
 
     def __len__(self) -&gt; int:
-        return len(list(self.data.values())[0])
+        return self.shape[0]
 
     def __iter__(self) -&gt; Generator[NumpyDataFrame]:
         for i in range(len(self)):
@@ -631,13 +648,20 @@ class Null:
         return self + -other
 
     def __str__(self) -&gt; str:
-        stacked = self.aggregate(np.stack, axis=1)
-        return &quot;{}\ncols={}\n{}&quot;.format(
-            self.__class__, self.columns, pprint.pformat(stacked)
-        )
+        if self.shape == tuple():
+            x = self.apply(np.expand_dims, axis=0)
+            x = x.aggregate(np.stack, axis=0).flatten()
+        else:
+            x = self.aggregate(np.stack, axis=1)
+        return &quot;{}\ncols={}\n{}&quot;.format(self.__class__, self.columns, pprint.pformat(x))
 
     def __repr__(self) -&gt; str:
-        return str(self)</div>
+        return &quot;&lt;{cls} shape={shape} cols={cols} dtype={dtype}&gt;&quot;.format(
+            cls=self.__class__.__name__,
+            shape=self.shape,
+            cols=self.columns,
+            dtype=list(self.data.values())[0].dtype,
+        )</div>
 
 
 class NumpyDataFrameIndexer(Mapping):
@@ -664,6 +688,8 @@ class NumpyDataFrameIndexer(Mapping):
         del self.df.data[key]
 
     def __setitem__(self, col: str, val: np.ndarray):
+        if not issubclass(type(val), np.ndarray):
+            raise TypeError(&quot;Value must be a np.ndarray, not a {}&quot;.format(type(val)))
         self.df.data[col] = val
         self.df.validate()
 

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.design &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -112,17 +112,12 @@ from __future__ import annotations
 
 import bisect
 from collections.abc import Iterable
-from itertools import zip_longest
 from typing import Dict
 from typing import Generator
 from typing import List
-from typing import Sized
 from typing import Tuple
-from typing import Union
 
 import networkx as nx
-import numpy as np
-import pandas as pd
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
@@ -136,13 +131,14 @@ from .graph_builder import AssemblyGraphBuilder
 from dasi.alignments import Alignment
 from dasi.alignments import AlignmentContainer
 from dasi.alignments import AlignmentContainerFactory
-from dasi.alignments import ComplexAlignmentGroup
 from dasi.constants import Constants
+from dasi.cost import SpanCost
+from dasi.design.assembly import Assembly
 from dasi.design.graph_builder import AssemblyNode
-from dasi.exceptions import DasiDesignException
+from dasi.design.sequence_design import design_edge
+from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
 from dasi.utils import perfect_subject
-from dasi.utils import sort_cycle
 
 BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;reward&quot;: 1, &quot;penalty&quot;: -5}
 
@@ -171,31 +167,90 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
         &quot;&quot;&quot;
         return tuple(self._assemblies)
 
-    def _new(self, path: List[AssemblyNode]):
-        return Assembly(path, self.container, self.graph, self.query_key, self.query)
+    def _add_assembly_from_path(self, path: List[AssemblyNode]):
+        return Assembly(
+            path, self.container, self.graph, self.query_key, self.query, do_raise=False
+        )
 
-<div class="viewcode-block" id="DesignResult.add_assembly"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assembly">[docs]</a>    def add_assembly(self, path: List[AssemblyNode]):
+<div class="viewcode-block" id="DesignResult.add_assembly"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assembly">[docs]</a>    def add_assembly(
+        self,
+        path: List[AssemblyNode],
+        ignore_invalid: bool = False,
+        allow_invalid: bool = False,
+    ):
         &quot;&quot;&quot;Add an assembly from a list of nodes.
 
         :param path: list of nodes
         :return: None
         &quot;&quot;&quot;
-        assembly = self._new(path)
+
+        assembly = self._add_assembly_from_path(path)
+
+        try:
+            assembly.post_validate()
+        except DasiInvalidMolecularAssembly as e:
+            if ignore_invalid:
+                return
+            elif not allow_invalid:
+                raise e
+
         cost = assembly.cost()
         n_nodes = len(assembly._nodes)
         k = (cost, n_nodes)
         i = bisect.bisect_left(self._keys, k)
         self._assemblies.insert(i, assembly)
-        self._keys.insert(i, k)</div>
+        self._keys.insert(i, k)
+        return assembly</div>
 
-<div class="viewcode-block" id="DesignResult.add_assemblies"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assemblies">[docs]</a>    def add_assemblies(self, paths: List[List[AssemblyNode]]):
+<div class="viewcode-block" id="DesignResult.add_assemblies"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assemblies">[docs]</a>    def add_assemblies(
+        self,
+        paths: List[List[AssemblyNode]],
+        ignore_invalid: bool = False,
+        allow_invalid: bool = False,
+    ):
         &quot;&quot;&quot;Adds a list of assemblies.
 
         :param paths: list of list of paths
         :return: None
         &quot;&quot;&quot;
         for path in paths:
-            self.add_assembly(path)</div>
+            self.add_assembly(
+                path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
+            )</div>
+
+    def _design_sequences_for_assembly(self, assembly):
+        seqdb = self.container.seqdb
+        for n1, n2, edata in assembly.edges():
+            design_edge(assembly, n1, n2, seqdb)
+            # edata[&quot;sequence_result&quot;] = seq_result
+
+    def design_sequences(self):
+        for a in self.assemblies:
+            self._design_sequences_for_assembly(a)
+
+    def design_sequence_output(self):
+        pass
+
+    #
+    #
+    #     for a in self.assemblies:
+    #         for n1, n2, edata in a.edges():
+    #             result = edata[&quot;sequence_result&quot;]
+    #             mol_type = edata[&quot;type_def&quot;]
+    #             if mol_type.int_or_ext == &quot;internal&quot;:
+    #                 pass
+    #                 # add a new reaction
+    #                 # add template
+    #                 # add primers
+    #             elif mol_type.use_direct:
+    #                 pass
+    #                 # add fragment
+    #             elif mol_type.synthesize:
+    #                 pass
+    #                 # add synthesize
+    #             else:
+    #                 pass
+    #                 # raise Exception
 
     def __iter__(self) -&gt; Generator[Assembly]:
         &quot;&quot;&quot;Yield assemblies.
@@ -215,214 +270,6 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
             qk=self.query_key,
             n=len(self.assemblies),
         )</div>
-
-
-<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Assembly">[docs]</a>class Assembly(Iterable):
-    &quot;&quot;&quot;Should take in a path, graph, container, seqdb to produce relevant
-    information.&quot;&quot;&quot;
-
-    def __init__(
-        self,
-        nodes: List[AssemblyNode],
-        container: AlignmentContainer,
-        full_assembly_graph: nx.DiGraph,
-        query_key: str,
-        query: SeqRecord,
-    ):
-        self.logger = logger(self)
-        self.container = container
-        self.groups = container.groups()
-        if len(self.groups) == 0:
-            raise DasiDesignException(&quot;No groups were found in container.&quot;)
-        self.query_key = query_key
-        self.query = query
-        self._nodes = tuple(nodes)
-        self._full_graph = full_assembly_graph
-        self.graph = self._subgraph(self._full_graph, nodes)
-        nx.freeze(self.graph)
-
-    @staticmethod
-    def _missing_edata():
-        return {
-            &quot;cost&quot;: np.inf,
-            &quot;weight&quot;: np.inf,
-            &quot;material&quot;: np.inf,
-            &quot;efficiency&quot;: 0.0,
-            &quot;type&quot;: Constants.MISSING,
-            &quot;span&quot;: np.inf,
-            &quot;name&quot;: &quot;missing&quot;,
-            &quot;internal_or_external&quot;: &quot;missing&quot;,
-        }
-
-    def _subgraph(self, graph: nx.DiGraph, nodes: List[AssemblyNode]):
-        def _resolve(node: AssemblyNode, qregion) -&gt; Tuple[AssemblyNode, dict]:
-            new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
-            return new_node, {}
-
-        subgraph = nx.OrderedDiGraph()
-        nodes = [AssemblyNode(*n) for n in nodes]
-        example_query_region = self.container.alignments[0].query_region
-
-        resolved_nodes = [_resolve(node, example_query_region) for node in nodes]
-        if self.cyclic:
-            resolved_nodes = sort_cycle(
-                resolved_nodes, key=lambda n: (n[0].type, n[0].index, n)
-            )
-        subgraph.add_nodes_from(resolved_nodes)
-
-        if self.cyclic:
-            pair_iter = list(pairwise(nodes + nodes[:1]))
-        else:
-            pair_iter = list(pairwise(nodes))
-
-        for n1, n2 in pair_iter:
-            edata = graph.get_edge_data(n1, n2)
-            if edata is None:
-                edata = self._missing_edata()
-            else:
-                assert &quot;internal_or_external&quot; in edata
-
-            # TODO: fix query_region (overlaps are backwards)
-            query_region = self.container.alignments[0].query_region.new(
-                n1.index, n2.index
-            )
-            groups = self.container.find_groups_by_pos(
-                query_region.a,
-                query_region.b,
-                group_type=edata[&quot;type&quot;],
-                groups=self.groups,
-            )
-            if edata[&quot;internal_or_external&quot;] == &quot;internal&quot; and not groups:
-                raise DasiDesignException(
-                    &quot;Missing groups for edge between {} and {}&quot;.format(n1, n2)
-                )
-
-            edata[&quot;groups&quot;] = groups
-            edata[&quot;query_region&quot;] = query_region
-            subgraph.add_edge(
-                _resolve(n1, query_region)[0], _resolve(n2, query_region)[0], **edata
-            )
-        return subgraph
-
-    @property
-    def cyclic(self):
-        return is_circular(self.query)
-
-    # TODO: consolidate this with shortest path utils in networkx
-    def cost(self):
-        material = 0
-        efficiency = 1.0
-        for _, _, edata in self.edges():
-            material += edata[&quot;material&quot;]
-            efficiency *= edata[&quot;efficiency&quot;]
-        if efficiency == 0:
-            return np.inf
-        return material / efficiency
-
-    def edges(self, data=True) -&gt; Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
-        return self.graph.edges(data=data)
-
-    def nodes(self, data=True) -&gt; Iterable[Tuple[AssemblyNode, Dict]]:
-        return self.graph.nodes(data=data)
-
-    def edit_distance(
-        self, other: Assembly, explain=False
-    ) -&gt; Union[int, Tuple[int, List[Tuple[int, str]]]]:
-        differences = []
-        for i, (n1, n2) in enumerate(
-            zip_longest(self.nodes(data=False), other.nodes(data=False))
-        ):
-            if n1 is None or n2 is None:
-                differences.append((i, &quot;{} != {}&quot;.format(n1, n2)))
-                continue
-            if n1.index != n2.index:
-                differences.append((i, &quot;Index: {} != {}&quot;.format(n1.index, n2.index)))
-            if n1.expandable != n2.expandable:
-                differences.append(
-                    (i, &quot;Expandable: {} != {}&quot;.format(n1.expandable, n2.expandable))
-                )
-            if n1.type != n2.type:
-                differences.append((i, &quot;Type: {} != {}&quot;.format(n1.type, n2.type)))
-            if n1.overhang != n2.overhang:
-                differences.append(
-                    (i, &quot;Overhang: {} != {}&quot;.format(n1.overhang, n2.overhang))
-                )
-        dist = len(differences)
-        if explain:
-            return dist, differences
-        return dist
-
-    def print(self):
-        print(&quot;query_name: {}&quot;.format(self.query.name))
-        print(&quot;query_key: {}&quot;.format(self.query_key))
-        print(&quot;Cost: {}&quot;.format(self.cost()))
-        df = self.to_df()
-        print(df)
-
-    def print_diff(self, other: Assembly):
-        for i, (n1, n2) in enumerate(
-            zip_longest(self.nodes(data=False), other.nodes(data=False))
-        ):
-            if n1 != n2:
-                desc = False
-            else:
-                desc = True
-            print(&quot;{} {} {}&quot;.format(desc, n1, n2))
-
-    def to_df(self):
-        rows = []
-        for n1, n2, edata in self.edges():
-            groups = edata[&quot;groups&quot;]
-
-            if groups:
-                group = groups[0]
-                if isinstance(group, ComplexAlignmentGroup):
-                    alignments = group.alignments
-                else:
-                    alignments = group.alignments[:1]
-            else:
-                alignments = []
-            subject_keys = [a.subject_key for a in alignments]
-            subject_names = [self.container.seqdb[key].name for key in subject_keys]
-            subject_starts = [a.subject_region.a for a in alignments]
-            subject_ends = [a.subject_region.b for a in alignments]
-
-            rows.append(
-                {
-                    &quot;query_start&quot;: edata[&quot;query_region&quot;].a,
-                    &quot;query_end&quot;: edata[&quot;query_region&quot;].b,
-                    &quot;subject_names&quot;: subject_names,
-                    &quot;subject_keys&quot;: subject_keys,
-                    &quot;subject_start&quot;: subject_starts,
-                    &quot;subject_ends&quot;: subject_ends,
-                    &quot;cost&quot;: edata[&quot;cost&quot;],
-                    &quot;material&quot;: edata[&quot;material&quot;],
-                    &quot;span&quot;: edata[&quot;span&quot;],
-                    &quot;type&quot;: edata[&quot;type&quot;],
-                    &quot;name&quot;: edata[&quot;name&quot;],
-                    &quot;internal_or_external&quot;: edata[&quot;internal_or_external&quot;],
-                    &quot;efficiency&quot;: edata.get(&quot;efficiency&quot;, np.nan),
-                }
-            )
-
-        df = pd.DataFrame(rows)
-        return df
-
-    def __eq__(self, other: Assembly) -&gt; bool:
-        return self.edit_distance(other) == 0
-
-    def __iter__(self) -&gt; Generator[AssemblyNode]:
-        for n in self.nodes(data=False):
-            yield n</div>
-
-
-def run_blast(args):
-    if args is None or args[0] is None:
-        return []
-    blast, func_str = args
-    func = getattr(blast, func_str)
-    func()
-    return blast.get_perfect()
 
 
 class FakePool:
@@ -465,15 +312,15 @@ class FakePool:
         # graph by query_key
         if seqdb is None:
             seqdb = {}
-        self._seqdb = seqdb
-        self.span_cost = span_cost
-        self.graphs = {}
-        self.results = {}
+        self._seqdb = seqdb  #: Sequence dict registry
+        self.span_cost = span_cost  #: span cost df
+        self.graphs = {}  #: Dict[str, nx.DiGraph]
+        self.results = {}  #: Dict[str, DesignResult]
         self.template_results = []
         self.fragment_results = []
         self.primer_results = []
         self.container_factory = AlignmentContainerFactory(self.seqdb)
-        self.n_jobs = n_jobs or self.DEFAULT_N_JOBS
+        self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
 
     @property
     def seqdb(self) -&gt; Dict[str, SeqRecord]:
@@ -484,7 +331,7 @@ class FakePool:
         primers: List[SeqRecord],
         templates: List[SeqRecord],
         queries: List[SeqRecord],
-        fragments=None,
+        fragments: List[SeqRecord] = None,
     ):
         if fragments is None:
             fragments = []
@@ -652,7 +499,7 @@ class FakePool:
             arr.append((n1, n2, edata))
         return arr
 
-    def optimize(self, n_paths=3, n_jobs=None) -&gt; Dict[str, List[List[AssemblyNode]]]:
+    def optimize(self, n_paths=3, n_jobs=None) -&gt; Dict[str, DesignResult]:
         n_jobs = n_jobs or self.n_jobs
         if n_jobs &gt; 1:
             with self.logger.timeit(
@@ -665,8 +512,7 @@ class FakePool:
         else:
             return self._optimize_without_threads(n_paths)
 
-    # TODO: n_paths to class attribute
-<div class="viewcode-block" id="Design._optimize_without_threads"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design._optimize_without_threads">[docs]</a>    def _optimize_without_threads(self, n_paths) -&gt; Dict[str, List[List[AssemblyNode]]]:
+<div class="viewcode-block" id="Design._optimize_without_threads"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design._optimize_without_threads">[docs]</a>    def _optimize_without_threads(self, n_paths) -&gt; Dict[str, DesignResult]:
         &quot;&quot;&quot;Finds the optimal paths for each query in the design.&quot;&quot;&quot;
         results_dict = {}
         for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
@@ -679,7 +525,7 @@ class FakePool:
             query = container.seqdb[query_key]
             cyclic = is_circular(query)
             results_dict[query_key] = result
-            paths = optimize_graph(graph, len(query), cyclic, n_paths)
+            paths, costs = optimize_graph(graph, len(query), cyclic, n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]
                 self.logger.error(
@@ -687,12 +533,10 @@ class FakePool:
                     &quot;This sequence may be better synthesized. Use a tool such as JBEI&#39;s&quot;
                     &quot; BOOST.&quot;.format(query_rec.name, query_key)
                 )
-            result.add_assemblies(paths)
+            result.add_assemblies(paths, ignore_invalid=True)
         return results_dict</div>
 
-    def _optimize_with_threads(
-        self, n_paths=5, n_jobs=10
-    ) -&gt; Dict[str, List[List[AssemblyNode]]]:
+    def _optimize_with_threads(self, n_paths=5, n_jobs=10) -&gt; Dict[str, DesignResult]:
         results_dict = {}
         query_keys, graphs, query_lengths, cyclics, results = zip(
             *list(self._collect_optimize_args(self.graphs))
@@ -706,7 +550,7 @@ class FakePool:
             n_jobs=n_jobs,
         )
         for qk, paths, result in zip(query_keys, list_of_paths, results):
-            result.add_assemblies(paths)
+            result.add_assemblies(paths, ignore_invalid=True)
             results_dict[qk] = result
         return results_dict
 

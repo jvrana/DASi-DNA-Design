@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.alignments.alignment &#8212; dasi 0.0.2 documentation</title>
+    <title>dasi.alignments.alignment &#8212; dasi 0.0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -111,29 +111,49 @@
 from __future__ import annotations
 
 from collections.abc import Sized
+from typing import Dict
 from typing import List
+from typing import Union
 
 from dasi.exceptions import AlignmentException
+from dasi.molecule import MoleculeType
 from dasi.utils import Region
 
-ALIGNMENT_SLOTS = [
-    &quot;query_region&quot;,
-    &quot;subject_region&quot;,
-    &quot;type&quot;,
-    &quot;query_key&quot;,
-    &quot;subject_key&quot;,
-    &quot;grouping_tags&quot;,
-]
+
+class RepresentsMolecule:
+    &quot;&quot;&quot;Mixin for molecular sized alignments or alignment groups.&quot;&quot;&quot;
+
+    def __init__(self, query_region: Region, atype: str):
+        self.query_region = query_region
+        self.type = atype
+        if atype not in MoleculeType.types:
+            raise ValueError(&quot;atype &#39;{}&#39; not in MoleculeTypes&quot;.format(atype))
+
+    def size_ok(self):
+        size = len(self.query_region)
+        mol_type = MoleculeType.types[self.type]
+        if mol_type.min_size is not None and size &lt; mol_type.min_size:
+            return False
+        if mol_type.max_size is not None and size &gt; mol_type.max_size:
+            return False
+        return True
 
 
-<div class="viewcode-block" id="Alignment"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.Alignment">[docs]</a>class Alignment(Sized):
+<div class="viewcode-block" id="Alignment"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.Alignment">[docs]</a>class Alignment(RepresentsMolecule, Sized):
     &quot;&quot;&quot;A pair of Regions that &#39;aligns&#39; two regions of DNA sequences. All
     regions must always be the same length.
 
     A subregion of both regions may be taken.
     &quot;&quot;&quot;
 
-    __slots__ = ALIGNMENT_SLOTS[:]
+    __slots__ = [
+        &quot;query_region&quot;,
+        &quot;subject_region&quot;,
+        &quot;type&quot;,
+        &quot;query_key&quot;,
+        &quot;subject_key&quot;,
+        &quot;uid&quot;,
+    ]
 
     def __init__(
         self,
@@ -152,13 +172,12 @@ ALIGNMENT_SLOTS = [
         :param query_key: The record identifier for the query
         :param subject_key: The record identifier for the subject
         &quot;&quot;&quot;
-        self.query_region = query_region
+        super().__init__(query_region, atype)
+        assert query_region.direction == 1
         self.subject_region = subject_region
         self.validate()
-        self.type = atype
         self.query_key = query_key
         self.subject_key = subject_key
-        self.grouping_tags = {}
 
     def validate(self):
         if not len(self.query_region) == len(self.subject_region):
@@ -184,12 +203,21 @@ ALIGNMENT_SLOTS = [
         :return:
         &quot;&quot;&quot;
         query_copy = self.query_region.sub(qstart, qend)
+
         i = self.query_region.i(qstart)
         if i &lt; 0:
             i = self.query_region.i(qstart + self.query_region.context_length)
         if i == len(self.subject_region):
             i = 0
-        subject_copy = self.subject_region[i : i + len(query_copy)]
+
+        if self.subject_region.direction == -1:
+            b = len(self.subject_region) - i
+            a = b - len(query_copy)
+            if a == b == len(self.subject_region):
+                a = b = 0
+            subject_copy = self.subject_region[a:b]
+        else:
+            subject_copy = self.subject_region[i : i + len(query_copy)]
 
         if atype is None:
             atype = self.type
@@ -227,22 +255,38 @@ ALIGNMENT_SLOTS = [
             self.__class__.__name__, self.type, self.query_region, self.subject_region
         )
 
+    # def __setstate__(self, state):
+    #     self._registry[self.uid] = self
+
     def __repr__(self) -&gt; str:
         return str(self)</div>
 
 
-<div class="viewcode-block" id="AlignmentGroupBase"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.AlignmentGroupBase">[docs]</a>class AlignmentGroupBase:
+<div class="viewcode-block" id="AlignmentGroupBase"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.AlignmentGroupBase">[docs]</a>class AlignmentGroupBase(RepresentsMolecule):
     &quot;&quot;&quot;A representative Alignment representing a group of alignments.&quot;&quot;&quot;
 
-    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
+    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;, &quot;meta&quot;]
 
     def __init__(
-        self, alignments: List[Alignment], group_type: str, name=None, query_region=None
+        self,
+        alignments: List[Alignment],
+        group_type: str,
+        name: str = None,
+        query_region: Region = None,
+        meta: dict = None,
     ):
-        self.query_region = query_region
+        &quot;&quot;&quot;
+
+        :param alignments:
+        :param group_type:
+        :param name:
+        :param query_region:
+        :param meta:
+        &quot;&quot;&quot;
+        super().__init__(query_region, group_type)
         self.alignments = alignments
         self.name = name
-        self.type = group_type
+        self.meta = meta
 
     @property
     def query_key(self) -&gt; str:
@@ -281,29 +325,134 @@ ALIGNMENT_SLOTS = [
 
     __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
 
-    def __init__(self, alignments: List[Alignment], group_type: str, name=None):
+    def __init__(
+        self,
+        alignments: List[Alignment],
+        group_type: str,
+        name: str = None,
+        meta: dict = None,
+    ):
         super().__init__(
             alignments=alignments,
             group_type=group_type,
             name=name,
             query_region=alignments[0].query_region,
+            meta=meta,
         )</div>
 
 
-<div class="viewcode-block" id="ComplexAlignmentGroup"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.ComplexAlignmentGroup">[docs]</a>class ComplexAlignmentGroup(AlignmentGroupBase):
-    &quot;&quot;&quot;A representation of an alignment in which the query region is the
-    concatenation of the underlying alignments provided.&quot;&quot;&quot;
+<div class="viewcode-block" id="PCRProductAlignmentGroup"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.PCRProductAlignmentGroup">[docs]</a>class PCRProductAlignmentGroup(AlignmentGroupBase):
+    &quot;&quot;&quot;Represents a PCR product alignment from a template alignment and
+    forward and reverse alignments. Represents several situations:
 
-    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
+    ::
 
-    def __init__(self, alignments: List[Alignment], group_type: str):
-        query_region = alignments[0].query_region
-        query_region = query_region.new(
-            alignments[0].query_region.a, alignments[-1].query_region.b
-        )
+            Situations the PCRProductAlignmentGroup represents:
+
+            Rev primer with overhang
+                        &lt;--------
+            ------------------
+            ----&gt;
+
+            Primers with overhangs
+                           &lt;--------
+               ------------------
+            --------&gt;
+
+            Primers &#39;within&#39; the template
+                    &lt;-----
+               ------------------
+            --------&gt;
+
+            And so on...
+
+    &quot;&quot;&quot;
+
+    def __init__(
+        self,
+        fwd: Union[None, Alignment],
+        template: Alignment,
+        rev: Union[None, Alignment],
+        query_region: Region,
+        group_type: str,
+        meta: dict = None,
+    ):
+        &quot;&quot;&quot;Initialize a new PCRProductAlignmentGroup. Represents a PCR product.
+        Query region end points are determined from the first non-None
+        alignment and the last non-None alignment. Produces *one new
+        alignment*, the template alignment, which is the intersection of the
+        provided template alignment and the query_region, which represents the
+        exact region for which PCR primers ought to align in a PCR reaction.
+
+        :param fwd: the forward primer alignment. Can be &#39;inside&#39; the template or have an overhang.
+        :param template: template alignment
+        :param rev: the reverse primer alignment. Can be &#39;within&#39; the template or have an overhang.
+        :param group_type: group type name
+        :param meta: extra meta data
+        &quot;&quot;&quot;
+        if fwd is None and rev is None:
+            raise AlignmentException(&quot;Must provide either a fwd and/or rev alignments&quot;)
+        alignments = [x for x in [fwd, template, rev] if x is not None]
+
+        a = alignments[0].query_region.a
+        b = alignments[-1].query_region.b
+
+        query_region = query_region.new(a, b)
+
+        self.raw_template = template
+        self._template = None
+        self.fwd = fwd
+        self.rev = rev
+
         super().__init__(
-            alignments=alignments, group_type=group_type, query_region=query_region
+            alignments=alignments,
+            group_type=group_type,
+            query_region=query_region,
+            meta=meta,
+        )
+
+    @property
+    def subject_keys(self):
+        raise AlignmentException(
+            &quot;Use subject keys directly, as in `self.fwd.subject_key`&quot;
         )</div>
+
+
+# TODO: rename this class
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.alignments.MultiPCRProductAlignmentGroup">[docs]</a>class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
+    &quot;&quot;&quot;A PCR Product Alignment with redundant forward primer, reverse primer,
+    and template alignments.&quot;&quot;&quot;
+
+    def __init__(
+        self,
+        groupings: List[Dict[str:Alignment]],
+        query_region: Region,
+        group_type: str,
+    ):
+        &quot;&quot;&quot;Initializes a new MultiPCRProductAlignmentGroup.
+
+        :param fwds:
+        :param templates:
+        :param revs:
+        :param query_region:
+        :param group_type:
+        &quot;&quot;&quot;
+        self.groupings = groupings
+        self._templates = [None] * len(self.groupings)
+        fwds = [d[&quot;fwd&quot;] for d in self.groupings]
+        revs = [d[&quot;rev&quot;] for d in self.groupings]
+        templates = [d[&quot;template&quot;] for d in self.groupings]
+        alignments = [a for a in fwds + revs + templates if a is not None]
+        super().__init__(
+            alignments=alignments, query_region=query_region, group_type=group_type
+        )
+
+    def get_template(self, index):
+        if self._templates[index] is None:
+            template = self.groupings[index][&quot;template&quot;]
+            intersection = template.query_region.intersection(self.query_region)
+            self._templates[index] = template.sub_region(intersection.a, intersection.b)
+        return self._templates[index]</div>
 </pre></div>
 
     </div>

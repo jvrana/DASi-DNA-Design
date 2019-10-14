@@ -16,8 +16,8 @@ from dasi.design.graph_builder import AssemblyGraphBuilder
 def _multiprocessing_optimize_graph(
     args: Tuple[nx.DiGraph, int, bool, int]
 ) -> List[List[tuple]]:
-    paths, costs = optimize_graph(args[0], args[1], args[2], args[3])
-    return paths, costs
+    paths, _ = optimize_graph(args[0], args[1], args[2], args[3])
+    return paths
 
 
 def multiprocessing_optimize_graph(
@@ -31,7 +31,7 @@ def multiprocessing_optimize_graph(
     args = [(g, q, c, n_paths) for g, q, c in zip(graphs, query_lengths, cyclics)]
 
     with Pool(processes=min(n_jobs, len(graphs))) as pool:  # start 4 worker processes
-        paths, costs = pool.map(_multiprocessing_optimize_graph, args)
+        paths = pool.map(_multiprocessing_optimize_graph, args)
     return paths
 
 

@@ -182,15 +182,16 @@ class TestExpectedSequences:
         assert tested
 
     def test_num_assemblies(self, reactions_dict):
-        for qk, rlist in reactions_dict.items():
-            for reactions in rlist:
-                print("REACTIONS")
-                for r in reactions:
-                    print(r)
-                assemblies = self.reactions_to_assembly(reactions)
-                print("ASSEMBLIES")
-                for a in assemblies:
-                    print(a)
+        pass
+        # for qk, rlist in reactions_dict.items():
+        #     for reactions in rlist:
+        #         print("REACTIONS")
+        #         for r in reactions:
+        #             print(r)
+        #         assemblies = self.reactions_to_assembly(reactions)
+        #         print("ASSEMBLIES")
+        #         for a in assemblies:
+        #             print(a)
 
     # def test_has_gibson_assembly(self, processed_assemblies):
     #     failed = []

@@ -122,7 +122,7 @@ def _nodes_to_fullpaths(
 
 def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
-) -> List[List[tuple]]:
+) -> Tuple[List[List[tuple]], List[float]]:
     nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
     weight_matrix, matrix_dict, ori_matrix_dict = sympy_floyd_warshall(
         graph,

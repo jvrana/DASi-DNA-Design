@@ -9,7 +9,6 @@ from Bio.SeqRecord import SeqRecord
 
 from dasi.alignments import Alignment
 from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.utils import Region
@@ -156,7 +155,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 0
 
@@ -171,7 +170,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 6
 
@@ -186,7 +185,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 2
 
@@ -213,11 +212,10 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 4
 
-    # TODO: THESE SHOULD BE THEIR OWN TYPE...
     def test_primer_overlap(self, container):
         """
         These DO produce PCR products.
@@ -238,7 +236,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 6
 
@@ -262,7 +260,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 6
 
@@ -293,7 +291,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == x[2]
 
@@ -327,7 +325,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == expected_num_alignments
 
@@ -348,7 +346,7 @@ class TestExpandPrimers:
         assert len(container) == 3
 
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 3
         types = {a.type for a in alignments}
@@ -378,7 +376,7 @@ class TestExpandPrimers:
 
         # expand and check
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 1
 
@@ -392,7 +390,7 @@ class TestExpandPrimers:
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, -1)
 
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
 
         indices = []
@@ -413,7 +411,7 @@ class TestExpandPrimers:
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, 1)
 
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 2
 
@@ -432,7 +430,7 @@ class TestExpandPrimers:
         assert len(container) == 2
 
         alignments = container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
         assert len(alignments) == 1
         assert alignments[0].query_region.a == 100
@@ -447,7 +445,7 @@ class TestExpandPrimers:
         assert len(groups) == 0
 
         container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
 
         groups = container.pcr_alignment_groups()
@@ -463,7 +461,7 @@ class TestExpandPrimers:
         new_alignment_in_container(container, 485, 500, Constants.PRIMER, -1)
 
         container.expand_primer_pairs(
-            container.get_groups_by_types(Constants.PCR_PRODUCT)
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=False
         )
 
         groups = container.pcr_alignment_groups()
@@ -506,10 +504,11 @@ class TestExpandPrimerExtensions:
         assert len(container) == 4
 
         # expand and check
-        alignments = container.expand_primer_extension_products()
+        alignments = container.expand_primer_extension_products(
+            lim_size=False, only_one_required=True
+        )
         assert len(alignments) == 2
 
-    # TODO: THESE SHOULD BE THEIR OWN TYPE...
     def test_primer_overlap(self, container):
         """
         These DO produce PCR products.
@@ -529,10 +528,13 @@ class TestExpandPrimerExtensions:
         assert len(container) == 4
 
         # expand and check
-        alignments = container.expand_primer_extension_products()
+        alignments = container.expand_primer_extension_products(
+            lim_size=False, only_one_required=True
+        )
         assert len(alignments) == 3
 
-    def test_primer_dimer(self, container):
+    @pytest.mark.parametrize("only_one_req", [(True, 3), (False, 1)])
+    def test_primer_dimer(self, container, only_one_req):
         """
         These DO produce PCR products.
         ::
@@ -542,6 +544,8 @@ class TestExpandPrimerExtensions:
         :param container:
         :return:
         """
+        only_one_req, expected = only_one_req
+
         new_alignment_in_container(container, 110, 900, Constants.PCR_PRODUCT)
         assert len(container) == 2
 
@@ -551,8 +555,10 @@ class TestExpandPrimerExtensions:
         assert len(container) == 4
 
         # expand and check
-        alignments = container.expand_primer_extension_products()
-        assert len(alignments) == 3
+        alignments = container.expand_primer_extension_products(
+            lim_size=False, only_one_required=only_one_req
+        )
+        assert len(alignments) == expected
 
     def test_not_enough_overlap(self, container):
         """
@@ -573,7 +579,9 @@ class TestExpandPrimerExtensions:
         assert len(container) == 4
 
         # expand and check
-        alignments = container.expand_primer_extension_products()
+        alignments = container.expand_primer_extension_products(
+            lim_size=False, only_one_required=True
+        )
         assert len(alignments) == 2
 
 
@@ -595,7 +603,7 @@ class TestExpandOverlaps:
         assert len(container) == 2
 
         groups = container.get_groups_by_types(Constants.PCR_PRODUCT)
-        alignments = container.expand_overlaps(groups)
+        alignments = container.expand_overlaps(groups, lim_size=False)
         assert len(alignments) == 2
 
         indices = []
@@ -655,3 +663,46 @@ def test_find_alignments(container):
         end_inclusive=False,
     )
     assert alignments == [a3]
+
+
+class TestSizeLim:
+    @pytest.mark.parametrize(
+        "x",
+        [
+            (False, 3, 100, 199),
+            (True, 1, 100, 199),
+            (True, 2, 101, 200),
+            (True, 3, 200, 300),
+            (True, 3, 900, 1000),
+            (True, 2, 900, 999),
+            (True, 1, 901, 999),
+        ],
+        ids=[
+            "no lim results in 3 products",
+            "lr and r product is invalid (size=99)",
+            "lr product is invalid (size=99)",
+            "no products invalid",
+            "no products invalid",
+            "lr product is invalid (size=99)",
+            "lr and r products invalid",
+        ],
+    )
+    def test_primer_pair_product_min_size(self, container, x):
+        lim_size, expected_num_alignments, start, end = x
+        left_primer_len, right_primer_len = 16, 16
+        assert len(container) == 1
+
+        # add primers
+        new_alignment_in_container(
+            container, start, start + left_primer_len, Constants.PRIMER
+        )
+        new_alignment_in_container(
+            container, end - right_primer_len, end, Constants.PRIMER, direction=-1
+        )
+        assert len(container) == 3
+
+        # expand and check
+        alignments = container.expand_primer_pairs(
+            container.get_groups_by_types(Constants.PCR_PRODUCT), lim_size=lim_size
+        )
+        assert len(alignments) == expected_num_alignments

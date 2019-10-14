@@ -11,12 +11,31 @@ import numpy as np
 from sympy import lambdify
 from sympy import sympify
 
-from .exceptions import TerrariumNetworkxError
+from .exceptions import NetworkxUtilsException
 from .utils import replace_nan_with_inf
-from .utils import select_from_arrs
 
 PRODUCT = "product"
 SUM = "sum"
+
+
+def str_to_symbols_and_func(f):
+    expr = sympify(f)
+    symbols = tuple(expr.free_symbols)
+    func = lambdify(symbols, expr)
+    return symbols, func
+
+
+def accumulate_helper(key, m1, m2):
+    if key == SUM:
+        return m1 + m2
+    elif key == PRODUCT:
+        return np.multiply(m1, m2)
+    else:
+        raise NetworkxUtilsException(
+            "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
+                key, PRODUCT, SUM
+            )
+        )
 
 
 def sympy_floyd_warshall(
@@ -29,7 +48,7 @@ def sympy_floyd_warshall(
     identity_subs: Dict[str, Any] = None,
     return_all: bool = False,
     dtype: Type = None,
-) -> Union[np.ndarray, Tuple[np.ndarray, dict]]:
+) -> Union[np.ndarray, Tuple[np.ndarray, Dict[str, np.matrix], Dict[str, np.matrix]]]:
     """Implementation of algorithm:
 
     .. math::
@@ -82,9 +101,7 @@ def sympy_floyd_warshall(
     if nonedge is None:
         nonedge = {}
 
-    expr = sympify(f)
-    symbols = tuple(expr.free_symbols)
-    func = lambdify(symbols, expr)
+    symbols, func = str_to_symbols_and_func(f)
 
     matrix_dict = OrderedDict()
 
@@ -98,6 +115,9 @@ def sympy_floyd_warshall(
             dtype=dtype,
         )
 
+    if return_all:
+        ori_matrix_dict = {k: v.copy() for k, v in matrix_dict.items()}
+
     n, m = list(matrix_dict.values())[0].shape
 
     # replace diagonals
@@ -109,7 +129,7 @@ def sympy_floyd_warshall(
         elif accumulators[key] == PRODUCT:
             d = 1.0
         else:
-            raise TerrariumNetworkxError(
+            raise NetworkxUtilsException(
                 "Accumulator key {} must either be '{}' or '{}' or a callable with two "
                 "arguments ('M' a numpy matrix and 'i' a node index as an int)".format(
                     key, SUM, PRODUCT
@@ -124,16 +144,9 @@ def sympy_floyd_warshall(
         parts_dict = OrderedDict()
         for key, M in matrix_dict.items():
             M = matrix_dict[key]
-            if accumulators.get(key, SUM) == SUM:
-                parts_dict[key] = M[i, :] + M[:, i]
-            elif accumulators[key] == PRODUCT:
-                parts_dict[key] = np.multiply(M[i, :], M[:, i])
-            else:
-                raise TerrariumNetworkxError(
-                    "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(
-                        key, PRODUCT, SUM
-                    )
-                )
+            parts_dict[key] = accumulate_helper(
+                accumulators.get(key, SUM), M[i, :], M[:, i]
+            )
 
         # get total cost
         m_arr = [np.asarray(m) for m in matrix_dict.values()]
@@ -153,7 +166,7 @@ def sympy_floyd_warshall(
     m_arr = [np.asarray(m) for m in matrix_dict.values()]
     C = replace_nan_with_inf(func(*m_arr))
     if return_all:
-        return C, matrix_dict
+        return C, matrix_dict, ori_matrix_dict
     return C
 
 

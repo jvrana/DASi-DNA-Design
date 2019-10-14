@@ -14,6 +14,7 @@ from pyblast.utils import make_linear
 
 from dasi import Design
 from dasi.cost import SpanCost
+from dasi.design.graph_builder import AssemblyNode
 
 
 def random_seq(n_bases):
@@ -85,6 +86,8 @@ def check_design_result(
     design, expected_path: List[Tuple], check_cost=False, check_path=True
 ):
 
+    expected_path = [AssemblyNode(*t) for t in expected_path]
+
     # compile the design
     design.compile()
 
@@ -97,7 +100,7 @@ def check_design_result(
         raise NoSolution("There are no solution.")
 
     best_solution = assemblies[0]
-    expected_solution = result._new(expected_path)
+    expected_solution = result.add_assembly(expected_path, allow_invalid=True)
 
     dist, explain = best_solution.edit_distance(expected_solution, explain=True)
 
@@ -255,13 +258,15 @@ def test_design_with_overlaps_with_templates(span_cost):
     make_circular([goal])
 
     r1 = goal[-40:] + goal[:1000]
-    r2 = goal[950:2000]
+    r2 = goal[970:2000]
     r3 = goal[1950:]
-    make_linear([r1, r2, r3])
+    p1 = goal[-40:]
+
+    make_linear([r1, r2, r3, p1])
 
     design = Design(span_cost)
     design.add_materials(
-        primers=[], fragments=[], queries=[goal], templates=[r1, r2, r3]
+        primers=[p1], fragments=[], queries=[goal], templates=[r1, r2, r3]
     )
 
     expected_path = [
@@ -273,7 +278,7 @@ def test_design_with_overlaps_with_templates(span_cost):
         (4000, True, "B", True),
     ]
 
-    check_design_result(design, expected_path, check_path=False)
+    check_design_result(design, expected_path, check_path=True)
 
 
 def test_design_task_with_gaps(span_cost):
@@ -442,7 +447,7 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1177, False, "A", False), (1300, True, "B", False)]
+    expected_path = [(1100, True, "A", False), (1225, False, "B", False)]
 
     check_design_result(design, expected_path)
 
@@ -475,9 +480,7 @@ def test_a_reverse_pcr_fragment(span_cost):
     goal = random_record(3000)
     make_circular([goal])
 
-    t1 = (
-        random_record(2000) + goal[1000:2500].reverse_complement() + random_record(1000)
-    )
+    t1 = goal[1000:2500].reverse_complement()
     p1 = goal[2500 - 20 : 2510].reverse_complement()
 
     make_linear([p1, t1])
@@ -485,10 +488,42 @@ def test_a_reverse_pcr_fragment(span_cost):
     design = Design(span_cost)
     design.add_materials(primers=[p1], templates=[t1], queries=[goal], fragments=[])
 
+    expected_path = [(1000, True, "A", False), (2510, False, "B", False)]
+
+    check_design_result(design, expected_path)
+
+
+def test_case2(span_cost):
+
+    goal = random_record(5000)
+    make_circular([goal])
+
+    p1 = goal[1096 : 1096 + 20]
+    p2 = goal[694 - 20 : 694].reverse_complement()
+
+    p3 = goal[665 - 20 : 665].reverse_complement()
+
+    t1 = random_seq(100) + goal[1000:] + goal[:700] + random_seq(100)
+
+    make_linear([p1, p2, p3])
+    make_circular([t1])
+
+    design = Design(span_cost)
+
+    design.add_materials(
+        primers=[p1, p2, p3], templates=[t1], queries=[goal], fragments=[]
+    )
+
     expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
+
+    # check_design_result(design, expected_path)
 
     design.compile()
     results = design.optimize()
-    result = results[list(results)[0]]
-
-    result.design_sequences()
+    result = list(results.values())[0]
+    for a in result.assemblies:
+        print(a)
+        print(a.cost())
+        for n1, n2, edata in a.edges():
+            print(n1, n2)
+        # print(a.to_df())

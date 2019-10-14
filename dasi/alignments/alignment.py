@@ -6,8 +6,8 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-from dasi.constants import MoleculeType
 from dasi.exceptions import AlignmentException
+from dasi.molecule import MoleculeType
 from dasi.utils import Region
 
 
@@ -17,7 +17,8 @@ class RepresentsMolecule:
     def __init__(self, query_region: Region, atype: str):
         self.query_region = query_region
         self.type = atype
-        assert atype in MoleculeType.types
+        if atype not in MoleculeType.types:
+            raise ValueError("atype '{}' not in MoleculeTypes".format(atype))
 
     def size_ok(self):
         size = len(self.query_region)
@@ -83,7 +84,6 @@ class Alignment(RepresentsMolecule, Sized):
     def is_perfect_subject(self):
         return len(self.subject_region) == self.subject_region.context_length
 
-    # TODO: subregion must be broken due to no considering direction of the region
     def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
         """Returns a copy of the alignment between the inclusive start and end
         relative to the query region.
@@ -232,26 +232,6 @@ class AlignmentGroup(AlignmentGroupBase):
         )
 
 
-# class ComplexAlignmentGroup(AlignmentGroupBase):
-#     """A representation of an alignment in which the query region is the
-#     concatenation of the underlying alignments provided."""
-#
-#     __slots__ = ["query_region", "alignments", "name", "type", "meta"]
-#
-#     def __init__(self, alignments: List[Alignment], group_type: str, meta: dict = None):
-#         # TODO: adjust alignments
-#         query_region = alignments[0].query_region
-#         query_region = query_region.new(
-#             alignments[0].query_region.a, alignments[-1].query_region.b
-#         )
-#         super().__init__(
-#             alignments=alignments,
-#             group_type=group_type,
-#             query_region=query_region,
-#             meta=meta,
-#         )
-
-
 class PCRProductAlignmentGroup(AlignmentGroupBase):
     """Represents a PCR product alignment from a template alignment and
     forward and reverse alignments. Represents several situations:
@@ -304,18 +284,17 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         if fwd is None and rev is None:
             raise AlignmentException("Must provide either a fwd and/or rev alignments")
         alignments = [x for x in [fwd, template, rev] if x is not None]
+
         a = alignments[0].query_region.a
         b = alignments[-1].query_region.b
 
         query_region = query_region.new(a, b)
+
         self.raw_template = template
         self._template = None
         self.fwd = fwd
         self.rev = rev
 
-        alignments = [
-            x for x in [self.fwd, self.raw_template, self.rev] if x is not None
-        ]
         super().__init__(
             alignments=alignments,
             group_type=group_type,

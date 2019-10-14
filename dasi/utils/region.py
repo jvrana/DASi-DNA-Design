@@ -1010,6 +1010,9 @@ class Region(Span):
         _new.direction = self.direction
         return _new
 
+    def __eq__(self, other: "Region") -> bool:
+        return super().__eq__(other) and self.direction == other.direction
+
     def __str__(self):
         return (
             "<{cls} {a} {b} ({c}) context_len={context_len} len={length} "

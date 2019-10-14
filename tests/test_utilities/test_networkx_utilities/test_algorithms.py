@@ -12,8 +12,9 @@ from dasi.utils.networkx import sympy_multisource_dijkstras
 
 
 COMPARISON_THRESHOLD = (
-    0.03
-)  # within 3% due to floating point errors during accumulating of multiple floats
+    0.01
+)  # within 1% due to floating point errors during accumulating of multiple floats
+EDGE_COMPARISON_THRESHOLD = 0.05
 
 
 def add_data(G, u, v, weight, eff, weight_key="weight", eff_key="eff"):
@@ -68,7 +69,7 @@ def grid_graph(dims):
 
 def compare_floats(expected, x):
     diff = abs(expected - x)
-    if diff / expected > COMPARISON_THRESHOLD:
+    if diff / expected > EDGE_COMPARISON_THRESHOLD:
         return False
     return True
 
@@ -76,19 +77,30 @@ def compare_floats(expected, x):
 def compare(G, C, nodelist):
     d = find_all_min_paths(G)
     errors = []
+    total = 0
+    true_total = 0
     for u, v in np.ndenumerate(C):
         true_cost = d[nodelist[u[0]]][nodelist[u[1]]]["cost"]
         msg = "{} -> {} {} {}".format(u[0], u[1], true_cost, v)
+        true_total += true_cost
+        total += v
         if true_cost != v:
             if compare_floats(true_cost, v):
                 status = "WARNING"
             else:
-                status = "ERROR (T={})".format(COMPARISON_THRESHOLD)
+                status = "ERROR (T={})".format(EDGE_COMPARISON_THRESHOLD)
                 errors.append(msg)
         else:
             status = ""
 
         print(status + " " + msg)
+    if true_total == 0:
+        if total:
+            raise Exception("Threshold too large")
+    else:
+        diff = abs(total - true_total) / true_total
+        if diff > COMPARISON_THRESHOLD:
+            raise Exception("Threshold too large: {}".format(diff))
     assert not errors
 
 
@@ -161,7 +173,7 @@ class TestAllPairShortestPath:
     def test_return_all(self):
         G = nx.path_graph(10)
         add_edata(G)
-        C, B = floyd_warshall_with_efficiency(
+        C, B, D = floyd_warshall_with_efficiency(
             G, weight_key="weight", eff_key="efficiency", return_all=True
         )
         assert np.all(B["weight"] >= C)
@@ -188,7 +200,6 @@ class TestSymPyAllPairsShortestPath:
             G,
             f="weight * eff",
             accumulators={"weight": "sum", "eff": "product"},
-            nonedge={"weight": np.inf, "eff": 0.0},
             nodelist=nodelist,
         )
         for n1, n2, edata in G.edges(data=True):

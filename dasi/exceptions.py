@@ -1,5 +1,6 @@
 """DASi exceptions and warnings."""
 from .log import logger
+from dasi.utils.networkx.exceptions import NetworkxUtilsException
 
 
 class DASiWarning(Warning):
@@ -28,3 +29,7 @@ class DasiSequenceDesignException(DASiException):
 
 class DasiNoPrimerPairsException(DASiException):
     """Sequence design exception."""
+
+
+class DasiInvalidMolecularAssembly(DASiException):
+    """Invalid molecular assembly."""

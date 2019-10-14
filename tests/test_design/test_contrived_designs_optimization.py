@@ -100,7 +100,7 @@ def check_design_result(
         raise NoSolution("There are no solution.")
 
     best_solution = assemblies[0]
-    expected_solution = result._add_assembly_from_path(expected_path)
+    expected_solution = result.add_assembly(expected_path, allow_invalid=True)
 
     dist, explain = best_solution.edit_distance(expected_solution, explain=True)
 

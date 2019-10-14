@@ -124,7 +124,6 @@ def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
 ) -> List[List[tuple]]:
     nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
-    node_to_i = {n: i for i, n in enumerate(nodelist)}
     weight_matrix, matrix_dict, ori_matrix_dict = sympy_floyd_warshall(
         graph,
         f=path_length_config["f"],
@@ -138,12 +137,12 @@ def optimize_graph(
         # add the closing edge
         closed_matrix_dict = OrderedDict({k: v.copy() for k, v in matrix_dict.items()})
 
-        fold_at_length = []
-        for n in nodelist:
-            if n.index > query_length:
-                n = AssemblyNode(n.index - query_length, *list(n)[1:])
-            fold_at_length.append(node_to_i[n])
-        fold_at_length
+        # # fold at length
+        # fold_at_length = []
+        # for n in nodelist:
+        #     if n.index > query_length:
+        #         n = AssemblyNode(n.index - query_length, *list(n)[1:])
+        #     fold_at_length.append(node_to_i[n])
 
         for k, v in closed_matrix_dict.items():
             m1 = matrix_dict[k].copy()

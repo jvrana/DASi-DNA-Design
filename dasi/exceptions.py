@@ -29,3 +29,7 @@ class DasiSequenceDesignException(DASiException):
 
 class DasiNoPrimerPairsException(DASiException):
     """Sequence design exception."""
+
+
+class DasiInvalidMolecularAssembly(DASiException):
+    """Invalid molecular assembly."""

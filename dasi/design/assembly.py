@@ -21,6 +21,7 @@ from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
+from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
 from dasi.molecule import MoleculeType
 from dasi.utils import sort_cycle
@@ -37,6 +38,7 @@ class Assembly(Iterable):
         full_assembly_graph: nx.DiGraph,
         query_key: str,
         query: SeqRecord,
+        do_raise: bool = True,
     ):
         self.logger = logger(self)
         self._nodes = tuple(nodes)
@@ -53,19 +55,20 @@ class Assembly(Iterable):
         self.graph = self._subgraph(self._full_graph, nodes)
         nx.freeze(self.graph)
 
-        self.post_validate()
+        if do_raise:
+            self.post_validate(do_raise)
 
     def post_validate(self):
         total_span = 0
         for n1, n2, edata in self.edges():
             if n1.type == n2.type:
-                raise ValueError("Invalid assembly graph")
+                raise DasiInvalidMolecularAssembly("Invalid assembly graph")
             total_span += edata["span"]
-        # if not total_span == len(self.query):
-        #     raise DasiDesignException(
-        #         "Assembly length '{}' is different from expected"
-        #         " length '{}'".format(total_span, len(self.query))
-        #     )
+        if not total_span == len(self.query):
+            raise DasiInvalidMolecularAssembly(
+                "Assembly length '{}' is different from expected"
+                " length '{}'".format(total_span, len(self.query))
+            )
 
     def _head(self):
         """Get the 'first' 'A' node."""

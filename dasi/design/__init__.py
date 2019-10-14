@@ -27,6 +27,7 @@ from dasi.cost import SpanCost
 from dasi.design.assembly import Assembly
 from dasi.design.graph_builder import AssemblyNode
 from dasi.design.sequence_design import design_edge
+from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
 from dasi.utils import perfect_subject
 
@@ -58,30 +59,55 @@ class DesignResult(Iterable):
         return tuple(self._assemblies)
 
     def _add_assembly_from_path(self, path: List[AssemblyNode]):
-        return Assembly(path, self.container, self.graph, self.query_key, self.query)
+        return Assembly(
+            path, self.container, self.graph, self.query_key, self.query, do_raise=False
+        )
 
-    def add_assembly(self, path: List[AssemblyNode]):
+    def add_assembly(
+        self,
+        path: List[AssemblyNode],
+        ignore_invalid: bool = False,
+        allow_invalid: bool = False,
+    ):
         """Add an assembly from a list of nodes.
 
         :param path: list of nodes
         :return: None
         """
+
         assembly = self._add_assembly_from_path(path)
+
+        try:
+            assembly.post_validate()
+        except DasiInvalidMolecularAssembly as e:
+            if ignore_invalid:
+                return
+            elif not allow_invalid:
+                raise e
+
         cost = assembly.cost()
         n_nodes = len(assembly._nodes)
         k = (cost, n_nodes)
         i = bisect.bisect_left(self._keys, k)
         self._assemblies.insert(i, assembly)
         self._keys.insert(i, k)
+        return assembly
 
-    def add_assemblies(self, paths: List[List[AssemblyNode]]):
+    def add_assemblies(
+        self,
+        paths: List[List[AssemblyNode]],
+        ignore_invalid: bool = False,
+        allow_invalid: bool = False,
+    ):
         """Adds a list of assemblies.
 
         :param paths: list of list of paths
         :return: None
         """
         for path in paths:
-            self.add_assembly(path)
+            self.add_assembly(
+                path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
+            )
 
     def _design_sequences_for_assembly(self, assembly):
         seqdb = self.container.seqdb
@@ -399,7 +425,7 @@ class Design:
                     "This sequence may be better synthesized. Use a tool such as JBEI's"
                     " BOOST.".format(query_rec.name, query_key)
                 )
-            result.add_assemblies(paths)
+            result.add_assemblies(paths, ignore_invalid=True)
         return results_dict
 
     def _optimize_with_threads(self, n_paths=5, n_jobs=10) -> Dict[str, DesignResult]:
@@ -416,7 +442,7 @@ class Design:
             n_jobs=n_jobs,
         )
         for qk, paths, result in zip(query_keys, list_of_paths, results):
-            result.add_assemblies(paths)
+            result.add_assemblies(paths, ignore_invalid=True)
             results_dict[qk] = result
         return results_dict
 

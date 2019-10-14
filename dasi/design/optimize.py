@@ -74,7 +74,6 @@ def index_slice(indices, arr):
 def only_ab(w, nodelist):
     b_array = np.array([n.type == "B" for n in nodelist]).reshape(1, -1)
     w[np.where(~np.logical_xor(b_array, b_array.T))] = np.inf
-    # w[b_array.ravel(), :] = np.inf
     return w
 
 
@@ -135,38 +134,41 @@ def optimize_graph(
         return_all=True,
     )
 
-    # add the closing edge
-    closed_matrix_dict = OrderedDict({k: v.copy() for k, v in matrix_dict.items()})
+    if cyclic:
+        # add the closing edge
+        closed_matrix_dict = OrderedDict({k: v.copy() for k, v in matrix_dict.items()})
 
-    fold_at_length = []
-    for n in nodelist:
-        if n.index > query_length:
-            n = AssemblyNode(n.index - query_length, *list(n)[1:])
-        fold_at_length.append(node_to_i[n])
-    fold_at_length
+        fold_at_length = []
+        for n in nodelist:
+            if n.index > query_length:
+                n = AssemblyNode(n.index - query_length, *list(n)[1:])
+            fold_at_length.append(node_to_i[n])
+        fold_at_length
 
-    for k, v in closed_matrix_dict.items():
-        m1 = matrix_dict[k].copy()
-        m1 = only_long(m1, query_length, nodelist)
+        for k, v in closed_matrix_dict.items():
+            m1 = matrix_dict[k].copy()
+            m1 = only_long(m1, query_length, nodelist)
 
-        # TODO: do we need to fold this?
-        m2 = ori_matrix_dict[k][:, :].T
-        # m2 = ori_matrix_dict[k][:, fold_at_length].T
-        closed_matrix_dict[k] = accumulate_helper(
-            path_length_config["accumulators"].get(k, "sum"), m1, m2
-        )
+            # TODO: do we need to fold this?
+            m2 = ori_matrix_dict[k][:, :].T
+            # m2 = ori_matrix_dict[k][:, fold_at_length].T
+            closed_matrix_dict[k] = accumulate_helper(
+                path_length_config["accumulators"].get(k, "sum"), m1, m2
+            )
 
-    symbols, func = str_to_symbols_and_func(path_length_config["f"])
-    closed_wmatrix = func(*[np.asarray(m) for m in closed_matrix_dict.values()])
-    closed_wmatrix = replace_nan_with_inf(closed_wmatrix)
+        symbols, func = str_to_symbols_and_func(path_length_config["f"])
+        closed_wmatrix = func(*[np.asarray(m) for m in closed_matrix_dict.values()])
+        closed_wmatrix = replace_nan_with_inf(closed_wmatrix)
 
-    fill_diag_inf(closed_wmatrix)
-    only_ab(closed_wmatrix, nodelist)
-    # only_long(closed_wmatrix, query_length, nodelist)
+        fill_diag_inf(closed_wmatrix)
+        only_ab(closed_wmatrix, nodelist)
+        weight_matrix = closed_wmatrix
+    else:
+        raise NotImplementedError("Linear assemblies not yet implemented.")
 
-    costs = closed_wmatrix.ravel().copy()
+    costs = weight_matrix.ravel().copy()
     costs.sort()
-    nodes = index_slice(argmin(closed_wmatrix), nodelist)
+    nodes = index_slice(argmin(weight_matrix), nodelist)
 
     nodes_and_costs = list(zip(nodes, costs))
     nodes_and_costs = [x for x in nodes_and_costs if x[1] != np.inf]

@@ -119,17 +119,15 @@ class Assembly(Iterable):
 
         pair_iter = list(pairwise(nodes))
 
-        # TODO: adding last 'edge' here is kinda clunky
         if self.cyclic:
             pair_iter.append((nodes[-1], nodes[0]))
 
         for n1, n2 in pair_iter:
             edata = graph.get_edge_data(n1, n2)
             if edata is None:
-                if n1.index > len(self.query):
-                    # TODO fix clunky if then statement
-                    n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
-                    edata = graph.get_edge_data(n3, n2)
+                # if n1.index > len(self.query):
+                #     n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
+                #     edata = graph.get_edge_data(n3, n2)
                 if edata is None:
                     edata = self._missing_edata()
             else:

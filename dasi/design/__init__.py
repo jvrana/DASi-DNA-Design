@@ -403,7 +403,6 @@ class Design:
         else:
             return self._optimize_without_threads(n_paths)
 
-    # TODO: n_paths to class attribute
     def _optimize_without_threads(self, n_paths) -> Dict[str, DesignResult]:
         """Finds the optimal paths for each query in the design."""
         results_dict = {}

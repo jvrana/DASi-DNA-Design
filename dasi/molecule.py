@@ -139,7 +139,6 @@ InternalType(
     9.0,
     0.95,
 )
-# TODO: implement primer dimer product with left and right primers
 
 ExternalType(
     name=Constants.OVERLAP, use_direct=False, cost=0.0, efficiency=1.0, synthesize=False

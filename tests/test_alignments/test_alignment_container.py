@@ -216,7 +216,6 @@ class TestExpandPrimers:
         )
         assert len(alignments) == 4
 
-    # TODO: THESE SHOULD BE THEIR OWN TYPE...
     def test_primer_overlap(self, container):
         """
         These DO produce PCR products.
@@ -510,7 +509,6 @@ class TestExpandPrimerExtensions:
         )
         assert len(alignments) == 2
 
-    # TODO: THESE SHOULD BE THEIR OWN TYPE...
     def test_primer_overlap(self, container):
         """
         These DO produce PCR products.

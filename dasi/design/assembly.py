@@ -136,7 +136,6 @@ class Assembly(Iterable):
             else:
                 assert edata["type_def"].int_or_ext
 
-            # TODO: fix query_region (overlaps are backwards)
             query_region = self.container.alignments[0].query_region.new(
                 n1.index, n2.index
             )
@@ -158,10 +157,10 @@ class Assembly(Iterable):
             rn2 = _resolve(n2, query_region)
 
             # TODO: add this check
-            # if rn1 in subgraph:
-            #     raise DasiDesignException("Node already exists in subgraph")
-            # if rn2 in subgraph:
-            #     raise DasiDesignException("Node already exists in subgraph")
+            if rn1 in subgraph:
+                raise DasiDesignException("Node already exists in subgraph")
+            if rn2 in subgraph:
+                raise DasiDesignException("Node already exists in subgraph")
 
             subgraph.add_edge(rn1, rn2, **edata)
         return subgraph

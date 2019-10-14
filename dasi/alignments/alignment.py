@@ -84,7 +84,6 @@ class Alignment(RepresentsMolecule, Sized):
     def is_perfect_subject(self):
         return len(self.subject_region) == self.subject_region.context_length
 
-    # TODO: subregion must be broken due to no considering direction of the region
     def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
         """Returns a copy of the alignment between the inclusive start and end
         relative to the query region.
@@ -231,26 +230,6 @@ class AlignmentGroup(AlignmentGroupBase):
             query_region=alignments[0].query_region,
             meta=meta,
         )
-
-
-# class ComplexAlignmentGroup(AlignmentGroupBase):
-#     """A representation of an alignment in which the query region is the
-#     concatenation of the underlying alignments provided."""
-#
-#     __slots__ = ["query_region", "alignments", "name", "type", "meta"]
-#
-#     def __init__(self, alignments: List[Alignment], group_type: str, meta: dict = None):
-#         # TODO: adjust alignments
-#         query_region = alignments[0].query_region
-#         query_region = query_region.new(
-#             alignments[0].query_region.a, alignments[-1].query_region.b
-#         )
-#         super().__init__(
-#             alignments=alignments,
-#             group_type=group_type,
-#             query_region=query_region,
-#             meta=meta,
-#         )
 
 
 class PCRProductAlignmentGroup(AlignmentGroupBase):

@@ -435,7 +435,6 @@ class AlignmentContainer(Sized):
         return alignments
 
     # TODO: break apart long alignments
-    # TODO: size_lim
     def expand(
         self,
         expand_overlaps=True,
@@ -470,10 +469,7 @@ class AlignmentContainer(Sized):
             )
             self.alignments += expanded
 
-        # TODO: trim min and max products, ignoring primer dimers, which other other properties.
-        #       maybe MoleculeType possess this property?
         # TODO: make a 'set' of all alignments
-        # TODO: tests for min and max products
 
     def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
         group_key = (group.query_region.a, group.query_region.b, group.type)
@@ -492,7 +488,6 @@ class AlignmentContainer(Sized):
         """A hashable representation of an alignment for grouping."""
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
-    # TODO: multi pcr groups???
     def pcr_alignment_groups(self):
         groups = []
         for (a, b, group_type), adict_list in self.multi_grouping_tags.items():

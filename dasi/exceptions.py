@@ -1,5 +1,6 @@
 """DASi exceptions and warnings."""
 from .log import logger
+from dasi.utils.networkx.exceptions import NetworkxUtilsException
 
 
 class DASiWarning(Warning):

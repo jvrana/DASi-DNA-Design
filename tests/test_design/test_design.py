@@ -172,3 +172,7 @@ class TestOutput:
         for result in results.values():
             for a in result.assemblies:
                 print(a.to_csv())
+
+    def test_design_csv_output(self, multi_processed_results):
+        design, results = multi_processed_results
+        print(design.to_csv())

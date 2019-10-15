@@ -64,3 +64,23 @@ def perfect_subject(data):
         and data["start"] == data["length"]
     ):
         return True
+
+
+def prep_df(df):
+    colnames = [
+        "DESIGN_ID",
+        "DESIGN_KEY",
+        "ASSEMBLY_ID",
+        "REACTION_ID",
+        "NAME",
+        "TYPE",
+        "KEY",
+        "ROLE",
+        "REGION",
+        "SEQUENCE",
+        "LENGTH",
+        "META",
+    ]
+    df.columns = colnames
+    df.sort_values(by=["TYPE", "DESIGN_ID", "REACTION_ID", "ASSEMBLY_ID", "ROLE"])
+    return df

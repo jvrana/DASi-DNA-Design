@@ -542,7 +542,8 @@ def test_case2(span_cost):
 
 
 class TestOutput:
-    def test_output(self, span_cost):
+    @pytest.fixture(scope="module")
+    def example_design(self, span_cost):
         goal = random_record(3000)
         make_circular_and_id([goal])
 
@@ -560,7 +561,16 @@ class TestOutput:
         )
         design.compile()
         results = design.optimize()
+        return design, results
+
+    def test_assembly_to_csv(self, example_design):
+        design, results = example_design
         for result in results.values():
             for a in result.assemblies:
                 print(a.to_csv())
                 print()
+
+    def test_design_to_csv(self, example_design):
+        design, results = example_design
+        df = design.to_csv()
+        print(df)

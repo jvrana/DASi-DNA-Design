@@ -1,6 +1,7 @@
 import os
 
 import fire
+from Bio import BiopythonParserWarning
 from pyblast.utils import load_fasta_glob
 from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
@@ -12,15 +13,26 @@ from dasi.log import logger
 
 
 class CLI:
-    def __init__(self, directory=os.getcwd()):
-        self._directory = directory
-        self._primers = os.path.join(self._directory, "primers.fasta")
-        self._templates = os.path.join(self._directory, "templates/*.gb")
-        self._fragments = os.path.join(self._directory, "fragments/*.gb")
-        self._goals = os.path.join(self._directory, "goals/*.gb")
+    def __init__(
+        self,
+        primers="primers.fasta",
+        templates="templates/*.gb",
+        fragments="fragments/*.gb",
+        goals="goals/*.gb",
+    ):
+        self._directory = os.getcwd()
+        self._primers = os.path.join(self._directory, primers)
+        self._templates = os.path.join(self._directory, templates)
+        self._fragments = os.path.join(self._directory, fragments)
+        self._goals = os.path.join(self._directory, goals)
         self._do_save = True
 
     def run(self):
+        import warnings
+
+        warnings.simplefilter(action="ignore", category=RuntimeWarning)
+        warnings.simplefilter(action="ignore", category=BiopythonParserWarning)
+
         primers = make_linear(load_fasta_glob(self._primers))
         templates = make_circular(load_genbank_glob(self._templates))
         fragments = make_linear(load_genbank_glob(self._fragments))
@@ -34,7 +46,10 @@ class CLI:
         )
 
         design.compile()
-        return design.optimize()
+        design.optimize()
+        df, adf = design.to_csv()
+        adf.to_csv("assembly.csv")
+        df.to_csv("out.csv")
 
     def _get_span_cost(self):
         """Saves the span cost as bytes; reloads when called."""

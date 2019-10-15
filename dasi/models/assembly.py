@@ -410,7 +410,7 @@ class Assembly(Iterable):
                 reaction = design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
                     reactions.append(reaction)
-            self._reactions = reactions
+            self._reactions = tuple(reactions)
         return self._reactions
 
     def post_validate(self):
@@ -639,7 +639,7 @@ class Assembly(Iterable):
     ):
         mtype = m.type.name
         group = m.alignment_group
-        if group:
+        if group and group.subject_key:
             key = group.subject_key
             name = self.seqdb[key].name
         else:
@@ -661,13 +661,13 @@ class Assembly(Iterable):
             "REACTION_ID": reaction_id,
         }
         if meta:
-            data.update(deepcopy(meta))
+            data.update({"META": deepcopy(meta)})
         return data
 
     def to_csv(self):
         rows = []
         for i, r in enumerate(self.reactions):
-            for m in r.inputs + r.outputs:
+            for m in r.inputs:
                 if m.type.name == "PRIMER":
                     meta = deepcopy(m.metadata)
                     meta["ANNEAL"] = meta["SEQUENCE"]
@@ -676,7 +676,28 @@ class Assembly(Iterable):
                 else:
                     meta = None
                 rows.append(self._csv_row(m, "input", i, meta))
-        return pd.DataFrame(rows)
+            for m in r.outputs:
+                rows.append(self._csv_row(m, "output", i))
+        colnames = [
+            "DESIGN_ID",
+            "DESIGN_KEY",
+            "ASSEMBLY_ID",
+            "REACTION_ID",
+            "NAME",
+            "TYPE",
+            "KEY",
+            "ROLE",
+            "REGION",
+            "SEQUENCE",
+            "LENGTH",
+            "META",
+        ]
+        df = pd.DataFrame(rows, columns=colnames)
+        df.sort_values(
+            by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
+            inplace=True,
+        )
+        return df
 
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0

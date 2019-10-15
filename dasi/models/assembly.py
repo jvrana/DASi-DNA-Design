@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Iterable
 from collections import namedtuple
+from copy import deepcopy
 from itertools import groupby
 from itertools import zip_longest
 from typing import Any
@@ -426,7 +427,6 @@ class Assembly(Iterable):
 
     def _head(self):
         """Get the 'first' 'A' node."""
-        print(list(self.graph.nodes))
         x = sorted(list(self.graph.nodes), key=lambda n: (n.type == "B", n.index))
         return x[0]
 
@@ -633,6 +633,50 @@ class Assembly(Iterable):
 
         df = pd.DataFrame(rows)
         return df
+
+    def _csv_row(
+        self, m: Molecule, role: str, reaction_id: Union[str, int], meta: dict = None
+    ):
+        mtype = m.type.name
+        group = m.alignment_group
+        if group:
+            key = group.subject_key
+            name = self.seqdb[key].name
+        else:
+            key = None
+            name = None
+        if m.query_region:
+            q = (m.query_region.a, m.query_region.b, m.query_region.context_length)
+        else:
+            q = None
+        length = len(m.sequence)
+        data = {
+            "NAME": name,
+            "LENGTH": length,
+            "SEQUENCE": m.sequence,
+            "TYPE": mtype,
+            "KEY": key,
+            "REGION": q,
+            "ROLE": role,
+            "REACTION_ID": reaction_id,
+        }
+        if meta:
+            data.update(deepcopy(meta))
+        return data
+
+    def to_csv(self):
+        rows = []
+        for i, r in enumerate(self.reactions):
+            for m in r.inputs + r.outputs:
+                if m.type.name == "PRIMER":
+                    meta = deepcopy(m.metadata)
+                    meta["ANNEAL"] = meta["SEQUENCE"]
+                    del meta["SEQUENCE"]
+                    meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
+                else:
+                    meta = None
+                rows.append(self._csv_row(m, "input", i, meta))
+        return pd.DataFrame(rows)
 
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0

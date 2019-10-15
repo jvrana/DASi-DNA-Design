@@ -17,6 +17,18 @@ from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 
 
+def make_linear_and_id(rlist):
+    make_linear(rlist)
+    for r in rlist:
+        r.id = str(uuid4())
+
+
+def make_circular_and_id(rlist):
+    make_circular(rlist)
+    for r in rlist:
+        r.id = str(uuid4())
+
+
 def random_seq(n_bases):
     bases = "AGTC"
     seq = ""
@@ -140,7 +152,7 @@ def check_design_result(
 
 def test_blast_has_same_results(span_cost):
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = random_record(100) + goal[1000:2000] + random_record(100)
     p1 = goal[970:1030]
@@ -148,7 +160,7 @@ def test_blast_has_same_results(span_cost):
     r2 = goal[2000:] + goal[:1000]
     p3 = goal[1970:2030]
 
-    make_linear([r1, p1, p2, r2, p3])
+    make_linear_and_id([r1, p1, p2, r2, p3])
 
     size_of_groups = []
     for i in range(20):
@@ -171,12 +183,12 @@ def test_design_with_no_gaps(span_cost):
     """Fragments with overlaps."""
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = SeqRecord(Seq("NNNNNN")) + goal[:1000] + SeqRecord(Seq("NNNNNN"))
     r2 = goal[1000:2000]
     r3 = goal[2000:]
-    make_linear([r1, r2, r3])
+    make_linear_and_id([r1, r2, r3])
 
     design = Design(span_cost)
     design.add_materials(
@@ -199,12 +211,12 @@ def test_design_with_overlaps(span_cost):
     """Fragments with overlaps."""
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[-40:] + goal[:1000]
     r2 = goal[950:2000]
     r3 = goal[1950:]
-    make_linear([r1, r2, r3])
+    make_linear_and_id([r1, r2, r3])
 
     design = Design(span_cost)
     design.add_materials(
@@ -227,12 +239,12 @@ def test_design_with_overlaps2(span_cost):
     """Fragments with overlaps."""
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[-40:] + goal[:1001]
     r2 = goal[950:2000]
     r3 = goal[1950:]
-    make_linear([r1, r2, r3])
+    make_linear_and_id([r1, r2, r3])
 
     design = Design(span_cost)
     design.add_materials(
@@ -255,14 +267,14 @@ def test_design_with_overlaps_with_templates(span_cost):
     """Fragments with overlaps."""
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[-40:] + goal[:1000]
     r2 = goal[970:2000]
     r3 = goal[1950:]
     p1 = goal[-40:]
 
-    make_linear([r1, r2, r3, p1])
+    make_linear_and_id([r1, r2, r3, p1])
 
     design = Design(span_cost)
     design.add_materials(
@@ -285,13 +297,13 @@ def test_design_task_with_gaps(span_cost):
     """Fragments with overlaps."""
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[:950]
     r2 = goal[1000:2000]
     r3 = goal[2050:]
 
-    make_linear([r1, r2, r3])
+    make_linear_and_id([r1, r2, r3])
 
     design = Design(span_cost)
     design.add_materials(
@@ -314,7 +326,7 @@ def test_design_task_with_gaps(span_cost):
 def test_design_with_overhang_primers(repeat, span_cost):
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = random_record(100) + goal[1000:2000] + random_record(100)
     p1 = goal[970:1030]
@@ -322,7 +334,7 @@ def test_design_with_overhang_primers(repeat, span_cost):
     r2 = goal[2000:] + goal[:1000]
     p3 = goal[1970:2030]
 
-    make_linear([r1, p1, p2, r2, p3])
+    make_linear_and_id([r1, p1, p2, r2, p3])
 
     design = Design(span_cost)
     design.add_materials(
@@ -341,7 +353,7 @@ def test_design_with_overhang_primers(repeat, span_cost):
 
 def test_amplify_fragment(span_cost):
     goal = random_record(4000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     f1 = goal[500:3000]
     f2 = goal[1000:4000]
@@ -350,12 +362,12 @@ def test_amplify_fragment(span_cost):
 
 def test_requires_synthesis(span_cost):
     goal = random_record(4000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[1000:2000]
     r2 = goal[200:500]
 
-    make_linear([r1, r2])
+    make_linear_and_id([r1, r2])
 
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
@@ -372,12 +384,12 @@ def test_requires_synthesis(span_cost):
 
 def test_requires_synthesis_with_template_over_origin(span_cost):
     goal = random_record(5000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[1000:2000]
     r2 = goal[3500:] + goal[:500]
 
-    make_linear([r1, r2])
+    make_linear_and_id([r1, r2])
 
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
@@ -394,12 +406,12 @@ def test_requires_synthesis_with_template_over_origin(span_cost):
 
 def test_very_long_synthesizable_region(span_cost):
     goal = random_record(10000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[4177:4255]
     r2 = goal[4188:4225]
 
-    make_linear([r1])
+    make_linear_and_id([r1])
 
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
@@ -417,11 +429,11 @@ def test_very_long_synthesizable_region(span_cost):
 
 def test_single_fragment(span_cost):
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[177:2255]
 
-    make_linear([r1])
+    make_linear_and_id([r1])
 
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
@@ -433,14 +445,14 @@ def test_single_fragment(span_cost):
 
 def test_fully_overlapped(span_cost):
     goal = random_record(2000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[1100:1300]
     p1 = goal[1177 : 1177 + 30]
     p2 = goal[1188 : 1188 + 30]
     p3 = goal[1225 - 30 : 1225].reverse_complement()
 
-    make_linear([r1, p1, p2, p3])
+    make_linear_and_id([r1, p1, p2, p3])
 
     design = Design(span_cost)
     design.add_materials(
@@ -460,12 +472,12 @@ def test_case(span_cost):
     synthesize the rest of the plasmid.
     """
     goal = random_record(2000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     r1 = goal[1188:1230]
     r2 = goal[1238:1282]
 
-    make_linear([r1, r2])
+    make_linear_and_id([r1, r2])
 
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1, r2], queries=[goal], fragments=[])
@@ -478,12 +490,12 @@ def test_case(span_cost):
 def test_a_reverse_pcr_fragment(span_cost):
 
     goal = random_record(3000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     t1 = goal[1000:2500].reverse_complement()
     p1 = goal[2500 - 20 : 2510].reverse_complement()
 
-    make_linear([p1, t1])
+    make_linear_and_id([p1, t1])
 
     design = Design(span_cost)
     design.add_materials(primers=[p1], templates=[t1], queries=[goal], fragments=[])
@@ -496,7 +508,7 @@ def test_a_reverse_pcr_fragment(span_cost):
 def test_case2(span_cost):
 
     goal = random_record(5000)
-    make_circular([goal])
+    make_circular_and_id([goal])
 
     p1 = goal[1096 : 1096 + 20]
     p2 = goal[694 - 20 : 694].reverse_complement()
@@ -505,8 +517,8 @@ def test_case2(span_cost):
 
     t1 = random_seq(100) + goal[1000:] + goal[:700] + random_seq(100)
 
-    make_linear([p1, p2, p3])
-    make_circular([t1])
+    make_linear_and_id([p1, p2, p3])
+    make_circular_and_id([t1])
 
     design = Design(span_cost)
 
@@ -527,3 +539,28 @@ def test_case2(span_cost):
         for n1, n2, edata in a.edges():
             print(n1, n2)
         # print(a.to_df())
+
+
+class TestOutput:
+    def test_output(self, span_cost):
+        goal = random_record(3000)
+        make_circular_and_id([goal])
+
+        r1 = random_record(100) + goal[1000:2000] + random_record(100)
+        p1 = goal[970:1030]
+        p2 = goal[1970:2030].reverse_complement()
+        r2 = goal[2000:] + goal[:1000]
+        p3 = goal[1970:2030]
+
+        make_linear_and_id([r1, p1, p2, r2, p3])
+
+        design = Design(span_cost)
+        design.add_materials(
+            primers=[p1, p2, p3], templates=[r1, r2], queries=[goal], fragments=[]
+        )
+        design.compile()
+        results = design.optimize()
+        for result in results.values():
+            for a in result.assemblies:
+                print(a.to_csv())
+                print()

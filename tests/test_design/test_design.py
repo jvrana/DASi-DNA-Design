@@ -163,3 +163,12 @@ class TestReactions:
         for result in results.values():
             for a in result.assemblies:
                 a.reactions
+
+
+class TestOutput:
+    def test_csv_output(self, multi_processed_results):
+        design, results = multi_processed_results
+
+        for result in results.values():
+            for a in result.assemblies:
+                print(a.to_csv())

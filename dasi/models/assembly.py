@@ -16,6 +16,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import primer3plus
+from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
@@ -344,7 +345,7 @@ def design_edge(
         for x in ["LEFT", "RIGHT"]:
             primer_seq = pair[x]["OVERHANG"] + pair[x]["SEQUENCE"]
             primer_group = pair[x]["GROUP"]
-            primer_record = SeqRecord(Seq(primer_seq))
+            primer_record = SeqRecord(Seq(primer_seq, generic_dna))
             primer = Molecule(
                 MoleculeType.types[Constants.PRIMER],
                 primer_group,
@@ -655,7 +656,7 @@ class Assembly(Iterable):
         data = {
             "NAME": name,
             "LENGTH": length,
-            "SEQUENCE": m.sequence,
+            "SEQUENCE": str(m.sequence.seq),
             "TYPE": mtype,
             "KEY": key,
             "REGION": q,
@@ -666,20 +667,25 @@ class Assembly(Iterable):
             data.update({"META": deepcopy(meta)})
         return data
 
-    def to_csv(self):
-        rows = []
+    @property
+    def molecules(self):
         for i, r in enumerate(self.reactions):
             for m in r.inputs:
-                if m.type.name == "PRIMER":
-                    meta = deepcopy(m.metadata)
-                    meta["ANNEAL"] = meta["SEQUENCE"]
-                    del meta["SEQUENCE"]
-                    meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
-                else:
-                    meta = None
-                rows.append(self._csv_row(m, "input", i, meta))
+                yield (i, "input", m)
             for m in r.outputs:
-                rows.append(self._csv_row(m, "output", i))
+                yield (i, "output", m)
+
+    def to_csv(self):
+        rows = []
+        for i, role, m in self.molecules:
+            if m.type.name == "PRIMER":
+                meta = deepcopy(m.metadata)
+                meta["ANNEAL"] = meta["SEQUENCE"]
+                del meta["SEQUENCE"]
+                meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
+            else:
+                meta = None
+            rows.append(self._csv_row(m, role, i, meta))
         colnames = [
             "DESIGN_ID",
             "DESIGN_KEY",

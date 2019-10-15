@@ -514,7 +514,7 @@ def test_ranges_ignore_wraps():
 
 
 class TestGetSlice:
-    def test_get_slice_str():
+    def test_get_slice_str(self):
         span = Span(8, 22, 10, cyclic=True)
         x = "abcdefghijklmnopqrstuv"
         y = span.get_slice(x)
@@ -537,4 +537,6 @@ class TestGetSlice:
         span = Span(8, 22, len(seq), cyclic=True)
 
         seq2 = span.get_slice(seq)
+        assert isinstance(seq2, SeqRecord)
+        assert isinstance(seq2.seq, Seq)
         print(seq2)

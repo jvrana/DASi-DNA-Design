@@ -2,6 +2,7 @@ import os
 
 import fire
 from Bio import BiopythonParserWarning
+from Bio import SeqIO
 from pyblast.utils import load_fasta_glob
 from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
@@ -52,6 +53,15 @@ class CLI:
         df, adf = design.to_df()
         adf.to_csv(os.path.join(self._directory, "assembly.csv"))
         df.to_csv(os.path.join(self._directory, "out.csv"))
+
+        records = []
+        for result in design.results.values():
+            if result.assemblies:
+                a = result.assemblies[0]
+                for i, role, m in a.molecules:
+                    records.append(m.sequence)
+
+        SeqIO.write(records, os.path.join(self._directory, "sequences.gb"), "genbank")
 
     def _get_span_cost(self):
         """Saves the span cost as bytes; reloads when called."""

@@ -519,7 +519,7 @@ class Span(Container, Iterable, Sized):
     def get_slice(
         self,
         x: List,
-        infer_type: bool = True,
+        infer_type: bool = False,
         as_type: Any = None,
         summary_func: Callable = None,
         reduce_op: Callable = operator.add,

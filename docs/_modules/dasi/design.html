@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <meta charset='utf-8'>
@@ -57,20 +56,29 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.design_algorithms.html">dasi.design.design_algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.graph_builder.html">dasi.design.graph_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.optimize.html">dasi.design.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.plotter.html">dasi.design.plotter</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.utils.networkx.html">dasi.utils.networkx</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.utils.networkx.html#networkx-utilities-dasi-utils-networkx">NetworkX Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code>)</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
 </ul>
 </ul>
 </li>
@@ -107,7 +115,23 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.design</h1><div class="highlight"><pre>
-<span></span>&quot;&quot;&quot;Primer and synthesis design.&quot;&quot;&quot;
+<span></span>r&quot;&quot;&quot;
+Design (:mod:`dasi.design`)
+=============================
+
+.. currentmodule:: dasi.design
+
+This module provide DNA assembly functionality for DASi.
+
+.. autosummary::
+    :toctree: generated/
+
+    design_algorithms
+    graph_builder
+    optimize
+    plotter
+&quot;&quot;&quot;
+
 from __future__ import annotations
 
 import bisect
@@ -118,6 +142,7 @@ from typing import List
 from typing import Tuple
 
 import networkx as nx
+import pandas as pd
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
@@ -132,18 +157,19 @@ from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiInvalidMolecularAssembly
+from dasi.exceptions import DASiWarning
 from dasi.log import logger
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
-
+from dasi.utils import prep_df
 
 BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;reward&quot;: 1, &quot;penalty&quot;: -5}
 
 
-<div class="viewcode-block" id="DesignResult"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult">[docs]</a>class DesignResult(Iterable):
+<div class="viewcode-block" id="DesignResult"><a class="viewcode-back" href="../../design.html#dasi.design.DesignResult">[docs]</a>class DesignResult(Iterable):
     &quot;&quot;&quot;DesignResult container.
 
     Maintains a list of top assemblies.
@@ -182,7 +208,7 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
             do_raise=False,
         )
 
-<div class="viewcode-block" id="DesignResult.add_assembly"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assembly">[docs]</a>    def add_assembly(
+<div class="viewcode-block" id="DesignResult.add_assembly"><a class="viewcode-back" href="../../design.html#dasi.design.DesignResult.add_assembly">[docs]</a>    def add_assembly(
         self,
         path: List[AssemblyNode],
         ignore_invalid: bool = False,
@@ -212,7 +238,7 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
         self._keys.insert(i, k)
         return assembly</div>
 
-<div class="viewcode-block" id="DesignResult.add_assemblies"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assemblies">[docs]</a>    def add_assemblies(
+<div class="viewcode-block" id="DesignResult.add_assemblies"><a class="viewcode-back" href="../../design.html#dasi.design.DesignResult.add_assemblies">[docs]</a>    def add_assemblies(
         self,
         paths: List[List[AssemblyNode]],
         ignore_invalid: bool = False,
@@ -284,7 +310,7 @@ class FakePool:
         return [func(arg) for arg in args]
 
 
-<div class="viewcode-block" id="Design"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design">[docs]</a>class Design:
+<div class="viewcode-block" id="Design"><a class="viewcode-back" href="../../design.html#dasi.design.Design">[docs]</a>class Design:
     &quot;&quot;&quot;Design class that returns optimal assemblies from a set of materials.&quot;&quot;&quot;
 
     PRIMERS = &quot;primers&quot;
@@ -312,7 +338,7 @@ class FakePool:
         self._seqdb = seqdb  #: Sequence dict registry
         self.span_cost = span_cost  #: span cost df
         self.graphs = {}  #: Dict[str, nx.DiGraph]
-        self.results = {}  #: Dict[str, DesignResult]
+        self._results = {}  #: Dict[str, DesignResult]
         self.template_results = []
         self.fragment_results = []
         self.primer_results = []
@@ -322,6 +348,10 @@ class FakePool:
     @property
     def seqdb(self) -&gt; Dict[str, SeqRecord]:
         return self._seqdb
+
+    @property
+    def results(self):
+        return dict(self._results)
 
     def add_materials(
         self,
@@ -338,33 +368,33 @@ class FakePool:
         self.add_queries(queries)
         self.add_fragments(fragments)
 
-<div class="viewcode-block" id="Design.add_primers"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.add_primers">[docs]</a>    def add_primers(self, primers: List[SeqRecord]):
+<div class="viewcode-block" id="Design.add_primers"><a class="viewcode-back" href="../../design.html#dasi.design.Design.add_primers">[docs]</a>    def add_primers(self, primers: List[SeqRecord]):
         &quot;&quot;&quot;Add primer sequences to materials list.&quot;&quot;&quot;
         self.blast_factory.add_records(primers, self.PRIMERS)
         self.logger.info(&quot;Added {} primers&quot;.format(len(primers)))</div>
 
-<div class="viewcode-block" id="Design.add_templates"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.add_templates">[docs]</a>    def add_templates(self, templates: List[SeqRecord]):
+<div class="viewcode-block" id="Design.add_templates"><a class="viewcode-back" href="../../design.html#dasi.design.Design.add_templates">[docs]</a>    def add_templates(self, templates: List[SeqRecord]):
         &quot;&quot;&quot;Add template sequences to materials list.&quot;&quot;&quot;
         self.blast_factory.add_records(templates, self.TEMPLATES)
         self.logger.info(&quot;Added {} templates&quot;.format(len(templates)))</div>
 
-<div class="viewcode-block" id="Design.add_queries"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.add_queries">[docs]</a>    def add_queries(self, queries: List[SeqRecord]):
+<div class="viewcode-block" id="Design.add_queries"><a class="viewcode-back" href="../../design.html#dasi.design.Design.add_queries">[docs]</a>    def add_queries(self, queries: List[SeqRecord]):
         &quot;&quot;&quot;Add goal/query sequences to materials list.&quot;&quot;&quot;
         self.blast_factory.add_records(queries, self.QUERIES)
         self.logger.info(&quot;Added {} queries&quot;.format(len(queries)))</div>
 
-<div class="viewcode-block" id="Design.add_fragments"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.add_fragments">[docs]</a>    def add_fragments(self, fragments: List[SeqRecord]):
+<div class="viewcode-block" id="Design.add_fragments"><a class="viewcode-back" href="../../design.html#dasi.design.Design.add_fragments">[docs]</a>    def add_fragments(self, fragments: List[SeqRecord]):
         &quot;&quot;&quot;Add fragment sequences to materials list.&quot;&quot;&quot;
         self.blast_factory.add_records(fragments, self.FRAGMENTS)
         self.logger.info(&quot;Added {} queries&quot;.format(len(fragments)))</div>
         # self.blast_factory.add_records(fragments, self.TEMPLATES)
 
-<div class="viewcode-block" id="Design.filter_linear_records"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.filter_linear_records">[docs]</a>    @classmethod
+<div class="viewcode-block" id="Design.filter_linear_records"><a class="viewcode-back" href="../../design.html#dasi.design.Design.filter_linear_records">[docs]</a>    @classmethod
     def filter_linear_records(cls, records: List[SeqRecord]) -&gt; List[SeqRecord]:
         &quot;&quot;&quot;Return only linear records.&quot;&quot;&quot;
         return [r for r in records if not is_circular(r)]</div>
 
-<div class="viewcode-block" id="Design.filter_perfect_subject"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.filter_perfect_subject">[docs]</a>    @classmethod
+<div class="viewcode-block" id="Design.filter_perfect_subject"><a class="viewcode-back" href="../../design.html#dasi.design.Design.filter_perfect_subject">[docs]</a>    @classmethod
     def filter_perfect_subject(cls, results: dict) -&gt; List[dict]:
         &quot;&quot;&quot;return only results whose subject is 100% aligned to query.&quot;&quot;&quot;
         return [r for r in results if perfect_subject(r[&quot;subject&quot;])]</div>
@@ -417,11 +447,11 @@ class FakePool:
         &quot;&quot;&quot;Iterable of alignment containers in this design.&quot;&quot;&quot;
         return self.container_factory.containers()
 
-<div class="viewcode-block" id="Design.container_list"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.container_list">[docs]</a>    def container_list(self) -&gt; List[AlignmentContainer]:
+<div class="viewcode-block" id="Design.container_list"><a class="viewcode-back" href="../../design.html#dasi.design.Design.container_list">[docs]</a>    def container_list(self) -&gt; List[AlignmentContainer]:
         &quot;&quot;&quot;List of alignment containers in this design.&quot;&quot;&quot;
         return list(self.container_factory.containers().values())</div>
 
-<div class="viewcode-block" id="Design.query_keys"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.query_keys">[docs]</a>    def query_keys(self) -&gt; List[str]:
+<div class="viewcode-block" id="Design.query_keys"><a class="viewcode-back" href="../../design.html#dasi.design.Design.query_keys">[docs]</a>    def query_keys(self) -&gt; List[str]:
         &quot;&quot;&quot;List of query keys in this design.&quot;&quot;&quot;
         return list(self.container_factory.containers())</div>
 
@@ -438,7 +468,7 @@ class FakePool:
         else:
             self._assemble_graphs_without_threads()
 
-<div class="viewcode-block" id="Design._assemble_graphs_without_threads"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design._assemble_graphs_without_threads">[docs]</a>    def _assemble_graphs_without_threads(self):
+<div class="viewcode-block" id="Design._assemble_graphs_without_threads"><a class="viewcode-back" href="../../design.html#dasi.design.Design._assemble_graphs_without_threads">[docs]</a>    def _assemble_graphs_without_threads(self):
         &quot;&quot;&quot;Assemble all assembly graphs for all queries in this design.&quot;&quot;&quot;
         for query_key, container in self.logger.tqdm(
             self.container_factory.containers().items(),
@@ -458,9 +488,9 @@ class FakePool:
         for qk, g, c in zip(query_keys, graphs, containers):
             self.graphs[qk] = g
 
-<div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design.compile">[docs]</a>    def compile(self, n_jobs=None):
+<div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../design.html#dasi.design.Design.compile">[docs]</a>    def compile(self, n_jobs=None):
         &quot;&quot;&quot;Compile materials to assembly graph.&quot;&quot;&quot;
-        self.results = {}
+        self._results = {}
         with self.logger.timeit(&quot;DEBUG&quot;, &quot;running blast&quot;):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)</div>
@@ -510,7 +540,7 @@ class FakePool:
             self._results = self._optimize_without_threads(n_paths)
         return self._results
 
-<div class="viewcode-block" id="Design._optimize_without_threads"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design._optimize_without_threads">[docs]</a>    def _optimize_without_threads(self, n_paths) -&gt; Dict[str, DesignResult]:
+<div class="viewcode-block" id="Design._optimize_without_threads"><a class="viewcode-back" href="../../design.html#dasi.design.Design._optimize_without_threads">[docs]</a>    def _optimize_without_threads(self, n_paths) -&gt; Dict[str, DesignResult]:
         &quot;&quot;&quot;Finds the optimal paths for each query in the design.&quot;&quot;&quot;
         results_dict = {}
         for query_key, graph, query_length, cyclic, result in self.logger.tqdm(
@@ -562,10 +592,56 @@ class FakePool:
             query = container.seqdb[query_key]
             cyclic = is_circular(query)
             result = DesignResult(container=container, query_key=query_key, graph=graph)
-            yield query_key, graph, len(query), cyclic, result</div>
+            yield query_key, graph, len(query), cyclic, result
+
+    # TODO: order keys
+    def to_df(self, assembly_index=0):
+        dfs = []
+        adfs = []
+        for i, (qk, result) in enumerate(self.results.items()):
+            if result.assemblies:
+                a = result.assemblies[assembly_index]
+                df = a.to_csv()
+                df[&quot;DESIGN_ID&quot;] = i
+                df[&quot;DESIGN_KEY&quot;] = qk
+                df[&quot;ASSEMBLY_ID&quot;] = assembly_index
+                dfs.append(df)
+
+                adf = a.to_df()
+                adf[&quot;DESIGN_ID&quot;] = i
+                adf[&quot;DESIGN_KEY&quot;] = qk
+                adf[&quot;ASSEMBLY_ID&quot;] = assembly_index
+                adfs.append(adf)
+            else:
+                msg = &quot;Query {} {} yielded no assembly&quot;.format(self.seqdb[qk].name, i)
+                self.logger.error(msg)
+
+        df = pd.concat(dfs)
+        colnames = [
+            &quot;DESIGN_ID&quot;,
+            &quot;DESIGN_KEY&quot;,
+            &quot;ASSEMBLY_ID&quot;,
+            &quot;REACTION_ID&quot;,
+            &quot;NAME&quot;,
+            &quot;TYPE&quot;,
+            &quot;KEY&quot;,
+            &quot;ROLE&quot;,
+            &quot;REGION&quot;,
+            &quot;SEQUENCE&quot;,
+            &quot;LENGTH&quot;,
+            &quot;META&quot;,
+        ]
+        df.columns = colnames
+        df.sort_values(
+            by=[&quot;TYPE&quot;, &quot;DESIGN_ID&quot;, &quot;ASSEMBLY_ID&quot;, &quot;REACTION_ID&quot;, &quot;NAME&quot;, &quot;ROLE&quot;],
+            inplace=True,
+        )
+
+        adf = pd.concat(adfs)
+        return df, adf</div>
 
 
-<div class="viewcode-block" id="LibraryDesign"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.LibraryDesign">[docs]</a>class LibraryDesign(Design):
+<div class="viewcode-block" id="LibraryDesign"><a class="viewcode-back" href="../../design.html#dasi.design.LibraryDesign">[docs]</a>class LibraryDesign(Design):
     &quot;&quot;&quot;Design class for producing assemblies for libraries.&quot;&quot;&quot;
 
     DEFAULT_N_JOBS = 10
@@ -586,7 +662,7 @@ class FakePool:
     #     return repeats
 
     # TODO: why?
-<div class="viewcode-block" id="LibraryDesign._get_iter_non_repeats"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.LibraryDesign._get_iter_non_repeats">[docs]</a>    @staticmethod
+<div class="viewcode-block" id="LibraryDesign._get_iter_non_repeats"><a class="viewcode-back" href="../../design.html#dasi.design.LibraryDesign._get_iter_non_repeats">[docs]</a>    @staticmethod
     def _get_iter_non_repeats(alignments: List[Alignment]) -&gt; Tuple[str, int, int]:
         &quot;&quot;&quot;Return repeat regions of alignments. These are alignments that align
         to themselves.
@@ -600,7 +676,7 @@ class FakePool:
             if qk == sk:
                 yield (qk, align.query_region.a, align.query_region.b)</div>
 
-<div class="viewcode-block" id="LibraryDesign._share_query_blast"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.LibraryDesign._share_query_blast">[docs]</a>    def _share_query_blast(self):
+<div class="viewcode-block" id="LibraryDesign._share_query_blast"><a class="viewcode-back" href="../../design.html#dasi.design.LibraryDesign._share_query_blast">[docs]</a>    def _share_query_blast(self):
         &quot;&quot;&quot;Find and use shared fragments across queries.
 
         :return:
@@ -686,7 +762,7 @@ class FakePool:
             # repeats += list(self._get_iter_non_repeats(alignments))
         self.repeats = repeats</div>
 
-<div class="viewcode-block" id="LibraryDesign.compile_library"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.LibraryDesign.compile_library">[docs]</a>    def compile_library(self, n_jobs=None):
+<div class="viewcode-block" id="LibraryDesign.compile_library"><a class="viewcode-back" href="../../design.html#dasi.design.LibraryDesign.compile_library">[docs]</a>    def compile_library(self, n_jobs=None):
         &quot;&quot;&quot;Compile the materials list into assembly graphs.&quot;&quot;&quot;
         n_jobs = n_jobs or self.DEFAULT_N_JOBS
         self.graphs = {}
@@ -694,7 +770,7 @@ class FakePool:
         self._share_query_blast()
         self.assemble_graphs(n_jobs=n_jobs)</div>
 
-<div class="viewcode-block" id="LibraryDesign.optimize_library"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.LibraryDesign.optimize_library">[docs]</a>    def optimize_library(self):
+<div class="viewcode-block" id="LibraryDesign.optimize_library"><a class="viewcode-back" href="../../design.html#dasi.design.LibraryDesign.optimize_library">[docs]</a>    def optimize_library(self):
         &quot;&quot;&quot;Optimize the assembly graph for library assembly.&quot;&quot;&quot;
         raise NotImplementedError</div></div>
 </pre></div>

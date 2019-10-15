@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.optimize &#8212; dasi 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.design_algorithms.html">dasi.design.design_algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.graph_builder.html">dasi.design.graph_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.optimize.html">dasi.design.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.plotter.html">dasi.design.plotter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.utils.networkx.html">dasi.utils.networkx</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.html#networkx-utilities-dasi-utils-networkx">NetworkX Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design.optimize</h1><div class="highlight"><pre>
+<span></span>from collections import OrderedDict
+from typing import List
+from typing import Tuple
+
+import networkx as nx
+import numpy as np
+
+from dasi.exceptions import DasiDesignException
+from dasi.exceptions import DASiWarning
+from dasi.utils import sort_with_keys
+from dasi.utils.networkx import sympy_floyd_warshall
+from dasi.utils.networkx import sympy_multipoint_shortest_path
+from dasi.utils.networkx.algorithms import accumulate_helper
+from dasi.utils.networkx.algorithms import str_to_symbols_and_func
+from dasi.utils.networkx.utils import replace_nan_with_inf
+
+# definition of how to compute path length
+# c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes &#39;material&#39;
+# and &#39;efficiency&#39; for a given path
+path_length_config = {
+    &quot;f&quot;: &quot;material / efficiency&quot;,
+    &quot;accumulators&quot;: {&quot;efficiency&quot;: &quot;product&quot;},
+}
+
+
+<div class="viewcode-block" id="_check_paths"><a class="viewcode-back" href="../../../generated/dasi.design.optimize.html#dasi.design.optimize._check_paths">[docs]</a>def _check_paths(paths: List[List[tuple]]) -&gt; None:
+    &quot;&quot;&quot;Validates a path to check for duplicate nodes.
+
+    :param paths:
+    :return:
+    &quot;&quot;&quot;
+    invalid_paths = []
+    for path in paths:
+        lastseen = path[0][2]
+        for p in path[1:]:
+            if p[2] == lastseen:
+                invalid_paths.append(path)
+                break
+            lastseen = p[2]
+    if invalid_paths:
+        raise DasiDesignException(
+            &quot;There are {} invalid paths:\n{}\n...{} more&quot;.format(
+                len(invalid_paths),
+                &quot;\n&quot;.join([str(x) for x in invalid_paths[:5]]),
+                max(len(invalid_paths) - 5, 0),
+            )
+        )</div>
+
+
+def argmin(w):
+    index = np.argsort(w.ravel())
+    return np.unravel_index(index, w.shape)
+
+
+def fill_diag(w, fillval):
+    iden = np.identity(len(w))
+    w[np.where(iden == 1)] = fillval
+    return w
+
+
+def fill_diag_inf(w):
+    return fill_diag(w, np.inf)
+
+
+<div class="viewcode-block" id="index_slice"><a class="viewcode-back" href="../../../generated/dasi.design.optimize.html#dasi.design.optimize.index_slice">[docs]</a>def index_slice(indices, arr):
+    &quot;&quot;&quot;From tuple of incides, return zipped items.&quot;&quot;&quot;
+    unzipped = []
+    for i in indices:
+        unzipped.append([arr[_i] for _i in i])
+    return list(zip(*unzipped))</div>
+
+
+def only_ab(w, nodelist):
+    b_array = np.array([n.type == &quot;B&quot; for n in nodelist]).reshape(1, -1)
+    w[np.where(~np.logical_xor(b_array, b_array.T))] = np.inf
+    return w
+
+
+def only_long(w, query_length, nodelist):
+    index = np.array([n.index for n in nodelist]).reshape(1, -1)
+    length = index - index.T
+    w[np.where(length &lt; query_length)] = np.inf
+    return w
+
+
+<div class="viewcode-block" id="_multinode_to_shortest_path"><a class="viewcode-back" href="../../../generated/dasi.design.optimize.html#dasi.design.optimize._multinode_to_shortest_path">[docs]</a>def _multinode_to_shortest_path(
+    graph, nodes, cyclic, return_length=False
+) -&gt; List[tuple]:
+    &quot;&quot;&quot;Estimate the shortest path that touches the specified nodes.&quot;&quot;&quot;
+    path_length, path = sympy_multipoint_shortest_path(
+        graph,
+        nodes,
+        f=path_length_config[&quot;f&quot;],
+        accumulators=path_length_config[&quot;accumulators&quot;],
+        cyclic=cyclic,
+    )
+    if return_length:
+        return path, path_length
+    return path</div>
+
+
+<div class="viewcode-block" id="_nodes_to_fullpaths"><a class="viewcode-back" href="../../../generated/dasi.design.optimize.html#dasi.design.optimize._nodes_to_fullpaths">[docs]</a>def _nodes_to_fullpaths(
+    graph: nx.DiGraph, cycle_endpoints: Tuple, cyclic: bool, n_paths=None
+) -&gt; List[List[Tuple]]:
+    &quot;&quot;&quot;Recover full paths from cycle endpoints.
+
+    :param graph:
+    :param cycle_endpoints:
+    :param n_paths:
+    :return:
+    &quot;&quot;&quot;
+    unique_cyclic_paths = []
+    for nodes in cycle_endpoints:
+        if n_paths is not None and len(unique_cyclic_paths) &gt;= n_paths:
+            break
+        path = _multinode_to_shortest_path(graph, nodes, cyclic)
+        if path not in unique_cyclic_paths:
+            unique_cyclic_paths.append(path)
+    return unique_cyclic_paths</div>
+
+
+def optimize_graph(
+    graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
+) -&gt; Tuple[List[List[tuple]], List[float]]:
+    nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
+    weight_matrix, matrix_dict, ori_matrix_dict = sympy_floyd_warshall(
+        graph,
+        f=path_length_config[&quot;f&quot;],
+        accumulators=path_length_config[&quot;accumulators&quot;],
+        nodelist=nodelist,
+        dtype=np.float64,
+        return_all=True,
+    )
+
+    if cyclic:
+        # add the closing edge
+        closed_matrix_dict = OrderedDict({k: v.copy() for k, v in matrix_dict.items()})
+
+        # # fold at length
+        # fold_at_length = []
+        # for n in nodelist:
+        #     if n.index &gt; query_length:
+        #         n = AssemblyNode(n.index - query_length, *list(n)[1:])
+        #     fold_at_length.append(node_to_i[n])
+
+        for k, v in closed_matrix_dict.items():
+            m1 = matrix_dict[k].copy()
+            m1 = only_long(m1, query_length, nodelist)
+
+            # TODO: do we need to fold this?
+            m2 = ori_matrix_dict[k][:, :].T
+            # m2 = ori_matrix_dict[k][:, fold_at_length].T
+            closed_matrix_dict[k] = accumulate_helper(
+                path_length_config[&quot;accumulators&quot;].get(k, &quot;sum&quot;), m1, m2
+            )
+
+        symbols, func = str_to_symbols_and_func(path_length_config[&quot;f&quot;])
+        closed_wmatrix = func(*[np.asarray(m) for m in closed_matrix_dict.values()])
+        closed_wmatrix = replace_nan_with_inf(closed_wmatrix)
+
+        fill_diag_inf(closed_wmatrix)
+        only_ab(closed_wmatrix, nodelist)
+        weight_matrix = closed_wmatrix
+    else:
+        raise NotImplementedError(&quot;Linear assemblies not yet implemented.&quot;)
+
+    costs = weight_matrix.ravel().copy()
+    costs.sort()
+    nodes = index_slice(argmin(weight_matrix), nodelist)
+
+    nodes_and_costs = list(zip(nodes, costs))
+    nodes_and_costs = [x for x in nodes_and_costs if x[1] != np.inf]
+    paths = _nodes_to_fullpaths(
+        graph, [n[0] for n in nodes_and_costs], False, n_paths=n_paths
+    )
+
+    if len(paths) &lt; n_paths:
+        DASiWarning(
+            &quot;Number of paths returned is less than requested paths {} &lt; {}&quot;.format(
+                len(paths), n_paths
+            )
+        )
+
+    _check_paths(paths)
+    return paths, [n[1] for n in nodes_and_costs]
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

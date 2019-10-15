@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <meta charset='utf-8'>
@@ -57,20 +56,29 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.design_algorithms.html">dasi.design.design_algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.graph_builder.html">dasi.design.graph_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.optimize.html">dasi.design.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.plotter.html">dasi.design.plotter</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.utils.networkx.html">dasi.utils.networkx</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.utils.networkx.html#networkx-utilities-dasi-utils-networkx">NetworkX Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code>)</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
 </ul>
 </ul>
 </li>
@@ -107,7 +115,21 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.cost</h1><div class="highlight"><pre>
-<span></span>&quot;&quot;&quot;Classes and methods for estimating assembly costs.&quot;&quot;&quot;
+<span></span>r&quot;&quot;&quot;
+Cost Model (:mod:`dasi.cost`)
+=============================
+
+.. currentmodule:: dasi.cost
+
+This module provide cost calculations for molecular assemblies
+
+.. autosummary::
+    :toctree: generated/
+
+    params
+    utils
+&quot;&quot;&quot;
+
 from abc import ABC
 from abc import abstractmethod
 from functools import partial
@@ -136,7 +158,7 @@ slice_dict = {
 }
 
 
-<div class="viewcode-block" id="encoder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.encoder">[docs]</a>def encoder(obj):
+<div class="viewcode-block" id="encoder"><a class="viewcode-back" href="../../cost.html#dasi.cost.encoder">[docs]</a>def encoder(obj):
     &quot;&quot;&quot;msgpack encoder for cost functions.
 
     :param obj:
@@ -153,7 +175,7 @@ slice_dict = {
     return obj</div>
 
 
-<div class="viewcode-block" id="decoder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.decoder">[docs]</a>def decoder(obj):
+<div class="viewcode-block" id="decoder"><a class="viewcode-back" href="../../cost.html#dasi.cost.decoder">[docs]</a>def decoder(obj):
     &quot;&quot;&quot;msgpack decoder for cost functions.
 
     :param obj:
@@ -172,7 +194,7 @@ slice_dict = {
     return obj</div>
 
 
-<div class="viewcode-block" id="CostBuilder"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder">[docs]</a>class CostBuilder(ABC):
+<div class="viewcode-block" id="CostBuilder"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder">[docs]</a>class CostBuilder(ABC):
     &quot;&quot;&quot;Abstract base class for building a cost model.&quot;&quot;&quot;
 
     def __init__(self, span: np.ndarray):
@@ -184,18 +206,18 @@ slice_dict = {
         self.cost_dict = {}
         self.span = span
 
-<div class="viewcode-block" id="CostBuilder.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.from_params">[docs]</a>    @classmethod
+<div class="viewcode-block" id="CostBuilder.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.from_params">[docs]</a>    @classmethod
     @abstractmethod
     def from_params(cls, *args):
         &quot;&quot;&quot;Initialize from parameters.&quot;&quot;&quot;
         pass</div>
 
-<div class="viewcode-block" id="CostBuilder.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.compute">[docs]</a>    @abstractmethod
+<div class="viewcode-block" id="CostBuilder.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.compute">[docs]</a>    @abstractmethod
     def compute(self):
         &quot;&quot;&quot;Before the numpy-based cost calculations.&quot;&quot;&quot;
         pass</div>
 
-<div class="viewcode-block" id="CostBuilder.to_df"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.to_df">[docs]</a>    def to_df(self):
+<div class="viewcode-block" id="CostBuilder.to_df"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.to_df">[docs]</a>    def to_df(self):
         &quot;&quot;&quot;Convert the cost builder to a pandas.DataFrame.&quot;&quot;&quot;
         dfs = []
         for ext, jxn in self.cost_dict.items():
@@ -213,7 +235,7 @@ slice_dict = {
         )
 
     # TODO: what if there is a gap in the span?
-<div class="viewcode-block" id="CostBuilder.cost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.CostBuilder.cost">[docs]</a>    def cost(
+<div class="viewcode-block" id="CostBuilder.cost"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.cost">[docs]</a>    def cost(
         self, bp: Union[np.ndarray, int], ext: Tuple[int, int], invalidate=False
     ) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Return the :class:`NumpyDataFrame &lt;dasi.usil.NumpyDataFrame&gt;` across
@@ -265,7 +287,7 @@ slice_dict = {
         return self.cost(bp, ext)</div>
 
 
-<div class="viewcode-block" id="PrimerCostModel"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostModel">[docs]</a>class PrimerCostModel(CostBuilder):
+<div class="viewcode-block" id="PrimerCostModel"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel">[docs]</a>class PrimerCostModel(CostBuilder):
     def __init__(
         self,
         pdf: pd.DataFrame,
@@ -298,7 +320,7 @@ slice_dict = {
         self.material_modifier = material_mod
         self.compute()
 
-<div class="viewcode-block" id="PrimerCostModel.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostModel.from_params">[docs]</a>    @classmethod
+<div class="viewcode-block" id="PrimerCostModel.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel.from_params">[docs]</a>    @classmethod
     def from_params(cls, primer_params: Type[PrimerParams]) -&gt; &quot;PrimerCostModel&quot;:
         &quot;&quot;&quot;Load from :class:`dasi.cost.params.PrimerParams`.
 
@@ -314,7 +336,7 @@ slice_dict = {
             min_span=primer_params.min_span,
         )</div>
 
-<div class="viewcode-block" id="PrimerCostModel.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.PrimerCostModel.compute">[docs]</a>    def compute(self):
+<div class="viewcode-block" id="PrimerCostModel.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel.compute">[docs]</a>    def compute(self):
         span = self.span
 
         # span, base cost, cost per bp, time (days)
@@ -368,7 +390,7 @@ slice_dict = {
             )</div></div>
 
 
-<div class="viewcode-block" id="SynthesisCostModel"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel">[docs]</a>class SynthesisCostModel(CostBuilder):
+<div class="viewcode-block" id="SynthesisCostModel"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel">[docs]</a>class SynthesisCostModel(CostBuilder):
     def __init__(
         self,
         sdf: pd.DataFrame,
@@ -399,7 +421,7 @@ slice_dict = {
         # self.logger = logger(self)
         self.compute()
 
-<div class="viewcode-block" id="SynthesisCostModel.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel.from_params">[docs]</a>    @classmethod
+<div class="viewcode-block" id="SynthesisCostModel.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel.from_params">[docs]</a>    @classmethod
     def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostModel):
         return cls(
             sdf=syn_params.synthesis_df,
@@ -410,7 +432,7 @@ slice_dict = {
             left_span_range=syn_params.left_span_range,
         )</div>
 
-<div class="viewcode-block" id="SynthesisCostModel.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel.compute">[docs]</a>    def compute(self):
+<div class="viewcode-block" id="SynthesisCostModel.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel.compute">[docs]</a>    def compute(self):
         syn = df_to_np_ranged(&quot;min&quot;, &quot;max&quot;, self.synthesis_df, dtype=np.float32)
         gene_sizes = syn[:, 0].reshape(-1, 1)[:: self.step_size, :].astype(np.int32)
         gene_costs = syn[:, 1][gene_sizes]
@@ -494,7 +516,7 @@ slice_dict = {
 
         return gap_df
 
-<div class="viewcode-block" id="SynthesisCostModel.cost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SynthesisCostModel.cost">[docs]</a>    def cost(
+<div class="viewcode-block" id="SynthesisCostModel.cost"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel.cost">[docs]</a>    def cost(
         self, bp: Union[int, np.ndarray], ext: Tuple[int, int], invalidate=True
     ) -&gt; NumpyDataFrame:
         return super().cost(bp, ext, invalidate=invalidate)</div>
@@ -503,7 +525,7 @@ slice_dict = {
         return self.cost(bp, ext)</div>
 
 
-<div class="viewcode-block" id="SpanCost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SpanCost">[docs]</a>class SpanCost(CostBuilder):
+<div class="viewcode-block" id="SpanCost"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost">[docs]</a>class SpanCost(CostBuilder):
     def __init__(self, syn_cost):
         self.syn_cost = syn_cost
         self.primer_cost = self.syn_cost.primer_cost
@@ -517,7 +539,7 @@ slice_dict = {
         super().__init__(span)
         self.compute()
 
-<div class="viewcode-block" id="SpanCost.from_params"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SpanCost.from_params">[docs]</a>    @classmethod
+<div class="viewcode-block" id="SpanCost.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost.from_params">[docs]</a>    @classmethod
     def from_params(cls):
         pass</div>
 
@@ -527,7 +549,7 @@ slice_dict = {
         syn_cost = SynthesisCostModel.from_params(SynthesisParams, primer_cost)
         return cls(syn_cost)
 
-<div class="viewcode-block" id="SpanCost.compute"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SpanCost.compute">[docs]</a>    def compute(self):
+<div class="viewcode-block" id="SpanCost.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost.compute">[docs]</a>    def compute(self):
         def choose(a, i):
             return np.choose(i, a)
 
@@ -548,7 +570,7 @@ slice_dict = {
             )
             self.cost_dict[s] = df4</div>
 
-<div class="viewcode-block" id="SpanCost.cost"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.cost.SpanCost.cost">[docs]</a>    def cost(
+<div class="viewcode-block" id="SpanCost.cost"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost.cost">[docs]</a>    def cost(
         self, bp: Union[int, np.ndarray], ext: Tuple[int, int], invalidate=True
     ) -&gt; NumpyDataFrame:
         return super().cost(bp, ext, invalidate=invalidate)</div>

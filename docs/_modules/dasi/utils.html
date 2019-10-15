@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 <meta charset='utf-8'>
@@ -57,20 +56,29 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.design_algorithms.html">dasi.design.design_algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.graph_builder.html">dasi.design.graph_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.optimize.html">dasi.design.optimize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.design.plotter.html">dasi.design.plotter</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.utils.networkx.html">dasi.utils.networkx</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.utils.networkx.html#networkx-utilities-dasi-utils-networkx">NetworkX Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code>)</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
 </ul>
 </ul>
 </li>
@@ -107,7 +115,20 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.utils</h1><div class="highlight"><pre>
-<span></span>&quot;&quot;&quot;Utilities.&quot;&quot;&quot;
+<span></span>r&quot;&quot;&quot;
+Utilities (:mod:`dasi.utils`)
+=============================
+
+.. currentmodule:: dasi.utils
+
+This module provide various utility functions.
+
+.. autosummary::
+    :toctree: generated/
+
+    networkx
+&quot;&quot;&quot;
+
 import bisect
 import functools
 from typing import Any
@@ -123,7 +144,7 @@ from .npdf import NumpyDataFrameException
 from .region import Region
 
 
-<div class="viewcode-block" id="sort_with_keys"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.sort_with_keys">[docs]</a>def sort_with_keys(a: Iterable[Any], key: Callable) -&gt; Tuple[List, List]:
+<div class="viewcode-block" id="sort_with_keys"><a class="viewcode-back" href="../../utils.html#dasi.utils.sort_with_keys">[docs]</a>def sort_with_keys(a: Iterable[Any], key: Callable) -&gt; Tuple[List, List]:
     &quot;&quot;&quot;Sort an iterable, returning both the sorted array and the sorted keys.
 
     :param a: the iterable
@@ -135,7 +156,7 @@ from .region import Region
     return s, keys</div>
 
 
-<div class="viewcode-block" id="bisect_between"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.bisect_between">[docs]</a>def bisect_between(a: Iterable, low: Any, high: Any) -&gt; Tuple[int, int]:
+<div class="viewcode-block" id="bisect_between"><a class="viewcode-back" href="../../utils.html#dasi.utils.bisect_between">[docs]</a>def bisect_between(a: Iterable, low: Any, high: Any) -&gt; Tuple[int, int]:
     &quot;&quot;&quot;Returns the start (inclusive) and end (exclusive) indices for a sorted
     array using a key function.
 
@@ -149,7 +170,7 @@ from .region import Region
     return i, j + i</div>
 
 
-<div class="viewcode-block" id="bisect_slice_between"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.bisect_slice_between">[docs]</a>def bisect_slice_between(a: Iterable, keys: Iterable, low: Any, high: Any) -&gt; Iterable:
+<div class="viewcode-block" id="bisect_slice_between"><a class="viewcode-back" href="../../utils.html#dasi.utils.bisect_slice_between">[docs]</a>def bisect_slice_between(a: Iterable, keys: Iterable, low: Any, high: Any) -&gt; Iterable:
     &quot;&quot;&quot;Slice the iterable using inclusive bisection. Assumes both the iterable
     and keys are sorted. Bisect at specified `low` and `high`.
 
@@ -163,7 +184,7 @@ from .region import Region
     return a[i:j]</div>
 
 
-<div class="viewcode-block" id="perfect_subject"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.utils.perfect_subject">[docs]</a>def perfect_subject(data):
+<div class="viewcode-block" id="perfect_subject"><a class="viewcode-back" href="../../utils.html#dasi.utils.perfect_subject">[docs]</a>def perfect_subject(data):
     &quot;&quot;&quot;Determine whether a blast result consumes the entire subject.&quot;&quot;&quot;
     if data[&quot;strand&quot;] == 1 and data[&quot;start&quot;] == 1 and data[&quot;raw_end&quot;] == data[&quot;length&quot;]:
         return True
@@ -173,6 +194,26 @@ from .region import Region
         and data[&quot;start&quot;] == data[&quot;length&quot;]
     ):
         return True</div>
+
+
+def prep_df(df):
+    colnames = [
+        &quot;DESIGN_ID&quot;,
+        &quot;DESIGN_KEY&quot;,
+        &quot;ASSEMBLY_ID&quot;,
+        &quot;REACTION_ID&quot;,
+        &quot;NAME&quot;,
+        &quot;TYPE&quot;,
+        &quot;KEY&quot;,
+        &quot;ROLE&quot;,
+        &quot;REGION&quot;,
+        &quot;SEQUENCE&quot;,
+        &quot;LENGTH&quot;,
+        &quot;META&quot;,
+    ]
+    df.columns = colnames
+    df.sort_values(by=[&quot;TYPE&quot;, &quot;DESIGN_ID&quot;, &quot;REACTION_ID&quot;, &quot;ASSEMBLY_ID&quot;, &quot;ROLE&quot;])
+    return df
 </pre></div>
 
     </div>

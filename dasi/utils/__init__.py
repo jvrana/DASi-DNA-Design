@@ -1,4 +1,16 @@
-"""Utilities."""
+r"""
+Utilities (:mod:`dasi.utils`)
+=============================
+
+.. currentmodule:: dasi.utils
+
+This module provide various utility functions.
+
+.. autosummary::
+    :toctree: generated/
+
+    networkx
+"""
 import bisect
 import functools
 from typing import Any

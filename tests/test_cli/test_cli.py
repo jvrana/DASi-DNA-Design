@@ -3,7 +3,7 @@ import shutil
 
 import pytest
 
-from dasi.cli import CLI
+from dasi.command_line import CLI
 
 here = os.path.abspath(os.path.dirname(__file__))
 

@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.utils.region &#8212; dasi 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.utils.region</h1><div class="highlight"><pre>
+<span></span>from __future__ import annotations
+
+import operator
+from collections.abc import Container
+from collections.abc import Iterable
+from collections.abc import Sized
+from functools import reduce
+from itertools import chain
+from typing import Any
+from typing import Callable
+from typing import Generator
+from typing import List
+from typing import Tuple
+from typing import Union
+
+
+<div class="viewcode-block" id="SpanError"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.SpanError">[docs]</a>class SpanError(Exception):
+    pass</div>
+
+
+# TODO: move this to pyblast?
+<div class="viewcode-block" id="Span"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span">[docs]</a>class Span(Container, Iterable, Sized):
+    &quot;&quot;&quot;`Span` maps the provided positions onto a context.
+
+    Spans have no direction and have an underlying context
+    that has a certain length, can be linear or cyclic, and has a starting index.
+
+    The following attributes are accessible:
+
+    - `a` - the starting (inclusive) position of the span
+    - `b` - the mapped exclusive position of the span
+    - `c` - the unmapped exclusive position of the span (used for cyclic spans that
+            wrap context multiple times)
+    - `cyclic` - whether the underlying context is circular or linear
+    - `index` - the first index of the context
+    - `context_length` - the length of the underlying context.
+
+    **Linear spans**
+    For example, a basic linear span can be represented using the following:
+
+    .. code-block::
+
+        s = Span(0, 10, 20)
+        assert s.a == 0
+        assert s.b == 10
+        assert list(s) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # spans are always
+                                                          # exclusive at endpoint.
+
+    **Indexing and Slicing**
+
+    New indexes can be provided to spans.
+
+    .. code-block::
+
+        s = Span(1, 10, 10, index=1)
+        assert s.a == 1
+        assert s.b == 10
+
+    Positions can be mapped to the span:
+
+    .. code-block::
+
+        s = Span(5, 8, 10, index=5)
+        assert s.a == 5
+        assert s.b == 8
+        assert s[0] == 5    # the &#39;first&#39; position in the span equivalent to the
+                            # starting index
+        assert s[-1] == 7   # the &#39;last&#39; position in the span is the last inclusive
+                            # index
+
+    Positions can be mapped automatically during initialization:
+
+    .. code-block::
+
+        s = Span(-1, 5, 10, cyclic=True, index=0)   # index &#39;-1&#39; is mapped onto last
+                                                    # available index on the context,
+        &#39;9&#39;
+        assert s.a == 9
+        assert s.b == 5
+
+        s = Span(6, -1, 10, cyclic=True, index=0)  # index &#39;-1&#39; is mapped onto last
+                                                   # available exclusive index on the
+         context, &#39;10&#39;
+        assert s.a == 6
+        assert s.b == 10
+
+    Inclusive positions can be mapped onto the context using `t`:
+
+    .. code-block::
+
+        s = Span(-1, 5, 10, cyclic=True)
+        assert s.t(11) == 1
+        assert s.t(10) == 0
+
+    **Reindexing**
+
+    Context starting index can be remapped:
+
+    .. code-block::
+
+        s = Span(0, 5, 10)
+        s1 = s.reindex(1)
+        asset s1.a == 1
+        assert s2.b == 6
+
+    **Slicing**
+
+    Spans can be sliced similarly to lists:
+
+    .. code-block::
+
+        s = Span(4, 8, 10)
+        s1 = s[1:]
+        assert s1.a == 5
+        assert s2.b == 8
+
+        s2 = s[:-1]
+        assert s2.a == 4
+        assert s2.b == 7
+
+        s3 = s[2:-1]
+        assert s3.a == 5
+        assert s3.b == 7
+
+    **Cyclic spans**
+    A cyclic span can be represented in the following way:
+
+    .. code-block::
+
+        s = Span(18, 2, 20, cyclic=True)
+        assert s.a == 18
+        assert s.b == 2
+        assert list(s) == [18, 19, 0, 1]
+        assert len(s) == 4
+
+    **Wrapping cyclic spans**
+    Spans the wrap around the context multiple times can be represented as well.
+    The mapped endpoint
+    is found with `span.b` and the non-mapped endpoint is found using `span.c`.
+
+    .. code-block::
+
+        s = Span(9, 21, 10, cyclic=True)
+        assert list(s) == [9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        assert len(s) == 12
+        assert s.a == 9  # start point
+        assert s.b == 1  # mapped endpoint
+        assert s.c == 21 # the unmapped endpoint
+
+    The indices are reduced to their lowest &#39;wrapping&#39; whenever possible.
+    For example, the following
+    initializations are equivalent:
+
+    .. code-block::
+
+        s1 = Span(1, 5, 10, cyclic=True)
+        s2 = Span(11, 15, 10, cyclic=True)
+        s3 = Span(21, 25, 10, cyclic=True)
+        assert s1 == s2
+        assert s2 == s3
+
+    **Iterating through spans**
+
+    Spans can be treated like iterators:
+
+    .. code-block::
+
+        for i in Span(5, 3, 10, cyclic=True):
+            print(i)
+
+    **Span inversion**
+
+    Inversion returns two spans that represent everything *except* the span:
+
+    .. code-block::
+
+        s = Span(4, 8, 10)
+        s1, s2 = s.invert()  # also s[::-1]
+        assert s1.a == 0
+        assert s1.b == 4
+        assert s2.a == 8
+        assert s2.b == 10
+
+        # inverted cyclic span returns one valid span and None
+        s = Span(4, 8, 10, cyclic=True)
+        s1, s2 = s.invert()
+        assert s1.a == 8
+        assert s1.b == 4
+        assert s2 is None
+
+    **Intersections, differences**
+
+    .. code-block::
+
+        s1 = Span(4, 10, 20)
+        s2 = Span(8, 12, 20)
+        s3 = s1.intersection(s2)
+        assert s3.a == 8
+        assert s3.b == 10
+
+    .. code-block::
+
+        s1 = Span(4, 10, 20)
+        s2 = Span(8, 12, 20)
+        s3, s4 = s1.differences(s2)
+
+        assert s3.a, s3.b == 4, 8
+        assert s4,a, s4.b == 10, 12
+    &quot;&quot;&quot;
+
+    __slots__ = [
+        &quot;_a&quot;,
+        &quot;_b&quot;,
+        &quot;_c&quot;,
+        &quot;_context_length&quot;,
+        &quot;_cyclic&quot;,
+        &quot;_index&quot;,
+        &quot;_strict&quot;,
+        &quot;_abs_wrap&quot;,
+        &quot;_ignore_wrap&quot;,
+    ]
+
+    def __init__(
+        self,
+        a: int,
+        b: int,
+        l: int,
+        cyclic=False,
+        index=0,
+        ignore_wrap=False,
+        strict=False,
+        abs_wrap=False,
+    ):
+        &quot;&quot;&quot;Constructs a new Span. There are several options to customize the
+        initialization procedure.
+
+        **strict=True**
+
+        When strict, any index outside the valid bounds of the context raises an
+        IndexError.
+
+        .. code-block::
+
+            Span(1, 10, 10, cyclic=True, strict=True) # no raise
+            Span(1, 11, 10, cyclic=True, strict=True) # raises IndexError
+            Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
+
+        **ignore_wrap=True**
+
+        When wrapping is ignored, indices are simply mapped to the context with no
+        consideration
+        of the number of times the absolute position would wrap around the context.
+
+        .. code-block::
+
+            # all of the following are equivalent with ignore_wrap == True
+            Span(1, 10, 10, cyclic=True, ignore_wrap=True)
+            Span(1+10, 10, 10, cyclic=True, ignore_wrap=True)
+            Span(1, 10-100, 10, cyclic=True, ignore_wrap=True)
+            Span(1+20, 10-100, 10, cyclic=True, ignore_wrap=True)
+
+        **abs_wrap=True**
+
+        When absolute wrapping is used, the absolute difference between starting and
+        ending index wrappings
+        is calculated, the starting index is to the context while the ending index is
+        adjusted such
+        that the length will reflect the abs difference between starting and ending
+        index wrappings.
+        This can be unintuitive
+        is best shown with the following example:
+
+        .. code-block::
+
+            # all of the following initializations result in equivalent spans
+
+            # starts at 1, wraps around one full time, ends at 5.
+            # Length is 15 - 1
+            s1 = Span(1, 15, 10, cyclic=True, abs_wrap=True)
+            assert len(s1) == 14
+
+            # starts at 11, wraps around one full time, ends at 15.
+            # Then positions are mapped back to context at 1 and 5.
+            # Length is still 25 - 11 == 14
+            s2 = Span(11, 25, 10, cyclic=True, abs_wrap=True)
+            assert len(s2) == 14
+
+            # starts at 11, wraps around one full time, ends at 15.
+            # Then positions are mapped back to context at 1 and 5.
+            # Length is now 11 + 5 = 14
+            s3 = Span(11, 5, 10, cyclic=True, abs_wrap=True)
+            assert len(s3) == 14
+
+            # the lengths change with the abs diff in number of times wrapped
+            _s = Span(21, 5, 10, cyclic=True, abs_wrap=True)
+            assert len(_s) == 24
+
+            _s = Span(21, 15, 10, cyclic=True, abs_wrap=True)
+            assert len(_s) == 14
+
+            # all
+            assert s1 == s2
+            assert s2 == s3
+
+        :param a: start of the span (inclusive)
+        :type a: int
+        :param b: end of the span (exclusive)
+        :type b: int
+        :param l: context length of the region
+        :type l: int
+        :param cyclic: whether the underlying context is cyclic
+        :type cyclic: bool
+        :param index: the starting index of the region
+        :type index: int
+        :param strict: if True, positions outside of context bounds are disallowed.
+        :type strict: bool
+        :param ignore_wrap: if True (default False), initialization indicies that wrap
+                            around multiple times will
+                            simply be mapped directly to the context (no wrapping used).
+        :type ignore_wrap: bool
+        :param abs_wrap:    if True, the abs difference between start and end wrappings
+                            are used. Starting wraps that are greater than ending wraps
+                            are valid. If False and the starting wrap is greater than
+                            the ending wrap, an IndexError is thrown.
+        &quot;&quot;&quot;
+        a = int(a)
+        b = int(b)
+        self._context_length = int(l)
+        self._index = index
+        self._cyclic = cyclic
+        self._strict = strict
+        self._abs_wrap = abs_wrap
+        self._ignore_wrap = ignore_wrap
+
+        # special empty edge case
+        if cyclic and a == b:
+            self._set_as_empty(a)
+            return
+
+        # check bounds
+        if self._strict or not cyclic:
+            bounds = self.bounds()
+            if not bounds[0] &lt;= a &lt; bounds[1]:
+                raise IndexError(
+                    &quot;Start {} must be in [{}, {})&quot;.format(a, index, index + l)
+                )
+            if not bounds[0] &lt;= b &lt;= bounds[1]:
+                raise IndexError(
+                    &quot;End {} must be in [{}, {}]&quot;.format(b, index, index + l)
+                )
+
+        if self._ignore_wrap:
+            start_wrap = 0
+            end_wrap = 0
+        else:
+            start_wrap = int((a - index) / l)
+            end_wrap = int((b - index - 1) / l)
+
+        if self._abs_wrap is False and start_wrap &gt; end_wrap:
+            self._a = a
+            self._b = b
+            self._c = b
+            diff = end_wrap - start_wrap
+            # return self._set_as_empty(a)
+            raise IndexError(
+                &quot;Could not interpret span {span}. Starting position wraps around &quot;
+                &quot;context {i} times and end position wraps around {j} times.&quot;
+                &quot; A valid initialization would be Span({a}, {b}, ...)&quot;.format(
+                    span=self,
+                    i=start_wrap,
+                    j=end_wrap,
+                    a=self._a,
+                    b=self._b - diff * self._context_length,
+                )
+            )
+
+        # set indices
+        _a = a - index
+        _b = b - index
+
+        if _a &gt;= l or _a &lt; 0:
+            self._a = self.t(_a, False)
+        else:
+            self._a = a
+        if _b &gt; l:
+            self._b = self.t(_b - 1, False) + 1
+        elif _b &lt; 0:
+            self._b = self.t(_b, False) + 1
+        else:
+            self._b = b
+
+        if self._a &gt; self._b and not cyclic:
+            raise IndexError(
+                &quot;Start {} cannot be greater than end {} for linear spans.&quot;.format(
+                    self._a, self._b
+                )
+            )
+
+        # allow wrap mean this will keep track of how many time the span wraps around
+        # the context
+        if not ignore_wrap and end_wrap - start_wrap:
+            if self._abs_wrap:
+                _c = self._b + abs(end_wrap - start_wrap) * l
+            else:
+                _c = self._b + (end_wrap - start_wrap) * l
+            self._c = _c
+        else:
+            self._c = self._b
+
+    @property
+    def index(self):
+        &quot;&quot;&quot;Return the starting index of the context.&quot;&quot;&quot;
+        return self._index
+
+    @property
+    def a(self):
+        &quot;&quot;&quot;Return the inclusive mapped startpoint.&quot;&quot;&quot;
+        return self._a
+
+    @property
+    def b(self):
+        &quot;&quot;&quot;Return the exclusive mapped endpoint.&quot;&quot;&quot;
+        return self._b
+
+    @property
+    def c(self):
+        &quot;&quot;&quot;Return the exclusive un-mapped endpoint.&quot;&quot;&quot;
+        return self._c
+
+    @property
+    def cyclic(self):
+        &quot;&quot;&quot;Return whether the context is cyclic/circular.&quot;&quot;&quot;
+        return self._cyclic
+
+    @property
+    def context_length(self):
+        &quot;&quot;&quot;Return the length of the context.&quot;&quot;&quot;
+        return self._context_length
+
+    def _set_as_empty(self, a: int) -&gt; None:
+        _a = self.t(a - self._index, False)
+        self._a = self._b = self._c = _a
+        return
+
+    @property
+    def _nwraps(self):
+        return int((self._c - self._index - 1) / self._context_length)
+
+<div class="viewcode-block" id="Span.bounds"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.bounds">[docs]</a>    def bounds(self) -&gt; tuple:
+        &quot;&quot;&quot;Return the context bounds (end exclusive)&quot;&quot;&quot;
+        return self._index, self._context_length + self._index</div>
+
+<div class="viewcode-block" id="Span.t"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.t">[docs]</a>    def t(self, p: int, throw_error=True) -&gt; int:
+        &quot;&quot;&quot;Translates a position &#39;p&#39; to an index within the context bounds.
+
+        :param p:
+        :type p:
+        :param throw_error:
+        :return:
+        :rtype:
+        &quot;&quot;&quot;
+        if p &gt;= self.bounds()[1] or p &lt; self.bounds()[0]:
+            if throw_error and not self._cyclic:
+                raise IndexError(
+                    &quot;Position {} outside of linear bounds {}&quot;.format(p, self.bounds())
+                )
+        _x = p % self._context_length
+        if _x &lt; 0:
+            return self.bounds()[1] + _x
+        else:
+            return self.bounds()[0] + _x</div>
+
+<div class="viewcode-block" id="Span.i"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.i">[docs]</a>    def i(self, p: int) -&gt; int:
+        &quot;&quot;&quot;Find index of position.
+
+        :param p:
+        :return:
+        &quot;&quot;&quot;
+        return p - self._a</div>
+
+    @staticmethod
+    def _ranges_str(ranges):
+        s = &quot;,&quot;.join(&quot;[{}, {})&quot;.format(*r) for r in ranges)
+        return &quot;[&quot; + s + &quot;]&quot;
+
+<div class="viewcode-block" id="Span.ranges"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.ranges">[docs]</a>    def ranges(self, ignore_wraps=False) -&gt; List[Tuple[int, int]]:
+        &quot;&quot;&quot;Return the valid ranges for this span.
+
+        :param ignore_wraps: if True, multiple wrappings will be ignored.
+        :return: List[Tuple[int, int]]
+        &quot;&quot;&quot;
+        if self._cyclic and (self._b &lt; self._a or (self._nwraps and not ignore_wraps)):
+            ranges = [(self._a, self.bounds()[1])]
+            if not ignore_wraps:
+                for _ in range(self._nwraps - 1):
+                    ranges.append(self.bounds())
+            ranges.append((self.bounds()[0], self._b))
+            return ranges
+        else:
+            return [(self._a, self._b)]</div>
+
+<div class="viewcode-block" id="Span.slices"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.slices">[docs]</a>    def slices(self):
+        &quot;&quot;&quot;Return list of slices.
+
+        :return:
+        :rtype:
+        &quot;&quot;&quot;
+        return [slice(*r) for r in self.ranges()]</div>
+
+<div class="viewcode-block" id="Span.get_slice_iter"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.get_slice_iter">[docs]</a>    def get_slice_iter(self, x: List):
+        &quot;&quot;&quot;Use the region to slice the iterable, returning another generator.
+
+        :param x: the iterable to slice
+        :return: iterable
+        &quot;&quot;&quot;
+        for s in self.slices():
+            yield x[s]</div>
+
+<div class="viewcode-block" id="Span.get_slice"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.get_slice">[docs]</a>    def get_slice(
+        self,
+        x: List,
+        infer_type: bool = False,
+        as_type: Any = None,
+        summary_func: Callable = None,
+        reduce_op: Callable = operator.add,
+    ) -&gt; Any:
+        &quot;&quot;&quot;Use the region to slice the iterable, returning a iterable of the
+        same type as &#39;x&#39;. If as_type is provided, the iterable will be
+        typecast.
+
+        :param x: the iterable to slice
+        :param as_type: type to convert the iterable into
+        :param summary_func: summary function that takes in an interable. If none, uses
+                            `itertools.reduce(operator.add, arr)`
+        :return: Any
+        &quot;&quot;&quot;
+        if summary_func is None:
+            if reduce_op is not None:
+
+                def summary_func(arr):
+                    return reduce(reduce_op, arr)
+
+            else:
+
+                def summary_func(arr):
+                    return arr
+
+        new_arr = summary_func(self.get_slice_iter(x))
+        if infer_type:
+            if as_type is None:
+                as_type = type(x)
+        if as_type:
+            return as_type(new_arr)
+        return new_arr</div>
+
+<div class="viewcode-block" id="Span.reindex"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.reindex">[docs]</a>    def reindex(self, i, strict=None, ignore_wrap=None):
+        &quot;&quot;&quot;Return a new span with positions reindexed.
+
+        :param i: new index
+        :param strict: initialize with &#39;strict&#39;
+        :param ignore_wrap: whether to ignore wrapping indices
+        :return:
+        &quot;&quot;&quot;
+        if ignore_wrap is None:
+            ignore_wrap = self._ignore_wrap
+        return self.new(None, None, ignore_wrap=ignore_wrap, index=i, strict=strict)</div>
+
+<div class="viewcode-block" id="Span.new"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.new">[docs]</a>    def new(
+        self,
+        a: Union[int, None],
+        b: Union[int, None],
+        ignore_wrap=None,
+        index=None,
+        strict=None,
+        abs_wrap=None,
+    ) -&gt; Span:
+        &quot;&quot;&quot;Create a new span using the same context.&quot;&quot;&quot;
+        if a is None:
+            a = self._a
+        if b is None:
+            b = self._c
+
+        if strict is None:
+            strict = self._strict
+
+        if abs_wrap is None:
+            abs_wrap = self._abs_wrap
+
+        if ignore_wrap is None:
+            ignore_wrap = self._ignore_wrap
+
+        if index is not None:
+            d = index - self._index
+            a += d
+            b += d
+        else:
+            index = self._index
+        return self.__class__(
+            a,
+            b,
+            self._context_length,
+            self._cyclic,
+            index=index,
+            ignore_wrap=ignore_wrap,
+            strict=strict,
+            abs_wrap=abs_wrap,
+        )</div>
+
+<div class="viewcode-block" id="Span.sub"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.sub">[docs]</a>    def sub(self, a: int, b: int) -&gt; Span:
+        &quot;&quot;&quot;Create a sub region starting from a to b.
+
+        :param a: starting pos
+        :param b: ending pos
+        :return: a new Span.
+        &quot;&quot;&quot;
+        # if a == b:
+        #     return self.new(a, b)
+        if b is not None and a &gt; b and not self._cyclic:
+            raise ValueError(
+                &quot;Start {} cannot exceed end {} for linear spans&quot;.format(a, b)
+            )
+
+        valid_ranges = [list(x) for x in self.ranges()]
+        valid_ranges[0][0] = max(a, self._a)
+        valid_ranges[-1][1] = min(b + 1, self._b + 1)
+
+        if self._nwraps &gt; 0:
+            valid_ranges += [(self._a, self._c + 1)]
+        # assert len(valid_ranges) &lt;= 2
+
+        def in_range(pos, ranges):
+            for i, r in enumerate(ranges):
+                if r[0] &lt;= pos &lt; r[1]:
+                    return True, i
+            return False, None
+
+        start_in_range, start_range = in_range(a, valid_ranges)
+
+        if not start_in_range:
+            raise IndexError(
+                &quot;Start {} must be in {}&quot;.format(a, self._ranges_str(valid_ranges))
+            )
+
+        valid_end_range = valid_ranges[start_range:]
+        end_in_range, end_range = in_range(b, valid_end_range)
+
+        if not end_in_range:
+            raise IndexError(
+                &quot;End {} must be in {}&quot;.format(b, self._ranges_str(valid_end_range))
+            )
+        subregion = self.new(a, b)
+        if len(subregion) &gt; len(self):
+            raise IndexError(&quot;Cannot make subspan.&quot;)
+        return subregion</div>
+
+<div class="viewcode-block" id="Span.same_context"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.same_context">[docs]</a>    def same_context(self, other: Span) -&gt; bool:
+        &quot;&quot;&quot;Return if another Span as an equivalent context.&quot;&quot;&quot;
+        return (
+            other.context_length == self._context_length
+            and self._cyclic == other.cyclic
+        )</div>
+
+<div class="viewcode-block" id="Span.force_context"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.force_context">[docs]</a>    def force_context(self, other: Span) -&gt; None:
+        &quot;&quot;&quot;Raise error if another Span has different context.
+
+        :param other: The other span
+        :return: None
+        :raises: SpanError
+        &quot;&quot;&quot;
+        if not self.same_context(other):
+            raise SpanError(&quot;Cannot compare with different contexts&quot;)</div>
+
+<div class="viewcode-block" id="Span.overlaps_with"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.overlaps_with">[docs]</a>    def overlaps_with(self, other: Span) -&gt; bool:
+        &quot;&quot;&quot;Returns True if other span has an overlap with this span.
+
+        :param other: The other span
+        :return: True if the two spans overlap.
+        &quot;&quot;&quot;
+        self.force_context(other)
+        # if other in self:
+        #     return True
+        # elif self in other:
+        #     return True
+        if (
+            other.a in self
+            or other.b - 1 in self
+            or self._a in other
+            or self._b - 1 in other
+        ):
+            return True
+        return False</div>
+
+<div class="viewcode-block" id="Span.differences"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.differences">[docs]</a>    def differences(self, other: Span) -&gt; Union[Tuple[Span], Tuple[Span, Span]]:
+        &quot;&quot;&quot;Return a tuple of differences between this span and the other
+        span.&quot;&quot;&quot;
+        self.force_context(other)
+        if other.a in self and other.b not in self:
+            return (self.new(self._a, other.a),)
+        elif other.b in self and other.a not in self:
+            return (self.new(other.b, self._b),)
+        if other in self:
+            return self.new(self._a, other.a), self.new(other.b, self._b)
+        elif self in other:
+            return (self.new(self._a, self._a),)
+        else:
+            return (self[:],)</div>
+
+<div class="viewcode-block" id="Span.intersection"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.intersection">[docs]</a>    def intersection(self, other: Span) -&gt; Span:
+        &quot;&quot;&quot;Return the span inersection between this span and the other span.&quot;&quot;&quot;
+        self.force_context(other)
+        if other.a in self and other.b not in self:
+            return self.sub(other.a, self._b)
+        elif other.b in self and other.a not in self:
+            return self.sub(self._a, other.b)
+        if other in self:
+            return other[:]
+        elif self in other:
+            return self[:]</div>
+
+<div class="viewcode-block" id="Span.consecutive"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.consecutive">[docs]</a>    def consecutive(self, other: Span) -&gt; bool:
+        &quot;&quot;&quot;Returns True if other span is immediately consecutive with this
+        span.&quot;&quot;&quot;
+        self.force_context(other)
+        try:
+            return self._b == other.t(other.a)
+        except IndexError:
+            return False</div>
+
+<div class="viewcode-block" id="Span.connecting_span"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.connecting_span">[docs]</a>    def connecting_span(self, other: Span) -&gt; Union[Span, None]:
+        &quot;&quot;&quot;Return the span that connects the two spans. Returns None.
+
+        :param other:
+        :return:
+        &quot;&quot;&quot;
+        self.force_context(other)
+        if self._cyclic and self._a == other.a and self._b == other.b:
+            return self.invert()[0]
+        if self.consecutive(other):
+            return self[self._b, self._b]
+        elif self.overlaps_with(other):
+            return None
+        else:
+            if self._b &gt; other.a and not self._cyclic:
+                return None
+            return self[self._b, other.a]</div>
+
+    # def union(self, other):
+    #     self.force_context(other)
+    #     if other in self:
+    #         return self[:]
+    #     elif self in other:
+    #         return other[:]
+    #     elif other.a in self and not other.t(other.b - 1) in self:
+    #         if self._a == other.b:
+    #             return self.new(self._a, None)
+    #         return self.new(self._a, other.b)
+    #     elif other.t(other.b - 1) in self and other.a not in self:
+    #         if other.a == self._b:
+    #             return self.new(self._a, None)
+    #         return self.new(other.a, self._b)
+
+    # def __ge__(self, other):
+    #     self.force_context(other)
+    #     return self._a &gt;= other.a
+
+    #     def __lt__(self, other):
+    #         return self._a &lt; other.a
+
+    #     def __gt__(self, other):
+    #         return self._a &gt; other.a
+
+    #     def __ge__(self, other):
+    #         return self._a &gt;= other.a
+
+    # def __invert__(self):
+    #     if self._a &gt; self._b:
+    #         if self._cyclic:
+    #             return self[self._b+1, self._a-1],
+    #         else:
+    # return
+
+<div class="viewcode-block" id="Span.invert"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.invert">[docs]</a>    def invert(self) -&gt; Union[Tuple[Span, Span], Tuple[Span, None]]:
+        &quot;&quot;&quot;Invert the region, returning a tuple of the remaining spans from the
+        context. If cyclic, a tuple (span, None) tuple is returned. If linear,
+        a (span, span) is returned.
+
+        :return: inverted regions
+        :rtype: tuple
+        &quot;&quot;&quot;
+        if len(self) &gt;= self._context_length:
+            return self[self._a, self._a], None
+        if self._cyclic:
+            return self[self._b, self._a], None
+        else:
+            return self[:, self._a], self[self._b, :]</div>
+
+    def __eq__(self, other: Span) -&gt; bool:
+        return (
+            self.same_context(other)
+            and self._a == other._a
+            and self._b == other._b
+            and self._c == other._c
+        )
+
+    def __ne__(self, other: Span) -&gt; bool:
+        return not (self.__eq__(other))
+
+    @classmethod
+    def _pos_in_ranges(cls, pos: int, ranges: List[Tuple[int, int]]):
+        for r in ranges:
+            if r[0] &lt;= pos &lt; r[1]:
+                return True
+        return False
+
+    def contains_pos(self, pos: int) -&gt; bool:
+        return self._pos_in_ranges(pos, self.ranges())
+
+    def contains_span(self, other: Span) -&gt; bool:
+        if not self.same_context(other):
+            return False
+        if other.a == other.b == self._a:
+            # special case where starting indices and ending indices are the same
+            return True
+        else:
+            if not self.contains_pos(other.a):
+                return False
+            elif not self.contains_pos(other.t(other.b - 1)):
+                return False
+            elif not len(other) &lt;= len(self):
+                return False
+            return True
+
+    def spans_origin(self) -&gt; bool:
+        if self._nwraps and self._cyclic:
+            return True
+        return self._b &lt; self._a and self._cyclic
+
+    def __contains__(self, other: Union[Span, int]):
+        if isinstance(other, int):
+            return self.contains_pos(other)
+        elif issubclass(type(other), Span):
+            return self.contains_span(other)
+
+    def __len__(self) -&gt; int:
+        return sum([r[1] - r[0] for r in self.ranges()])
+
+    def __iter__(self) -&gt; Generator[int]:
+        for i in chain(*[range(*x) for x in self.ranges()]):
+            yield i
+
+    def __invert__(self):
+        return self.invert()
+
+    def _check_index_pos(self, val: int, inclusive=True) -&gt; None:
+        if val is not None and not self.cyclic:
+
+            if inclusive and (val &gt;= len(self) or val &lt; -len(self)):
+                raise IndexError(
+                    &quot;Index &#39;{}&#39; outside of linear span with length of {}&quot;.format(
+                        val, len(self)
+                    )
+                )
+            elif not inclusive and (val &gt; len(self) or val &lt; -len(self)):
+                raise IndexError(
+                    &quot;Exclusive index &#39;{}&#39; outside of linear span with length of {}&quot;.format(
+                        val, len(self)
+                    )
+                )
+
+    def __getitem__(self, val):
+        if isinstance(val, int):
+            self._check_index_pos(val)
+            if val &lt; 0:
+                return self.t(val + self._c - self._index)
+            else:
+                return self.t(val + self._a - self._index)
+        elif issubclass(type(val), slice):
+            self._check_index_pos(val.start)
+            self._check_index_pos(val.stop, False)
+
+            if val.step == -1:
+                return self[val.start : val.stop].invert()
+            elif val.step is not None and val.step != 1:
+                raise ValueError(
+                    &quot;{} slicing does not support step {}.&quot;.format(
+                        self.__class__.__name__, val.step
+                    )
+                )
+
+            if val.start is None:
+                i = self._a
+            elif val.start &lt; 0:
+                i = self._c + val.start
+            else:
+                i = self._a + val.start
+
+            if val.stop is None:
+                j = self._c
+            elif val.stop &lt; 0:
+                j = self._c + val.stop
+            else:
+                j = self._a + val.stop
+
+            return self.new(i, j)
+        elif isinstance(val, tuple):
+            if len(val) &gt; 2:
+                raise ValueError(
+                    &quot;{} -- copying only supports (start, stop)&quot;.format(val)
+                )
+            val = list(val)
+            for i in [0, 1]:
+                if val[i] == slice(None, None, None):
+                    val[i] = None
+            if val == (None, None):
+                val = self.bounds()
+            elif val[0] is None:
+                val = (self.bounds()[0], val[1])
+            elif val[1] is None:
+                val = (val[0], self.bounds()[1])
+            return self.new(*val)
+        else:
+            raise ValueError(&quot;indexing does not support {}&quot;.format(type(val)))
+
+    def __repr__(self):
+        return (
+            &quot;&lt;{cls} {a} {b} ({c}) context_len={context_len} len={length} &quot;
+            &quot;cyclic={cyclic} index={index}, nwraps={n}&gt;&quot;.format(
+                cls=self.__class__.__name__,
+                a=self._a,
+                b=self._b,
+                c=self._c,
+                context_len=self._context_length,
+                cyclic=self._cyclic,
+                index=self._index,
+                length=len(self),
+                n=self._nwraps,
+            )
+        )
+
+    def __str__(self):
+        return self.__repr__()</div>
+
+
+<div class="viewcode-block" id="EmptySpan"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.EmptySpan">[docs]</a>class EmptySpan(Span):
+<div class="viewcode-block" id="EmptySpan.ranges"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.EmptySpan.ranges">[docs]</a>    def ranges(self, *args) -&gt; List[Tuple[int, int]]:
+        return [(self.bounds()[0], self.bounds()[0])]</div></div>
+
+
+class Direction:
+    FORWARD = 1
+    REVERSE = -1
+    BOTH = 0
+
+
+<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Region">[docs]</a>class Region(Span):
+    &quot;&quot;&quot;A direction span.&quot;&quot;&quot;
+
+    __slots__ = [&quot;name&quot;, &quot;id&quot;, &quot;direction&quot;]
+
+    FORWARD = Direction.FORWARD
+    REVERSE = Direction.REVERSE
+    BOTH = Direction.BOTH
+
+    def __init__(
+        self,
+        start: int,
+        end: int,
+        length: int,
+        cyclic: bool = False,
+        index: int = 0,
+        direction: int = FORWARD,
+        name: Union[None, str] = None,
+        region_id: Union[None, str] = None,
+        ignore_wrap: bool = False,
+        abs_wrap: bool = True,
+        strict: bool = None,
+    ):
+        &quot;&quot;&quot;Initialize a new Region.
+
+        :param start: start position
+        :param end: end position (exclusive)
+        :param length: length of context
+        :param cyclic: topology of context
+        :param index: starting index of context
+        :param direction: direction of the region
+        :param name: name of the region
+        :param region_id: id of the region
+        :param strict: if True, positions outside of context bounds are disallowed.
+        :type strict: bool
+        :param ignore_wrap: if True (default False), initialization indicies that wrap
+                            around multiple times will
+                            simply be mapped directly to the context (no wrapping used).
+        :type ignore_wrap: bool
+        :param abs_wrap:    if True, the abs difference between start and end wrappings
+                            are used. Starting wraps that are greater than ending wraps
+                            are valid. If False and the starting wrap is greater than
+                            the ending wrap, an IndexError is thrown.
+        &quot;&quot;&quot;
+        self.name = name
+        self.id = region_id
+        assert direction in [self.FORWARD, self.REVERSE, self.BOTH]
+        self.direction = direction
+        super().__init__(
+            start,
+            end,
+            length,
+            cyclic=cyclic,
+            index=index,
+            ignore_wrap=ignore_wrap,
+            strict=strict,
+            abs_wrap=abs_wrap,
+        )
+
+<div class="viewcode-block" id="Region.flip"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Region.flip">[docs]</a>    def flip(self) -&gt; Region:
+        &quot;&quot;&quot;Flip the indices of the region.&quot;&quot;&quot;
+        flipped = self.new(self.context_length - self.b, self.context_length - self.a)
+        flipped.direction *= -1
+        return flipped</div>
+
+    @property
+    def start(self):
+        if self.direction == self.REVERSE:
+            return self.b
+        else:
+            return self.a
+
+    @property
+    def end(self):
+        if self.direction == self.REVERSE:
+            return self.a
+        else:
+            return self.b
+
+<div class="viewcode-block" id="Region.new"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Region.new">[docs]</a>    def new(self, a: Union[None, int], b: Union[None, int]):
+        _new = super().new(a, b)
+        _new.direction = self.direction
+        return _new</div>
+
+    def __eq__(self, other: &quot;Region&quot;) -&gt; bool:
+        return super().__eq__(other) and self.direction == other.direction
+
+    def __str__(self):
+        return (
+            &quot;&lt;{cls} {a} {b} ({c}) context_len={context_len} len={length} &quot;
+            &quot;cyclic={cyclic} direction={direction} index={index}, nwraps={n}&gt;&quot;.format(
+                cls=self.__class__.__name__,
+                a=self._a,
+                b=self._b,
+                c=self._c,
+                context_len=self._context_length,
+                cyclic=self._cyclic,
+                index=self._index,
+                length=len(self),
+                n=self._nwraps,
+                direction=self.direction,
+            )
+        )</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

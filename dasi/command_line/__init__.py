@@ -29,6 +29,7 @@ class CLI:
         templates="templates/*.gb",
         fragments="fragments/*.gb",
         goals="goals/*.gb",
+        verbose="v",
     ):
         self._directory = directory
         self._primers = os.path.join(self._directory, primers)
@@ -37,6 +38,18 @@ class CLI:
         self._goals = os.path.join(self._directory, goals)
         self._do_save = True
         self._logger = logger(self)
+        if verbose == "v":
+            self._logger.set_level("INFO")
+        elif verbose == "vv":
+            logger.set_level("INFO")
+        elif verbose == "vvv":
+            logger.set_level("DEBUG")
+        elif verbose is None:
+            pass
+        else:
+            raise ValueError(
+                "Verbose level '{}' not recognized. " "Select from 'v', 'vv', or 'vvv'"
+            )
 
     def run(self):
         import warnings
@@ -44,20 +57,28 @@ class CLI:
         warnings.simplefilter(action="ignore", category=RuntimeWarning)
         warnings.simplefilter(action="ignore", category=BiopythonParserWarning)
 
+        self._logger.info("Loading sequence files")
         primers = make_linear(load_fasta_glob(self._primers))
         templates = make_circular(load_genbank_glob(self._templates))
         fragments = make_linear(load_genbank_glob(self._fragments))
         goals = make_circular(load_genbank_glob(self._goals))
-
-        span_cost = self._get_span_cost()
-        design = Design(span_cost=span_cost)
+        design = Design()
         design.n_jobs = 10
         design.add_materials(
             primers=primers, templates=templates, fragments=fragments, queries=goals
         )
 
+        self._logger.info("Getting span cost model")
+        span_cost = self._get_span_cost()
+        design.span_cost = span_cost
+
+        self._logger.info("Compiling possible molecular assemblies")
         design.compile()
+
+        self._logger.info("Optimizing molecular assemblies")
         design.optimize()
+
+        self._logger.info("Designing assembly primers and fragments")
         df, adf = design.to_df()
         adf.to_csv(os.path.join(self._directory, "assembly.csv"))
         df.to_csv(os.path.join(self._directory, "out.csv"))

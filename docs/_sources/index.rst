@@ -35,3 +35,8 @@ The developer documentation conatins information on how to contribute to DASi.
 
    guidelines
 
+.. code-block:: python
+
+   from dasi import Design
+
+   design = Design()

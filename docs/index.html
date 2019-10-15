@@ -98,13 +98,7 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.design_algorithms.html">dasi.design.design_algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.graph_builder.html">dasi.design.graph_builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.optimize.html">dasi.design.optimize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.plotter.html">dasi.design.plotter</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.params.html">dasi.cost.params</a></li>
@@ -113,14 +107,28 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.utils.networkx.html">dasi.utils.networkx</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.html#networkx-utilities-dasi-utils-networkx">NetworkX Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
 </ul>
 </ul>
 </li>
@@ -182,12 +190,23 @@
 <h1>User Documentation<a class="headerlink" href="#user-documentation" title="Permalink to this headline">¶</a></h1>
 <p>The user documentation contains high-level information for users of DASi.</p>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
 </div>
 </div>
 <div class="section" id="developer-documentation">
 <h1>Developer Documentation<a class="headerlink" href="#developer-documentation" title="Permalink to this headline">¶</a></h1>
 <p>The developer documentation conatins information on how to contribute to DASi.</p>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
+</ul>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dasi</span> <span class="kn">import</span> <span class="n">Design</span>
+
+<span class="n">design</span> <span class="o">=</span> <span class="n">Design</span><span class="p">()</span>
+</pre></div>
 </div>
 </div>
 

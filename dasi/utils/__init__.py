@@ -2,14 +2,35 @@ r"""
 Utilities (:mod:`dasi.utils`)
 =============================
 
+This module provide various utility functions.
+
 .. currentmodule:: dasi.utils
 
-This module provide various utility functions.
+Utility modules
+---------------
 
 .. autosummary::
     :toctree: generated/
 
-    networkx
+    npdf
+    region
+    sequence_design
+
+Networkx utilities
+------------------
+
+.. currentmodule:: dasi.utils.networkx
+
+Specialized networkx algorithms for path and cycle finding.
+
+.. autosummary::
+    :toctree: generated/
+
+    algorithsm
+    exceptions
+    shortest_path
+    utils
+
 """
 import bisect
 import functools

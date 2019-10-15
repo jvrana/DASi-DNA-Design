@@ -3,7 +3,7 @@ h1, h2, h3 {
 }
 
 a {
-    color: #84629d !important;
+    color: #98509d !important;
 }
 
 a:active, a:hover, a:focus {
@@ -97,7 +97,7 @@ table.citation td > em {
 
 #navbar .dropdown-menu > li > a:hover {
     color: #FFF !important;
-    background-color: #b8008d !important;
+    background-color: #b84386 !important;
 }
 
 .navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {

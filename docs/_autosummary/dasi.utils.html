@@ -56,13 +56,7 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../generated/dasi.design.design_algorithms.html">dasi.design.design_algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/dasi.design.graph_builder.html">dasi.design.graph_builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/dasi.design.optimize.html">dasi.design.optimize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generated/dasi.design.plotter.html">dasi.design.plotter</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../generated/dasi.cost.params.html">dasi.cost.params</a></li>
@@ -71,14 +65,28 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../generated/dasi.utils.networkx.html">dasi.utils.networkx</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.networkx.html#networkx-utilities-dasi-utils-networkx">NetworkX Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
 </ul>
 </ul>
 </li>
@@ -118,46 +126,8 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="module-dasi.utils">
-<span id="dasi-utils"></span><h1>dasi.utils<a class="headerlink" href="#module-dasi.utils" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="utilities-dasi-utils">
-<h2>Utilities (<a class="reference internal" href="../utils.html#module-dasi.utils" title="dasi.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code></a>)<a class="headerlink" href="#utilities-dasi-utils" title="Permalink to this headline">¶</a></h2>
-<p>This module provide various utility functions.</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../generated/dasi.utils.networkx.html#module-dasi.utils.networkx" title="dasi.utils.networkx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx</span></code></a></p></td>
-<td><p>NetworkX Utilities (<a class="reference internal" href="../generated/dasi.utils.networkx.html#module-dasi.utils.networkx" title="dasi.utils.networkx"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils.networkx</span></code></a>)</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Functions</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#dasi.utils.bisect_between" title="dasi.utils.bisect_between"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bisect_between</span></code></a>(a, low, high)</p></td>
-<td><p>Returns the start (inclusive) and end (exclusive) indices for a sorted array using a key function.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../utils.html#dasi.utils.bisect_slice_between" title="dasi.utils.bisect_slice_between"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bisect_slice_between</span></code></a>(a, keys, low, high)</p></td>
-<td><p>Slice the iterable using inclusive bisection.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#dasi.utils.perfect_subject" title="dasi.utils.perfect_subject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">perfect_subject</span></code></a>(data)</p></td>
-<td><p>Determine whether a blast result consumes the entire subject.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prep_df</span></code>(df)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../utils.html#dasi.utils.sort_with_keys" title="dasi.utils.sort_with_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_with_keys</span></code></a>(a, key)</p></td>
-<td><p>Sort an iterable, returning both the sorted array and the sorted keys.</p></td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="dasi-utils">
+<h1>dasi.utils<a class="headerlink" href="#dasi-utils" title="Permalink to this headline">¶</a></h1>
 <p><strong>Functions</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -176,6 +146,76 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../utils.html#dasi.utils.sort_with_keys" title="dasi.utils.sort_with_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_with_keys</span></code></a>(a, key)</p></td>
 <td><p>Sort an iterable, returning both the sorted array and the sorted keys.</p></td>
+</tr>
+</tbody>
+</table>
+<span class="target" id="module-dasi.utils"></span><div class="section" id="utilities-dasi-utils">
+<h2>Utilities (<a class="reference internal" href="../utils.html#module-dasi.utils" title="dasi.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code></a>)<a class="headerlink" href="#utilities-dasi-utils" title="Permalink to this headline">¶</a></h2>
+<p>This module provide various utility functions.</p>
+<div class="section" id="utility-modules">
+<h3>Utility modules<a class="headerlink" href="#utility-modules" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../generated/dasi.utils.npdf.html#module-dasi.utils.npdf" title="dasi.utils.npdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">npdf</span></code></a></p></td>
+<td><p>NumpyDataFrame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../generated/dasi.utils.region.html#module-dasi.utils.region" title="dasi.utils.region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">region</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../generated/dasi.utils.sequence_design.html#module-dasi.utils.sequence_design" title="dasi.utils.sequence_design"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sequence_design</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="networkx-utilities">
+<h3>Networkx utilities<a class="headerlink" href="#networkx-utilities" title="Permalink to this headline">¶</a></h3>
+<p>Specialized networkx algorithms for path and cycle finding.</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">algorithsm</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../generated/dasi.utils.networkx.exceptions.html#module-dasi.utils.networkx.exceptions" title="dasi.utils.networkx.exceptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exceptions</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../generated/dasi.utils.networkx.shortest_path.html#module-dasi.utils.networkx.shortest_path" title="dasi.utils.networkx.shortest_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shortest_path</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../generated/dasi.utils.networkx.utils.html#module-dasi.utils.networkx.utils" title="dasi.utils.networkx.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bisect_between</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bisect_slice_between</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">perfect_subject</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prep_df</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_with_keys</span></code></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -250,6 +290,7 @@ and keys are sorted. Bisect at specified <cite>low</cite> and <cite>high</cite>.
 </dl>
 </dd></dl>
 
+</div>
 </div>
 </div>
 

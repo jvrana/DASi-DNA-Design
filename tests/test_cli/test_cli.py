@@ -36,5 +36,5 @@ def outdir(paths):
 
 
 def test(outdir):
-    cli = CLI(".out")
+    cli = CLI(".test_out")
     cli.run()

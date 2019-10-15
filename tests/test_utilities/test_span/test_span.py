@@ -1,4 +1,6 @@
 import pytest
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 from dasi.utils.region import Span
 
@@ -511,13 +513,28 @@ def test_ranges_ignore_wraps():
     assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
 
 
-def test_get_slice():
-    span = Span(8, 22, 10, cyclic=True)
-    x = list(range(20, 140))
-    y = span.get_slice(x)
-    assert y == [x[_s] for _s in list(span)]
+class TestGetSlice:
+    def test_get_slice_str():
+        span = Span(8, 22, 10, cyclic=True)
+        x = "abcdefghijklmnopqrstuv"
+        y = span.get_slice(x)
 
-    span = Span(8, 22, 10, cyclic=True)
-    x = tuple(range(20, 140))
-    y = span.get_slice(x)
-    assert y == tuple([x[_s] for _s in list(span)])
+    def test_get_slice_list_of_ints(self):
+        span = Span(8, 22, 10, cyclic=True)
+        x = list(range(20, 140))
+        y = span.get_slice(x)
+        print(list(span.get_slice_iter(x)))
+        print(y)
+        assert y == [x[_s] for _s in list(span)]
+
+        span = Span(8, 22, 10, cyclic=True)
+        x = tuple(range(20, 140))
+        y = span.get_slice(x)
+        assert y == tuple([x[_s] for _s in list(span)])
+
+    def test_get_slice_seqrecord(self):
+        seq = SeqRecord(Seq("AGGGTGTGTGCGA"))
+        span = Span(8, 22, len(seq), cyclic=True)
+
+        seq2 = span.get_slice(seq)
+        print(seq2)

@@ -183,7 +183,7 @@ def _design_gap(
         a = n1.index + lshift
         b = a + gene_size
         gene_region = edge_data["query_region"].new(a, b)
-        gene_seq = gene_region.get_slice(qrecord.seq)
+        gene_seq = gene_region.get_slice(qrecord)
         return gene_seq, gene_region
     else:
         return None, None

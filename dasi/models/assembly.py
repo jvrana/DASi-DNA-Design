@@ -404,7 +404,12 @@ class Assembly(Iterable):
     @property
     def reactions(self):
         if not self._reactions:
-            self._reactions = self._design_reactions()
+            reactions = []
+            for n1, n2, edata in self.edges():
+                reaction = design_edge(self, n1, n2, seqdb=self.seqdb)
+                if reaction:
+                    reactions.append(reaction)
+            self._reactions = reactions
         return self._reactions
 
     def post_validate(self):

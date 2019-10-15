@@ -85,33 +85,6 @@ def test_primer_design_overorigin():
     assert pairs
 
 
-def pkl_results(here, paths, query, span_cost):
-    path = "results.pkl"
-
-    if os.path.isfile(path):
-        with open(path, "rb") as f:
-            return dill.load(f)
-    else:
-        primers = make_linear(load_fasta_glob(paths["primers"]))
-        templates = load_genbank_glob(paths["templates"]) + load_genbank_glob(
-            paths["registry"]
-        )
-
-        query_path = os.path.join(here, "data/test_data/genbank/designs", query)
-        queries = make_circular(load_genbank_glob(query_path))
-
-        design = Design(span_cost=span_cost)
-        design.n_jobs = 10
-        design.add_materials(primers=primers, templates=templates, queries=queries)
-
-        design.compile()
-
-        results = design.optimize()
-        with open(path, "wb") as f:
-            dill.dump(results, f)
-        return results
-
-
 class TestExpectedSequences:
     def design_for_assembly(self, design, assembly):
         reactions = []
@@ -183,6 +156,12 @@ class TestExpectedSequences:
             for reactions in rlist:
                 assemblies = self.reactions_to_assembly(reactions)
                 assert len(assemblies) == 2
+
+    def test_call_reactions_from_assembly(self, multi_processed_results):
+        design, results = multi_processed_results
+        for result in results.values():
+            for assembly in result.assemblies:
+                assert assembly.reactions
 
                 # print("REACTIONS")
                 # for r in reactions:

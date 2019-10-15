@@ -59,7 +59,7 @@
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#alignments">Alignments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
@@ -128,17 +128,17 @@ from .design_algorithms import multiprocessing_assemble_graph
 from .design_algorithms import multiprocessing_optimize_graph
 from .design_algorithms import optimize_graph
 from .graph_builder import AssemblyGraphBuilder
-from dasi.alignments import Alignment
-from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.cost import SpanCost
-from dasi.design.assembly import Assembly
 from dasi.design.graph_builder import AssemblyNode
-from dasi.design.sequence_design import design_edge
 from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
+from dasi.models import Alignment
+from dasi.models import AlignmentContainer
+from dasi.models import AlignmentContainerFactory
+from dasi.models import Assembly
 from dasi.utils import perfect_subject
+
 
 BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;reward&quot;: 1, &quot;penalty&quot;: -5}
 
@@ -160,6 +160,10 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
         self._keys = []
 
     @property
+    def seqdb(self):
+        return self.container.seqdb
+
+    @property
     def assemblies(self) -&gt; Tuple[Assembly, ...]:
         &quot;&quot;&quot;Return a tuple of all assemblies.
 
@@ -169,7 +173,13 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
 
     def _add_assembly_from_path(self, path: List[AssemblyNode]):
         return Assembly(
-            path, self.container, self.graph, self.query_key, self.query, do_raise=False
+            path,
+            self.container,
+            self.graph,
+            self.query_key,
+            self.query,
+            seqdb=self.seqdb,
+            do_raise=False,
         )
 
 <div class="viewcode-block" id="DesignResult.add_assembly"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.DesignResult.add_assembly">[docs]</a>    def add_assembly(
@@ -217,19 +227,6 @@ BLAST_PENALTY_CONFIG = {&quot;gapopen&quot;: 3, &quot;gapextend&quot;: 3, &quot;
             self.add_assembly(
                 path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
             )</div>
-
-    def _design_sequences_for_assembly(self, assembly):
-        seqdb = self.container.seqdb
-        for n1, n2, edata in assembly.edges():
-            design_edge(assembly, n1, n2, seqdb)
-            # edata[&quot;sequence_result&quot;] = seq_result
-
-    def design_sequences(self):
-        for a in self.assemblies:
-            self._design_sequences_for_assembly(a)
-
-    def design_sequence_output(self):
-        pass
 
     #
     #
@@ -508,9 +505,10 @@ class FakePool:
                     len(self.graphs), n_jobs
                 ),
             ):
-                return self._optimize_with_threads(n_paths, n_jobs)
+                self._results = self._optimize_with_threads(n_paths, n_jobs)
         else:
-            return self._optimize_without_threads(n_paths)
+            self._results = self._optimize_without_threads(n_paths)
+        return self._results
 
 <div class="viewcode-block" id="Design._optimize_without_threads"><a class="viewcode-back" href="../../developer/api_reference.html#dasi.design.Design._optimize_without_threads">[docs]</a>    def _optimize_without_threads(self, n_paths) -&gt; Dict[str, DesignResult]:
         &quot;&quot;&quot;Finds the optimal paths for each query in the design.&quot;&quot;&quot;

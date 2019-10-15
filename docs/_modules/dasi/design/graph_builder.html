@@ -59,7 +59,7 @@
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.alignments">Alignments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#alignments">Alignments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
 </ul>
@@ -109,7 +109,6 @@
   <h1>Source code for dasi.design.graph_builder</h1><div class="highlight"><pre>
 <span></span>import bisect
 import itertools
-from collections import namedtuple
 from typing import Iterable
 from typing import List
 from typing import Tuple
@@ -119,17 +118,16 @@ import networkx as nx
 import numpy as np
 from more_itertools import partition
 
-from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentGroup
-from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.log import logger
-from dasi.molecule import MoleculeType
+from dasi.models import AlignmentContainer
+from dasi.models import AlignmentGroup
+from dasi.models import AssemblyNode
+from dasi.models import MoleculeType
+from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
 from dasi.utils import sort_with_keys
-
-AssemblyNode = namedtuple(&quot;AssemblyNode&quot;, &quot;index expandable type overhang&quot;)
 
 
 <div class="viewcode-block" id="AssemblyGraphBuilder"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.design.AssemblyGraphBuilder">[docs]</a>class AssemblyGraphBuilder:

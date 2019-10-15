@@ -109,7 +109,7 @@ class TestExpectedSequences:
         if length_only:
             assert len(product) == len(reaction.outputs[0].query_region)
             return
-        assert str(product).upper() == reaction.outputs[0].sequence.upper()
+        assert str(product).upper() == str(reaction.outputs[0].sequence.seq).upper()
 
     def reactions_to_assembly(self, reactions):
         seqs = []

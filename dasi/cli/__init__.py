@@ -15,17 +15,19 @@ from dasi.log import logger
 class CLI:
     def __init__(
         self,
+        directory=os.getcwd(),
         primers="primers.fasta",
         templates="templates/*.gb",
         fragments="fragments/*.gb",
         goals="goals/*.gb",
     ):
-        self._directory = os.getcwd()
+        self._directory = directory
         self._primers = os.path.join(self._directory, primers)
         self._templates = os.path.join(self._directory, templates)
         self._fragments = os.path.join(self._directory, fragments)
         self._goals = os.path.join(self._directory, goals)
         self._do_save = True
+        self._logger = logger(self)
 
     def run(self):
         import warnings
@@ -47,9 +49,9 @@ class CLI:
 
         design.compile()
         design.optimize()
-        df, adf = design.to_csv()
-        adf.to_csv("assembly.csv")
-        df.to_csv("out.csv")
+        df, adf = design.to_df()
+        adf.to_csv(os.path.join(self._directory, "assembly.csv"))
+        df.to_csv(os.path.join(self._directory, "out.csv"))
 
     def _get_span_cost(self):
         """Saves the span cost as bytes; reloads when called."""

@@ -474,7 +474,12 @@ class Design:
                 df["DESIGN_KEY"] = qk
                 df["ASSEMBLY_ID"] = assembly_index
                 dfs.append(df)
-                adfs.append(a.to_df())
+
+                adf = a.to_df()
+                adf["DESIGN_ID"] = i
+                adf["DESIGN_KEY"] = qk
+                adf["ASSEMBLY_ID"] = assembly_index
+                adfs.append(adf)
             else:
                 msg = "Query {} {} yielded no assembly".format(self.seqdb[qk].name, i)
                 self.logger.error(msg)

@@ -572,5 +572,5 @@ class TestOutput:
 
     def test_design_to_csv(self, example_design):
         design, results = example_design
-        df = design.to_csv()
+        df = design.to_df()
         print(df)

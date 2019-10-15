@@ -16,6 +16,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import primer3plus
+from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from primer3plus.utils import reverse_complement as rc
@@ -163,17 +164,17 @@ def get_primer_extensions(
 
 def _use_direct(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
-) -> Tuple[str, AlignmentGroup]:
+) -> Tuple[SeqRecord, AlignmentGroup]:
     group = edge[2]["groups"][0]
     alignment = group.alignments[0]
     sk = alignment.subject_keys
     srecord = seqdb[sk]
-    return str(srecord.seq), alignment
+    return srecord, alignment
 
 
 def _design_gap(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord
-) -> Union[Tuple[str, Region], Tuple[None, None]]:
+) -> Union[Tuple[SeqRecord, Region], Tuple[None, None]]:
     n1, _, edge_data = edge
     gene_size = edge_data["gene_size"]
     if not np.isnan(gene_size):
@@ -182,7 +183,7 @@ def _design_gap(
         a = n1.index + lshift
         b = a + gene_size
         gene_region = edge_data["query_region"].new(a, b)
-        gene_seq = gene_region.get_slice(qrecord.seq, as_type=str)
+        gene_seq = gene_region.get_slice(qrecord.seq)
         return gene_seq, gene_region
     else:
         return None, None
@@ -343,23 +344,24 @@ def design_edge(
         for x in ["LEFT", "RIGHT"]:
             primer_seq = pair[x]["OVERHANG"] + pair[x]["SEQUENCE"]
             primer_group = pair[x]["GROUP"]
+            primer_record = SeqRecord(Seq(primer_seq))
             primer = Molecule(
                 MoleculeType.types[Constants.PRIMER],
                 primer_group,
-                primer_seq,
+                primer_record,
                 metadata=pair[x],
             )
             primers.append(primer)
         template = Molecule(
             MoleculeType.types[Constants.TEMPLATE],
             pair["PAIR"]["GROUP"],
-            str(seqdb[pair["PAIR"]["SUBJECT_KEY"]].seq),
+            seqdb[pair["PAIR"]["SUBJECT_KEY"]],
         )
 
         product = Molecule(
             moltype,
             group,
-            query_region.get_slice(seqdb[query_key], as_type=str),
+            query_region.get_slice(seqdb[query_key]),
             query_region=query_region,
         )
 

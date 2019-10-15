@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import operator
 from collections.abc import Container
 from collections.abc import Iterable
 from collections.abc import Sized
+from functools import reduce
 from itertools import chain
 from typing import Any
+from typing import Callable
 from typing import Generator
 from typing import List
 from typing import Tuple
@@ -510,22 +513,45 @@ class Span(Container, Iterable, Sized):
         :param x: the iterable to slice
         :return: iterable
         """
-        return chain(*[x[s] for s in self.slices()])
+        for s in self.slices():
+            yield x[s]
 
-    def get_slice(self, x: List, as_type=None) -> Any:
+    def get_slice(
+        self,
+        x: List,
+        infer_type: bool = True,
+        as_type: Any = None,
+        summary_func: Callable = None,
+        reduce_op: Callable = operator.add,
+    ) -> Any:
         """Use the region to slice the iterable, returning a iterable of the
         same type as 'x'. If as_type is provided, the iterable will be
         typecast.
 
         :param x: the iterable to slice
         :param as_type: type to convert the iterable into
+        :param summary_func: summary function that takes in an interable. If none, uses
+                            `itertools.reduce(operator.add, arr)`
         :return: Any
         """
-        if as_type is None:
-            as_type = type(x)
-        if as_type is str:
-            return "".join(self.get_slice_iter(x))
-        return as_type(self.get_slice_iter(x))
+        if summary_func is None:
+            if reduce_op is not None:
+
+                def summary_func(arr):
+                    return reduce(reduce_op, arr)
+
+            else:
+
+                def summary_func(arr):
+                    return arr
+
+        new_arr = summary_func(self.get_slice_iter(x))
+        if infer_type:
+            if as_type is None:
+                as_type = type(x)
+        if as_type:
+            return as_type(new_arr)
+        return new_arr
 
     def reindex(self, i, strict=None, ignore_wrap=None):
         """Return a new span with positions reindexed.

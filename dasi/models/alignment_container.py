@@ -8,7 +8,6 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
-from uuid import uuid4
 
 from Bio.SeqRecord import SeqRecord
 from frozendict import frozendict
@@ -23,7 +22,6 @@ from .alignment import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
-from dasi.molecule import MoleculeType
 from dasi.utils import bisect_slice_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys

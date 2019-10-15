@@ -1,16 +1,14 @@
-import bisect
 from multiprocessing import Pool
 from typing import List
 from typing import Tuple
 
 import networkx as nx
-import numpy as np
 
 from .optimize import optimize_graph
-from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentContainerFactory
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyGraphBuilder
+from dasi.models import AlignmentContainer
+from dasi.models import AlignmentContainerFactory
 
 
 def _multiprocessing_optimize_graph(

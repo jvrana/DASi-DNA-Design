@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from collections import Iterable
+from collections import namedtuple
 from itertools import groupby
 from itertools import zip_longest
 from typing import Any
 from typing import Dict
 from typing import Generator
-from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -19,21 +20,20 @@ from more_itertools import pairwise
 from primer3plus.utils import reverse_complement as rc
 from pyblast.utils import is_circular
 
-from dasi.alignments import Alignment
-from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentGroup
-from dasi.alignments import PCRProductAlignmentGroup
+from .alignment import Alignment
+from .alignment import AlignmentGroup
+from .alignment import PCRProductAlignmentGroup
+from .alignment_container import AlignmentContainer
+from .molecule import Molecule
+from .molecule import MoleculeType
+from .molecule import Reaction
 from dasi.constants import Constants
 from dasi.cost import SpanCost
-from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.exceptions import DasiNoPrimerPairsException
 from dasi.exceptions import DasiSequenceDesignException
 from dasi.log import logger
-from dasi.molecule import Molecule
-from dasi.molecule import MoleculeType
-from dasi.molecule import Reaction
 from dasi.utils import NumpyDataFrame
 from dasi.utils import Region
 from dasi.utils import sort_cycle
@@ -365,6 +365,9 @@ def design_edge(
         return Reaction("PCR", inputs=primers + [template], outputs=[product])
 
 
+AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
+
+
 class Assembly(Iterable):
     """Should take in a path, graph, container, seqdb to produce relevant
     information."""
@@ -397,15 +400,6 @@ class Assembly(Iterable):
 
         if do_raise:
             self.post_validate(do_raise)
-
-    def _design_reactions(self):
-        reactions = []
-        for n1, n2, edata in self.edges():
-            reaction = design_edge(self, n1, n2, self.seqdb)
-            if reaction:
-                reactions.append(reaction)
-        self.add_reactions(reactions)
-        return reactions
 
     @property
     def reactions(self):

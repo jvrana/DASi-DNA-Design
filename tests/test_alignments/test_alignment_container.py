@@ -7,10 +7,10 @@ import pytest
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-from dasi.alignments import Alignment
-from dasi.alignments import AlignmentContainer
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
+from dasi.models import Alignment
+from dasi.models import AlignmentContainer
 from dasi.utils import Region
 
 

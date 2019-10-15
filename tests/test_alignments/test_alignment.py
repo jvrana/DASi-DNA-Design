@@ -1,8 +1,8 @@
 import pytest
 
-from dasi.alignments import Alignment
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentException
+from dasi.models import Alignment
 from dasi.utils.region import Region
 
 

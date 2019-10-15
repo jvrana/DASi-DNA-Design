@@ -2,6 +2,8 @@
 
 classes representing *molecules* and types of *molecules*
 """
+from __future__ import annotations
+
 from copy import copy
 from typing import Dict
 from typing import List
@@ -10,7 +12,7 @@ from typing import Union
 
 from numpy import inf
 
-from .constants import Constants
+from dasi.constants import Constants
 from dasi.utils import Region
 
 

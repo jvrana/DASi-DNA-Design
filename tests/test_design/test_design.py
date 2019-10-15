@@ -96,6 +96,29 @@ class TestMultiProcessing:
 
             assert not diff
 
+    def _pair_keys(self, design1, design2):
+
+        name_to_key = {design2.seqdb[k].name: k for k in design2.containers}
+        key_to_name = {k: design1.seqdb[k].name for k in design1.containers}
+
+        paired_keys = []
+        for key1 in design1.containers:
+            name1 = key_to_name[key1]
+            key2 = name_to_key[name1]
+            paired_keys.append((key1, key2))
+        return paired_keys
+
+    def test_same_groups(self, single_compiled_results, multi_compiled_results):
+        design1 = single_compiled_results
+        design2 = multi_compiled_results
+
+        paired_keys = self._pair_keys(design1, design2)
+
+        for k1, k2 in paired_keys:
+            c1 = design1.containers[k1]
+            c2 = design2.containers[k2]
+            assert len(c1.groups()) == len(c2.groups())
+
     def test_same_results(self, single_processed_results, multi_processed_results):
         """The output results from single and multiprocessed results should be
         exactly the same (minus the difference in query_keys."""
@@ -105,14 +128,7 @@ class TestMultiProcessing:
 
         assert len(results1) == len(results2), "Number of results should be the same"
 
-        name_to_key = {design2.seqdb[k].name: k for k in results2}
-        key_to_name = {k: design1.seqdb[k].name for k in results1}
-
-        paired_keys = []
-        for key1 in results1:
-            name1 = key_to_name[key1]
-            key2 = name_to_key[name1]
-            paired_keys.append((key1, key2))
+        paired_keys = self._pair_keys(design1, design2)
 
         for k1, k2 in paired_keys:
             r1 = results1[k1]

@@ -1,6 +1,6 @@
-from dasi.alignments import Alignment
-from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
+from dasi.models import Alignment
+from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import Region
 
 

@@ -19,15 +19,15 @@ from .design_algorithms import multiprocessing_assemble_graph
 from .design_algorithms import multiprocessing_optimize_graph
 from .design_algorithms import optimize_graph
 from .graph_builder import AssemblyGraphBuilder
-from dasi.alignments import Alignment
-from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentContainerFactory
 from dasi.constants import Constants
 from dasi.cost import SpanCost
-from dasi.design.assembly import Assembly
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
+from dasi.models import Alignment
+from dasi.models import AlignmentContainer
+from dasi.models import AlignmentContainerFactory
+from dasi.models import Assembly
 from dasi.utils import perfect_subject
 
 

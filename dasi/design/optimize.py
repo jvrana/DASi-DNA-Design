@@ -5,7 +5,6 @@ from typing import Tuple
 import networkx as nx
 import numpy as np
 
-from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DASiWarning
 from dasi.utils import sort_with_keys

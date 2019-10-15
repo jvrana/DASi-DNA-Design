@@ -1,6 +1,5 @@
 import bisect
 import itertools
-from collections import namedtuple
 from typing import Iterable
 from typing import List
 from typing import Tuple
@@ -10,17 +9,16 @@ import networkx as nx
 import numpy as np
 from more_itertools import partition
 
-from dasi.alignments import AlignmentContainer
-from dasi.alignments import AlignmentGroup
-from dasi.alignments import PCRProductAlignmentGroup
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.log import logger
-from dasi.molecule import MoleculeType
+from dasi.models import AlignmentContainer
+from dasi.models import AlignmentGroup
+from dasi.models import AssemblyNode
+from dasi.models import MoleculeType
+from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
 from dasi.utils import sort_with_keys
-
-AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
 
 
 class AssemblyGraphBuilder:

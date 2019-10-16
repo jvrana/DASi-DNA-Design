@@ -49,9 +49,7 @@ def paths(here) -> Dict[str, str]:
     return {
         PRIMERS: join(here, "data/test_data/primers/primers.fasta"),
         TEMPLATES: join(here, "data/test_data/genbank/templates/*.gb"),
-        QUERIES: join(
-            here, "data/test_data/genbank/designs/pmodkan-ho-pact1-z4-er-vpr.gb"
-        ),
+        QUERIES: join(here, "data/test_data/genbank/designs/*.gb"),
         REGISTRY: join(here, "data/test_data/genbank/benchling_registry/*.gb"),
     }
 

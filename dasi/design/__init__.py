@@ -1,4 +1,11 @@
-"""Primer and synthesis design."""
+r"""
+Design (:mod:`dasi.design`)
+=============================
+
+.. currentmodule:: dasi.design
+
+This module provide DNA assembly functionality for DASi.
+"""
 from __future__ import annotations
 
 import bisect
@@ -9,6 +16,7 @@ from typing import List
 from typing import Tuple
 
 import networkx as nx
+import pandas as pd
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from pyblast import BioBlastFactory
@@ -23,13 +31,14 @@ from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiInvalidMolecularAssembly
+from dasi.exceptions import DASiWarning
 from dasi.log import logger
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
-
+from dasi.utils import prep_df
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 
@@ -203,7 +212,7 @@ class Design:
         self._seqdb = seqdb  #: Sequence dict registry
         self.span_cost = span_cost  #: span cost df
         self.graphs = {}  #: Dict[str, nx.DiGraph]
-        self.results = {}  #: Dict[str, DesignResult]
+        self._results = {}  #: Dict[str, DesignResult]
         self.template_results = []
         self.fragment_results = []
         self.primer_results = []
@@ -213,6 +222,10 @@ class Design:
     @property
     def seqdb(self) -> Dict[str, SeqRecord]:
         return self._seqdb
+
+    @property
+    def results(self):
+        return dict(self._results)
 
     def add_materials(
         self,
@@ -351,7 +364,7 @@ class Design:
 
     def compile(self, n_jobs=None):
         """Compile materials to assembly graph."""
-        self.results = {}
+        self._results = {}
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
@@ -454,6 +467,52 @@ class Design:
             cyclic = is_circular(query)
             result = DesignResult(container=container, query_key=query_key, graph=graph)
             yield query_key, graph, len(query), cyclic, result
+
+    # TODO: order keys
+    def to_df(self, assembly_index=0):
+        dfs = []
+        adfs = []
+        for i, (qk, result) in enumerate(self.results.items()):
+            if result.assemblies:
+                a = result.assemblies[assembly_index]
+                df = a.to_csv()
+                df["DESIGN_ID"] = i
+                df["DESIGN_KEY"] = qk
+                df["ASSEMBLY_ID"] = assembly_index
+                dfs.append(df)
+
+                adf = a.to_df()
+                adf["DESIGN_ID"] = i
+                adf["DESIGN_KEY"] = qk
+                adf["ASSEMBLY_ID"] = assembly_index
+                adfs.append(adf)
+            else:
+                msg = "Query {} {} yielded no assembly".format(self.seqdb[qk].name, i)
+                self.logger.error(msg)
+
+        df = pd.concat(dfs)
+        colnames = [
+            "DESIGN_ID",
+            "DESIGN_KEY",
+            "ASSEMBLY_ID",
+            "REACTION_ID",
+            "NAME",
+            "TYPE",
+            "KEY",
+            "ROLE",
+            "REGION",
+            "SEQUENCE",
+            "LENGTH",
+            "META",
+        ]
+        df.columns = colnames
+        df.sort_values(
+            by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
+            inplace=True,
+        )
+
+        adf = pd.concat(adfs)
+        return df, adf
 
 
 class LibraryDesign(Design):

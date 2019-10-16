@@ -1,4 +1,37 @@
-"""Utilities."""
+r"""
+Utilities (:mod:`dasi.utils`)
+=============================
+
+This module provide various utility functions.
+
+.. currentmodule:: dasi.utils
+
+Utility modules
+---------------
+
+.. autosummary::
+    :toctree: generated/
+
+    npdf
+    region
+    sequence_design
+
+Networkx utilities
+------------------
+
+.. currentmodule:: dasi.utils.networkx
+
+Specialized networkx algorithms for path and cycle finding.
+
+.. autosummary::
+    :toctree: generated/
+
+    algorithsm
+    exceptions
+    shortest_path
+    utils
+
+"""
 import bisect
 import functools
 from typing import Any
@@ -64,3 +97,23 @@ def perfect_subject(data):
         and data["start"] == data["length"]
     ):
         return True
+
+
+def prep_df(df):
+    colnames = [
+        "DESIGN_ID",
+        "DESIGN_KEY",
+        "ASSEMBLY_ID",
+        "REACTION_ID",
+        "NAME",
+        "TYPE",
+        "KEY",
+        "ROLE",
+        "REGION",
+        "SEQUENCE",
+        "LENGTH",
+        "META",
+    ]
+    df.columns = colnames
+    df.sort_values(by=["TYPE", "DESIGN_ID", "REACTION_ID", "ASSEMBLY_ID", "ROLE"])
+    return df

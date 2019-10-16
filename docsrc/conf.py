@@ -32,7 +32,9 @@ autodoc_default_flags = [
     "private-members",
     "show-inheritance",
 ]
-autosummary_generate = True  # Make _autosummary files and include them
+import glob
+
+autosummary_generate = glob.glob("*.rst")  # Make _autosummary files and include them
 napoleon_numpy_docstring = False  # Force consistency, leave only Google
 napoleon_use_rtype = False  # More legible
 
@@ -106,6 +108,7 @@ pygments_style = "sphinx"
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+html_static_path = ["_static"]
 
 html_context = {
     "version": version,
@@ -198,15 +201,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (
-        master_doc,
-        "DASi.tex",
-        "DASi Documentation",
-        "Justin Vrana, Eric Klavins, Ben Keller",
-        "manual",
-    )
-]
+latex_documents = [(master_doc, "DASi.tex", "DASi Documentation", author, "manual")]
 
 
 # -- Options for manual page output ---------------------------------------
@@ -233,9 +228,10 @@ texinfo_documents = [
     )
 ]
 
-# def setup(app):
-#     app.add_stylesheet('css/custom.css')
-#
+
+def setup(app):
+    app.add_stylesheet("css/style.css")
+
 
 # Default language for syntax highlighting in reST and Markdown cells
 highlight_language = "none"

@@ -15,8 +15,8 @@ from pyblast.utils import make_linear
 
 from dasi.design import Design
 from dasi.models import Reaction
-from dasi.models.assembly import design_edge
-from dasi.models.assembly import design_primers
+from dasi.models.assembly import _design_edge
+from dasi.models.assembly import _design_primers
 from dasi.utils import Region
 
 gfp = "ATGGTCTCTAAGGGTGAAGAATTGTTCACCGGTGTCGTCCCAATCTTGGTCGAATTGGACGGGGACGTCAACGGTCACAAGTTCTCTGTCTCTGGTGAAGGTGAAGGTGACGCTACCTACGGTAAGTTGACCTTGAAGTTCATCTGTACCACCGGTAAGTTGCCAGTCCCATGGCCAACCTTGGTCACCACCTTCGGTTACGGTGTCCAATGTTTCGCTAGATACCCAGACCACATGAAGCAACACGACTTCTTCAAGTCTGCTATGCCAGAAGGTTACGTCCAAGAAAGAACCATCTTCTTCAAGGACGACGGTAACTACAAGACCAGAGCTGAAGTCAAGTTCGAAGGTGACACCTTGGTCAACAGAATCGAATTGAAGGGTATCGACTTCAAGGAAGACGGTAACATCTTGGGTCACAAGTTGGAATACAACTACAACTCTCACAACGTCTACATCATGGCTGACAAGCAAAAGAACGGTATCAAGGTCAACTTCAAGATCAGACACAACATCGAAGACGGTTCTGTCCAATTGGCTGACCACTACCAACAAAACACCCCAATCGGTGACGGTCCAGTCTTGTTGCCAGACAACCACTACTTGTCTACCCAATCTGCTTTGTCTAAGGACCCAAACGAAAAGAGAGACCACATGGTCTTGTTGGAATTCGTCACCGCTGCTGGTATCACCCACGGTATGGACGAATTGTACAAGTAA"
@@ -35,7 +35,7 @@ def test_region_invert():
 
 def test_primer_design():
     region = Region(100, 300, len(gfp), cyclic=True)
-    pairs, explain = design_primers(gfp, region, None, None)
+    pairs, explain = _design_primers(gfp, region, None, None)
     print(json.dumps(pairs, indent=1))
 
     for pair in pairs.values():
@@ -47,7 +47,7 @@ def test_primer_design2():
     i = len(gfp) - 50
     j = 100
     region = Region(i, j, len(gfp), cyclic=True)
-    pairs, explain = design_primers(gfp, region, None, None)
+    pairs, explain = _design_primers(gfp, region, None, None)
     # print(json.dumps(pairs, indent=1))
     for pair in pairs.values():
         print(pair["LEFT"]["location"])
@@ -79,7 +79,7 @@ def test_primer_design_overorigin():
     # assert expected == reindexed
 
     rprimer = "CGCTGGAGAAAACCTTCGTATCGGCgcatgcacgcgtgtcgacatcg"
-    pairs, explain = design_primers(template, region, None, rseq=rprimer)
+    pairs, explain = _design_primers(template, region, None, rseq=rprimer)
     print(json.dumps(pairs, indent=1))
     print(explain)
     assert pairs
@@ -89,7 +89,7 @@ class TestExpectedSequences:
     def design_for_assembly(self, design, assembly):
         reactions = []
         for n1, n2, edata in assembly.edges():
-            reaction = design_edge(assembly, n1, n2, design.seqdb)
+            reaction = _design_edge(assembly, n1, n2, design.seqdb)
             if reaction:
                 reactions.append(reaction)
         return reactions
@@ -109,7 +109,7 @@ class TestExpectedSequences:
         if length_only:
             assert len(product) == len(reaction.outputs[0].query_region)
             return
-        assert str(product).upper() == reaction.outputs[0].sequence.upper()
+        assert str(product).upper() == str(reaction.outputs[0].sequence.seq).upper()
 
     def reactions_to_assembly(self, reactions):
         seqs = []

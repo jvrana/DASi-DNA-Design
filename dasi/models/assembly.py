@@ -16,6 +16,8 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import primer3plus
+from Bio.Alphabet import generic_dna
+from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
 from primer3plus.utils import reverse_complement as rc
@@ -40,7 +42,7 @@ from dasi.utils import Region
 from dasi.utils import sort_cycle
 
 
-def design_primers(
+def _design_primers(
     template: str,
     region: Region,
     lseq: Union[None, str],
@@ -115,17 +117,17 @@ def design_primers(
     return pairs, explain
 
 
-def edata_to_npdf(edata: dict, span_cost: SpanCost) -> NumpyDataFrame:
+def _edata_to_npdf(edata: dict, span_cost: SpanCost) -> NumpyDataFrame:
     return span_cost.cost(edata["span"], edata["type_def"])
 
 
-def no_none_or_nan(*i):
+def _no_none_or_nan(*i):
     for _i in i:
         if _i is not None and not np.isnan(_i):
             return _i
 
 
-def get_primer_extensions(
+def _get_primer_extensions(
     graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
 ) -> Tuple[int, int]:
     """Return the left and right primer extensions for the given *internal*
@@ -143,7 +145,7 @@ def get_primer_extensions(
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
-        right_ext = no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
+        right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
         raise DasiSequenceDesignException
     else:
@@ -153,7 +155,7 @@ def get_primer_extensions(
     predecessors = list(graph.predecessors(n1))
     if predecessors:
         pedge = graph[predecessors[0]][n1]
-        left_ext = no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
+        left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
         raise DasiSequenceDesignException
     else:
@@ -163,17 +165,17 @@ def get_primer_extensions(
 
 def _use_direct(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
-) -> Tuple[str, AlignmentGroup]:
+) -> Tuple[SeqRecord, AlignmentGroup]:
     group = edge[2]["groups"][0]
     alignment = group.alignments[0]
     sk = alignment.subject_keys
     srecord = seqdb[sk]
-    return str(srecord.seq), alignment
+    return srecord, alignment
 
 
 def _design_gap(
     edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord
-) -> Union[Tuple[str, Region], Tuple[None, None]]:
+) -> Union[Tuple[SeqRecord, Region], Tuple[None, None]]:
     n1, _, edge_data = edge
     gene_size = edge_data["gene_size"]
     if not np.isnan(gene_size):
@@ -182,7 +184,7 @@ def _design_gap(
         a = n1.index + lshift
         b = a + gene_size
         gene_region = edge_data["query_region"].new(a, b)
-        gene_seq = gene_region.get_slice(qrecord.seq, as_type=str)
+        gene_seq = gene_region.get_slice(qrecord)
         return gene_seq, gene_region
     else:
         return None, None
@@ -199,7 +201,7 @@ def _design_pcr_product_primers(
 
     # this is a new PCR product
     n1, n2, edata = edge
-    lext, rext = get_primer_extensions(graph, n1, n2)
+    lext, rext = _get_primer_extensions(graph, n1, n2)
     alignment_groups = edata["groups"]
     group = alignment_groups[0]
 
@@ -265,7 +267,7 @@ def _design_pcr_product_primers(
         lseq = None
 
     # design primers
-    pairs, explain = design_primers(
+    pairs, explain = _design_primers(
         tseq,
         template.subject_region,
         lseq,
@@ -293,7 +295,7 @@ def _design_pcr_product_primers(
     return pairs, explain, template, query_region
 
 
-def design_edge(
+def _design_edge(
     assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
 ) -> Union[Reaction, None]:
     query_key = assembly.query_key
@@ -343,30 +345,33 @@ def design_edge(
         for x in ["LEFT", "RIGHT"]:
             primer_seq = pair[x]["OVERHANG"] + pair[x]["SEQUENCE"]
             primer_group = pair[x]["GROUP"]
+            primer_record = SeqRecord(Seq(primer_seq, generic_dna))
             primer = Molecule(
                 MoleculeType.types[Constants.PRIMER],
                 primer_group,
-                primer_seq,
+                primer_record,
                 metadata=pair[x],
             )
             primers.append(primer)
         template = Molecule(
             MoleculeType.types[Constants.TEMPLATE],
             pair["PAIR"]["GROUP"],
-            str(seqdb[pair["PAIR"]["SUBJECT_KEY"]].seq),
+            seqdb[pair["PAIR"]["SUBJECT_KEY"]],
         )
 
         product = Molecule(
             moltype,
             group,
-            query_region.get_slice(seqdb[query_key], as_type=str),
+            query_region.get_slice(seqdb[query_key]),
             query_region=query_region,
         )
 
         return Reaction("PCR", inputs=primers + [template], outputs=[product])
 
 
-AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
+AssemblyNode = namedtuple(
+    "AssemblyNode", "index expandable type overhang"
+)  #: tuple representing a location on a goal sequence
 
 
 class Assembly(Iterable):
@@ -407,10 +412,10 @@ class Assembly(Iterable):
         if not self._reactions:
             reactions = []
             for n1, n2, edata in self.edges():
-                reaction = design_edge(self, n1, n2, seqdb=self.seqdb)
+                reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
                     reactions.append(reaction)
-            self._reactions = reactions
+            self._reactions = tuple(reactions)
         return self._reactions
 
     def post_validate(self):
@@ -639,7 +644,7 @@ class Assembly(Iterable):
     ):
         mtype = m.type.name
         group = m.alignment_group
-        if group:
+        if group and group.subject_key:
             key = group.subject_key
             name = self.seqdb[key].name
         else:
@@ -653,7 +658,7 @@ class Assembly(Iterable):
         data = {
             "NAME": name,
             "LENGTH": length,
-            "SEQUENCE": m.sequence,
+            "SEQUENCE": str(m.sequence.seq),
             "TYPE": mtype,
             "KEY": key,
             "REGION": q,
@@ -661,22 +666,48 @@ class Assembly(Iterable):
             "REACTION_ID": reaction_id,
         }
         if meta:
-            data.update(deepcopy(meta))
+            data.update({"META": deepcopy(meta)})
         return data
+
+    @property
+    def molecules(self):
+        for i, r in enumerate(self.reactions):
+            for m in r.inputs:
+                yield (i, "input", m)
+            for m in r.outputs:
+                yield (i, "output", m)
 
     def to_csv(self):
         rows = []
-        for i, r in enumerate(self.reactions):
-            for m in r.inputs + r.outputs:
-                if m.type.name == "PRIMER":
-                    meta = deepcopy(m.metadata)
-                    meta["ANNEAL"] = meta["SEQUENCE"]
-                    del meta["SEQUENCE"]
-                    meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
-                else:
-                    meta = None
-                rows.append(self._csv_row(m, "input", i, meta))
-        return pd.DataFrame(rows)
+        for i, role, m in self.molecules:
+            if m.type.name == "PRIMER":
+                meta = deepcopy(m.metadata)
+                meta["ANNEAL"] = meta["SEQUENCE"]
+                del meta["SEQUENCE"]
+                meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
+            else:
+                meta = None
+            rows.append(self._csv_row(m, role, i, meta))
+        colnames = [
+            "DESIGN_ID",
+            "DESIGN_KEY",
+            "ASSEMBLY_ID",
+            "REACTION_ID",
+            "NAME",
+            "TYPE",
+            "KEY",
+            "ROLE",
+            "REGION",
+            "SEQUENCE",
+            "LENGTH",
+            "META",
+        ]
+        df = pd.DataFrame(rows, columns=colnames)
+        df.sort_values(
+            by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
+            inplace=True,
+        )
+        return df
 
     def __eq__(self, other: Assembly) -> bool:
         return self.edit_distance(other) == 0

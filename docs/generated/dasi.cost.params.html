@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.cost.params &#8212; dasi 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dasi.cost.utils" href="dasi.cost.utils.html" />
+    <link rel="prev" title="Cost Model (dasi.cost)" href="../cost.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="../cost.html" title="Previous Chapter: Cost Model (dasi.cost)"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Cost Model (d...</span>
+    </a>
+  </li>
+  <li>
+    <a href="dasi.cost.utils.html" title="Next Chapter: dasi.cost.utils"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.cost.utils &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/dasi.cost.params.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="module-dasi.cost.params">
+<span id="dasi-cost-params"></span><h1>dasi.cost.params<a class="headerlink" href="#module-dasi.cost.params" title="Permalink to this headline">¶</a></h1>
+<p>Cost Parameters.</p>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Globals</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimerParams</span></code></a></p></td>
+<td><p>Primer parameters for the <a class="reference internal" href="../cost.html#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostModel</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams" title="dasi.cost.params.SynthesisParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SynthesisParams</span></code></a></p></td>
+<td><p>Synthesis parameters for the <a class="reference internal" href="../cost.html#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostModel</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimerParams</span></code></a></p></td>
+<td><p>Primer parameters for the <a class="reference internal" href="../cost.html#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostModel</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams" title="dasi.cost.params.SynthesisParams"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SynthesisParams</span></code></a></p></td>
+<td><p>Synthesis parameters for the <a class="reference internal" href="../cost.html#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostModel</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="dasi.cost.params.PrimerParams">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.params.</code><code class="sig-name descname">PrimerParams</code><a class="reference internal" href="../_modules/dasi/cost/params.html#PrimerParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.params.PrimerParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Primer parameters for the <a class="reference internal" href="../cost.html#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.PrimerCostModel</span></code></a>.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams.eff_df" title="dasi.cost.params.PrimerParams.eff_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eff_df</span></code></a></p></td>
+<td><p>efficiency table</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams.material_modifier" title="dasi.cost.params.PrimerParams.material_modifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">material_modifier</span></code></a></p></td>
+<td><p>multiplier for materials cost</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams.min_anneal" title="dasi.cost.params.PrimerParams.min_anneal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_anneal</span></code></a></p></td>
+<td><p>minimum annealing to consider for primer annealing</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams.min_span" title="dasi.cost.params.PrimerParams.min_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_span</span></code></a></p></td>
+<td><p>minimum span</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams.primer_df" title="dasi.cost.params.PrimerParams.primer_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primer_df</span></code></a></p></td>
+<td><p>primer cost table</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.PrimerParams.time_cost" title="dasi.cost.params.PrimerParams.time_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_cost</span></code></a></p></td>
+<td><p>cost of a day of ‘waiting’</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dasi.cost.params.PrimerParams.eff_df">
+<code class="sig-name descname">eff_df</code><em class="property"> =     min  max  efficiency 0     0   10        0.00 1    10   15        0.30 2    15   20        0.60 3    20   30        0.80 4    30   40        0.90 5    40   50        0.80 6    50  100        0.75 7   100  120        0.50 8   120  150        0.30 9   150  250        0.10 10  250  300        0.00</em><a class="headerlink" href="#dasi.cost.params.PrimerParams.eff_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>efficiency table</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.PrimerParams.material_modifier">
+<code class="sig-name descname">material_modifier</code><em class="property"> = 1.0</em><a class="headerlink" href="#dasi.cost.params.PrimerParams.material_modifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>multiplier for materials cost</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.PrimerParams.min_anneal">
+<code class="sig-name descname">min_anneal</code><em class="property"> = 16</em><a class="headerlink" href="#dasi.cost.params.PrimerParams.min_anneal" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimum annealing to consider for primer annealing</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.PrimerParams.min_span">
+<code class="sig-name descname">min_span</code><em class="property"> = -300</em><a class="headerlink" href="#dasi.cost.params.PrimerParams.min_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimum span</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.PrimerParams.primer_df">
+<code class="sig-name descname">primer_df</code><em class="property"> =                         name   min    max  base cost  cost per bp  time (days) 0  Non-primer (special case)  16.0   17.0        0.0         0.00          0.0 1                  IDTPrimer  16.0   60.0        0.0         0.15          1.5 2                IDTUltramer  45.0  200.0        0.0         0.40          1.5</em><a class="headerlink" href="#dasi.cost.params.PrimerParams.primer_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>primer cost table</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.PrimerParams.time_cost">
+<code class="sig-name descname">time_cost</code><em class="property"> = 10.0</em><a class="headerlink" href="#dasi.cost.params.PrimerParams.time_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>cost of a day of ‘waiting’</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.cost.params.SynthesisParams">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.params.</code><code class="sig-name descname">SynthesisParams</code><a class="reference internal" href="../_modules/dasi/cost/params.html#SynthesisParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.params.SynthesisParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Synthesis parameters for the <a class="reference internal" href="../cost.html#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.SynthesisCostModel</span></code></a>.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams.left_span_range" title="dasi.cost.params.SynthesisParams.left_span_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">left_span_range</span></code></a></p></td>
+<td><p>left span range to consider. Used with syn table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams.material_modifier" title="dasi.cost.params.SynthesisParams.material_modifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">material_modifier</span></code></a></p></td>
+<td><p>material cost multiplier</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams.step_size" title="dasi.cost.params.SynthesisParams.step_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_size</span></code></a></p></td>
+<td><p>step size to consider during calculations. Lowering significantly</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams.synthesis_df" title="dasi.cost.params.SynthesisParams.synthesis_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">synthesis_df</span></code></a></p></td>
+<td><p>synthesis cost table</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.params.SynthesisParams.time_cost" title="dasi.cost.params.SynthesisParams.time_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_cost</span></code></a></p></td>
+<td><p>time cost for a day of ‘waiting’</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dasi.cost.params.SynthesisParams.left_span_range">
+<code class="sig-name descname">left_span_range</code><em class="property"> = (-300, 300)</em><a class="headerlink" href="#dasi.cost.params.SynthesisParams.left_span_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>left span range to consider. Used with syn table.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.SynthesisParams.material_modifier">
+<code class="sig-name descname">material_modifier</code><em class="property"> = 1.0</em><a class="headerlink" href="#dasi.cost.params.SynthesisParams.material_modifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>material cost multiplier</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.SynthesisParams.step_size">
+<code class="sig-name descname">step_size</code><em class="property"> = 10</em><a class="headerlink" href="#dasi.cost.params.SynthesisParams.step_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>step size to consider during calculations. Lowering significantly</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.SynthesisParams.synthesis_df">
+<code class="sig-name descname">synthesis_df</code><em class="property"> =     min   max   base  time 0     0     1    0.0   0.0 1     1   100    inf   inf 2   100   500   89.0   3.0 3   500   750  129.0   3.0 4   750  1000  149.0   4.0 5  1000  1250  209.0   7.0 6  1250  1500  249.0   7.0 7  1500  1750  289.0   7.0 8  1750  2000  329.0   7.0 9  2000  2250  399.0   7.0</em><a class="headerlink" href="#dasi.cost.params.SynthesisParams.synthesis_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>synthesis cost table</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.cost.params.SynthesisParams.time_cost">
+<code class="sig-name descname">time_cost</code><em class="property"> = 10.0</em><a class="headerlink" href="#dasi.cost.params.SynthesisParams.time_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>time cost for a day of ‘waiting’</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

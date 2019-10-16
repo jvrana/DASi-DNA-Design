@@ -684,3 +684,6 @@ MigrationBackup/
 
 # ignore output test csvs
 */**/*__test__.csv
+
+# ignore output test directories
+*/**/.test*

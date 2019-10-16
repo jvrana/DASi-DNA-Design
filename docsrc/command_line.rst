@@ -1,0 +1,1 @@
+.. automodule:: dasi.command_line

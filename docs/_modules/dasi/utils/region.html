@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta charset='utf-8'>
@@ -57,20 +56,37 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
 </ul>
 </ul>
 </li>
@@ -109,23 +125,26 @@
   <h1>Source code for dasi.utils.region</h1><div class="highlight"><pre>
 <span></span>from __future__ import annotations
 
+import operator
 from collections.abc import Container
 from collections.abc import Iterable
 from collections.abc import Sized
+from functools import reduce
 from itertools import chain
 from typing import Any
+from typing import Callable
 from typing import Generator
 from typing import List
 from typing import Tuple
 from typing import Union
 
 
-class SpanError(Exception):
-    pass
+<div class="viewcode-block" id="SpanError"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.SpanError">[docs]</a>class SpanError(Exception):
+    pass</div>
 
 
 # TODO: move this to pyblast?
-class Span(Container, Iterable, Sized):
+<div class="viewcode-block" id="Span"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span">[docs]</a>class Span(Container, Iterable, Sized):
     &quot;&quot;&quot;`Span` maps the provided positions onto a context.
 
     Spans have no direction and have an underlying context
@@ -552,11 +571,11 @@ class Span(Container, Iterable, Sized):
     def _nwraps(self):
         return int((self._c - self._index - 1) / self._context_length)
 
-    def bounds(self) -&gt; tuple:
+<div class="viewcode-block" id="Span.bounds"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.bounds">[docs]</a>    def bounds(self) -&gt; tuple:
         &quot;&quot;&quot;Return the context bounds (end exclusive)&quot;&quot;&quot;
-        return self._index, self._context_length + self._index
+        return self._index, self._context_length + self._index</div>
 
-    def t(self, p: int, throw_error=True) -&gt; int:
+<div class="viewcode-block" id="Span.t"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.t">[docs]</a>    def t(self, p: int, throw_error=True) -&gt; int:
         &quot;&quot;&quot;Translates a position &#39;p&#39; to an index within the context bounds.
 
         :param p:
@@ -574,22 +593,22 @@ class Span(Container, Iterable, Sized):
         if _x &lt; 0:
             return self.bounds()[1] + _x
         else:
-            return self.bounds()[0] + _x
+            return self.bounds()[0] + _x</div>
 
-    def i(self, p: int) -&gt; int:
+<div class="viewcode-block" id="Span.i"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.i">[docs]</a>    def i(self, p: int) -&gt; int:
         &quot;&quot;&quot;Find index of position.
 
         :param p:
         :return:
         &quot;&quot;&quot;
-        return p - self._a
+        return p - self._a</div>
 
     @staticmethod
     def _ranges_str(ranges):
         s = &quot;,&quot;.join(&quot;[{}, {})&quot;.format(*r) for r in ranges)
         return &quot;[&quot; + s + &quot;]&quot;
 
-    def ranges(self, ignore_wraps=False) -&gt; List[Tuple[int, int]]:
+<div class="viewcode-block" id="Span.ranges"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.ranges">[docs]</a>    def ranges(self, ignore_wraps=False) -&gt; List[Tuple[int, int]]:
         &quot;&quot;&quot;Return the valid ranges for this span.
 
         :param ignore_wraps: if True, multiple wrappings will be ignored.
@@ -603,40 +622,63 @@ class Span(Container, Iterable, Sized):
             ranges.append((self.bounds()[0], self._b))
             return ranges
         else:
-            return [(self._a, self._b)]
+            return [(self._a, self._b)]</div>
 
-    def slices(self):
+<div class="viewcode-block" id="Span.slices"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.slices">[docs]</a>    def slices(self):
         &quot;&quot;&quot;Return list of slices.
 
         :return:
         :rtype:
         &quot;&quot;&quot;
-        return [slice(*r) for r in self.ranges()]
+        return [slice(*r) for r in self.ranges()]</div>
 
-    def get_slice_iter(self, x: List):
+<div class="viewcode-block" id="Span.get_slice_iter"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.get_slice_iter">[docs]</a>    def get_slice_iter(self, x: List):
         &quot;&quot;&quot;Use the region to slice the iterable, returning another generator.
 
         :param x: the iterable to slice
         :return: iterable
         &quot;&quot;&quot;
-        return chain(*[x[s] for s in self.slices()])
+        for s in self.slices():
+            yield x[s]</div>
 
-    def get_slice(self, x: List, as_type=None) -&gt; Any:
+<div class="viewcode-block" id="Span.get_slice"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.get_slice">[docs]</a>    def get_slice(
+        self,
+        x: List,
+        infer_type: bool = False,
+        as_type: Any = None,
+        summary_func: Callable = None,
+        reduce_op: Callable = operator.add,
+    ) -&gt; Any:
         &quot;&quot;&quot;Use the region to slice the iterable, returning a iterable of the
         same type as &#39;x&#39;. If as_type is provided, the iterable will be
         typecast.
 
         :param x: the iterable to slice
         :param as_type: type to convert the iterable into
+        :param summary_func: summary function that takes in an interable. If none, uses
+                            `itertools.reduce(operator.add, arr)`
         :return: Any
         &quot;&quot;&quot;
-        if as_type is None:
-            as_type = type(x)
-        if as_type is str:
-            return &quot;&quot;.join(self.get_slice_iter(x))
-        return as_type(self.get_slice_iter(x))
+        if summary_func is None:
+            if reduce_op is not None:
 
-    def reindex(self, i, strict=None, ignore_wrap=None):
+                def summary_func(arr):
+                    return reduce(reduce_op, arr)
+
+            else:
+
+                def summary_func(arr):
+                    return arr
+
+        new_arr = summary_func(self.get_slice_iter(x))
+        if infer_type:
+            if as_type is None:
+                as_type = type(x)
+        if as_type:
+            return as_type(new_arr)
+        return new_arr</div>
+
+<div class="viewcode-block" id="Span.reindex"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.reindex">[docs]</a>    def reindex(self, i, strict=None, ignore_wrap=None):
         &quot;&quot;&quot;Return a new span with positions reindexed.
 
         :param i: new index
@@ -646,9 +688,9 @@ class Span(Container, Iterable, Sized):
         &quot;&quot;&quot;
         if ignore_wrap is None:
             ignore_wrap = self._ignore_wrap
-        return self.new(None, None, ignore_wrap=ignore_wrap, index=i, strict=strict)
+        return self.new(None, None, ignore_wrap=ignore_wrap, index=i, strict=strict)</div>
 
-    def new(
+<div class="viewcode-block" id="Span.new"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.new">[docs]</a>    def new(
         self,
         a: Union[int, None],
         b: Union[int, None],
@@ -687,9 +729,9 @@ class Span(Container, Iterable, Sized):
             ignore_wrap=ignore_wrap,
             strict=strict,
             abs_wrap=abs_wrap,
-        )
+        )</div>
 
-    def sub(self, a: int, b: int) -&gt; Span:
+<div class="viewcode-block" id="Span.sub"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.sub">[docs]</a>    def sub(self, a: int, b: int) -&gt; Span:
         &quot;&quot;&quot;Create a sub region starting from a to b.
 
         :param a: starting pos
@@ -734,16 +776,16 @@ class Span(Container, Iterable, Sized):
         subregion = self.new(a, b)
         if len(subregion) &gt; len(self):
             raise IndexError(&quot;Cannot make subspan.&quot;)
-        return subregion
+        return subregion</div>
 
-    def same_context(self, other: Span) -&gt; bool:
+<div class="viewcode-block" id="Span.same_context"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.same_context">[docs]</a>    def same_context(self, other: Span) -&gt; bool:
         &quot;&quot;&quot;Return if another Span as an equivalent context.&quot;&quot;&quot;
         return (
             other.context_length == self._context_length
             and self._cyclic == other.cyclic
-        )
+        )</div>
 
-    def force_context(self, other: Span) -&gt; None:
+<div class="viewcode-block" id="Span.force_context"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.force_context">[docs]</a>    def force_context(self, other: Span) -&gt; None:
         &quot;&quot;&quot;Raise error if another Span has different context.
 
         :param other: The other span
@@ -751,9 +793,9 @@ class Span(Container, Iterable, Sized):
         :raises: SpanError
         &quot;&quot;&quot;
         if not self.same_context(other):
-            raise SpanError(&quot;Cannot compare with different contexts&quot;)
+            raise SpanError(&quot;Cannot compare with different contexts&quot;)</div>
 
-    def overlaps_with(self, other: Span) -&gt; bool:
+<div class="viewcode-block" id="Span.overlaps_with"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.overlaps_with">[docs]</a>    def overlaps_with(self, other: Span) -&gt; bool:
         &quot;&quot;&quot;Returns True if other span has an overlap with this span.
 
         :param other: The other span
@@ -771,9 +813,9 @@ class Span(Container, Iterable, Sized):
             or self._b - 1 in other
         ):
             return True
-        return False
+        return False</div>
 
-    def differences(self, other: Span) -&gt; Union[Tuple[Span], Tuple[Span, Span]]:
+<div class="viewcode-block" id="Span.differences"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.differences">[docs]</a>    def differences(self, other: Span) -&gt; Union[Tuple[Span], Tuple[Span, Span]]:
         &quot;&quot;&quot;Return a tuple of differences between this span and the other
         span.&quot;&quot;&quot;
         self.force_context(other)
@@ -786,9 +828,9 @@ class Span(Container, Iterable, Sized):
         elif self in other:
             return (self.new(self._a, self._a),)
         else:
-            return (self[:],)
+            return (self[:],)</div>
 
-    def intersection(self, other: Span) -&gt; Span:
+<div class="viewcode-block" id="Span.intersection"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.intersection">[docs]</a>    def intersection(self, other: Span) -&gt; Span:
         &quot;&quot;&quot;Return the span inersection between this span and the other span.&quot;&quot;&quot;
         self.force_context(other)
         if other.a in self and other.b not in self:
@@ -798,18 +840,18 @@ class Span(Container, Iterable, Sized):
         if other in self:
             return other[:]
         elif self in other:
-            return self[:]
+            return self[:]</div>
 
-    def consecutive(self, other: Span) -&gt; bool:
+<div class="viewcode-block" id="Span.consecutive"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.consecutive">[docs]</a>    def consecutive(self, other: Span) -&gt; bool:
         &quot;&quot;&quot;Returns True if other span is immediately consecutive with this
         span.&quot;&quot;&quot;
         self.force_context(other)
         try:
             return self._b == other.t(other.a)
         except IndexError:
-            return False
+            return False</div>
 
-    def connecting_span(self, other: Span) -&gt; Union[Span, None]:
+<div class="viewcode-block" id="Span.connecting_span"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.connecting_span">[docs]</a>    def connecting_span(self, other: Span) -&gt; Union[Span, None]:
         &quot;&quot;&quot;Return the span that connects the two spans. Returns None.
 
         :param other:
@@ -825,7 +867,7 @@ class Span(Container, Iterable, Sized):
         else:
             if self._b &gt; other.a and not self._cyclic:
                 return None
-            return self[self._b, other.a]
+            return self[self._b, other.a]</div>
 
     # def union(self, other):
     #     self.force_context(other)
@@ -862,7 +904,7 @@ class Span(Container, Iterable, Sized):
     #         else:
     # return
 
-    def invert(self) -&gt; Union[Tuple[Span, Span], Tuple[Span, None]]:
+<div class="viewcode-block" id="Span.invert"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.invert">[docs]</a>    def invert(self) -&gt; Union[Tuple[Span, Span], Tuple[Span, None]]:
         &quot;&quot;&quot;Invert the region, returning a tuple of the remaining spans from the
         context. If cyclic, a tuple (span, None) tuple is returned. If linear,
         a (span, span) is returned.
@@ -875,7 +917,7 @@ class Span(Container, Iterable, Sized):
         if self._cyclic:
             return self[self._b, self._a], None
         else:
-            return self[:, self._a], self[self._b, :]
+            return self[:, self._a], self[self._b, :]</div>
 
     def __eq__(self, other: Span) -&gt; bool:
         return (
@@ -1021,12 +1063,12 @@ class Span(Container, Iterable, Sized):
         )
 
     def __str__(self):
-        return self.__repr__()
+        return self.__repr__()</div>
 
 
-class EmptySpan(Span):
-    def ranges(self, *args) -&gt; List[Tuple[int, int]]:
-        return [(self.bounds()[0], self.bounds()[0])]
+<div class="viewcode-block" id="EmptySpan"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.EmptySpan">[docs]</a>class EmptySpan(Span):
+<div class="viewcode-block" id="EmptySpan.ranges"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.EmptySpan.ranges">[docs]</a>    def ranges(self, *args) -&gt; List[Tuple[int, int]]:
+        return [(self.bounds()[0], self.bounds()[0])]</div></div>
 
 
 class Direction:
@@ -1035,7 +1077,7 @@ class Direction:
     BOTH = 0
 
 
-<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.Region">[docs]</a>class Region(Span):
+<div class="viewcode-block" id="Region"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Region">[docs]</a>class Region(Span):
     &quot;&quot;&quot;A direction span.&quot;&quot;&quot;
 
     __slots__ = [&quot;name&quot;, &quot;id&quot;, &quot;direction&quot;]
@@ -1094,7 +1136,7 @@ class Direction:
             abs_wrap=abs_wrap,
         )
 
-<div class="viewcode-block" id="Region.flip"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.Region.flip">[docs]</a>    def flip(self) -&gt; Region:
+<div class="viewcode-block" id="Region.flip"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Region.flip">[docs]</a>    def flip(self) -&gt; Region:
         &quot;&quot;&quot;Flip the indices of the region.&quot;&quot;&quot;
         flipped = self.new(self.context_length - self.b, self.context_length - self.a)
         flipped.direction *= -1
@@ -1114,7 +1156,7 @@ class Direction:
         else:
             return self.b
 
-<div class="viewcode-block" id="Region.new"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.Region.new">[docs]</a>    def new(self, a: Union[None, int], b: Union[None, int]):
+<div class="viewcode-block" id="Region.new"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Region.new">[docs]</a>    def new(self, a: Union[None, int], b: Union[None, int]):
         _new = super().new(a, b)
         _new.direction = self.direction
         return _new</div>

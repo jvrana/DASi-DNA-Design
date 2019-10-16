@@ -10,6 +10,8 @@ from typing import List
 from typing import Tuple
 from typing import Union
 
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 from numpy import inf
 
 from dasi.constants import Constants
@@ -185,12 +187,14 @@ class Molecule:
         self,
         molecule_type: MoleculeType,
         alignment_group,
-        sequence: str,
+        sequence: SeqRecord,
         query_region: Region = None,
         metadata: Dict = None,
     ):
         self.type = molecule_type
         self.alignment_group = alignment_group
+        assert issubclass(type(sequence), SeqRecord)
+        assert issubclass(type(sequence.seq), Seq)
         self.sequence = sequence
         self.metadata = metadata or {}
         self.query_region = query_region

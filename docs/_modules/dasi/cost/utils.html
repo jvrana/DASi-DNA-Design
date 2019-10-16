@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta charset='utf-8'>
@@ -57,20 +56,37 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
 </ul>
 </ul>
 </li>
@@ -111,13 +127,13 @@
 import numpy as np
 
 
-<div class="viewcode-block" id="square_broadcast"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.utils.square_broadcast">[docs]</a>def square_broadcast(a, b, a_axis=0, b_axis=1):
+<div class="viewcode-block" id="square_broadcast"><a class="viewcode-back" href="../../../generated/dasi.cost.utils.html#dasi.cost.utils.square_broadcast">[docs]</a>def square_broadcast(a, b, a_axis=0, b_axis=1):
     &quot;&quot;&quot;Broadcast b to the a_axis of ndarray &#39;a&#39; and perform a hstack.&quot;&quot;&quot;
     c = np.broadcast_to(b, (a.shape[a_axis], b.shape[b_axis]))
     return np.hstack([a, c])</div>
 
 
-<div class="viewcode-block" id="df_to_np_ranged"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.utils.df_to_np_ranged">[docs]</a>def df_to_np_ranged(min_col, max_col, df, cols=None, dtype=None):
+<div class="viewcode-block" id="df_to_np_ranged"><a class="viewcode-back" href="../../../generated/dasi.cost.utils.html#dasi.cost.utils.df_to_np_ranged">[docs]</a>def df_to_np_ranged(min_col, max_col, df, cols=None, dtype=None):
     &quot;&quot;&quot;Expand a pandas data frame, which has min and max span columns defined,
     into a numpy ndarray. Specific columns to include in the expansion can be
     defined in the `remaining_cols` argument, else all columns are used.
@@ -153,7 +169,7 @@ def unshape(shape, axis):
     return [s for i, s in enumerate(shape) if i not in axis]
 
 
-<div class="viewcode-block" id="flatten_axis"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.utils.flatten_axis">[docs]</a>def flatten_axis(a, axis=None, copy=True):
+<div class="viewcode-block" id="flatten_axis"><a class="viewcode-back" href="../../../generated/dasi.cost.utils.html#dasi.cost.utils.flatten_axis">[docs]</a>def flatten_axis(a, axis=None, copy=True):
     &quot;&quot;&quot;Flatten the array along the specified axes.&quot;&quot;&quot;
     if axis is None:
         return a.flatten()
@@ -168,7 +184,7 @@ def unshape(shape, axis):
         return view</div>
 
 
-<div class="viewcode-block" id="duplicates"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.cost.utils.duplicates">[docs]</a>def duplicates(b, axis=None):
+<div class="viewcode-block" id="duplicates"><a class="viewcode-back" href="../../../generated/dasi.cost.utils.html#dasi.cost.utils.duplicates">[docs]</a>def duplicates(b, axis=None):
     &quot;&quot;&quot;Find duplicates within the specified axes.
 
     If axis not provided, flatten array and return duplicates.

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Constants (dasi.constants) &#8212; dasi 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Exceptions (dasi.exceptions)" href="exceptions.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="exceptions.html" title="Previous Chapter: Exceptions (dasi.exceptions)"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Exceptions (d...</span>
+    </a>
+  </li>
+  <li>
+    <a href="usage.html" title="Next Chapter: Usage"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Usage &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/constants.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <span class="target" id="module-dasi.constants"></span><div class="section" id="constants-dasi-constants">
+<h1>Constants (<a class="reference internal" href="#module-dasi.constants" title="dasi.constants"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code></a>)<a class="headerlink" href="#constants-dasi-constants" title="Permalink to this headline">¶</a></h1>
+<p>This module provides DASi constants.</p>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants" title="dasi.constants.Constants"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Constants</span></code></a></p></td>
+<td><p>DASi constants.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="dasi.constants.Constants">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.constants.</code><code class="sig-name descname">Constants</code><a class="reference internal" href="_modules/dasi/constants.html#Constants"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.constants.Constants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DASi constants.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.FRAGMENT" title="dasi.constants.Constants.FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FRAGMENT</span></code></a></p></td>
+<td><p>an alignment that is generate from an already existing PCR product or fragment</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.GAP" title="dasi.constants.Constants.GAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GAP</span></code></a></p></td>
+<td><p>region that represents a gap that must be synthesized</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.INF" title="dasi.constants.Constants.INF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INF</span></code></a></p></td>
+<td><p>almost infinity</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.MAX_HOMOLOGY" title="dasi.constants.Constants.MAX_HOMOLOGY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAX_HOMOLOGY</span></code></a></p></td>
+<td><p>maximum overlap for searching for overlapping alignments</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.MIN_OVERLAP" title="dasi.constants.Constants.MIN_OVERLAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_OVERLAP</span></code></a></p></td>
+<td><p>minimum overlap for searching for overlapping alignments</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.MISSING" title="dasi.constants.Constants.MISSING"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MISSING</span></code></a></p></td>
+<td><p>missing region</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.OVERLAP" title="dasi.constants.Constants.OVERLAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OVERLAP</span></code></a></p></td>
+<td><p>region that represents overlapping molecules</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT" title="dasi.constants.Constants.PCR_PRODUCT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT</span></code></a></p></td>
+<td><p>an alignment that is to be generated from a PCR product</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER" title="dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT_WITH_LEFT_PRIMER</span></code></a></p></td>
+<td><p>PCR product with existing left primer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS" title="dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT_WITH_PRIMERS</span></code></a></p></td>
+<td><p>PCR product that can be produces from existing primers</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER" title="dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT_WITH_RIGHT_PRIMER</span></code></a></p></td>
+<td><p>PCR product with existing right primer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER" title="dasi.constants.Constants.PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER</span></code></a></p></td>
+<td><p>a primer binding alignment</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT</span></code></a></p></td>
+<td><p>a pcr product that uses no template, but extends two primers</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER</span></code></a></p></td>
+<td><p>a pcr product that uses no template, but extends an existing fwd primer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER</span></code></a></p></td>
+<td><p>a pcr product that uses no template, but extends an existing rev primer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_MIN_BIND" title="dasi.constants.Constants.PRIMER_MIN_BIND"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_MIN_BIND</span></code></a></p></td>
+<td><p>minimum primer binding for searching for primer alignments</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_FRAGMENT" title="dasi.constants.Constants.SHARED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_FRAGMENT</span></code></a></p></td>
+<td><p>A fragment alignment that is shared with other queries for potential reuse</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.TEMPLATE" title="dasi.constants.Constants.TEMPLATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMPLATE</span></code></a></p></td>
+<td><p>A template alignment group.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dasi.constants.Constants.FRAGMENT">
+<code class="sig-name descname">FRAGMENT</code><em class="property"> = 'PRE-MADE DNA FRAGMENT'</em><a class="headerlink" href="#dasi.constants.Constants.FRAGMENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>an alignment that is generate from an already existing PCR product or fragment</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.GAP">
+<code class="sig-name descname">GAP</code><em class="property"> = 'GAP'</em><a class="headerlink" href="#dasi.constants.Constants.GAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>region that represents a gap that must be synthesized</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.INF">
+<code class="sig-name descname">INF</code><em class="property"> = 1000000.0</em><a class="headerlink" href="#dasi.constants.Constants.INF" title="Permalink to this definition">¶</a></dt>
+<dd><p>almost infinity</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.MAX_HOMOLOGY">
+<code class="sig-name descname">MAX_HOMOLOGY</code><em class="property"> = 100</em><a class="headerlink" href="#dasi.constants.Constants.MAX_HOMOLOGY" title="Permalink to this definition">¶</a></dt>
+<dd><p>maximum overlap for searching for overlapping alignments</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.MIN_OVERLAP">
+<code class="sig-name descname">MIN_OVERLAP</code><em class="property"> = 15</em><a class="headerlink" href="#dasi.constants.Constants.MIN_OVERLAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimum overlap for searching for overlapping alignments</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.MISSING">
+<code class="sig-name descname">MISSING</code><em class="property"> = '__MISSING'</em><a class="headerlink" href="#dasi.constants.Constants.MISSING" title="Permalink to this definition">¶</a></dt>
+<dd><p>missing region</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.OVERLAP">
+<code class="sig-name descname">OVERLAP</code><em class="property"> = 'OVERLAP'</em><a class="headerlink" href="#dasi.constants.Constants.OVERLAP" title="Permalink to this definition">¶</a></dt>
+<dd><p>region that represents overlapping molecules</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT">
+<code class="sig-name descname">PCR_PRODUCT</code><em class="property"> = 'PCR_PRODUCT'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT" title="Permalink to this definition">¶</a></dt>
+<dd><p>an alignment that is to be generated from a PCR product</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER">
+<code class="sig-name descname">PCR_PRODUCT_WITH_LEFT_PRIMER</code><em class="property"> = 'PCR_PRODUCT_WITH_LEFT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>PCR product with existing left primer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS">
+<code class="sig-name descname">PCR_PRODUCT_WITH_PRIMERS</code><em class="property"> = 'PCR_PRODUCT_WITH_PRIMERS'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS" title="Permalink to this definition">¶</a></dt>
+<dd><p>PCR product that can be produces from existing primers</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER">
+<code class="sig-name descname">PCR_PRODUCT_WITH_RIGHT_PRIMER</code><em class="property"> = 'PCR_PRODUCT_WITH_RIGHT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>PCR product with existing right primer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PRIMER">
+<code class="sig-name descname">PRIMER</code><em class="property"> = 'PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>a primer binding alignment</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT">
+<code class="sig-name descname">PRIMER_EXTENSION_PRODUCT</code><em class="property"> = 'PRIMER_EXTENSION_PRODUCT'</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT" title="Permalink to this definition">¶</a></dt>
+<dd><p>a pcr product that uses no template, but extends two primers</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER">
+<code class="sig-name descname">PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER</code><em class="property"> = 'PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>a pcr product that uses no template, but extends an existing fwd primer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER">
+<code class="sig-name descname">PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER</code><em class="property"> = 'PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>a pcr product that uses no template, but extends an existing rev primer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PRIMER_MIN_BIND">
+<code class="sig-name descname">PRIMER_MIN_BIND</code><em class="property"> = 14</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER_MIN_BIND" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimum primer binding for searching for primer alignments</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.SHARED_FRAGMENT">
+<code class="sig-name descname">SHARED_FRAGMENT</code><em class="property"> = 'FRAGMENT_SHARED_WITH_OTHER_QUERIES'</em><a class="headerlink" href="#dasi.constants.Constants.SHARED_FRAGMENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>A fragment alignment that is shared with other queries for potential reuse</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.TEMPLATE">
+<code class="sig-name descname">TEMPLATE</code><em class="property"> = 'TEMPLATE'</em><a class="headerlink" href="#dasi.constants.Constants.TEMPLATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>A template alignment group. Not an actual molecule.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

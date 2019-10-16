@@ -1,3 +1,11 @@
+r"""
+Models (:mod:`dasi.models`)
+=============================
+
+.. currentmodule:: dasi.models
+
+This module provides representations of Molecules and Molecular Assemblies.
+"""
 from .alignment import Alignment
 from .alignment import AlignmentGroup
 from .alignment import AlignmentGroupBase

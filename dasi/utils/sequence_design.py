@@ -168,7 +168,7 @@ def _design_gap(
         a = n1.index + lshift
         b = a + gene_size
         gene_region = edge_data["query_region"].new(a, b)
-        gene_seq = gene_region.get_slice(qrecord.seq, as_type=str)
+        gene_seq = gene_region.get_slice(qrecord.seq)
         return gene_seq, gene_region
     else:
         return None, None
@@ -345,7 +345,7 @@ def design_edge(
         product = Molecule(
             moltype,
             group,
-            query_region.get_slice(seqdb[query_key], as_type=str),
+            query_region.get_slice(seqdb[query_key]),
             query_region=query_region,
         )
 

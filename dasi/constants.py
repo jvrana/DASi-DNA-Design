@@ -1,7 +1,11 @@
-from copy import copy
-from typing import Tuple
+r"""
+Constants (:mod:`dasi.constants`)
+=============================
 
-from numpy import inf
+.. currentmodule:: dasi.constants
+
+This module provides DASi constants.
+"""
 
 
 class Constants:

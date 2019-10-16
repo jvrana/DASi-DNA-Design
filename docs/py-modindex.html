@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
 
@@ -60,20 +59,37 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
 </ul>
 </ul>
 </li>
@@ -124,42 +140,107 @@
        <td><img src="_static/minus.png" class="toggler"
               id="toggle-1" style="display: none" alt="-" /></td>
        <td>
-       <a href="developer/api_reference.html#module-dasi"><code class="xref">dasi</code></a></td><td>
+       <code class="xref">dasi</code></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.cost"><code class="xref">dasi.cost</code></a></td><td>
+       <a href="command_line.html#module-dasi.command_line"><code class="xref">dasi.command_line</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.cost.params"><code class="xref">dasi.cost.params</code></a></td><td>
+       <a href="constants.html#module-dasi.constants"><code class="xref">dasi.constants</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.cost.utils"><code class="xref">dasi.cost.utils</code></a></td><td>
+       <a href="cost.html#module-dasi.cost"><code class="xref">dasi.cost</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.design"><code class="xref">dasi.design</code></a></td><td>
+       <a href="generated/dasi.cost.params.html#module-dasi.cost.params"><code class="xref">dasi.cost.params</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.design.design_algorithms"><code class="xref">dasi.design.design_algorithms</code></a></td><td>
+       <a href="generated/dasi.cost.utils.html#module-dasi.cost.utils"><code class="xref">dasi.cost.utils</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.utils"><code class="xref">dasi.utils</code></a></td><td>
+       <a href="design.html#module-dasi.design"><code class="xref">dasi.design</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="developer/api_reference.html#module-dasi.utils.networkx"><code class="xref">dasi.utils.networkx</code></a></td><td>
+       <a href="generated/dasi.design.design_algorithms.html#module-dasi.design.design_algorithms"><code class="xref">dasi.design.design_algorithms</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.design.graph_builder.html#module-dasi.design.graph_builder"><code class="xref">dasi.design.graph_builder</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.design.optimize.html#module-dasi.design.optimize"><code class="xref">dasi.design.optimize</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.design.plotter.html#module-dasi.design.plotter"><code class="xref">dasi.design.plotter</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="exceptions.html#module-dasi.exceptions"><code class="xref">dasi.exceptions</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="models.html#module-dasi.models"><code class="xref">dasi.models</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="utils.html#module-dasi.utils"><code class="xref">dasi.utils</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.networkx.html#module-dasi.utils.networkx"><code class="xref">dasi.utils.networkx</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.networkx.exceptions.html#module-dasi.utils.networkx.exceptions"><code class="xref">dasi.utils.networkx.exceptions</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.networkx.shortest_path.html#module-dasi.utils.networkx.shortest_path"><code class="xref">dasi.utils.networkx.shortest_path</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.networkx.utils.html#module-dasi.utils.networkx.utils"><code class="xref">dasi.utils.networkx.utils</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.npdf.html#module-dasi.utils.npdf"><code class="xref">dasi.utils.npdf</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.region.html#module-dasi.utils.region"><code class="xref">dasi.utils.region</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="generated/dasi.utils.sequence_design.html#module-dasi.utils.sequence_design"><code class="xref">dasi.utils.sequence_design</code></a></td><td>
        <em></em></td></tr>
    </table>
 

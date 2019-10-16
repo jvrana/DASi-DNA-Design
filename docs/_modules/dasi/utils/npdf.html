@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"TeX": {"equationNumbers": {"autoNumber": "AMS", "useLabelIds": true}}, "tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 <meta charset='utf-8'>
@@ -57,20 +56,37 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developer/api_reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.design">Design</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#alignments">Alignments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost">Cost Calculations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.params">Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.cost.utils">Cost utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../developer/api_reference.html#module-dasi.utils.networkx">Networkx utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
 </ul>
 </ul>
 </li>
@@ -131,15 +147,15 @@ import pandas as pd
 m.patch()
 
 
-class Null:
-    &quot;&quot;&quot;Not None.&quot;&quot;&quot;
+<div class="viewcode-block" id="Null"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.Null">[docs]</a>class Null:
+    &quot;&quot;&quot;Not None.&quot;&quot;&quot;</div>
 
 
-<div class="viewcode-block" id="NumpyDataFrameException"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrameException">[docs]</a>class NumpyDataFrameException(Exception):
+<div class="viewcode-block" id="NumpyDataFrameException"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrameException">[docs]</a>class NumpyDataFrameException(Exception):
     &quot;&quot;&quot;Generic exceptions for NumpyDataFrame.&quot;&quot;&quot;</div>
 
 
-<div class="viewcode-block" id="NumpyDataFrame"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame">[docs]</a>class NumpyDataFrame(Mapping):
+<div class="viewcode-block" id="NumpyDataFrame"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame">[docs]</a>class NumpyDataFrame(Mapping):
     &quot;&quot;&quot;The NumpyDataFrame is a class halfway between pandas and numpy. It has
     named columns, indexing, slicing, function applications, and mathematical
     operations. Unlike pandas however, it maintains the multi-dimensionality of
@@ -313,7 +329,7 @@ class Null:
         self._data = new
         self.validate()
 
-<div class="viewcode-block" id="NumpyDataFrame.validate"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.validate">[docs]</a>    def validate(self):
+<div class="viewcode-block" id="NumpyDataFrame.validate"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.validate">[docs]</a>    def validate(self):
         &quot;&quot;&quot;Validate that the shapes of all of the np.ndarrays are the same.&quot;&quot;&quot;
         shapes = {v.shape for v in self.data.values()}
         if len(shapes) &gt; 1:
@@ -334,21 +350,21 @@ class Null:
                     )
                 )</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.prefix"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.prefix">[docs]</a>    def prefix(self, s: str, cols=None, inplace=False) -&gt; NumpyDataFrame:
+<div class="viewcode-block" id="NumpyDataFrame.prefix"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.prefix">[docs]</a>    def prefix(self, s: str, cols=None, inplace=False) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Adds a prefix to all of the column names and returns a new
         dataframe.&quot;&quot;&quot;
         if cols is None:
             cols = self.columns
         return self.apply_to_col_names(lambda x: s + x, cols=cols, inplace=inplace)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.suffix"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.suffix">[docs]</a>    def suffix(self, s: str, cols=None, inplace=False) -&gt; NumpyDataFrame:
+<div class="viewcode-block" id="NumpyDataFrame.suffix"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.suffix">[docs]</a>    def suffix(self, s: str, cols=None, inplace=False) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Adds a prefix to all of the column names and returns a new
         dataframe.&quot;&quot;&quot;
         if cols is None:
             cols = self.columns
         return self.apply_to_col_names(lambda x: x + s, cols=cols, inplace=inplace)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.apply_to_col_names"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.apply_to_col_names">[docs]</a>    def apply_to_col_names(
+<div class="viewcode-block" id="NumpyDataFrame.apply_to_col_names"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.apply_to_col_names">[docs]</a>    def apply_to_col_names(
         self, func, *args, cols=None, inplace=False, **kwargs
     ) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Apply a function to the column names and returns a new dataframe.
@@ -370,7 +386,7 @@ class Null:
             return self
         return self.__class__(data)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.aggregate"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.aggregate">[docs]</a>    def aggregate(self, func, *args, cols=None, **kwargs) -&gt; Any:
+<div class="viewcode-block" id="NumpyDataFrame.aggregate"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.aggregate">[docs]</a>    def aggregate(self, func, *args, cols=None, **kwargs) -&gt; Any:
         &quot;&quot;&quot;Group all of the np.ndarrays across all columns as a list and apply
         a function.
 
@@ -385,7 +401,7 @@ class Null:
         collapsed = [self.data[c] for c in cols]
         return func(collapsed, *args, **kwargs)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.apply"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.apply">[docs]</a>    def apply(
+<div class="viewcode-block" id="NumpyDataFrame.apply"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.apply">[docs]</a>    def apply(
         self,
         func: Callable,
         *args,
@@ -432,7 +448,7 @@ class Null:
             astype = self.__class__
         return astype(data)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.merge"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.merge">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.merge"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.merge">[docs]</a>    @classmethod
     def merge(cls, others: Iterable[NumpyDataFrame]) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Merge many dfs into a single df.&quot;&quot;&quot;
         df = cls()
@@ -440,26 +456,26 @@ class Null:
             df.update(a)
         return df</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.concat"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.concat">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.concat"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.concat">[docs]</a>    @classmethod
     def concat(
         cls, others: Iterable[NumpyDataFrame], fill_value=Null
     ) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Concatenate several dfs into a single df.&quot;&quot;&quot;
         return cls.group_apply(others, np.hstack, _fill_value=fill_value)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.append"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.append">[docs]</a>    def append(self, other: NumpyDataFrame) -&gt; NumpyDataFrame:
+<div class="viewcode-block" id="NumpyDataFrame.append"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.append">[docs]</a>    def append(self, other: NumpyDataFrame) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Append the contents of the other df to this df.&quot;&quot;&quot;
         self.group_apply((other,), np.hstack)
         return self</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.fill_value"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.fill_value">[docs]</a>    def fill_value(self, cols: Iterable[str], value: Any) -&gt; None:
+<div class="viewcode-block" id="NumpyDataFrame.fill_value"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.fill_value">[docs]</a>    def fill_value(self, cols: Iterable[str], value: Any) -&gt; None:
         &quot;&quot;&quot;Create new columns, if they are missing, and fill them with the
         specified value.&quot;&quot;&quot;
         for c in cols:
             if c not in self.col:
                 self.col[c] = np.array([value for _ in range(len(self))])</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.group_apply"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.group_apply">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.group_apply"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.group_apply">[docs]</a>    @classmethod
     def group_apply(
         cls,
         others: Iterable[NumpyDataFrame],
@@ -507,17 +523,17 @@ class Null:
             data = {k: func(v, *args, **kwargs) for k, v in d.items()}
         return cls(data)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.stack"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.stack">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.stack"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.stack">[docs]</a>    @classmethod
     def stack(cls, others: Iterable[NumpyDataFrame], axis):
         &quot;&quot;&quot;Apply np.stack to each column for several dfs.&quot;&quot;&quot;
         return cls.group_apply(others, np.stack, axis=axis)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.hstack"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.hstack">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.hstack"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.hstack">[docs]</a>    @classmethod
     def hstack(cls, others: Iterable[NumpyDataFrame]):
         &quot;&quot;&quot;Apply np.hstack to each column for several dfs.&quot;&quot;&quot;
         return cls.group_apply(others, np.hstack)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.vstack"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.vstack">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.vstack"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.vstack">[docs]</a>    @classmethod
     def vstack(cls, others: List[NumpyDataFrame]):
         &quot;&quot;&quot;Apply np.vstack to each column for several dfs.&quot;&quot;&quot;
         return cls.group_apply(others, np.vstack)</div>
@@ -530,7 +546,7 @@ class Null:
         &quot;&quot;&quot;
         return list(self.data.values())[0].shape
 
-<div class="viewcode-block" id="NumpyDataFrame.reshape"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.reshape">[docs]</a>    def reshape(self, shape) -&gt; NumpyDataFrame:
+<div class="viewcode-block" id="NumpyDataFrame.reshape"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.reshape">[docs]</a>    def reshape(self, shape) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Reshape all arrays in the df.&quot;&quot;&quot;
         return self.apply(np.reshape, shape)</div>
 
@@ -544,7 +560,7 @@ class Null:
         &quot;&quot;&quot;Return the column indexer.&quot;&quot;&quot;
         return NumpyDataFrameIndexer(self)
 
-<div class="viewcode-block" id="NumpyDataFrame.to_df"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.to_df">[docs]</a>    def to_df(self, force=True) -&gt; pd.DataFrame:
+<div class="viewcode-block" id="NumpyDataFrame.to_df"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.to_df">[docs]</a>    def to_df(self, force=True) -&gt; pd.DataFrame:
         &quot;&quot;&quot;Force the NumpyDataFrame into a pandas.DataFrame.&quot;&quot;&quot;
         print(self.shape)
         x = self
@@ -560,7 +576,7 @@ class Null:
             )
         return pd.DataFrame(x.data)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.update"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.update">[docs]</a>    def update(self, data: Union[NumpyDataFrame, Dict[str, np.ndarray]], apply=None):
+<div class="viewcode-block" id="NumpyDataFrame.update"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.update">[docs]</a>    def update(self, data: Union[NumpyDataFrame, Dict[str, np.ndarray]], apply=None):
         &quot;&quot;&quot;Update the df from a dict or another df.&quot;&quot;&quot;
         if issubclass(type(data), NumpyDataFrame):
             data = data.data
@@ -570,31 +586,31 @@ class Null:
                 self.apply(apply)
             self.validate()</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.items"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.items">[docs]</a>    def items(self) -&gt; ItemsView[str, np.ndarray]:
+<div class="viewcode-block" id="NumpyDataFrame.items"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.items">[docs]</a>    def items(self) -&gt; ItemsView[str, np.ndarray]:
         &quot;&quot;&quot;Iterate key: arr for the the underlying data dict.&quot;&quot;&quot;
         return self.data.items()</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.copy"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.copy">[docs]</a>    def copy(self) -&gt; NumpyDataFrame:
+<div class="viewcode-block" id="NumpyDataFrame.copy"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.copy">[docs]</a>    def copy(self) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Copy the df.&quot;&quot;&quot;
         return self.apply(np.copy)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.dumps"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.dumps">[docs]</a>    def dumps(self):
+<div class="viewcode-block" id="NumpyDataFrame.dumps"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.dumps">[docs]</a>    def dumps(self):
         &quot;&quot;&quot;Use msgpack to dump df to a byte string.&quot;&quot;&quot;
         return msgpack.dumps(self.data)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.dump"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.dump">[docs]</a>    def dump(self, f: str):
+<div class="viewcode-block" id="NumpyDataFrame.dump"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.dump">[docs]</a>    def dump(self, f: str):
         &quot;&quot;&quot;Dump byte repr of df to the specified path.&quot;&quot;&quot;
         with open(f, &quot;wb&quot;) as f:
             msgpack.dump(self.data, f)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.loads"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.loads">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.loads"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.loads">[docs]</a>    @classmethod
     def loads(cls, s: str) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Use msgpack to load a df from a byte string.&quot;&quot;&quot;
         data = msgpack.loads(s)
         data = {k.decode(): v for k, v in data.items()}
         return cls(data)</div>
 
-<div class="viewcode-block" id="NumpyDataFrame.load"><a class="viewcode-back" href="../../../developer/api_reference.html#dasi.utils.NumpyDataFrame.load">[docs]</a>    @classmethod
+<div class="viewcode-block" id="NumpyDataFrame.load"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.load">[docs]</a>    @classmethod
     def load(cls, f: str) -&gt; NumpyDataFrame:
         &quot;&quot;&quot;Load the byte repr of df from the specified path.&quot;&quot;&quot;
         with open(f, &quot;rb&quot;) as f:
@@ -664,7 +680,7 @@ class Null:
         )</div>
 
 
-class NumpyDataFrameIndexer(Mapping):
+<div class="viewcode-block" id="NumpyDataFrameIndexer"><a class="viewcode-back" href="../../../generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrameIndexer">[docs]</a>class NumpyDataFrameIndexer(Mapping):
     &quot;&quot;&quot;The indexer for NumpyDataFrames.&quot;&quot;&quot;
 
     def __init__(self, df: NumpyDataFrame):
@@ -699,7 +715,7 @@ class NumpyDataFrameIndexer(Mapping):
         elif not isinstance(cols, Iterable):
             cols = (cols,)
         data = {k: self.df.data[k] for k in self.df.data if k in cols}
-        return self.df.__class__(data)
+        return self.df.__class__(data)</div>
 </pre></div>
 
     </div>

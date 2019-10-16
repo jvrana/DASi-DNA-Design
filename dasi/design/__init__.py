@@ -1,4 +1,11 @@
-"""Primer and synthesis design."""
+r"""
+Design (:mod:`dasi.design`)
+=============================
+
+.. currentmodule:: dasi.design
+
+This module provide DNA assembly functionality for DASi.
+"""
 from __future__ import annotations
 
 import bisect
@@ -7,7 +14,6 @@ from typing import Dict
 from typing import Generator
 from typing import List
 from typing import Tuple
-from warnings import warn
 
 import networkx as nx
 import pandas as pd

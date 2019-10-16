@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cost Model (dasi.cost) &#8212; dasi 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dasi.cost.params" href="generated/dasi.cost.params.html" />
+    <link rel="prev" title="Models (dasi.models)" href="models.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="models.html" title="Previous Chapter: Models (dasi.models)"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Models (dasi.models)</span>
+    </a>
+  </li>
+  <li>
+    <a href="generated/dasi.cost.params.html" title="Next Chapter: dasi.cost.params"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.cost.params &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/cost.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <span class="target" id="module-dasi.cost"></span><div class="section" id="cost-model-dasi-cost">
+<h1>Cost Model (<a class="reference internal" href="#module-dasi.cost" title="dasi.cost"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code></a>)<a class="headerlink" href="#cost-model-dasi-cost" title="Permalink to this headline">¶</a></h1>
+<p>This module provide cost calculations for molecular assemblies</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dasi.cost.params.html#module-dasi.cost.params" title="dasi.cost.params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></a></p></td>
+<td><p>Cost Parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dasi.cost.utils.html#module-dasi.cost.utils" title="dasi.cost.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></p></td>
+<td><p>Cost utilities.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CostBuilder</span></code></a>(span)</p></td>
+<td><p>Abstract base class for building a cost model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimerCostModel</span></code></a>(pdf, edf, min_anneal, …)</p></td>
+<td><p>Initialize the cost model for primer designs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SpanCost" title="dasi.cost.SpanCost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpanCost</span></code></a>(syn_cost)</p></td>
+<td><p>Initialize cost builder from a ‘span’, or a list of indices for which the model is valid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel" title="dasi.cost.SynthesisCostModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SynthesisCostModel</span></code></a>(sdf, primer_cost, …[, …])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">type sdf</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.decoder" title="dasi.cost.decoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decoder</span></code></a>(obj)</p></td>
+<td><p>msgpack decoder for cost functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.encoder" title="dasi.cost.encoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encoder</span></code></a>(obj)</p></td>
+<td><p>msgpack encoder for cost functions.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="dasi.cost.CostBuilder">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">CostBuilder</code><span class="sig-paren">(</span><em class="sig-param">span</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#CostBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract base class for building a cost model.</p>
+<p>Initialize cost builder from a ‘span’, or a list of indices for
+which the model is valid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>span</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – the list of indices (span) for which this cost model is evaluated.</p>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.compute" title="dasi.cost.CostBuilder.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
+<td><p>Before the numpy-based cost calculations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.cost" title="dasi.cost.CostBuilder.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
+<td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.from_params" title="dasi.cost.CostBuilder.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(*args)</p></td>
+<td><p>Initialize from parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.to_df" title="dasi.cost.CostBuilder.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
+<td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.CostBuilder.plot" title="dasi.cost.CostBuilder.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<td><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.cost.CostBuilder.compute">
+<em class="property">abstract </em><code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#CostBuilder.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before the numpy-based cost calculations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.CostBuilder.cost">
+<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#CostBuilder.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bp</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – either a integer or np.ndarray of integers to compute.</p></li>
+<li><p><strong>ext</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The extension design parameters (bool, bool) that represent
+whether the left or right primer is ‘extendable’. Primers
+that have been provided are not extendable. If we had,
+for example, an existing right primer and flexibility to
+design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
+<li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
+invalid indices cost will be set to <cite>np.inf</cite> and efficiency
+to <cite>0.0</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame" title="dasi.utils.npdf.NumpyDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>NumpyDataFrame representing the cost of from the input span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.CostBuilder.from_params">
+<em class="property">abstract classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#CostBuilder.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder.from_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize from parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.CostBuilder.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.CostBuilder.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.CostBuilder.to_df">
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#CostBuilder.to_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.CostBuilder.to_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the cost builder to a pandas.DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.cost.PrimerCostModel">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">PrimerCostModel</code><span class="sig-paren">(</span><em class="sig-param">pdf</em>, <em class="sig-param">edf</em>, <em class="sig-param">min_anneal</em>, <em class="sig-param">time_cost</em>, <em class="sig-param">material_mod</em>, <em class="sig-param">min_span</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#PrimerCostModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.CostBuilder</span></code></a></p>
+<p>Initialize the cost model for primer designs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pdf</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – a pandas DataFrame representing costs for primers.
+Example parameters found at
+<a class="reference internal" href="generated/dasi.cost.params.html#dasi.cost.params.PrimerParams.primer_df" title="dasi.cost.params.PrimerParams.primer_df"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dasi.cost.params.PrimerParams.primer_df</span></code></a></p></li>
+<li><p><strong>edf</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – a pandas DataFrame representing efficiencies for spans.
+Example parameters found at
+<a class="reference internal" href="generated/dasi.cost.params.html#dasi.cost.params.PrimerParams.eff_df" title="dasi.cost.params.PrimerParams.eff_df"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dasi.cost.params.PrimerParams.eff_df</span></code></a></p></li>
+<li><p><strong>min_anneal</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the number of bases to consider for annealing a primer.</p></li>
+<li><p><strong>time_cost</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the cost to produce a primer</p></li>
+<li><p><strong>material_mod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>min_span</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.compute" title="dasi.cost.PrimerCostModel.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
+<td><p>Before the numpy-based cost calculations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.cost" title="dasi.cost.PrimerCostModel.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
+<td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.from_params" title="dasi.cost.PrimerCostModel.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(primer_params)</p></td>
+<td><p>Load from <a class="reference internal" href="generated/dasi.cost.params.html#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.params.PrimerParams</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.to_df" title="dasi.cost.PrimerCostModel.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
+<td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.PrimerCostModel.plot" title="dasi.cost.PrimerCostModel.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<td><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.cost.PrimerCostModel.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#PrimerCostModel.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostModel.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before the numpy-based cost calculations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.PrimerCostModel.cost">
+<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.PrimerCostModel.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bp</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – either a integer or np.ndarray of integers to compute.</p></li>
+<li><p><strong>ext</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The extension design parameters (bool, bool) that represent
+whether the left or right primer is ‘extendable’. Primers
+that have been provided are not extendable. If we had,
+for example, an existing right primer and flexibility to
+design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
+<li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
+invalid indices cost will be set to <cite>np.inf</cite> and efficiency
+to <cite>0.0</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame" title="dasi.utils.npdf.NumpyDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>NumpyDataFrame representing the cost of from the input span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.PrimerCostModel.from_params">
+<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">primer_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#PrimerCostModel.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.PrimerCostModel.from_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load from <a class="reference internal" href="generated/dasi.cost.params.html#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.params.PrimerParams</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>primer_params</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="generated/dasi.cost.params.html#dasi.cost.params.PrimerParams" title="dasi.cost.params.PrimerParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerParams</span></code></a>]) – parameters</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerCostModel</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>PrimerCostModel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.PrimerCostModel.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.PrimerCostModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.PrimerCostModel.to_df">
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.PrimerCostModel.to_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the cost builder to a pandas.DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.cost.SpanCost">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">SpanCost</code><span class="sig-paren">(</span><em class="sig-param">syn_cost</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SpanCost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.CostBuilder</span></code></a></p>
+<p>Initialize cost builder from a ‘span’, or a list of indices for
+which the model is valid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>span</strong> – the list of indices (span) for which this cost model is evaluated.</p>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.compute" title="dasi.cost.SpanCost.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
+<td><p>Before the numpy-based cost calculations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.cost" title="dasi.cost.SpanCost.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
+<td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.from_params" title="dasi.cost.SpanCost.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>()</p></td>
+<td><p>Initialize from parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.to_df" title="dasi.cost.SpanCost.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
+<td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SpanCost.plot" title="dasi.cost.SpanCost.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<td><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.cost.SpanCost.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SpanCost.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before the numpy-based cost calculations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SpanCost.cost">
+<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SpanCost.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bp</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – either a integer or np.ndarray of integers to compute.</p></li>
+<li><p><strong>ext</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The extension design parameters (bool, bool) that represent
+whether the left or right primer is ‘extendable’. Primers
+that have been provided are not extendable. If we had,
+for example, an existing right primer and flexibility to
+design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
+<li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
+invalid indices cost will be set to <cite>np.inf</cite> and efficiency
+to <cite>0.0</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame" title="dasi.utils.npdf.NumpyDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>NumpyDataFrame representing the cost of from the input span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SpanCost.from_params">
+<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SpanCost.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SpanCost.from_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize from parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SpanCost.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.SpanCost.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SpanCost.to_df">
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.SpanCost.to_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the cost builder to a pandas.DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.cost.SynthesisCostModel">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">SynthesisCostModel</code><span class="sig-paren">(</span><em class="sig-param">sdf</em>, <em class="sig-param">primer_cost</em>, <em class="sig-param">time_cost</em>, <em class="sig-param">material_modifier</em>, <em class="sig-param">step_size=10</em>, <em class="sig-param">left_span_range=(-500</em>, <em class="sig-param">500)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SynthesisCostModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dasi.cost.CostBuilder" title="dasi.cost.CostBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.cost.CostBuilder</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sdf</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – synthesis parameter pandas dataframe. Example parameters found
+at <a class="reference internal" href="generated/dasi.cost.params.html#dasi.cost.params.SynthesisParams.synthesis_df" title="dasi.cost.params.SynthesisParams.synthesis_df"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dasi.cost.params.SynthesisParams.synthesis_df</span></code></a></p></li>
+<li><p><strong>primer_cost</strong> (<a class="reference internal" href="#dasi.cost.PrimerCostModel" title="dasi.cost.PrimerCostModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrimerCostModel</span></code></a>) – primer cost builder</p></li>
+<li><p><strong>time_cost</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – time cost per day</p></li>
+<li><p><strong>material_modifier</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – material multiplier (default: 1.0)</p></li>
+<li><p><strong>step_size</strong> – step size to consider (default: 10)</p></li>
+<li><p><strong>left_span_range</strong> – span range for left primer to consider
+(default: -500, 500)</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.compute" title="dasi.cost.SynthesisCostModel.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>()</p></td>
+<td><p>Before the numpy-based cost calculations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.cost" title="dasi.cost.SynthesisCostModel.cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost</span></code></a>(bp, ext[, invalidate])</p></td>
+<td><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across the provided span.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.from_params" title="dasi.cost.SynthesisCostModel.from_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_params</span></code></a>(syn_params, primer_cost)</p></td>
+<td><p>Initialize from parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.to_df" title="dasi.cost.SynthesisCostModel.to_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code></a>()</p></td>
+<td><p>Convert the cost builder to a pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.cost.SynthesisCostModel.plot" title="dasi.cost.SynthesisCostModel.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
+<td><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.cost.SynthesisCostModel.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SynthesisCostModel.compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before the numpy-based cost calculations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SynthesisCostModel.cost">
+<code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param">bp</em>, <em class="sig-param">ext</em>, <em class="sig-param">invalidate=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SynthesisCostModel.cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code> across
+the provided span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bp</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – either a integer or np.ndarray of integers to compute.</p></li>
+<li><p><strong>ext</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The extension design parameters (bool, bool) that represent
+whether the left or right primer is ‘extendable’. Primers
+that have been provided are not extendable. If we had,
+for example, an existing right primer and flexibility to
+design the left primer, this would be <cite>(1, 0)</cite>.</p></li>
+<li><p><strong>invalidate</strong> – Whether to invalidate indicies that go beyond the provided
+span for the cost builder (<cite>CostModelBase.span</cite>). Any
+invalid indices cost will be set to <cite>np.inf</cite> and efficiency
+to <cite>0.0</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame" title="dasi.utils.npdf.NumpyDataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumpyDataFrame</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>NumpyDataFrame representing the cost of from the input span.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SynthesisCostModel.from_params">
+<em class="property">classmethod </em><code class="sig-name descname">from_params</code><span class="sig-paren">(</span><em class="sig-param">syn_params</em>, <em class="sig-param">primer_cost</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#SynthesisCostModel.from_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.SynthesisCostModel.from_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize from parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SynthesisCostModel.plot">
+<em class="property">property </em><code class="sig-name descname">plot</code><a class="headerlink" href="#dasi.cost.SynthesisCostModel.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot attributes across ‘span’ from the pandas.DataFrame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.cost.SynthesisCostModel.to_df">
+<code class="sig-name descname">to_df</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.cost.SynthesisCostModel.to_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the cost builder to a pandas.DataFrame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="dasi.cost.decoder">
+<code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">decoder</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#decoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.decoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>msgpack decoder for cost functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="dasi.cost.encoder">
+<code class="sig-prename descclassname">dasi.cost.</code><code class="sig-name descname">encoder</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/cost.html#encoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.cost.encoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>msgpack encoder for cost functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -42,7 +42,7 @@ from dasi.utils import Region
 from dasi.utils import sort_cycle
 
 
-def design_primers(
+def _design_primers(
     template: str,
     region: Region,
     lseq: Union[None, str],
@@ -117,17 +117,17 @@ def design_primers(
     return pairs, explain
 
 
-def edata_to_npdf(edata: dict, span_cost: SpanCost) -> NumpyDataFrame:
+def _edata_to_npdf(edata: dict, span_cost: SpanCost) -> NumpyDataFrame:
     return span_cost.cost(edata["span"], edata["type_def"])
 
 
-def no_none_or_nan(*i):
+def _no_none_or_nan(*i):
     for _i in i:
         if _i is not None and not np.isnan(_i):
             return _i
 
 
-def get_primer_extensions(
+def _get_primer_extensions(
     graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
 ) -> Tuple[int, int]:
     """Return the left and right primer extensions for the given *internal*
@@ -145,7 +145,7 @@ def get_primer_extensions(
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
-        right_ext = no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
+        right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
         raise DasiSequenceDesignException
     else:
@@ -155,7 +155,7 @@ def get_primer_extensions(
     predecessors = list(graph.predecessors(n1))
     if predecessors:
         pedge = graph[predecessors[0]][n1]
-        left_ext = no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
+        left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
         raise DasiSequenceDesignException
     else:
@@ -201,7 +201,7 @@ def _design_pcr_product_primers(
 
     # this is a new PCR product
     n1, n2, edata = edge
-    lext, rext = get_primer_extensions(graph, n1, n2)
+    lext, rext = _get_primer_extensions(graph, n1, n2)
     alignment_groups = edata["groups"]
     group = alignment_groups[0]
 
@@ -267,7 +267,7 @@ def _design_pcr_product_primers(
         lseq = None
 
     # design primers
-    pairs, explain = design_primers(
+    pairs, explain = _design_primers(
         tseq,
         template.subject_region,
         lseq,
@@ -295,7 +295,7 @@ def _design_pcr_product_primers(
     return pairs, explain, template, query_region
 
 
-def design_edge(
+def _design_edge(
     assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
 ) -> Union[Reaction, None]:
     query_key = assembly.query_key
@@ -369,7 +369,9 @@ def design_edge(
         return Reaction("PCR", inputs=primers + [template], outputs=[product])
 
 
-AssemblyNode = namedtuple("AssemblyNode", "index expandable type overhang")
+AssemblyNode = namedtuple(
+    "AssemblyNode", "index expandable type overhang"
+)  #: tuple representing a location on a goal sequence
 
 
 class Assembly(Iterable):
@@ -410,7 +412,7 @@ class Assembly(Iterable):
         if not self._reactions:
             reactions = []
             for n1, n2, edata in self.edges():
-                reaction = design_edge(self, n1, n2, seqdb=self.seqdb)
+                reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
                     reactions.append(reaction)
             self._reactions = tuple(reactions)

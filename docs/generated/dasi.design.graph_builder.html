@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.4</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dasi.cost.params.html">dasi.cost.params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/dasi.design.graph_builder.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="module-dasi.design.graph_builder">
+<span id="dasi-design-graph-builder"></span><h1>dasi.design.graph_builder<a class="headerlink" href="#module-dasi.design.graph_builder" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphBuilder" title="dasi.design.graph_builder.AssemblyGraphBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyGraphBuilder</span></code></a>(alignment_container[, …])</p></td>
+<td><p>Class that builds an AssemblyGraph from an alignment container.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphBuilder" title="dasi.design.graph_builder.AssemblyGraphBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyGraphBuilder</span></code></a>(alignment_container[, …])</p></td>
+<td><p>Class that builds an AssemblyGraph from an alignment container.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="dasi.design.graph_builder.AssemblyGraphBuilder">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.design.graph_builder.</code><code class="sig-name descname">AssemblyGraphBuilder</code><span class="sig-paren">(</span><em class="sig-param">alignment_container</em>, <em class="sig-param">span_cost=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that builds an AssemblyGraph from an alignment container.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphBuilder._batch_add_edge_costs" title="dasi.design.graph_builder.AssemblyGraphBuilder._batch_add_edge_costs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_batch_add_edge_costs</span></code></a>()</p></td>
+<td><p>Add costs to all edges at once batch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_edge" title="dasi.design.graph_builder.AssemblyGraphBuilder.add_edge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_edge</span></code></a>(n1, n2, cost, material, time, …)</p></td>
+<td><p>Add an edge between two assembly nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_node" title="dasi.design.graph_builder.AssemblyGraphBuilder.add_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_node</span></code></a>(node)</p></td>
+<td><p>Add node to the graph.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.design.graph_builder.AssemblyGraphBuilder._batch_add_edge_costs">
+<code class="sig-name descname">_batch_add_edge_costs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder._batch_add_edge_costs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder._batch_add_edge_costs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add costs to all edges at once batch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.graph_builder.AssemblyGraphBuilder.add_edge">
+<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">internal_or_external</em>, <em class="sig-param">condition</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an edge between two assembly nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>) – src node</p></li>
+<li><p><strong>n2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>) – dest node</p></li>
+<li><p><strong>name</strong> – name of the edge</p></li>
+<li><p><strong>cost</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – overall cost of the edge</p></li>
+<li><p><strong>material</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – material cost of the edge. Used in path calculations.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – time cost of the edge. Used in path calculations.</p></li>
+<li><p><strong>efficiency</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – efficiency of the edge. Used in path calculations.</p></li>
+<li><p><strong>span</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – spanning distance (in bp) of the edge.</p></li>
+<li><p><strong>atype</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alignment type of the edge.</p></li>
+<li><p><strong>kwargs</strong> – additional kwargs for the edge data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.graph_builder.AssemblyGraphBuilder.add_node">
+<code class="sig-name descname">add_node</code><span class="sig-paren">(</span><em class="sig-param">node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add node to the graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>) – the assembly node to add</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

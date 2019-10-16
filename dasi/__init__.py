@@ -1,21 +1,3 @@
-"""DASi.
-
-.. module:: dasi
-
-Submodules
-==========
-
-.. autosummary::
-    :toctree: _autosummary
-
-    alignments
-    cost
-    design
-    utils
-    constants
-    exceptions
-    log
-"""
 from .__version__ import __authors__
 from .__version__ import __homepage__
 from .__version__ import __repo__

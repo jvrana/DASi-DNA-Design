@@ -1,5 +1,11 @@
-"""DASi exceptions and warnings."""
-from .log import logger
+r"""
+Exceptions (:mod:`dasi.exceptions`)
+=============================
+
+.. currentmodule:: dasi.exceptions
+
+This module provides DASi exceptions and warnings
+"""
 from dasi.utils.networkx.exceptions import NetworkxUtilsException
 
 

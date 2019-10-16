@@ -1,4 +1,17 @@
-"""Classes and methods for estimating assembly costs."""
+r"""
+Cost Model (:mod:`dasi.cost`)
+=============================
+
+.. currentmodule:: dasi.cost
+
+This module provide cost calculations for molecular assemblies
+
+.. autosummary::
+    :toctree: generated/
+
+    params
+    utils
+"""
 from abc import ABC
 from abc import abstractmethod
 from functools import partial

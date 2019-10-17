@@ -1,4 +1,9 @@
 {
+  "0.0.5": {
+    "description": "setup updates",
+    "date": "2019-10-17T12:14:53.728652",
+    "changes": []
+  },
   "0.0.4": {
     "description": "command-line interface",
     "date": "2019-10-17T11:47:06.003351",

@@ -178,16 +178,6 @@ from typing import Union
     Spans have no direction and have an underlying context
     that has a certain length, can be linear or cyclic, and has a starting index.
 
-    The following attributes are accessible:
-
-    - `a` - the starting (inclusive) position of the span
-    - `b` - the mapped exclusive position of the span
-    - `c` - the unmapped exclusive position of the span (used for cyclic spans that
-            wrap context multiple times)
-    - `cyclic` - whether the underlying context is circular or linear
-    - `index` - the first index of the context
-    - `context_length` - the length of the underlying context.
-
     **Linear spans**
     For example, a basic linear span can be represented using the following:
 

@@ -1257,19 +1257,15 @@ a (span, span) is returned.</p>
 <p><cite>Span</cite> maps the provided positions onto a context.</p>
 <p>Spans have no direction and have an underlying context
 that has a certain length, can be linear or cyclic, and has a starting index.</p>
-<p>The following attributes are accessible:</p>
-<ul class="simple">
-<li><p><cite>a</cite> - the starting (inclusive) position of the span</p></li>
-<li><p><cite>b</cite> - the mapped exclusive position of the span</p></li>
-<li><dl class="simple">
-<dt><cite>c</cite> - the unmapped exclusive position of the span (used for cyclic spans that</dt><dd><p>wrap context multiple times)</p>
-</dd>
-</dl>
-</li>
-<li><p><cite>cyclic</cite> - whether the underlying context is circular or linear</p></li>
-<li><p><cite>index</cite> - the first index of the context</p></li>
-<li><p><cite>context_length</cite> - the length of the underlying context.</p></li>
-</ul>
+<p><strong>Linear spans</strong>
+For example, a basic linear span can be represented using the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
+<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>  <span class="c1"># spans are always</span>
+                                                  <span class="c1"># exclusive at endpoint.</span>
+</pre></div>
+</div>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -1366,15 +1362,6 @@ that has a certain length, can be linear or cyclic, and has a starting index.</p
 </tr>
 </tbody>
 </table>
-<p><strong>Linear spans</strong>
-For example, a basic linear span can be represented using the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">0</span>
-<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
-<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>  <span class="c1"># spans are always</span>
-                                                  <span class="c1"># exclusive at endpoint.</span>
-</pre></div>
-</div>
 <p><strong>Indexing and Slicing</strong></p>
 <p>New indexes can be provided to spans.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>

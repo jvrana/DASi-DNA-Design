@@ -29,7 +29,7 @@ class AssemblyGraphBuilder:
     def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
         self.container = alignment_container
         if span_cost is None:
-            self.span_cost = SpanCost.default()
+            self.span_cost = SpanCost.open()
         else:
             self.span_cost = span_cost
         self.G = None

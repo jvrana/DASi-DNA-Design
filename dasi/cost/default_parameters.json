@@ -1,0 +1,46 @@
+{
+    "global_time_cost": 10.0,
+    "global_material_modifier": 1.0,
+    "primer_min_anneal": 16,
+    "_primer_min_span": -300,
+    "primer_efficiency": {
+        "data": [
+            [0, 10, 0.0],
+            [10, 15, 0.3],
+            [15, 20, 0.6],
+            [20, 30, 0.8],
+            [30, 40, 0.9],
+            [40, 50, 0.8],
+            [50, 100, 0.75],
+            [100, 120, 0.5],
+            [120, 150, 0.3],
+            [150, 250, 0.1],
+            [250, 300, 0.0]
+        ],
+        "columns": ["min", "max", "efficiency"]
+    },
+    "primer_cost": {
+        "data":  [
+            ["IDTPrimer", 16.0, 60.0, 0.0, 0.15, 1.5],
+            ["IDTUltramer", 45.0, 200.0, 0.0, 0.40, 1.5]
+        ],
+        "columns": ["name", "min", "max", "base cost", "cost per bp", "time (days)"]
+    },
+    "synthesis_cost": {
+        "data": [
+            [0, 1, 0, 0],
+            [1, 100, "inf", "inf"],
+            [100, 500, 89.0, 3.0],
+            [500, 750, 129.0, 3.0],
+            [750, 1000, 149.0, 4.0],
+            [1000, 1250, 209.0, 7.0],
+            [1250, 1500, 249.0, 7.0],
+            [1500, 1750, 289.0, 7.0],
+            [1750, 2000, 329.0, 7.0],
+            [2000, 2250, 399.0, 7.0]
+        ],
+        "columns": ["min", "max", "base", "time"]
+    },
+    "_synthesis_step_size": 10,
+    "_synthesis_left_span_range": [-500, 500]
+}

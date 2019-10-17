@@ -59,10 +59,30 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.params.html">dasi.cost.params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
@@ -86,6 +106,14 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas/schemas.html">User Parameter Inputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
@@ -158,16 +186,19 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.exceptions.DASiWarning" title="dasi.exceptions.DASiWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DASiWarning</span></code></a></p></td>
 <td><p>A generic dasi warning.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.exceptions.DasiDesignException" title="dasi.exceptions.DasiDesignException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiDesignException</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.exceptions.DasiCostParameterValidationError" title="dasi.exceptions.DasiCostParameterValidationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiCostParameterValidationError</span></code></a></p></td>
+<td><p>Input json file for cost parameters was invalid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.exceptions.DasiDesignException" title="dasi.exceptions.DasiDesignException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiDesignException</span></code></a></p></td>
 <td><p>A design exception.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.exceptions.DasiInvalidMolecularAssembly" title="dasi.exceptions.DasiInvalidMolecularAssembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiInvalidMolecularAssembly</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.exceptions.DasiInvalidMolecularAssembly" title="dasi.exceptions.DasiInvalidMolecularAssembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiInvalidMolecularAssembly</span></code></a></p></td>
 <td><p>Invalid molecular assembly.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.exceptions.DasiNoPrimerPairsException" title="dasi.exceptions.DasiNoPrimerPairsException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiNoPrimerPairsException</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.exceptions.DasiNoPrimerPairsException" title="dasi.exceptions.DasiNoPrimerPairsException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiNoPrimerPairsException</span></code></a></p></td>
 <td><p>Sequence design exception.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.exceptions.DasiSequenceDesignException" title="dasi.exceptions.DasiSequenceDesignException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiSequenceDesignException</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.exceptions.DasiSequenceDesignException" title="dasi.exceptions.DasiSequenceDesignException"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiSequenceDesignException</span></code></a></p></td>
 <td><p>Sequence design exception.</p></td>
 </tr>
 </tbody>
@@ -222,6 +253,20 @@ set self.__traceback__ to tb and return self.</p>
 <dl class="method">
 <dt id="dasi.exceptions.DASiWarning.with_traceback">
 <code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.exceptions.DASiWarning.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="dasi.exceptions.DasiCostParameterValidationError">
+<em class="property">exception </em><code class="sig-prename descclassname">dasi.exceptions.</code><code class="sig-name descname">DasiCostParameterValidationError</code><a class="reference internal" href="_modules/dasi/exceptions.html#DasiCostParameterValidationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.exceptions.DasiCostParameterValidationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dasi.exceptions.DASiException" title="dasi.exceptions.DASiException"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.exceptions.DASiException</span></code></a></p>
+<p>Input json file for cost parameters was invalid.</p>
+<dl class="method">
+<dt id="dasi.exceptions.DasiCostParameterValidationError.with_traceback">
+<code class="sig-name descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.exceptions.DasiCostParameterValidationError.with_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>

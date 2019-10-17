@@ -21,6 +21,27 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 import dasi
 
+# copy over the json schema
+import json
+import pprint
+
+
+def dump(d, path):
+    x = (
+        pprint.pformat(d)
+        .replace("'", '"')
+        .replace("True", "true")
+        .replace("False", "false")
+    )
+    with open(path, "w") as f:
+        f.write(x)
+
+
+with open("schemas/cost_schema.json", "w") as f:
+    json.dump(dasi.cost.schema, f, indent=2)
+
+dump(dasi.cost.open_params(), "schemas/cost_default.json")
+
 # -- General configuration ------------------------------------------------
 
 # AUTODOC
@@ -52,6 +73,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "autodocsumm",
+    "sphinx-jsonschema",
     "nbsphinx",
     "sphinx.ext.mathjax",
     "sphinx.ext.doctest",

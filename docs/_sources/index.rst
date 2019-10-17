@@ -1,8 +1,3 @@
-.. DASi documentation master file, created by
-   sphinx-quickstart on Sun Nov 19 22:18:51 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 API Reference
 -------------
 
@@ -23,8 +18,10 @@ User Documentation
 The user documentation contains high-level information for users of DASi.
 
 .. toctree::
+   :maxdepth: 1
 
    usage
+   schemas/schemas.rst
 
 Developer Documentation
 -----------------------
@@ -32,6 +29,7 @@ Developer Documentation
 The developer documentation conatins information on how to contribute to DASi.
 
 .. toctree::
+   :maxdepth: 1
 
    guidelines
 

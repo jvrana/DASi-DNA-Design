@@ -32,7 +32,7 @@ def span_cost() -> SpanCost:
             print("Loading file: {}".format(path))
             span_cost = SpanCost.load(path)
     else:
-        span_cost = SpanCost.default()
+        span_cost = SpanCost.open()
         if do_save:
             with logger.timeit("INFO", "saving bytes"):
                 print("Saving file: {}".format(path))

@@ -39,3 +39,7 @@ class DasiNoPrimerPairsException(DASiException):
 
 class DasiInvalidMolecularAssembly(DASiException):
     """Invalid molecular assembly."""
+
+
+class DasiCostParameterValidationError(DASiException):
+    """Input json file for cost parameters was invalid."""

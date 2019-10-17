@@ -1,7 +1,4 @@
-"""molecule.py.
-
-classes representing *molecules* and types of *molecules*
-"""
+"""classes representing *molecules* and types of *molecules*"""
 from __future__ import annotations
 
 from copy import copy
@@ -34,6 +31,7 @@ class MoleculeType:
         min_size: int = None,
         max_size: int = None,
     ):
+        """Initializes a new molecule."""
         self.name = name
         self.cost = cost
         self.use_direct = use_direct
@@ -111,6 +109,8 @@ class ExternalType(MoleculeType):
         return copied
 
 
+# TODO: efficiencies and base costs could be parameters
+# TODO: min_size and max_size could be parameters
 InternalType(Constants.FRAGMENT, (False, False), True, 0.0, 0.98)
 InternalType(Constants.PCR_PRODUCT, (True, True), False, 10.0, 0.95, min_size=100)
 InternalType(

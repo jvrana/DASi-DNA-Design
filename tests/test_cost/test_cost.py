@@ -4,26 +4,41 @@ import numpy as np
 import pylab as plt
 import pytest
 
+from dasi.cost import open_params
 from dasi.cost import PrimerCostModel
-from dasi.cost import PrimerParams
 from dasi.cost import SpanCost
 from dasi.cost import SynthesisCostModel
-from dasi.cost import SynthesisParams
+from dasi.cost import validate_params
+from dasi.exceptions import DasiCostParameterValidationError
 
 
 @pytest.fixture(scope="module")
 def primer_cost():
-    return PrimerCostModel.from_params(PrimerParams)
+    return PrimerCostModel.open()
 
 
 @pytest.fixture(scope="module")
 def syn_cost(primer_cost):
-    return SynthesisCostModel.from_params(SynthesisParams, primer_cost)
+    return SynthesisCostModel.open()
 
 
 @pytest.fixture(scope="module")
 def span_cost(primer_cost, syn_cost):
     return SpanCost(syn_cost)
+
+
+def test_invalid_json():
+    params = open_params()
+    validate_params(params)
+
+    with pytest.raises(DasiCostParameterValidationError):
+        params["extra_key"] = 1
+        SpanCost.from_json(params)
+
+    params = open_params()
+    with pytest.raises(DasiCostParameterValidationError):
+        del params[list(params)[0]]
+        SpanCost.from_json(params)
 
 
 class TestPlotters:
@@ -104,7 +119,6 @@ class TestEdgeCases:
 
 
 class TestSerialization:
-
     here = os.path.abspath(os.path.dirname(__file__))
 
     def test_dumpb(self, span_cost):

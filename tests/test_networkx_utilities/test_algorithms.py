@@ -12,7 +12,7 @@ from dasi.utils.networkx import sympy_multisource_dijkstras
 
 
 COMPARISON_THRESHOLD = (
-    0.01
+    0.03
 )  # within 1% due to floating point errors during accumulating of multiple floats
 EDGE_COMPARISON_THRESHOLD = 0.05
 

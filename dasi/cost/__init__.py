@@ -1,36 +1,57 @@
 r"""
+.. _cost_model:
+
 Cost Model (:mod:`dasi.cost`)
 =============================
 
 .. currentmodule:: dasi.cost
 
-This module provide cost calculations for molecular assemblies
+This module provide cost calculations for molecular assemblies.
+
+Default cost parameters can be opened as follows:
+
+.. code-block::
+
+    cost_model = SpanCost.open()
+
+    # optionally use custom parameters
+    cost_model = SpanCost.open("my_parameters.json")
+
+Take a look at the :ref:`parameters schema <cost_schema>` for how to build the
+parameter json.
+
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
 
-    params
     utils
 """
+import json
 from abc import ABC
 from abc import abstractmethod
 from functools import partial
+from os.path import abspath
+from os.path import dirname
+from os.path import join
 from typing import Tuple
-from typing import Type
 from typing import Union
 
+import jsonschema
 import msgpack
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from .params import Globals
-from .params import PrimerParams
-from .params import SynthesisParams
 from .utils import df_to_np_ranged
 from .utils import lexargmin
 from .utils import slicer
+from dasi.exceptions import DasiCostParameterValidationError
 from dasi.utils import NumpyDataFrame
+
+
+here = abspath(dirname(__file__))
 
 slice_dict = {
     (0, 0): slicer[:, :1, :1],
@@ -76,6 +97,60 @@ def decoder(obj):
     return obj
 
 
+def _add_special_primer_case(params):
+    primer_cost_data = params["primer_cost"]["data"]
+    primer_cost_columns = params["primer_cost"]["columns"]
+    i = primer_cost_columns.index("min")
+    j = primer_cost_columns.index("max")
+    k = primer_cost_columns.index("name")
+
+    new = [0] * len(primer_cost_columns)
+
+    new[k] = "Non-primer (special case)"
+    new[i] = params["primer_min_anneal"]
+    new[j] = params["primer_min_anneal"] + 1
+
+    primer_cost_data.insert(0, new)
+
+
+def _replace_inf(params):
+    if isinstance(params, list):
+        for i, p in enumerate(params):
+            if p == "inf":
+                params[i] = np.inf
+        for p in params:
+            _replace_inf(p)
+    elif isinstance(params, dict):
+
+        for k, v in params.items():
+            if v == "inf":
+                params[k] = np.inf
+            else:
+                _replace_inf(v)
+
+
+with open(join(here, "parameter_json_schema.json")) as f:
+    schema = json.load(f)
+
+
+def validate_params(params):
+    try:
+        jsonschema.validate(params, schema)
+    except jsonschema.ValidationError as e:
+        raise DasiCostParameterValidationError(str(e))
+
+
+default_parameters_path = join(here, "default_parameters.json")
+
+
+def open_params(path=None):
+    if path is None:
+        path = default_parameters_path
+    with open(path, "r") as f:
+        params = json.load(f)
+    return params
+
+
 class CostBuilder(ABC):
     """Abstract base class for building a cost model."""
 
@@ -88,11 +163,23 @@ class CostBuilder(ABC):
         self.cost_dict = {}
         self.span = span
 
+    @staticmethod
+    def _fix_params(params):
+        validate_params(params)
+        _add_special_primer_case(params)
+        _replace_inf(params)
+        return params
+
     @classmethod
     @abstractmethod
-    def from_params(cls, *args):
+    def from_json(cls, params):
         """Initialize from parameters."""
-        pass
+        cls._fix_params(params)
+
+    @classmethod
+    def open(cls, path: str = None):
+        params = open_params(path)
+        return cls.from_json(params)
 
     @abstractmethod
     def compute(self):
@@ -203,19 +290,25 @@ class PrimerCostModel(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, primer_params: Type[PrimerParams]) -> "PrimerCostModel":
+    def from_json(cls, params) -> "PrimerCostModel":
         """Load from :class:`dasi.cost.params.PrimerParams`.
 
         :param primer_params: parameters
         :return: PrimerCostModel
         """
-        return cls(
-            pdf=primer_params.primer_df,
-            edf=primer_params.eff_df,
-            min_anneal=primer_params.min_anneal,
-            time_cost=primer_params.time_cost,
-            material_mod=primer_params.material_modifier,
-            min_span=primer_params.min_span,
+        super().from_json(params)
+        return PrimerCostModel(
+            pdf=pd.DataFrame(
+                params["primer_cost"]["data"], columns=params["primer_cost"]["columns"]
+            ),
+            edf=pd.DataFrame(
+                params["primer_efficiency"]["data"],
+                columns=params["primer_efficiency"]["columns"],
+            ),
+            time_cost=params["global_time_cost"],
+            material_mod=params["global_material_modifier"],
+            min_span=params["_primer_min_span"],
+            min_anneal=params["primer_min_anneal"],
         )
 
     def compute(self):
@@ -304,15 +397,24 @@ class SynthesisCostModel(CostBuilder):
         self.compute()
 
     @classmethod
-    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostModel):
-        return cls(
-            sdf=syn_params.synthesis_df,
-            primer_cost=primer_cost,
-            time_cost=syn_params.time_cost,
-            material_modifier=syn_params.material_modifier,
-            step_size=syn_params.step_size,
-            left_span_range=syn_params.left_span_range,
+    def from_json(cls, params: dict, primer_cost_model: PrimerCostModel):
+        super().from_json(params)
+        return SynthesisCostModel(
+            sdf=pd.DataFrame(
+                params["synthesis_cost"]["data"],
+                columns=params["synthesis_cost"]["columns"],
+            ),
+            primer_cost=primer_cost_model,
+            time_cost=params["global_time_cost"],
+            material_modifier=params["global_material_modifier"],
+            step_size=params["_synthesis_step_size"],
+            left_span_range=params["_synthesis_left_span_range"],
         )
+
+    @classmethod
+    def open(cls, path: str = None):
+        params = open_params(path)
+        return cls.from_json(params, PrimerCostModel.open(path))
 
     def compute(self):
         syn = df_to_np_ranged("min", "max", self.synthesis_df, dtype=np.float32)
@@ -408,7 +510,7 @@ class SynthesisCostModel(CostBuilder):
 
 
 class SpanCost(CostBuilder):
-    def __init__(self, syn_cost):
+    def __init__(self, syn_cost, input_data=None):
         self.syn_cost = syn_cost
         self.primer_cost = self.syn_cost.primer_cost
         x = [
@@ -419,17 +521,15 @@ class SpanCost(CostBuilder):
         ]
         span = np.arange(min(x), max(x))
         super().__init__(span)
+        self.input_data = input_data
         self.compute()
 
     @classmethod
-    def from_params(cls):
-        pass
-
-    @classmethod
-    def default(cls):
-        primer_cost = PrimerCostModel.from_params(PrimerParams)
-        syn_cost = SynthesisCostModel.from_params(SynthesisParams, primer_cost)
-        return cls(syn_cost)
+    def from_json(cls, params):
+        super().from_json(params)
+        primer_cost_model = PrimerCostModel.from_json(params)
+        synthesis_cost_model = SynthesisCostModel.from_json(params, primer_cost_model)
+        return cls(synthesis_cost_model, params)
 
     def compute(self):
         def choose(a, i):

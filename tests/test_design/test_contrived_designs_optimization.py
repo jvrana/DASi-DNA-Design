@@ -567,7 +567,7 @@ class TestOutput:
         design, results = example_design
         for result in results.values():
             for a in result.assemblies:
-                print(a.to_csv())
+                print(a.to_reaction_df())
                 print()
 
     def test_design_to_csv(self, example_design):

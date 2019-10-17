@@ -1,3 +1,4 @@
+"""Assembly."""
 from __future__ import annotations
 
 from collections import Iterable
@@ -677,7 +678,7 @@ class Assembly(Iterable):
             for m in r.outputs:
                 yield (i, "output", m)
 
-    def to_csv(self):
+    def to_reaction_df(self):
         rows = []
         for i, role, m in self.molecules:
             if m.type.name == "PRIMER":

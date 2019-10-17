@@ -1,1 +1,2 @@
 .. automodule:: dasi.cost
+

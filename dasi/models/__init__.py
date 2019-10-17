@@ -5,6 +5,33 @@ Models (:mod:`dasi.models`)
 .. currentmodule:: dasi.models
 
 This module provides representations of Molecules and Molecular Assemblies.
+
+.. autosummary::
+    :toctree: generated/
+
+    Assembly
+    AssemblyNode
+    Molecule
+    MoleculeType
+    Reaction
+    Alignment
+    AlignmentGroup
+    AlignmentGroupBase
+    MultiPCRProductAlignmentGroup
+    PCRProductAlignmentGroup
+    AlignmentContainer
+    AlignmentContainerFactory
+
+modules
+-------
+
+.. autosummary::
+    :toctree: generated/
+
+    assembly
+    molecule
+    alignment
+    alignment_container
 """
 from .alignment import Alignment
 from .alignment import AlignmentGroup

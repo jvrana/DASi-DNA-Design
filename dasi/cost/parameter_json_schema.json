@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Cost Parameters Schema",
+  "description": "This schema validate a json input for the DASi cost model",
+  "type": "object",
+  "properties": {
+    "global_time_cost": {
+      "type": "number",
+      "title": "global time cost",
+      "description": "the global cost of waiting *1* day"
+    },
+    "global_material_modifier": {
+      "type": "number",
+      "title": "global material modifier",
+      "description": "multiplies the effect of the material cost by this amount",
+      "default": 1,
+      "examples": [
+        1
+      ]
+    },
+    "primer_min_anneal": {
+      "type": "number",
+      "minimum": 5,
+      "maximum": 99,
+      "multipleOf": 1.0,
+      "title": "minimum primer anneal",
+      "description": "the minimum number of bases to consider for an annealing event",
+      "default": 16
+    },
+    "_primer_min_span": {
+      "type": "number",
+      "multipleOf": 1.0
+    },
+    "primer_efficiency": {
+      "type": "object",
+      "title": "primer efficiency data frame",
+      "description": "provides efficiency *homology* for gibson assembly",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": [
+              {"type":  "number", "multipleOf": 1},
+              {"type":  "number", "multipleOf": 1},
+              {"type":  "number", "maximum": 1}
+            ],
+            "additionalItems": false
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "data",
+        "columns"
+      ],
+      "additionalProperties": false
+    },
+    "primer_cost": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "contains": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 6,
+          "maxItems": 6
+        }
+      },
+      "required": [
+        "data",
+        "columns"
+      ],
+      "additionalProperties": false
+    },
+    "synthesis_cost": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 4,
+          "maxItems": 4
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "data",
+        "columns"
+      ]
+    },
+    "_synthesis_step_size": {
+      "type": "number",
+      "multipleOf": 1.0
+    },
+    "_synthesis_left_span_range": {
+      "type": "array",
+      "items": [
+        {
+          "type": "number",
+          "multipleOf": 1.0
+        },
+        {
+          "type": "number",
+          "multipleOf": 1.0
+        }
+      ],
+      "additionalItems": false
+    }
+  },
+  "minProperties": 9,
+  "maxProperties": 9,
+  "additionalProperties": false
+}

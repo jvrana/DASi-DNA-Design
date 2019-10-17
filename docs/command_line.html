@@ -59,10 +59,30 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.params.html">dasi.cost.params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
@@ -86,6 +106,14 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas/schemas.html">User Parameter Inputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
@@ -139,6 +167,73 @@
   <span class="target" id="module-dasi.command_line"></span><div class="section" id="command-line-dasi-command-line">
 <h1>Command Line (<a class="reference internal" href="#module-dasi.command_line" title="dasi.command_line"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code></a>)<a class="headerlink" href="#command-line-dasi-command-line" title="Permalink to this headline">¶</a></h1>
 <p>This module provide command line interface for DASi.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dasi run
+</pre></div>
+</div>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.command_line.DasiCLI" title="dasi.command_line.DasiCLI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DasiCLI</span></code></a>([directory, primers, templates, …])</p></td>
+<td><p>DASi command line interface.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="dasi.command_line.DasiCLI">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.command_line.</code><code class="sig-name descname">DasiCLI</code><span class="sig-paren">(</span><em class="sig-param">directory='/Users/justinvrana/Documents/GitHub/DASi-DNA-Design/docsrc'</em>, <em class="sig-param">primers='primers.fasta'</em>, <em class="sig-param">templates='templates/*.gb'</em>, <em class="sig-param">fragments='fragments/*.gb'</em>, <em class="sig-param">goals='goals/*.gb'</em>, <em class="sig-param">verbose='v'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/command_line.html#DasiCLI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.command_line.DasiCLI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DASi command line interface.</p>
+<p>Initialize a new design</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.command_line.DasiCLI._get_span_cost" title="dasi.command_line.DasiCLI._get_span_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_span_cost</span></code></a>()</p></td>
+<td><p>Saves the span cost as bytes; reloads when called.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.command_line.DasiCLI.run" title="dasi.command_line.DasiCLI.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_jobs])</p></td>
+<td><p>Run a design job.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.command_line.DasiCLI.version" title="dasi.command_line.DasiCLI.version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">version</span></code></a>()</p></td>
+<td><p>Print the package version</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.command_line.DasiCLI._get_span_cost">
+<code class="sig-name descname">_get_span_cost</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/command_line.html#DasiCLI._get_span_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.command_line.DasiCLI._get_span_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the span cost as bytes; reloads when called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.command_line.DasiCLI.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">n_jobs=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/command_line.html#DasiCLI.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.command_line.DasiCLI.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a design job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_jobs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of parrallel jobs to run. (default: 10)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.command_line.DasiCLI.version">
+<code class="sig-name descname">version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dasi/command_line.html#DasiCLI.version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.command_line.DasiCLI.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the package version</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

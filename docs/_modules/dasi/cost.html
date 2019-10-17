@@ -57,10 +57,30 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.params.html">dasi.cost.params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
@@ -84,6 +104,14 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schemas/schemas.html">User Parameter Inputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../guidelines.html">Code Guidelines</a></li>
@@ -124,24 +152,39 @@
       
   <h1>Source code for dasi.cost</h1><div class="highlight"><pre>
 <span></span>r&quot;&quot;&quot;
+.. _cost_model:
+
 Cost Model (:mod:`dasi.cost`)
 =============================
 
 .. currentmodule:: dasi.cost
 
-This module provide cost calculations for molecular assemblies
+This module provide cost calculations for molecular assemblies.
+
+Default cost parameters can be opened as follows:
+
+.. code-block::
+
+    cost_model = SpanCost.open()
+
+    # optionally use custom parameters
+    cost_model = SpanCost.open(&quot;my_parameters.json&quot;)
+
+Take a look at the :ref:`parameters schema &lt;cost_schema&gt;` for how to build the
+parameter json.
+
+Utilities
+---------
 
 .. autosummary::
     :toctree: generated/
 
-    params
     utils
 &quot;&quot;&quot;
 from abc import ABC
 from abc import abstractmethod
 from functools import partial
 from typing import Tuple
-from typing import Type
 from typing import Union
 
 import msgpack
@@ -149,13 +192,17 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from .params import Globals
-from .params import PrimerParams
-from .params import SynthesisParams
 from .utils import df_to_np_ranged
 from .utils import lexargmin
 from .utils import slicer
 from dasi.utils import NumpyDataFrame
+from os.path import join, abspath, dirname
+import json
+import jsonschema
+from dasi.exceptions import DasiCostParameterValidationError
+
+
+here = abspath(dirname(__file__))
 
 slice_dict = {
     (0, 0): slicer[:, :1, :1],
@@ -201,6 +248,60 @@ slice_dict = {
     return obj</div>
 
 
+def _add_special_primer_case(params):
+    primer_cost_data = params[&#39;primer_cost&#39;][&#39;data&#39;]
+    primer_cost_columns = params[&#39;primer_cost&#39;][&#39;columns&#39;]
+    i = primer_cost_columns.index(&#39;min&#39;)
+    j = primer_cost_columns.index(&#39;max&#39;)
+    k = primer_cost_columns.index(&#39;name&#39;)
+
+    new = [0] * len(primer_cost_columns)
+
+    new[k] = &#39;Non-primer (special case)&#39;
+    new[i] = params[&#39;primer_min_anneal&#39;]
+    new[j] = params[&#39;primer_min_anneal&#39;] + 1
+
+    primer_cost_data.insert(0, new)
+
+
+def _replace_inf(params):
+    if isinstance(params, list):
+        for i, p in enumerate(params):
+            if p == &#39;inf&#39;:
+                params[i] = np.inf
+        for p in params:
+            _replace_inf(p)
+    elif isinstance(params, dict):
+
+        for k, v in params.items():
+            if v == &#39;inf&#39;:
+                params[k] = np.inf
+            else:
+                _replace_inf(v)
+
+
+with open(join(here, &#39;parameter_json_schema.json&#39;)) as f:
+    schema = json.load(f)
+
+
+def validate_params(params):
+    try:
+        jsonschema.validate(params, schema)
+    except jsonschema.ValidationError as e:
+        raise DasiCostParameterValidationError(str(e))
+
+
+default_parameters_path = join(here, &#39;default_parameters.json&#39;)
+
+
+def open_params(path = None):
+    if path is None:
+        path = default_parameters_path
+    with open(path, &#39;r&#39;) as f:
+        params = json.load(f)
+    return params
+
+
 <div class="viewcode-block" id="CostBuilder"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder">[docs]</a>class CostBuilder(ABC):
     &quot;&quot;&quot;Abstract base class for building a cost model.&quot;&quot;&quot;
 
@@ -213,11 +314,23 @@ slice_dict = {
         self.cost_dict = {}
         self.span = span
 
-<div class="viewcode-block" id="CostBuilder.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.from_params">[docs]</a>    @classmethod
+    @staticmethod
+    def _fix_params(params):
+        validate_params(params)
+        _add_special_primer_case(params)
+        _replace_inf(params)
+        return params
+
+<div class="viewcode-block" id="CostBuilder.from_json"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.from_json">[docs]</a>    @classmethod
     @abstractmethod
-    def from_params(cls, *args):
+    def from_json(cls, params):
         &quot;&quot;&quot;Initialize from parameters.&quot;&quot;&quot;
-        pass</div>
+        cls._fix_params(params)</div>
+
+    @classmethod
+    def open(cls, path: str = None):
+        params = open_params(path)
+        return cls.from_json(params)
 
 <div class="viewcode-block" id="CostBuilder.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.CostBuilder.compute">[docs]</a>    @abstractmethod
     def compute(self):
@@ -302,7 +415,7 @@ slice_dict = {
         min_anneal: int,
         time_cost: float,
         material_mod: float,
-        min_span: int,
+        min_span: int
     ):
         &quot;&quot;&quot;Initialize the cost model for primer designs.
 
@@ -327,20 +440,23 @@ slice_dict = {
         self.material_modifier = material_mod
         self.compute()
 
-<div class="viewcode-block" id="PrimerCostModel.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel.from_params">[docs]</a>    @classmethod
-    def from_params(cls, primer_params: Type[PrimerParams]) -&gt; &quot;PrimerCostModel&quot;:
+<div class="viewcode-block" id="PrimerCostModel.from_json"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel.from_json">[docs]</a>    @classmethod
+    def from_json(cls, params) -&gt; &quot;PrimerCostModel&quot;:
         &quot;&quot;&quot;Load from :class:`dasi.cost.params.PrimerParams`.
 
         :param primer_params: parameters
         :return: PrimerCostModel
         &quot;&quot;&quot;
-        return cls(
-            pdf=primer_params.primer_df,
-            edf=primer_params.eff_df,
-            min_anneal=primer_params.min_anneal,
-            time_cost=primer_params.time_cost,
-            material_mod=primer_params.material_modifier,
-            min_span=primer_params.min_span,
+        super().from_json(params)
+        return PrimerCostModel(
+            pdf=pd.DataFrame(params[&#39;primer_cost&#39;][&#39;data&#39;],
+                             columns=params[&#39;primer_cost&#39;][&#39;columns&#39;]),
+            edf=pd.DataFrame(params[&#39;primer_efficiency&#39;][&#39;data&#39;],
+                             columns=params[&#39;primer_efficiency&#39;][&#39;columns&#39;]),
+            time_cost=params[&#39;global_time_cost&#39;],
+            material_mod=params[&#39;global_material_modifier&#39;],
+            min_span=params[&#39;_primer_min_span&#39;],
+            min_anneal=params[&#39;primer_min_anneal&#39;]
         )</div>
 
 <div class="viewcode-block" id="PrimerCostModel.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel.compute">[docs]</a>    def compute(self):
@@ -428,16 +544,23 @@ slice_dict = {
         # self.logger = logger(self)
         self.compute()
 
-<div class="viewcode-block" id="SynthesisCostModel.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel.from_params">[docs]</a>    @classmethod
-    def from_params(cls, syn_params: SynthesisParams, primer_cost: PrimerCostModel):
-        return cls(
-            sdf=syn_params.synthesis_df,
-            primer_cost=primer_cost,
-            time_cost=syn_params.time_cost,
-            material_modifier=syn_params.material_modifier,
-            step_size=syn_params.step_size,
-            left_span_range=syn_params.left_span_range,
+<div class="viewcode-block" id="SynthesisCostModel.from_json"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel.from_json">[docs]</a>    @classmethod
+    def from_json(cls, params: dict, primer_cost_model: PrimerCostModel):
+        super().from_json(params)
+        return SynthesisCostModel(
+            sdf=pd.DataFrame(params[&#39;synthesis_cost&#39;][&#39;data&#39;],
+                             columns=params[&#39;synthesis_cost&#39;][&#39;columns&#39;]),
+            primer_cost=primer_cost_model,
+            time_cost=params[&#39;global_time_cost&#39;],
+            material_modifier=params[&#39;global_material_modifier&#39;],
+            step_size=params[&#39;_synthesis_step_size&#39;],
+            left_span_range=params[&#39;_synthesis_left_span_range&#39;]
         )</div>
+
+    @classmethod
+    def open(cls, path: str = None):
+        params = open_params(path)
+        return cls.from_json(params, PrimerCostModel.open(path))
 
 <div class="viewcode-block" id="SynthesisCostModel.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.SynthesisCostModel.compute">[docs]</a>    def compute(self):
         syn = df_to_np_ranged(&quot;min&quot;, &quot;max&quot;, self.synthesis_df, dtype=np.float32)
@@ -533,7 +656,7 @@ slice_dict = {
 
 
 <div class="viewcode-block" id="SpanCost"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost">[docs]</a>class SpanCost(CostBuilder):
-    def __init__(self, syn_cost):
+    def __init__(self, syn_cost, input_data=None):
         self.syn_cost = syn_cost
         self.primer_cost = self.syn_cost.primer_cost
         x = [
@@ -544,17 +667,15 @@ slice_dict = {
         ]
         span = np.arange(min(x), max(x))
         super().__init__(span)
+        self.input_data = input_data
         self.compute()
 
-<div class="viewcode-block" id="SpanCost.from_params"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost.from_params">[docs]</a>    @classmethod
-    def from_params(cls):
-        pass</div>
-
-    @classmethod
-    def default(cls):
-        primer_cost = PrimerCostModel.from_params(PrimerParams)
-        syn_cost = SynthesisCostModel.from_params(SynthesisParams, primer_cost)
-        return cls(syn_cost)
+<div class="viewcode-block" id="SpanCost.from_json"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost.from_json">[docs]</a>    @classmethod
+    def from_json(cls, params):
+        super().from_json(params)
+        primer_cost_model = PrimerCostModel.from_json(params)
+        synthesis_cost_model = SynthesisCostModel.from_json(params, primer_cost_model)
+        return cls(synthesis_cost_model, params)</div>
 
 <div class="viewcode-block" id="SpanCost.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.SpanCost.compute">[docs]</a>    def compute(self):
         def choose(a, i):

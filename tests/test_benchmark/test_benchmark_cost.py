@@ -12,7 +12,7 @@ from dasi.design import Design
 
 class TestBenchmarkCosts:
     def test_span_cost_constructor(self, benchmark):
-        benchmark.pedantic(SpanCost.default, rounds=1, iterations=1)
+        benchmark.pedantic(SpanCost.open(), rounds=1, iterations=1)
 
 
 @pytest.mark.parametrize(

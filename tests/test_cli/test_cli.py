@@ -3,7 +3,7 @@ import shutil
 
 import pytest
 
-from dasi.command_line import CLI
+from dasi.command_line import DasiCLI
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,5 +36,5 @@ def outdir(paths):
 
 
 def test(outdir):
-    cli = CLI(".test_out")
+    cli = DasiCLI(".test_out")
     cli.run()

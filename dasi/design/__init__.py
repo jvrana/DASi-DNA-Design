@@ -475,7 +475,7 @@ class Design:
         for i, (qk, result) in enumerate(self.results.items()):
             if result.assemblies:
                 a = result.assemblies[assembly_index]
-                df = a.to_csv()
+                df = a.to_reaction_df()
                 df["DESIGN_ID"] = i
                 df["DESIGN_KEY"] = qk
                 df["ASSEMBLY_ID"] = assembly_index

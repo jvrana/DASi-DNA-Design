@@ -5,6 +5,10 @@ Command Line (:mod:`dasi.command_line`)
 .. currentmodule:: dasi.command_line
 
 This module provide command line interface for DASi.
+
+.. code-block::
+
+    dasi run
 """
 import os
 
@@ -16,12 +20,15 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
+from dasi import __version__
 from dasi import Design
 from dasi.cost import SpanCost
 from dasi.log import logger
 
 
-class CLI:
+class DasiCLI:
+    """DASi command line interface."""
+
     def __init__(
         self,
         directory=os.getcwd(),
@@ -31,6 +38,7 @@ class CLI:
         goals="goals/*.gb",
         verbose="v",
     ):
+        """Initialize a new design."""
         self._directory = directory
         self._primers = os.path.join(self._directory, primers)
         self._templates = os.path.join(self._directory, templates)
@@ -51,7 +59,12 @@ class CLI:
                 "Verbose level '{}' not recognized. " "Select from 'v', 'vv', or 'vvv'"
             )
 
-    def run(self):
+    def run(self, n_jobs: int = 10):
+        """Run a design job.
+
+        :param n_jobs: number of parrallel jobs to run. (default: 10)
+        :return:
+        """
         import warnings
 
         warnings.simplefilter(action="ignore", category=RuntimeWarning)
@@ -63,7 +76,7 @@ class CLI:
         fragments = make_linear(load_genbank_glob(self._fragments))
         goals = make_circular(load_genbank_glob(self._goals))
         design = Design()
-        design.n_jobs = 10
+        design.n_jobs = n_jobs
         design.add_materials(
             primers=primers, templates=templates, fragments=fragments, queries=goals
         )
@@ -80,8 +93,8 @@ class CLI:
 
         self._logger.info("Designing assembly primers and fragments")
         df, adf = design.to_df()
-        adf.to_csv(os.path.join(self._directory, "assembly.csv"))
-        df.to_csv(os.path.join(self._directory, "out.csv"))
+        adf.to_reaction_df(os.path.join(self._directory, "assembly.csv"))
+        df.to_reaction_df(os.path.join(self._directory, "out.csv"))
 
         records = []
         for result in design.results.values():
@@ -92,6 +105,10 @@ class CLI:
 
         SeqIO.write(records, os.path.join(self._directory, "sequences.gb"), "genbank")
 
+    def version(self):
+        """Print the package version."""
+        print(__version__)
+
     def _get_span_cost(self):
         """Saves the span cost as bytes; reloads when called."""
         path = os.path.join(self._directory, "span_cost.b")
@@ -100,7 +117,7 @@ class CLI:
                 print("Loading file: {}".format(path))
                 span_cost = SpanCost.load(path)
         else:
-            span_cost = SpanCost.default()
+            span_cost = SpanCost.open()
             if self._do_save:
                 with logger.timeit("INFO", "saving bytes"):
                     print("Saving file: {}".format(path))
@@ -109,4 +126,4 @@ class CLI:
 
 
 def main():
-    fire.Fire(CLI)
+    fire.Fire(DasiCLI)

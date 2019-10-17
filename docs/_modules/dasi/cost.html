@@ -181,12 +181,17 @@ Utilities
 
     utils
 &quot;&quot;&quot;
+import json
 from abc import ABC
 from abc import abstractmethod
 from functools import partial
+from os.path import abspath
+from os.path import dirname
+from os.path import join
 from typing import Tuple
 from typing import Union
 
+import jsonschema
 import msgpack
 import numpy as np
 import pandas as pd
@@ -195,11 +200,8 @@ import seaborn as sns
 from .utils import df_to_np_ranged
 from .utils import lexargmin
 from .utils import slicer
-from dasi.utils import NumpyDataFrame
-from os.path import join, abspath, dirname
-import json
-import jsonschema
 from dasi.exceptions import DasiCostParameterValidationError
+from dasi.utils import NumpyDataFrame
 
 
 here = abspath(dirname(__file__))
@@ -249,17 +251,17 @@ slice_dict = {
 
 
 def _add_special_primer_case(params):
-    primer_cost_data = params[&#39;primer_cost&#39;][&#39;data&#39;]
-    primer_cost_columns = params[&#39;primer_cost&#39;][&#39;columns&#39;]
-    i = primer_cost_columns.index(&#39;min&#39;)
-    j = primer_cost_columns.index(&#39;max&#39;)
-    k = primer_cost_columns.index(&#39;name&#39;)
+    primer_cost_data = params[&quot;primer_cost&quot;][&quot;data&quot;]
+    primer_cost_columns = params[&quot;primer_cost&quot;][&quot;columns&quot;]
+    i = primer_cost_columns.index(&quot;min&quot;)
+    j = primer_cost_columns.index(&quot;max&quot;)
+    k = primer_cost_columns.index(&quot;name&quot;)
 
     new = [0] * len(primer_cost_columns)
 
-    new[k] = &#39;Non-primer (special case)&#39;
-    new[i] = params[&#39;primer_min_anneal&#39;]
-    new[j] = params[&#39;primer_min_anneal&#39;] + 1
+    new[k] = &quot;Non-primer (special case)&quot;
+    new[i] = params[&quot;primer_min_anneal&quot;]
+    new[j] = params[&quot;primer_min_anneal&quot;] + 1
 
     primer_cost_data.insert(0, new)
 
@@ -267,20 +269,20 @@ def _add_special_primer_case(params):
 def _replace_inf(params):
     if isinstance(params, list):
         for i, p in enumerate(params):
-            if p == &#39;inf&#39;:
+            if p == &quot;inf&quot;:
                 params[i] = np.inf
         for p in params:
             _replace_inf(p)
     elif isinstance(params, dict):
 
         for k, v in params.items():
-            if v == &#39;inf&#39;:
+            if v == &quot;inf&quot;:
                 params[k] = np.inf
             else:
                 _replace_inf(v)
 
 
-with open(join(here, &#39;parameter_json_schema.json&#39;)) as f:
+with open(join(here, &quot;parameter_json_schema.json&quot;)) as f:
     schema = json.load(f)
 
 
@@ -291,13 +293,13 @@ def validate_params(params):
         raise DasiCostParameterValidationError(str(e))
 
 
-default_parameters_path = join(here, &#39;default_parameters.json&#39;)
+default_parameters_path = join(here, &quot;default_parameters.json&quot;)
 
 
-def open_params(path = None):
+def open_params(path=None):
     if path is None:
         path = default_parameters_path
-    with open(path, &#39;r&#39;) as f:
+    with open(path, &quot;r&quot;) as f:
         params = json.load(f)
     return params
 
@@ -415,7 +417,7 @@ def open_params(path = None):
         min_anneal: int,
         time_cost: float,
         material_mod: float,
-        min_span: int
+        min_span: int,
     ):
         &quot;&quot;&quot;Initialize the cost model for primer designs.
 
@@ -449,14 +451,17 @@ def open_params(path = None):
         &quot;&quot;&quot;
         super().from_json(params)
         return PrimerCostModel(
-            pdf=pd.DataFrame(params[&#39;primer_cost&#39;][&#39;data&#39;],
-                             columns=params[&#39;primer_cost&#39;][&#39;columns&#39;]),
-            edf=pd.DataFrame(params[&#39;primer_efficiency&#39;][&#39;data&#39;],
-                             columns=params[&#39;primer_efficiency&#39;][&#39;columns&#39;]),
-            time_cost=params[&#39;global_time_cost&#39;],
-            material_mod=params[&#39;global_material_modifier&#39;],
-            min_span=params[&#39;_primer_min_span&#39;],
-            min_anneal=params[&#39;primer_min_anneal&#39;]
+            pdf=pd.DataFrame(
+                params[&quot;primer_cost&quot;][&quot;data&quot;], columns=params[&quot;primer_cost&quot;][&quot;columns&quot;]
+            ),
+            edf=pd.DataFrame(
+                params[&quot;primer_efficiency&quot;][&quot;data&quot;],
+                columns=params[&quot;primer_efficiency&quot;][&quot;columns&quot;],
+            ),
+            time_cost=params[&quot;global_time_cost&quot;],
+            material_mod=params[&quot;global_material_modifier&quot;],
+            min_span=params[&quot;_primer_min_span&quot;],
+            min_anneal=params[&quot;primer_min_anneal&quot;],
         )</div>
 
 <div class="viewcode-block" id="PrimerCostModel.compute"><a class="viewcode-back" href="../../cost.html#dasi.cost.PrimerCostModel.compute">[docs]</a>    def compute(self):
@@ -548,13 +553,15 @@ def open_params(path = None):
     def from_json(cls, params: dict, primer_cost_model: PrimerCostModel):
         super().from_json(params)
         return SynthesisCostModel(
-            sdf=pd.DataFrame(params[&#39;synthesis_cost&#39;][&#39;data&#39;],
-                             columns=params[&#39;synthesis_cost&#39;][&#39;columns&#39;]),
+            sdf=pd.DataFrame(
+                params[&quot;synthesis_cost&quot;][&quot;data&quot;],
+                columns=params[&quot;synthesis_cost&quot;][&quot;columns&quot;],
+            ),
             primer_cost=primer_cost_model,
-            time_cost=params[&#39;global_time_cost&#39;],
-            material_modifier=params[&#39;global_material_modifier&#39;],
-            step_size=params[&#39;_synthesis_step_size&#39;],
-            left_span_range=params[&#39;_synthesis_left_span_range&#39;]
+            time_cost=params[&quot;global_time_cost&quot;],
+            material_modifier=params[&quot;global_material_modifier&quot;],
+            step_size=params[&quot;_synthesis_step_size&quot;],
+            left_span_range=params[&quot;_synthesis_left_span_range&quot;],
         )</div>
 
     @classmethod

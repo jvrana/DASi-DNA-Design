@@ -184,7 +184,7 @@ from dasi.utils import Region
         min_size: int = None,
         max_size: int = None,
     ):
-        &quot;&quot;&quot;Initializes a new molecule&quot;&quot;&quot;
+        &quot;&quot;&quot;Initializes a new molecule.&quot;&quot;&quot;
         self.name = name
         self.cost = cost
         self.use_direct = use_direct
@@ -260,6 +260,7 @@ class ExternalType(MoleculeType):
         copied = copy(self)
         copied.design = design
         return copied
+
 
 # TODO: efficiencies and base costs could be parameters
 # TODO: min_size and max_size could be parameters

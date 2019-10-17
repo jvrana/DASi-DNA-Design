@@ -503,13 +503,13 @@ def test_ranges_ignore_wraps():
     assert s2.ranges() == [(8, 10), (0, 2)]
     assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
 
-    # TODO: this is a strange behavior?
+    # # TODO: this is a strange behavior?
     s2 = Span(8, 12, 10, cyclic=True)
-    assert s2.ranges() == [(8, 10), (0, 10), (0, 2)]
+    assert s2.ranges() == [(8, 10), (0, 2)]
     assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
 
     s2 = Span(8, 22, 10, cyclic=True)
-    assert s2.ranges() == [(8, 10), (0, 10), (0, 10), (0, 2)]
+    assert s2.ranges() == [(8, 10), (0, 10), (0, 2)]
     assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
 
 

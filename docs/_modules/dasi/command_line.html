@@ -173,7 +173,8 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
-from dasi import Design, __version__
+from dasi import __version__
+from dasi import Design
 from dasi.cost import SpanCost
 from dasi.log import logger
 
@@ -190,7 +191,7 @@ from dasi.log import logger
         goals=&quot;goals/*.gb&quot;,
         verbose=&quot;v&quot;,
     ):
-        &quot;&quot;&quot;Initialize a new design&quot;&quot;&quot;
+        &quot;&quot;&quot;Initialize a new design.&quot;&quot;&quot;
         self._directory = directory
         self._primers = os.path.join(self._directory, primers)
         self._templates = os.path.join(self._directory, templates)
@@ -212,8 +213,7 @@ from dasi.log import logger
             )
 
 <div class="viewcode-block" id="DasiCLI.run"><a class="viewcode-back" href="../../command_line.html#dasi.command_line.DasiCLI.run">[docs]</a>    def run(self, n_jobs: int = 10):
-        &quot;&quot;&quot;
-        Run a design job.
+        &quot;&quot;&quot;Run a design job.
 
         :param n_jobs: number of parrallel jobs to run. (default: 10)
         :return:
@@ -246,8 +246,8 @@ from dasi.log import logger
 
         self._logger.info(&quot;Designing assembly primers and fragments&quot;)
         df, adf = design.to_df()
-        adf.to_csv(os.path.join(self._directory, &quot;assembly.csv&quot;))
-        df.to_csv(os.path.join(self._directory, &quot;out.csv&quot;))
+        adf.to_reaction_df(os.path.join(self._directory, &quot;assembly.csv&quot;))
+        df.to_reaction_df(os.path.join(self._directory, &quot;out.csv&quot;))
 
         records = []
         for result in design.results.values():
@@ -259,7 +259,7 @@ from dasi.log import logger
         SeqIO.write(records, os.path.join(self._directory, &quot;sequences.gb&quot;), &quot;genbank&quot;)</div>
 
 <div class="viewcode-block" id="DasiCLI.version"><a class="viewcode-back" href="../../command_line.html#dasi.command_line.DasiCLI.version">[docs]</a>    def version(self):
-        &quot;&quot;&quot;Print the package version&quot;&quot;&quot;
+        &quot;&quot;&quot;Print the package version.&quot;&quot;&quot;
         print(__version__)</div>
 
 <div class="viewcode-block" id="DasiCLI._get_span_cost"><a class="viewcode-back" href="../../command_line.html#dasi.command_line.DasiCLI._get_span_cost">[docs]</a>    def _get_span_cost(self):

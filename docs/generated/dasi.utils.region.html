@@ -238,9 +238,9 @@ initialization procedure.</p>
 <p><strong>strict=True</strong></p>
 <p>When strict, any index outside the valid bounds of the context raises an
 IndexError.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Span(1, 10, 10, cyclic=True, strict=True) # no raise
-Span(1, 11, 10, cyclic=True, strict=True) # raises IndexError
-Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># no raise</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># raises IndexError</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># raises IndexError</span>
 </pre></div>
 </div>
 <p><strong>Attributes</strong></p>
@@ -285,6 +285,12 @@ Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.region.EmptySpan.consecutive" title="dasi.utils.region.EmptySpan.consecutive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consecutive</span></code></a>(other)</p></td>
 <td><p>Returns True if other span is immediately consecutive with this span.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.region.EmptySpan.contains_pos" title="dasi.utils.region.EmptySpan.contains_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_pos</span></code></a>(pos)</p></td>
+<td><p>Checks if this span contains a specified position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.region.EmptySpan.contains_span" title="dasi.utils.region.EmptySpan.contains_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_span</span></code></a>(other)</p></td>
+<td><p>Checks if this span encompasses another span.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.region.EmptySpan.differences" title="dasi.utils.region.EmptySpan.differences"><code class="xref py py-obj docutils literal notranslate"><span class="pre">differences</span></code></a>(other)</p></td>
 <td><p>Return a tuple of differences between this span and the other span.</p></td>
@@ -337,11 +343,11 @@ Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
 <p>When wrapping is ignored, indices are simply mapped to the context with no
 consideration
 of the number of times the absolute position would wrap around the context.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all of the following are equivalent with ignore_wrap == True
-Span(1, 10, 10, cyclic=True, ignore_wrap=True)
-Span(1+10, 10, 10, cyclic=True, ignore_wrap=True)
-Span(1, 10-100, 10, cyclic=True, ignore_wrap=True)
-Span(1+20, 10-100, 10, cyclic=True, ignore_wrap=True)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># all of the following are equivalent with ignore_wrap == True</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>abs_wrap=True</strong></p>
@@ -353,35 +359,35 @@ that the length will reflect the abs difference between starting and ending
 index wrappings.
 This can be unintuitive
 is best shown with the following example:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all of the following initializations result in equivalent spans
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># all of the following initializations result in equivalent spans</span>
 
-# starts at 1, wraps around one full time, ends at 5.
-# Length is 15 - 1
-s1 = Span(1, 15, 10, cyclic=True, abs_wrap=True)
-assert len(s1) == 14
+<span class="c1"># starts at 1, wraps around one full time, ends at 5.</span>
+<span class="c1"># Length is 15 - 1</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# starts at 11, wraps around one full time, ends at 15.
-# Then positions are mapped back to context at 1 and 5.
-# Length is still 25 - 11 == 14
-s2 = Span(11, 25, 10, cyclic=True, abs_wrap=True)
-assert len(s2) == 14
+<span class="c1"># starts at 11, wraps around one full time, ends at 15.</span>
+<span class="c1"># Then positions are mapped back to context at 1 and 5.</span>
+<span class="c1"># Length is still 25 - 11 == 14</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# starts at 11, wraps around one full time, ends at 15.
-# Then positions are mapped back to context at 1 and 5.
-# Length is now 11 + 5 = 14
-s3 = Span(11, 5, 10, cyclic=True, abs_wrap=True)
-assert len(s3) == 14
+<span class="c1"># starts at 11, wraps around one full time, ends at 15.</span>
+<span class="c1"># Then positions are mapped back to context at 1 and 5.</span>
+<span class="c1"># Length is now 11 + 5 = 14</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# the lengths change with the abs diff in number of times wrapped
-_s = Span(21, 5, 10, cyclic=True, abs_wrap=True)
-assert len(_s) == 24
+<span class="c1"># the lengths change with the abs diff in number of times wrapped</span>
+<span class="n">_s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">24</span>
 
-_s = Span(21, 15, 10, cyclic=True, abs_wrap=True)
-assert len(_s) == 14
+<span class="n">_s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# all
-assert s1 == s2
-assert s2 == s3
+<span class="c1"># all</span>
+<span class="k">assert</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
+<span class="k">assert</span> <span class="n">s2</span> <span class="o">==</span> <span class="n">s3</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -457,6 +463,40 @@ span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.region.EmptySpan.contains_pos">
+<code class="sig-name descname">contains_pos</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.region.EmptySpan.contains_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if this span contains a specified position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – index position</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.region.EmptySpan.contains_span">
+<code class="sig-name descname">contains_span</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.region.EmptySpan.contains_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if this span encompasses another span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#dasi.utils.region.Span" title="dasi.utils.region.Span"><code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code></a>) – other span</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -794,6 +834,12 @@ the ending wrap, an IndexError is thrown.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.region.Region.consecutive" title="dasi.utils.region.Region.consecutive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consecutive</span></code></a>(other)</p></td>
 <td><p>Returns True if other span is immediately consecutive with this span.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.region.Region.contains_pos" title="dasi.utils.region.Region.contains_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_pos</span></code></a>(pos)</p></td>
+<td><p>Checks if this span contains a specified position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.region.Region.contains_span" title="dasi.utils.region.Region.contains_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_span</span></code></a>(other)</p></td>
+<td><p>Checks if this span encompasses another span.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.region.Region.differences" title="dasi.utils.region.Region.differences"><code class="xref py py-obj docutils literal notranslate"><span class="pre">differences</span></code></a>(other)</p></td>
 <td><p>Return a tuple of differences between this span and the other span.</p></td>
 </tr>
@@ -898,6 +944,40 @@ span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.region.Region.contains_pos">
+<code class="sig-name descname">contains_pos</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.region.Region.contains_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if this span contains a specified position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – index position</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.region.Region.contains_span">
+<code class="sig-name descname">contains_span</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.utils.region.Region.contains_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if this span encompasses another span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#dasi.utils.region.Span" title="dasi.utils.region.Span"><code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code></a>) – other span</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1233,6 +1313,12 @@ that has a certain length, can be linear or cyclic, and has a starting index.</p
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.region.Span.consecutive" title="dasi.utils.region.Span.consecutive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">consecutive</span></code></a>(other)</p></td>
 <td><p>Returns True if other span is immediately consecutive with this span.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.region.Span.contains_pos" title="dasi.utils.region.Span.contains_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_pos</span></code></a>(pos)</p></td>
+<td><p>Checks if this span contains a specified position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.utils.region.Span.contains_span" title="dasi.utils.region.Span.contains_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contains_span</span></code></a>(other)</p></td>
+<td><p>Checks if this span encompasses another span.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.utils.region.Span.differences" title="dasi.utils.region.Span.differences"><code class="xref py py-obj docutils literal notranslate"><span class="pre">differences</span></code></a>(other)</p></td>
 <td><p>Return a tuple of differences between this span and the other span.</p></td>
 </tr>
@@ -1282,142 +1368,153 @@ that has a certain length, can be linear or cyclic, and has a starting index.</p
 </table>
 <p><strong>Linear spans</strong>
 For example, a basic linear span can be represented using the following:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(0, 10, 20)
-assert s.a == 0
-assert s.b == 10
-assert list(s) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]  # spans are always
-                                                  # exclusive at endpoint.
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
+<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>  <span class="c1"># spans are always</span>
+                                                  <span class="c1"># exclusive at endpoint.</span>
 </pre></div>
 </div>
 <p><strong>Indexing and Slicing</strong></p>
 <p>New indexes can be provided to spans.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(1, 10, 10, index=1)
-assert s.a == 1
-assert s.b == 10
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
 </pre></div>
 </div>
 <p>Positions can be mapped to the span:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(5, 8, 10, index=5)
-assert s.a == 5
-assert s.b == 8
-assert s[0] == 5    # the &#39;first&#39; position in the span equivalent to the
-                    # starting index
-assert s[-1] == 7   # the &#39;last&#39; position in the span is the last inclusive
-                    # index
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">5</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">8</span>
+<span class="k">assert</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span>    <span class="c1"># the &#39;first&#39; position in the span equivalent to the</span>
+                    <span class="c1"># starting index</span>
+<span class="k">assert</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">7</span>   <span class="c1"># the &#39;last&#39; position in the span is the last inclusive</span>
+                    <span class="c1"># index</span>
 </pre></div>
 </div>
 <p>Positions can be mapped automatically during initialization:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(-1, 5, 10, cyclic=True, index=0)   # index &#39;-1&#39; is mapped onto last
-                                            # available index on the context,
-&#39;9&#39;
-assert s.a == 9
-assert s.b == 5
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>   <span class="c1"># index &#39;-1&#39; is mapped onto last</span>
+                                            <span class="c1"># available index on the context,</span>
+<span class="s1">&#39;9&#39;</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">9</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">5</span>
 
-s = Span(6, -1, 10, cyclic=True, index=0)  # index &#39;-1&#39; is mapped onto last
-                                           # available exclusive index on the
- context, &#39;10&#39;
-assert s.a == 6
-assert s.b == 10
+<span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># index &#39;-1&#39; is mapped onto last</span>
+                                           <span class="c1"># available exclusive index on the</span>
+ <span class="n">context</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">6</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
 </pre></div>
 </div>
 <p>Inclusive positions can be mapped onto the context using <cite>t</cite>:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(-1, 5, 10, cyclic=True)
-assert s.t(11) == 1
-assert s.t(10) == 0
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 </pre></div>
 </div>
 <p><strong>Reindexing</strong></p>
 <p>Context starting index can be remapped:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(0, 5, 10)
-s1 = s.reindex(1)
-asset s1.a == 1
-assert s2.b == 6
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">asset</span> <span class="n">s1</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">6</span>
 </pre></div>
 </div>
 <p><strong>Slicing</strong></p>
 <p>Spans can be sliced similarly to lists:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(4, 8, 10)
-s1 = s[1:]
-assert s1.a == 5
-assert s2.b == 8
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">5</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">8</span>
 
-s2 = s[:-1]
-assert s2.a == 4
-assert s2.b == 7
+<span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">7</span>
 
-s3 = s[2:-1]
-assert s3.a == 5
-assert s3.b == 7
+<span class="n">s3</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">assert</span> <span class="n">s3</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">5</span>
+<span class="k">assert</span> <span class="n">s3</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">7</span>
 </pre></div>
 </div>
 <p><strong>Cyclic spans</strong>
 A cyclic span can be represented in the following way:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(18, 2, 20, cyclic=True)
-assert s.a == 18
-assert s.b == 2
-assert list(s) == [18, 19, 0, 1]
-assert len(s) == 4
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">18</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
 </pre></div>
 </div>
 <p><strong>Wrapping cyclic spans</strong>
 Spans the wrap around the context multiple times can be represented as well.
 The mapped endpoint
 is found with <cite>span.b</cite> and the non-mapped endpoint is found using <cite>span.c</cite>.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(9, 21, 10, cyclic=True)
-assert list(s) == [9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
-assert len(s) == 12
-assert s.a == 9  # start point
-assert s.b == 1  # mapped endpoint
-assert s.c == 21 # the unmapped endpoint
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">12</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">9</span>  <span class="c1"># start point</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">1</span>  <span class="c1"># mapped endpoint</span>
+<span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">c</span> <span class="o">==</span> <span class="mi">21</span> <span class="c1"># the unmapped endpoint</span>
 </pre></div>
 </div>
 <p>The indices are reduced to their lowest ‘wrapping’ whenever possible.
 For example, the following
 initializations are equivalent:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s1 = Span(1, 5, 10, cyclic=True)
-s2 = Span(11, 15, 10, cyclic=True)
-s3 = Span(21, 25, 10, cyclic=True)
-assert s1 == s2
-assert s2 == s3
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
+<span class="k">assert</span> <span class="n">s2</span> <span class="o">==</span> <span class="n">s3</span>
 </pre></div>
 </div>
 <p><strong>Iterating through spans</strong></p>
 <p>Spans can be treated like iterators:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for i in Span(5, 3, 10, cyclic=True):
-    print(i)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Span</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Span inversion</strong></p>
 <p>Inversion returns two spans that represent everything <em>except</em> the span:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s = Span(4, 8, 10)
-s1, s2 = s.invert()  # also s[::-1]
-assert s1.a == 0
-assert s1.b == 4
-assert s2.a == 8
-assert s2.b == 10
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span>  <span class="c1"># also s[::-1]</span>
+<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">8</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
 
-# inverted cyclic span returns one valid span and None
-s = Span(4, 8, 10, cyclic=True)
-s1, s2 = s.invert()
-assert s1.a == 8
-assert s1.b == 4
-assert s2 is None
+<span class="c1"># inverted cyclic span returns one valid span and None</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">8</span>
+<span class="k">assert</span> <span class="n">s1</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="k">assert</span> <span class="n">s2</span> <span class="ow">is</span> <span class="bp">None</span>
 </pre></div>
 </div>
 <p><strong>Intersections, differences</strong></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s1 = Span(4, 10, 20)
-s2 = Span(8, 12, 20)
-s3 = s1.intersection(s2)
-assert s3.a == 8
-assert s3.b == 10
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s3</span><span class="o">.</span><span class="n">a</span> <span class="o">==</span> <span class="mi">8</span>
+<span class="k">assert</span> <span class="n">s3</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span>
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>s1 = Span(4, 10, 20)
-s2 = Span(8, 12, 20)
-s3, s4 = s1.differences(s2)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">s3</span><span class="p">,</span> <span class="n">s4</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">differences</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
 
-assert s3.a, s3.b == 4, 8
-assert s4,a, s4.b == 10, 12
+<span class="k">assert</span> <span class="n">s3</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="n">s3</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span>
+<span class="k">assert</span> <span class="n">s4</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">s4</span><span class="o">.</span><span class="n">b</span> <span class="o">==</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span>
+</pre></div>
+</div>
+<p><strong>Gotchas</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">ranges</span><span class="p">()</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">ranges</span><span class="p">(</span><span class="n">ignore_wraps</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+
+<span class="c1"># # TODO: this is a strange behavior?</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">ranges</span><span class="p">()</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="k">assert</span> <span class="n">s2</span><span class="o">.</span><span class="n">ranges</span><span class="p">(</span><span class="n">ignore_wraps</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
 </pre></div>
 </div>
 <p>Constructs a new Span. There are several options to customize the
@@ -1425,20 +1522,20 @@ initialization procedure.</p>
 <p><strong>strict=True</strong></p>
 <p>When strict, any index outside the valid bounds of the context raises an
 IndexError.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Span(1, 10, 10, cyclic=True, strict=True) # no raise
-Span(1, 11, 10, cyclic=True, strict=True) # raises IndexError
-Span(0, 11, 10, index=1, cyclic=True, strict=True) # raises IndexError
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># no raise</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># raises IndexError</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># raises IndexError</span>
 </pre></div>
 </div>
 <p><strong>ignore_wrap=True</strong></p>
 <p>When wrapping is ignored, indices are simply mapped to the context with no
 consideration
 of the number of times the absolute position would wrap around the context.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all of the following are equivalent with ignore_wrap == True
-Span(1, 10, 10, cyclic=True, ignore_wrap=True)
-Span(1+10, 10, 10, cyclic=True, ignore_wrap=True)
-Span(1, 10-100, 10, cyclic=True, ignore_wrap=True)
-Span(1+20, 10-100, 10, cyclic=True, ignore_wrap=True)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># all of the following are equivalent with ignore_wrap == True</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">ignore_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>abs_wrap=True</strong></p>
@@ -1450,35 +1547,35 @@ that the length will reflect the abs difference between starting and ending
 index wrappings.
 This can be unintuitive
 is best shown with the following example:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># all of the following initializations result in equivalent spans
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># all of the following initializations result in equivalent spans</span>
 
-# starts at 1, wraps around one full time, ends at 5.
-# Length is 15 - 1
-s1 = Span(1, 15, 10, cyclic=True, abs_wrap=True)
-assert len(s1) == 14
+<span class="c1"># starts at 1, wraps around one full time, ends at 5.</span>
+<span class="c1"># Length is 15 - 1</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# starts at 11, wraps around one full time, ends at 15.
-# Then positions are mapped back to context at 1 and 5.
-# Length is still 25 - 11 == 14
-s2 = Span(11, 25, 10, cyclic=True, abs_wrap=True)
-assert len(s2) == 14
+<span class="c1"># starts at 11, wraps around one full time, ends at 15.</span>
+<span class="c1"># Then positions are mapped back to context at 1 and 5.</span>
+<span class="c1"># Length is still 25 - 11 == 14</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# starts at 11, wraps around one full time, ends at 15.
-# Then positions are mapped back to context at 1 and 5.
-# Length is now 11 + 5 = 14
-s3 = Span(11, 5, 10, cyclic=True, abs_wrap=True)
-assert len(s3) == 14
+<span class="c1"># starts at 11, wraps around one full time, ends at 15.</span>
+<span class="c1"># Then positions are mapped back to context at 1 and 5.</span>
+<span class="c1"># Length is now 11 + 5 = 14</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# the lengths change with the abs diff in number of times wrapped
-_s = Span(21, 5, 10, cyclic=True, abs_wrap=True)
-assert len(_s) == 24
+<span class="c1"># the lengths change with the abs diff in number of times wrapped</span>
+<span class="n">_s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">24</span>
 
-_s = Span(21, 15, 10, cyclic=True, abs_wrap=True)
-assert len(_s) == 14
+<span class="n">_s</span> <span class="o">=</span> <span class="n">Span</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">abs_wrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">14</span>
 
-# all
-assert s1 == s2
-assert s2 == s3
+<span class="c1"># all</span>
+<span class="k">assert</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
+<span class="k">assert</span> <span class="n">s2</span> <span class="o">==</span> <span class="n">s3</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1554,6 +1651,40 @@ span.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.region.Span.contains_pos">
+<code class="sig-name descname">contains_pos</code><span class="sig-paren">(</span><em class="sig-param">pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/region.html#Span.contains_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.region.Span.contains_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if this span contains a specified position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – index position</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.utils.region.Span.contains_span">
+<code class="sig-name descname">contains_span</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/utils/region.html#Span.contains_span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.utils.region.Span.contains_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if this span encompasses another span.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#dasi.utils.region.Span" title="dasi.utils.region.Span"><code class="xref py py-class docutils literal notranslate"><span class="pre">Span</span></code></a>) – other span</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>

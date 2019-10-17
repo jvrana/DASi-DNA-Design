@@ -25,20 +25,10 @@ class Span(Container, Iterable, Sized):
     Spans have no direction and have an underlying context
     that has a certain length, can be linear or cyclic, and has a starting index.
 
-    The following attributes are accessible:
-
-    - `a` - the starting (inclusive) position of the span
-    - `b` - the mapped exclusive position of the span
-    - `c` - the unmapped exclusive position of the span (used for cyclic spans that
-            wrap context multiple times)
-    - `cyclic` - whether the underlying context is circular or linear
-    - `index` - the first index of the context
-    - `context_length` - the length of the underlying context.
-
     **Linear spans**
     For example, a basic linear span can be represented using the following:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(0, 10, 20)
         assert s.a == 0
@@ -50,7 +40,7 @@ class Span(Container, Iterable, Sized):
 
     New indexes can be provided to spans.
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(1, 10, 10, index=1)
         assert s.a == 1
@@ -58,7 +48,7 @@ class Span(Container, Iterable, Sized):
 
     Positions can be mapped to the span:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(5, 8, 10, index=5)
         assert s.a == 5
@@ -70,7 +60,7 @@ class Span(Container, Iterable, Sized):
 
     Positions can be mapped automatically during initialization:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(-1, 5, 10, cyclic=True, index=0)   # index '-1' is mapped onto last
                                                     # available index on the context,
@@ -86,7 +76,7 @@ class Span(Container, Iterable, Sized):
 
     Inclusive positions can be mapped onto the context using `t`:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(-1, 5, 10, cyclic=True)
         assert s.t(11) == 1
@@ -96,7 +86,7 @@ class Span(Container, Iterable, Sized):
 
     Context starting index can be remapped:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(0, 5, 10)
         s1 = s.reindex(1)
@@ -107,7 +97,7 @@ class Span(Container, Iterable, Sized):
 
     Spans can be sliced similarly to lists:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(4, 8, 10)
         s1 = s[1:]
@@ -125,7 +115,7 @@ class Span(Container, Iterable, Sized):
     **Cyclic spans**
     A cyclic span can be represented in the following way:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(18, 2, 20, cyclic=True)
         assert s.a == 18
@@ -138,7 +128,7 @@ class Span(Container, Iterable, Sized):
     The mapped endpoint
     is found with `span.b` and the non-mapped endpoint is found using `span.c`.
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(9, 21, 10, cyclic=True)
         assert list(s) == [9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
@@ -151,7 +141,7 @@ class Span(Container, Iterable, Sized):
     For example, the following
     initializations are equivalent:
 
-    .. code-block::
+    .. code-block:: python
 
         s1 = Span(1, 5, 10, cyclic=True)
         s2 = Span(11, 15, 10, cyclic=True)
@@ -163,7 +153,7 @@ class Span(Container, Iterable, Sized):
 
     Spans can be treated like iterators:
 
-    .. code-block::
+    .. code-block:: python
 
         for i in Span(5, 3, 10, cyclic=True):
             print(i)
@@ -172,7 +162,7 @@ class Span(Container, Iterable, Sized):
 
     Inversion returns two spans that represent everything *except* the span:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(4, 8, 10)
         s1, s2 = s.invert()  # also s[::-1]
@@ -190,7 +180,7 @@ class Span(Container, Iterable, Sized):
 
     **Intersections, differences**
 
-    .. code-block::
+    .. code-block:: python
 
         s1 = Span(4, 10, 20)
         s2 = Span(8, 12, 20)
@@ -198,7 +188,7 @@ class Span(Container, Iterable, Sized):
         assert s3.a == 8
         assert s3.b == 10
 
-    .. code-block::
+    .. code-block:: python
 
         s1 = Span(4, 10, 20)
         s2 = Span(8, 12, 20)
@@ -206,6 +196,19 @@ class Span(Container, Iterable, Sized):
 
         assert s3.a, s3.b == 4, 8
         assert s4,a, s4.b == 10, 12
+
+    **Gotchas**
+
+    .. code-block:: python
+
+        s2 = Span(8, 2, 10, cyclic=True)
+        assert s2.ranges() == [(8, 10), (0, 2)]
+        assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
+
+        # # TODO: this is a strange behavior?
+        s2 = Span(8, 12, 10, cyclic=True)
+        assert s2.ranges() == [(8, 10), (0, 2)]
+        assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
     """
 
     __slots__ = [
@@ -239,7 +242,7 @@ class Span(Container, Iterable, Sized):
         When strict, any index outside the valid bounds of the context raises an
         IndexError.
 
-        .. code-block::
+        .. code-block:: python
 
             Span(1, 10, 10, cyclic=True, strict=True) # no raise
             Span(1, 11, 10, cyclic=True, strict=True) # raises IndexError
@@ -251,7 +254,7 @@ class Span(Container, Iterable, Sized):
         consideration
         of the number of times the absolute position would wrap around the context.
 
-        .. code-block::
+        .. code-block:: python
 
             # all of the following are equivalent with ignore_wrap == True
             Span(1, 10, 10, cyclic=True, ignore_wrap=True)
@@ -270,7 +273,7 @@ class Span(Container, Iterable, Sized):
         This can be unintuitive
         is best shown with the following example:
 
-        .. code-block::
+        .. code-block:: python
 
             # all of the following initializations result in equivalent spans
 
@@ -813,9 +816,19 @@ class Span(Container, Iterable, Sized):
         return False
 
     def contains_pos(self, pos: int) -> bool:
+        """Checks if this span contains a specified position.
+
+        :param pos: index position
+        :return: bool
+        """
         return self._pos_in_ranges(pos, self.ranges())
 
     def contains_span(self, other: Span) -> bool:
+        """Checks if this span encompasses another span.
+
+        :param other: other span
+        :return: bool
+        """
         if not self.same_context(other):
             return False
         if other.a == other.b == self._a:

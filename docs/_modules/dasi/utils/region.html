@@ -191,7 +191,7 @@ from typing import Union
     **Linear spans**
     For example, a basic linear span can be represented using the following:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(0, 10, 20)
         assert s.a == 0
@@ -203,7 +203,7 @@ from typing import Union
 
     New indexes can be provided to spans.
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(1, 10, 10, index=1)
         assert s.a == 1
@@ -211,7 +211,7 @@ from typing import Union
 
     Positions can be mapped to the span:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(5, 8, 10, index=5)
         assert s.a == 5
@@ -223,7 +223,7 @@ from typing import Union
 
     Positions can be mapped automatically during initialization:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(-1, 5, 10, cyclic=True, index=0)   # index &#39;-1&#39; is mapped onto last
                                                     # available index on the context,
@@ -239,7 +239,7 @@ from typing import Union
 
     Inclusive positions can be mapped onto the context using `t`:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(-1, 5, 10, cyclic=True)
         assert s.t(11) == 1
@@ -249,7 +249,7 @@ from typing import Union
 
     Context starting index can be remapped:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(0, 5, 10)
         s1 = s.reindex(1)
@@ -260,7 +260,7 @@ from typing import Union
 
     Spans can be sliced similarly to lists:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(4, 8, 10)
         s1 = s[1:]
@@ -278,7 +278,7 @@ from typing import Union
     **Cyclic spans**
     A cyclic span can be represented in the following way:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(18, 2, 20, cyclic=True)
         assert s.a == 18
@@ -291,7 +291,7 @@ from typing import Union
     The mapped endpoint
     is found with `span.b` and the non-mapped endpoint is found using `span.c`.
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(9, 21, 10, cyclic=True)
         assert list(s) == [9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
@@ -304,7 +304,7 @@ from typing import Union
     For example, the following
     initializations are equivalent:
 
-    .. code-block::
+    .. code-block:: python
 
         s1 = Span(1, 5, 10, cyclic=True)
         s2 = Span(11, 15, 10, cyclic=True)
@@ -316,7 +316,7 @@ from typing import Union
 
     Spans can be treated like iterators:
 
-    .. code-block::
+    .. code-block:: python
 
         for i in Span(5, 3, 10, cyclic=True):
             print(i)
@@ -325,7 +325,7 @@ from typing import Union
 
     Inversion returns two spans that represent everything *except* the span:
 
-    .. code-block::
+    .. code-block:: python
 
         s = Span(4, 8, 10)
         s1, s2 = s.invert()  # also s[::-1]
@@ -343,7 +343,7 @@ from typing import Union
 
     **Intersections, differences**
 
-    .. code-block::
+    .. code-block:: python
 
         s1 = Span(4, 10, 20)
         s2 = Span(8, 12, 20)
@@ -351,7 +351,7 @@ from typing import Union
         assert s3.a == 8
         assert s3.b == 10
 
-    .. code-block::
+    .. code-block:: python
 
         s1 = Span(4, 10, 20)
         s2 = Span(8, 12, 20)
@@ -359,6 +359,19 @@ from typing import Union
 
         assert s3.a, s3.b == 4, 8
         assert s4,a, s4.b == 10, 12
+
+    **Gotchas**
+
+    .. code-block:: python
+
+        s2 = Span(8, 2, 10, cyclic=True)
+        assert s2.ranges() == [(8, 10), (0, 2)]
+        assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
+
+        # # TODO: this is a strange behavior?
+        s2 = Span(8, 12, 10, cyclic=True)
+        assert s2.ranges() == [(8, 10), (0, 2)]
+        assert s2.ranges(ignore_wraps=True) == [(8, 10), (0, 2)]
     &quot;&quot;&quot;
 
     __slots__ = [
@@ -392,7 +405,7 @@ from typing import Union
         When strict, any index outside the valid bounds of the context raises an
         IndexError.
 
-        .. code-block::
+        .. code-block:: python
 
             Span(1, 10, 10, cyclic=True, strict=True) # no raise
             Span(1, 11, 10, cyclic=True, strict=True) # raises IndexError
@@ -404,7 +417,7 @@ from typing import Union
         consideration
         of the number of times the absolute position would wrap around the context.
 
-        .. code-block::
+        .. code-block:: python
 
             # all of the following are equivalent with ignore_wrap == True
             Span(1, 10, 10, cyclic=True, ignore_wrap=True)
@@ -423,7 +436,7 @@ from typing import Union
         This can be unintuitive
         is best shown with the following example:
 
-        .. code-block::
+        .. code-block:: python
 
             # all of the following initializations result in equivalent spans
 
@@ -965,10 +978,20 @@ from typing import Union
                 return True
         return False
 
-    def contains_pos(self, pos: int) -&gt; bool:
-        return self._pos_in_ranges(pos, self.ranges())
+<div class="viewcode-block" id="Span.contains_pos"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.contains_pos">[docs]</a>    def contains_pos(self, pos: int) -&gt; bool:
+        &quot;&quot;&quot;Checks if this span contains a specified position.
 
-    def contains_span(self, other: Span) -&gt; bool:
+        :param pos: index position
+        :return: bool
+        &quot;&quot;&quot;
+        return self._pos_in_ranges(pos, self.ranges())</div>
+
+<div class="viewcode-block" id="Span.contains_span"><a class="viewcode-back" href="../../../generated/dasi.utils.region.html#dasi.utils.region.Span.contains_span">[docs]</a>    def contains_span(self, other: Span) -&gt; bool:
+        &quot;&quot;&quot;Checks if this span encompasses another span.
+
+        :param other: other span
+        :return: bool
+        &quot;&quot;&quot;
         if not self.same_context(other):
             return False
         if other.a == other.b == self._a:
@@ -981,7 +1004,7 @@ from typing import Union
                 return False
             elif not len(other) &lt;= len(self):
                 return False
-            return True
+            return True</div>
 
     def spans_origin(self) -&gt; bool:
         if self._nwraps and self._cyclic:

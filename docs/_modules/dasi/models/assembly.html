@@ -151,8 +151,7 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.models.assembly</h1><div class="highlight"><pre>
-<span></span>&quot;&quot;&quot;Assembly&quot;&quot;&quot;
-
+<span></span>&quot;&quot;&quot;Assembly.&quot;&quot;&quot;
 from __future__ import annotations
 
 from collections import Iterable
@@ -832,7 +831,7 @@ AssemblyNode = namedtuple(
             for m in r.outputs:
                 yield (i, &quot;output&quot;, m)
 
-    def to_csv(self):
+    def to_reaction_df(self):
         rows = []
         for i, role, m in self.molecules:
             if m.type.name == &quot;PRIMER&quot;:

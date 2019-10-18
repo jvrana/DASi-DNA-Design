@@ -1,7 +1,7 @@
 {
   "0.0.6": {
     "description": "update API breaking dependencies",
-    "date": "2019-10-18T12:46:47.470589",
+    "date": "2019-10-18T12:49:46.896456",
     "changes": [
       "update networkx to 2.4, update pyblast to 0.5"
     ]

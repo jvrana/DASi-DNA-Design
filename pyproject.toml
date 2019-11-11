@@ -52,7 +52,6 @@ flake8 = "^3.7"
 autodocsumm = "^0.1.11"
 jdna = "^0.1.4"
 dictdiffer = "^0.8.0"
-keats = "0.2.26"
 sphinx-jsonschema = "^1.11"
 
 [tool.black]
@@ -71,10 +70,6 @@ exclude = '''
   | buck-out
   | build
   | dist
-  # The following are specific to Black, you probably don't want those.
-  | blib2to3
-  | tests/data
-  | profiling
 )/
 '''
 
@@ -84,4 +79,3 @@ dasi = 'dasi:command_line.main'
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-

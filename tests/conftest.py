@@ -59,7 +59,7 @@ def blast_factory(paths) -> BioBlastFactory:
     factory = BioBlastFactory()
 
     primers = make_linear(load_fasta_glob(paths[PRIMERS]))
-    templates = load_genbank_glob(paths[TEMPLATES])
+    templates = load_genbank_glob(paths[REGISTRY])
     queries = make_circular(load_genbank_glob(paths[QUERIES]))
 
     factory.add_records(primers, PRIMERS)

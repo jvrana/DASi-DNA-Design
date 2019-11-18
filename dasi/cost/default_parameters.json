@@ -1,5 +1,5 @@
 {
-    "global_time_cost": 10.0,
+    "global_time_cost": 1.0,
     "global_material_modifier": 1.0,
     "primer_min_anneal": 16,
     "_primer_min_span": -300,

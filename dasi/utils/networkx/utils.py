@@ -9,8 +9,10 @@ def select_from_arrs(A, B, condition):
     """Returns an ndarray of same shape as A and B, selecting elements from
     either A or B according to the condition.
 
-    Somehow, this is 2X faster than whatever is implemented in
-    np.choose.
+    .. note::     This method is called many thousands of times in the
+    execution of     the modified floyd-warshall algorithm. This
+    implementation is 2X faster     than whatever is implemented in
+    `np.choose`, resulting in significant     speed improvements.
     """
     a = np.asarray(A).ravel()
     b = np.asarray(B).ravel()

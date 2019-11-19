@@ -109,6 +109,7 @@ class ExternalType(MoleculeType):
         return copied
 
 
+# TODO: move this to the parameters
 # TODO: efficiencies and base costs could be parameters
 # TODO: min_size and max_size could be parameters
 InternalType(Constants.FRAGMENT, (False, False), True, 0.0, 0.98)

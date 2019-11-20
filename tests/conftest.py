@@ -150,7 +150,7 @@ def cached(path, save_func, load_func, checksum_path, logger=None):
     return model
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def cached_span_cost(cost_filepath, cost_checksum_filepath):
     """This will check the checksum of the cost module against the last
     checksum. If checksums are the same, the span cost will be loaded. Else,

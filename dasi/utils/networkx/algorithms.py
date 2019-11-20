@@ -27,15 +27,12 @@ def str_to_symbols_and_func(f):
     return symbols, func
 
 
+# TODO: implement MIN and MAX
 def accumulate_helper(key, m1, m2):
     if key == SUM:
         return m1 + m2
     elif key == PRODUCT:
         return np.multiply(m1, m2)
-    elif key == MAX:
-        return max(m1.max(), m2.max())
-    elif key == MIN:
-        return min(m1.min(), m2.min())
     else:
         raise NetworkxUtilsException(
             "Key '{}' not in accumulator dictionary. Options are '{}' or '{}'".format(

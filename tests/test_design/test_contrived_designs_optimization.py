@@ -542,7 +542,7 @@ def test_case2(span_cost):
 
 
 class TestOutput:
-    @pytest.fixture(scope="module")
+    @pytest.fixture(scope="session")
     def example_design(self, span_cost):
         goal = random_record(3000)
         make_circular_and_id([goal])

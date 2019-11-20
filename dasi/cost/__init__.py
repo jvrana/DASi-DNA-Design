@@ -526,30 +526,43 @@ class SynthesisCostModel(CostBuilder):
 
         _gcosts = gene_costs[idx[1]]
         _span = np.squeeze(self.span)[idx[0]]
-
+        _gtimes = syn_time_cost[idx[1]]
         gene_df = NumpyDataFrame(
             dict(
                 cost=_gcosts,
                 material=_gcosts,
+                time=_gtimes,
                 efficiency=np.ones(idx[0].shape[0]),
                 size=gene_sizes[idx[1]],
             ),
             apply=np.squeeze,
         )
 
+        flat_left_jxn = left_jxn[idx[2]].apply(np.squeeze)
+        flat_right_jxn = right_jxn[idx[2], idx[1], idx[0]]
+
+        time = np.vstack(
+            (
+                flat_left_jxn.data["time"],
+                flat_right_jxn.data["time"],
+                gene_df.data["time"],
+            )
+        ).max(axis=0)
+
         gap_df = NumpyDataFrame(
             dict(
                 span=_span,
                 cost=syn_total_cost[idx],
                 efficiency=syn_eff[idx],
+                time=time,
                 material=syn_material_cost[idx],
                 lshift=left_span[idx[2]],
             ),
             apply=np.squeeze,
         )
 
-        gap_df.update(left_jxn[idx[2]].apply(np.squeeze).prefix("lprimer_"))
-        gap_df.update(right_jxn[idx[2], idx[1], idx[0]].prefix("rprimer_"))
+        gap_df.update(flat_left_jxn.prefix("lprimer_"))
+        gap_df.update(flat_right_jxn.prefix("rprimer_"))
         gap_df.update(gene_df.prefix("gene_"))
 
         return gap_df

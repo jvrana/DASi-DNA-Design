@@ -1,6 +1,4 @@
 """NumpyDataFrame."""
-from __future__ import annotations
-
 import pprint
 from collections import ItemsView
 from collections import OrderedDict
@@ -225,14 +223,14 @@ class NumpyDataFrame(Mapping):
                     )
                 )
 
-    def prefix(self, s: str, cols=None, inplace=False) -> NumpyDataFrame:
+    def prefix(self, s: str, cols=None, inplace=False) -> "NumpyDataFrame":
         """Adds a prefix to all of the column names and returns a new
         dataframe."""
         if cols is None:
             cols = self.columns
         return self.apply_to_col_names(lambda x: s + x, cols=cols, inplace=inplace)
 
-    def suffix(self, s: str, cols=None, inplace=False) -> NumpyDataFrame:
+    def suffix(self, s: str, cols=None, inplace=False) -> "NumpyDataFrame":
         """Adds a prefix to all of the column names and returns a new
         dataframe."""
         if cols is None:
@@ -241,7 +239,7 @@ class NumpyDataFrame(Mapping):
 
     def apply_to_col_names(
         self, func, *args, cols=None, inplace=False, **kwargs
-    ) -> NumpyDataFrame:
+    ) -> "NumpyDataFrame":
         """Apply a function to the column names and returns a new dataframe.
 
         :param func: the function to apply
@@ -324,7 +322,7 @@ class NumpyDataFrame(Mapping):
         return astype(data)
 
     @classmethod
-    def merge(cls, others: Iterable[NumpyDataFrame]) -> NumpyDataFrame:
+    def merge(cls, others: Iterable["NumpyDataFrame"]) -> "NumpyDataFrame":
         """Merge many dfs into a single df."""
         df = cls()
         for a in others:
@@ -333,12 +331,12 @@ class NumpyDataFrame(Mapping):
 
     @classmethod
     def concat(
-        cls, others: Iterable[NumpyDataFrame], fill_value=Null
-    ) -> NumpyDataFrame:
+        cls, others: Iterable["NumpyDataFrame"], fill_value=Null
+    ) -> "NumpyDataFrame":
         """Concatenate several dfs into a single df."""
         return cls.group_apply(others, np.hstack, _fill_value=fill_value)
 
-    def append(self, other: NumpyDataFrame) -> NumpyDataFrame:
+    def append(self, other: "NumpyDataFrame") -> "NumpyDataFrame":
         """Append the contents of the other df to this df."""
         self.group_apply((other,), np.hstack)
         return self
@@ -353,13 +351,13 @@ class NumpyDataFrame(Mapping):
     @classmethod
     def group_apply(
         cls,
-        others: Iterable[NumpyDataFrame],
+        others: Iterable["NumpyDataFrame"],
         func,
         *args,
         expand=False,
         _fill_value=Null,
         **kwargs,
-    ) -> NumpyDataFrame:
+    ) -> "NumpyDataFrame":
         """Groups np.arrays according to their column name for several
         dataframes (as a list) and applies a function to each group. Returns a
         new df with the results.
@@ -399,17 +397,17 @@ class NumpyDataFrame(Mapping):
         return cls(data)
 
     @classmethod
-    def stack(cls, others: Iterable[NumpyDataFrame], axis):
+    def stack(cls, others: Iterable["NumpyDataFrame"], axis):
         """Apply np.stack to each column for several dfs."""
         return cls.group_apply(others, np.stack, axis=axis)
 
     @classmethod
-    def hstack(cls, others: Iterable[NumpyDataFrame]):
+    def hstack(cls, others: Iterable["NumpyDataFrame"]):
         """Apply np.hstack to each column for several dfs."""
         return cls.group_apply(others, np.hstack)
 
     @classmethod
-    def vstack(cls, others: List[NumpyDataFrame]):
+    def vstack(cls, others: List["NumpyDataFrame"]):
         """Apply np.vstack to each column for several dfs."""
         return cls.group_apply(others, np.vstack)
 
@@ -421,7 +419,7 @@ class NumpyDataFrame(Mapping):
         """
         return list(self.data.values())[0].shape
 
-    def reshape(self, shape) -> NumpyDataFrame:
+    def reshape(self, shape) -> "NumpyDataFrame":
         """Reshape all arrays in the df."""
         return self.apply(np.reshape, shape)
 
@@ -431,7 +429,7 @@ class NumpyDataFrame(Mapping):
         return tuple(self.data)
 
     @property
-    def col(self) -> NumpyDataFrameIndexer:
+    def col(self) -> "NumpyDataFrameIndexer":
         """Return the column indexer."""
         return NumpyDataFrameIndexer(self)
 
@@ -451,7 +449,7 @@ class NumpyDataFrame(Mapping):
             )
         return pd.DataFrame(x.data)
 
-    def update(self, data: Union[NumpyDataFrame, Dict[str, np.ndarray]], apply=None):
+    def update(self, data: Union["NumpyDataFrame", Dict[str, np.ndarray]], apply=None):
         """Update the df from a dict or another df."""
         if issubclass(type(data), NumpyDataFrame):
             data = data.data
@@ -465,7 +463,7 @@ class NumpyDataFrame(Mapping):
         """Iterate key: arr for the the underlying data dict."""
         return self.data.items()
 
-    def copy(self) -> NumpyDataFrame:
+    def copy(self) -> "NumpyDataFrame":
         """Copy the df."""
         return self.apply(np.copy)
 
@@ -479,21 +477,21 @@ class NumpyDataFrame(Mapping):
             msgpack.dump(self.data, f)
 
     @classmethod
-    def loads(cls, s: str) -> NumpyDataFrame:
+    def loads(cls, s: str) -> "NumpyDataFrame":
         """Use msgpack to load a df from a byte string."""
         data = msgpack.loads(s)
         data = {k.decode(): v for k, v in data.items()}
         return cls(data)
 
     @classmethod
-    def load(cls, f: str) -> NumpyDataFrame:
+    def load(cls, f: str) -> "NumpyDataFrame":
         """Load the byte repr of df from the specified path."""
         with open(f, "rb") as f:
             data = msgpack.load(f)
             data = {k.decode(): v for k, v in data.items()}
             return cls(data)
 
-    def __getitem__(self, key: Union[int, slice, np.ndarray]) -> NumpyDataFrame:
+    def __getitem__(self, key: Union[int, slice, np.ndarray]) -> "NumpyDataFrame":
         new = self.__class__(self.data)
         new.data = {k: np.array(v[key]) for k, v in new.data.items()}
         return new
@@ -505,37 +503,37 @@ class NumpyDataFrame(Mapping):
     def __len__(self) -> int:
         return self.shape[0]
 
-    def __iter__(self) -> Generator[NumpyDataFrame]:
+    def __iter__(self) -> Generator["NumpyDataFrame"]:
         for i in range(len(self)):
             yield self[i]
 
-    def __add__(self, other: NumpyDataFrame) -> NumpyDataFrame:
+    def __add__(self, other: "NumpyDataFrame") -> "NumpyDataFrame":
         if not issubclass(type(other), NumpyDataFrame):
             return self.apply(np.sum, preprocess=lambda x: (x, other))
         return self.stack([self, other], axis=1).apply(np.sum, axis=1)
 
-    def __mul__(self, other: Union[int, float]) -> NumpyDataFrame:
+    def __mul__(self, other: Union[int, float]) -> "NumpyDataFrame":
         if not issubclass(type(other), NumpyDataFrame):
             other = np.array([other] * self.shape[0])
             return self.apply(np.multiply, other)
         return self.group_apply([self, other], np.multiply, expand=True)
 
-    def __truediv__(self, other: NumpyDataFrame) -> NumpyDataFrame:
+    def __truediv__(self, other: "NumpyDataFrame") -> "NumpyDataFrame":
         if not issubclass(type(other), NumpyDataFrame):
             other = np.array([other] * self.shape[0])
             return self.apply(np.divide, other)
         return self.group_apply([self, other], np.divide, expand=True)
 
-    def __pow__(self, other: NumpyDataFrame) -> NumpyDataFrame:
+    def __pow__(self, other: "NumpyDataFrame") -> "NumpyDataFrame":
         if not issubclass(type(other), NumpyDataFrame):
             other = np.array([other] * self.shape[0])
             return self.apply(np.power, other)
         return self.group_apply([self, other], np.power, expand=True)
 
-    def __neg__(self) -> NumpyDataFrame:
+    def __neg__(self) -> "NumpyDataFrame":
         return self * -1
 
-    def __sub__(self, other: NumpyDataFrame) -> NumpyDataFrame:
+    def __sub__(self, other: "NumpyDataFrame") -> "NumpyDataFrame":
         return self + -other
 
     def __str__(self) -> str:
@@ -558,7 +556,7 @@ class NumpyDataFrame(Mapping):
 class NumpyDataFrameIndexer(Mapping):
     """The indexer for NumpyDataFrames."""
 
-    def __init__(self, df: NumpyDataFrame):
+    def __init__(self, df: "NumpyDataFrame"):
         self.df = df
 
     def __len__(self) -> int:
@@ -584,7 +582,7 @@ class NumpyDataFrameIndexer(Mapping):
         self.df.data[col] = val
         self.df.validate()
 
-    def __getitem__(self, cols: Union[str, Iterable[str]]) -> NumpyDataFrame:
+    def __getitem__(self, cols: Union[str, Iterable[str]]) -> "NumpyDataFrame":
         if isinstance(cols, str):
             cols = (cols,)
         elif not isinstance(cols, Iterable):

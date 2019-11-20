@@ -1,6 +1,4 @@
 """Alignments."""
-from __future__ import annotations
-
 from collections.abc import Sized
 from typing import Dict
 from typing import List
@@ -84,7 +82,7 @@ class Alignment(RepresentsMolecule, Sized):
     def is_perfect_subject(self):
         return len(self.subject_region) == self.subject_region.context_length
 
-    def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
+    def sub_region(self, qstart: int, qend: int, atype=None) -> "Alignment":
         """Returns a copy of the alignment between the inclusive start and end
         relative to the query region.
 
@@ -121,7 +119,7 @@ class Alignment(RepresentsMolecule, Sized):
             subject_key=self.subject_key,
         )
 
-    def copy(self, atype=None) -> Alignment:
+    def copy(self, atype=None) -> "Alignment":
         """Do shallow copy of this alignment. Query and subject regions between
         this and the copied alignment will be identical.
 
@@ -194,7 +192,7 @@ class AlignmentGroupBase(RepresentsMolecule):
         """Return the list of subject keys in this alignment group."""
         return [a.subject_key for a in self.alignments]
 
-    def sub_region(self, qstart: int, qend: int, atype: str) -> AlignmentGroupBase:
+    def sub_region(self, qstart: int, qend: int, atype: str) -> "AlignmentGroupBase":
         """Produce a new alignment group with sub-regions of the query region
         and subject regions at the specified new indicies."""
         alignments_copy = []

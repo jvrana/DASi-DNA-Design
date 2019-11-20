@@ -1,6 +1,4 @@
 """Alignment container."""
-from __future__ import annotations
-
 from bisect import bisect_left
 from collections.abc import Sized
 from typing import Any

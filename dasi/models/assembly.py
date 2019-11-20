@@ -1,6 +1,4 @@
 """Assembly."""
-from __future__ import annotations
-
 from collections import Iterable
 from collections import namedtuple
 from copy import deepcopy
@@ -129,7 +127,7 @@ def _no_none_or_nan(*i):
 
 
 def _get_primer_extensions(
-    graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
+    graph: nx.DiGraph, n1: "AssemblyNode", n2: "AssemblyNode", cyclic: bool = True
 ) -> Tuple[int, int]:
     """Return the left and right primer extensions for the given *internal*
     fragment. To get the extensions, we look for the left predecessor edge and
@@ -165,7 +163,7 @@ def _get_primer_extensions(
 
 
 def _use_direct(
-    edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
+    edge: Tuple["AssemblyNode", "AssemblyNode", dict], seqdb: Dict[str, SeqRecord]
 ) -> Tuple[SeqRecord, AlignmentGroup]:
     group = edge[2]["groups"][0]
     alignment = group.alignments[0]
@@ -175,7 +173,7 @@ def _use_direct(
 
 
 def _design_gap(
-    edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord
+    edge: Tuple["AssemblyNode", "AssemblyNode", dict], qrecord: SeqRecord
 ) -> Union[Tuple[SeqRecord, Region], Tuple[None, None]]:
     n1, _, edge_data = edge
     gene_size = edge_data["gene_size"]
@@ -192,7 +190,7 @@ def _design_gap(
 
 
 def _design_pcr_product_primers(
-    edge: Tuple[AssemblyNode, AssemblyNode, dict],
+    edge: Tuple["AssemblyNode", "AssemblyNode", dict],
     graph: nx.DiGraph,
     design: Tuple[bool, bool],
     seqdb: Dict[str, SeqRecord],
@@ -297,7 +295,10 @@ def _design_pcr_product_primers(
 
 
 def _design_edge(
-    assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
+    assembly: "Assembly",
+    n1: "AssemblyNode",
+    n2: "AssemblyNode",
+    seqdb: Dict[str, SeqRecord],
 ) -> Union[Reaction, None]:
     query_key = assembly.query_key
     graph = assembly.graph
@@ -467,7 +468,7 @@ class Assembly(Iterable):
     def _subgraph(
         self, graph: nx.DiGraph, nodes: List[AssemblyNode], do_raise: bool = True
     ):
-        def _resolve(node: AssemblyNode, qregion) -> Tuple[AssemblyNode, dict]:
+        def _resolve(node: "AssemblyNode", qregion) -> Tuple[AssemblyNode, dict]:
             new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
             return new_node
 
@@ -559,7 +560,7 @@ class Assembly(Iterable):
         return self.graph.nodes(data=data)
 
     def edit_distance(
-        self, other: Assembly, explain=False
+        self, other: "Assembly", explain=False
     ) -> Union[int, Tuple[int, List[Tuple[int, str]]]]:
         differences = []
         for i, (n1, n2) in enumerate(
@@ -592,7 +593,7 @@ class Assembly(Iterable):
         df = self.to_df()
         print(df)
 
-    def print_diff(self, other: Assembly):
+    def print_diff(self, other: "Assembly"):
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
@@ -710,7 +711,7 @@ class Assembly(Iterable):
         )
         return df
 
-    def __eq__(self, other: Assembly) -> bool:
+    def __eq__(self, other: "Assembly") -> bool:
         return self.edit_distance(other) == 0
 
     def __iter__(self) -> Generator[AssemblyNode]:

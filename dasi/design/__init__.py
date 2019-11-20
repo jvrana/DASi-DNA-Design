@@ -6,8 +6,6 @@ Design (:mod:`dasi.design`)
 
 This module provide DNA assembly functionality for DASi.
 """
-from __future__ import annotations
-
 import bisect
 from collections.abc import Iterable
 from typing import Dict

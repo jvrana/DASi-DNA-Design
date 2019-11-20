@@ -24,24 +24,7 @@ LIM_NUM_DESIGNS = None
 
 
 @pytest.fixture(scope="session")
-def span_cost() -> SpanCost:
-    """Saves the span cost as bytes; reloads when called."""
-    path = os.path.join(here, "span_cost.b")
-    if do_save and os.path.isfile(path):
-        with logger.timeit("INFO", "loading bytes"):
-            print("Loading file: {}".format(path))
-            span_cost = SpanCost.load(path)
-    else:
-        span_cost = SpanCost.open()
-        if do_save:
-            with logger.timeit("INFO", "saving bytes"):
-                print("Saving file: {}".format(path))
-                span_cost.dump(path)
-    return span_cost
-
-
-@pytest.fixture(scope="session")
-def _processed_results(here, paths, span_cost) -> Callable:
+def _processed_results(here, paths, cached_span_cost) -> Callable:
     def _get_results_func(n_jobs, only_compile=False, precompiled=None):
         if precompiled:
             design = precompiled
@@ -53,7 +36,7 @@ def _processed_results(here, paths, span_cost) -> Callable:
             query_path = join(here, "data/test_data/genbank/designs/*.gb")
             queries = make_circular(load_genbank_glob(query_path))[:LIM_NUM_DESIGNS]
 
-            design = Design(span_cost=span_cost)
+            design = Design(span_cost=cached_span_cost)
             design.add_materials(primers=primers, templates=templates, queries=queries)
             design.n_jobs = n_jobs
             design.compile()

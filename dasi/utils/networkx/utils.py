@@ -34,39 +34,6 @@ def divide(mata, matb):
     return matc
 
 
-def find_all_min_paths(G, lim=None):
-    """Explicitly finds minimum paths according to the cost function
-    sum(weight) / prod(efficiency)"""
-    min_path_dict = {}
-    n_paths = 0
-    for n1, n2 in product(G.nodes(), repeat=2):
-        if lim and n_paths >= lim:
-            break
-        min_path = []
-        min_cost = np.inf
-        paths = nx.all_simple_paths(G, source=n1, target=n2)
-
-        for path in map(nx.utils.pairwise, paths):
-            path = list(path)
-            weight = 0.0
-            eff = 1.0
-            for pair in path:
-                edata = G.get_edge_data(*pair)
-                weight += edata["weight"]
-                eff *= edata["eff"]
-            cost = weight / eff
-            if cost < min_cost:
-                min_path = path
-                min_cost = cost
-        min_path_dict.setdefault(n1, {})
-        if n1 == n2:
-            min_cost = 0.0
-            min_path = []
-        min_path_dict[n1][n2] = {"cost": min_cost, "path": min_path}
-        n_paths += 1
-    return min_path_dict
-
-
 def compare_matrix_to_true_paths(mat, path_dict, nodelist):
     node_to_index = {n: i for i, n in enumerate(nodelist)}
     for n1 in path_dict:

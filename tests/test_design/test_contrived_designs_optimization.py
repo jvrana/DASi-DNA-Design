@@ -282,11 +282,11 @@ def test_design_with_overlaps_with_templates(span_cost):
     )
 
     expected_path = [
-        (950, True, "A", True),
-        (2000, True, "B", True),
-        (1950, True, "A", True),
-        (3000, True, "B", True),
-        (3000 - 40, True, "A", True),
+        (970, True, "A", True),
+        (1950, True, "B", False),
+        (1950, True, "A", False),
+        (3000 - 40, True, "B", False),
+        (3000 - 40, False, "A", False),
         (4000, True, "B", True),
     ]
 
@@ -542,7 +542,7 @@ def test_case2(span_cost):
 
 
 class TestOutput:
-    @pytest.fixture(scope="module")
+    @pytest.fixture
     def example_design(self, span_cost):
         goal = random_record(3000)
         make_circular_and_id([goal])

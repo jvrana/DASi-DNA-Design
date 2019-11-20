@@ -46,6 +46,38 @@ class TestPrimerCostValues:
         assert np.all(df1.data["material"] == df2.data["material"])
 
 
+class TestBasicPrimerHasValues:
+    @pytest.fixture(scope="module")
+    def span_cost1(self):
+        params = cost.open_params()
+        span = np.arange(-30, 100)
+        span_cost = cost.SpanCost.from_json(params, override_span=span)
+        return span_cost
+
+    @pytest.fixture(scope="module")
+    def span_cost2(self):
+        params = cost.open_params()
+        span = np.arange(510, 515)
+        span_cost = cost.SpanCost.from_json(params, override_span=span)
+        return span_cost
+
+    @pytest.mark.parametrize("ext", [(0, 1), (1, 0), (1, 1)])
+    def test_has_expected_values1(self, span_cost1, ext):
+        df = span_cost1.cost(np.arange(-30, 100), ext)
+        assert len(df.data["span"])
+        assert np.all(df.data["cost"] > 0)
+        assert np.all(df.data["efficiency"] >= 0)
+        assert np.any(df.data["time"] > 0)
+
+    @pytest.mark.parametrize("ext", [(0, 0), (0, 1), (1, 0), (1, 1)])
+    def test_has_expected_values2(self, span_cost2, ext):
+        df = span_cost2.cost(512, ext)
+        assert len(df.data["span"])
+        assert np.all(df.data["cost"] > 0)
+        assert np.all(df.data["efficiency"] >= 0)
+        assert np.any(df.data["time"] > 0)
+
+
 class TestBasicPrimerMaterialCost:
     @pytest.fixture(scope="module")
     def small_span_cost(self):

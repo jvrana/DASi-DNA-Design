@@ -16,6 +16,8 @@ from .utils import replace_nan_with_inf
 
 PRODUCT = "product"
 SUM = "sum"
+MAX = "max"
+MIN = "min"
 
 
 def str_to_symbols_and_func(f):
@@ -25,6 +27,7 @@ def str_to_symbols_and_func(f):
     return symbols, func
 
 
+# TODO: implement MIN and MAX
 def accumulate_helper(key, m1, m2):
     if key == SUM:
         return m1 + m2
@@ -128,6 +131,8 @@ def sympy_floyd_warshall(
             d = 0.0
         elif accumulators[key] == PRODUCT:
             d = 1.0
+        elif accumulators[key] in [MAX, MIN]:
+            d = 0.0
         else:
             raise NetworkxUtilsException(
                 "Accumulator key {} must either be '{}' or '{}' or a callable with two "

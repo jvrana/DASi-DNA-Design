@@ -1,4 +1,18 @@
 # dasi change log
+## 0.0.6
+**2019-10-18T12:49:46.896456**
+update API breaking dependencies
+
+ - update networkx to 2.4, update pyblast to 0.5
+
+
+## 0.0.5
+**2019-10-17T12:14:53.728652**
+setup updates
+
+
+
+
 ## 0.0.4
 **2019-10-17T11:47:06.003351**
 command-line interface

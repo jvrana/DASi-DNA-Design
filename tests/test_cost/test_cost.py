@@ -12,21 +12,6 @@ from dasi.cost import validate_params
 from dasi.exceptions import DasiCostParameterValidationError
 
 
-@pytest.fixture(scope="module")
-def primer_cost():
-    return PrimerCostModel.open()
-
-
-@pytest.fixture(scope="module")
-def syn_cost(primer_cost):
-    return SynthesisCostModel.open()
-
-
-@pytest.fixture(scope="module")
-def span_cost(primer_cost, syn_cost):
-    return SpanCost(syn_cost)
-
-
 def test_invalid_json():
     params = open_params()
     validate_params(params)

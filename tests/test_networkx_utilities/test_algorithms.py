@@ -1,15 +1,14 @@
 import random
+from itertools import product
 
 import networkx as nx
 import numpy as np
 import pytest
 
-from dasi.utils.networkx import find_all_min_paths
 from dasi.utils.networkx import floyd_warshall_with_efficiency
 from dasi.utils.networkx import sympy_dijkstras
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multisource_dijkstras
-
 
 COMPARISON_THRESHOLD = (
     0.03
@@ -47,10 +46,11 @@ def simple_graph():
     return G, nodelist
 
 
-def add_edata(G, weight="weight", eff="eff"):
+def add_edata(G, weight="weight", eff="eff", time="time"):
     for n1, n2, edata in G.edges(data=True):
         edata[weight] = float(random.randint(0, 100))
-        edata[eff] = np.random.uniform(0.8, 0.9)
+        edata[eff] = np.random.uniform(0.75, 0.9)
+        edata[time] = np.random.uniform(10, 11)
 
 
 def complete_graph(n_nodes, create_using=None):
@@ -74,8 +74,8 @@ def compare_floats(expected, x):
     return True
 
 
-def compare(G, C, nodelist):
-    d = find_all_min_paths(G)
+def compare(G, C, nodelist, include_time=False):
+    d = find_all_min_paths(G, include_time=include_time)
     errors = []
     total = 0
     true_total = 0
@@ -106,6 +106,45 @@ def compare(G, C, nodelist):
 
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
+
+
+def find_all_min_paths(G, lim=None, include_time=False):
+    """Explicitly finds minimum paths according to the cost function
+    sum(weight) / prod(efficiency)"""
+    min_path_dict = {}
+    n_paths = 0
+    for n1, n2 in product(G.nodes(), repeat=2):
+        if lim and n_paths >= lim:
+            break
+        min_path = []
+        min_cost = np.inf
+        paths = nx.all_simple_paths(G, source=n1, target=n2)
+
+        for path in map(nx.utils.pairwise, paths):
+            path = list(path)
+            weight = 0.0
+            eff = 1.0
+            time = 0.0
+            for pair in path:
+                edata = G.get_edge_data(*pair)
+                weight += edata["weight"]
+                eff *= edata["eff"]
+                if "time" in edata and edata["time"] > time:
+                    time = edata["time"]
+            if include_time:
+                cost = time + (weight / eff)
+            else:
+                cost = weight / eff
+            if cost < min_cost:
+                min_path = path
+                min_cost = cost
+        min_path_dict.setdefault(n1, {})
+        if n1 == n2:
+            min_cost = 0.0
+            min_path = []
+        min_path_dict[n1][n2] = {"cost": min_cost, "path": min_path}
+        n_paths += 1
+    return min_path_dict
 
 
 class TestAllPairShortestPath:
@@ -218,6 +257,19 @@ class TestSymPyAllPairsShortestPath:
             nodelist=nodelist,
         )
         compare(G, C, nodelist)
+
+    @pytest.mark.parametrize("n", list(range(8)))
+    @pytest.mark.parametrize("repeat", range(3))
+    def test_complete_with_max(self, n, repeat):
+        G, nodelist = complete_graph(n)
+        C = sympy_floyd_warshall(
+            G,
+            f="time + (weight / eff)",
+            accumulators={"weight": "sum", "eff": "product", "time": "max"},
+            nonedge={"weight": np.inf, "eff": 0.0, "time": np.inf},
+            nodelist=nodelist,
+        )
+        compare(G, C, nodelist, include_time=True)
 
 
 class TestDijkstras:

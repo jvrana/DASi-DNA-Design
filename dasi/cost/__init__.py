@@ -53,13 +53,6 @@ from dasi.utils import NumpyDataFrame
 
 here = abspath(dirname(__file__))
 
-slice_dict = {
-    (0, 0): slicer[:, :1, :1],
-    (0, 1): slicer[:, :1, 1:],
-    (1, 0): slicer[:, 1:, :1],
-    (1, 1): slicer[:, 1:, 1:],
-}
-
 
 def encoder(obj):
     """msgpack encoder for cost functions.
@@ -72,6 +65,20 @@ def encoder(obj):
     elif isinstance(obj, SpanCost):
         return {
             "__spancost__": True,
+            "cost_dict": {k: v for k, v in obj.cost_dict.items()},
+            "span": obj.span,
+        }
+    elif isinstance(obj, PrimerCostModel):
+        return (
+            {
+                "__primercostmodel__": True,
+                "cost_dict": {k: v for k, v in obj.cost_dict.items()},
+                "span": obj.span,
+            },
+        )
+    elif isinstance(obj, SynthesisCostModel):
+        return {
+            "__synthesiscostmodel__": True,
             "cost_dict": {k: v for k, v in obj.cost_dict.items()},
             "span": obj.span,
         }
@@ -88,6 +95,18 @@ def decoder(obj):
         data = obj[b"data"]
         data = {k.decode(): v for k, v in data.items()}
         obj = NumpyDataFrame(data=data)
+    elif b"__primercostmodel__" in obj:
+        cost_dict = {tuple(k): v for k, v in obj[b"cost_dict"].items()}
+        span = obj[b"span"]
+        obj = PrimerCostModel.__new__(PrimerCostModel)
+        obj.cost_dict = cost_dict
+        obj.span = span
+    elif b"__synthesiscostmodel__" in obj:
+        cost_dict = {tuple(k): v for k, v in obj[b"cost_dict"].items()}
+        span = obj[b"span"]
+        obj = SynthesisCostModel.__new__(SynthesisCostModel)
+        obj.cost_dict = cost_dict
+        obj.span = span
     elif b"__spancost__" in obj:
         cost_dict = {tuple(k): v for k, v in obj[b"cost_dict"].items()}
         span = obj[b"span"]
@@ -109,8 +128,8 @@ def _add_special_primer_case(params):
     new[k] = "Non-primer (special case)"
     new[i] = params["primer_min_anneal"]
     new[j] = params["primer_min_anneal"] + 1
-
-    primer_cost_data.insert(0, new)
+    if new not in primer_cost_data:
+        primer_cost_data.insert(0, new)
 
 
 def _replace_inf(params):
@@ -172,7 +191,7 @@ class CostBuilder(ABC):
 
     @classmethod
     @abstractmethod
-    def from_json(cls, params):
+    def from_json(cls, params: dict, override_span: np.ndarray = None):
         """Initialize from parameters."""
         cls._fix_params(params)
 
@@ -216,7 +235,7 @@ class CostBuilder(ABC):
                     that have been provided are not extendable. If we had,
                     for example, an existing right primer and flexibility to
                     design the left primer, this would be `(1, 0)`.
-        :param invalidate: Whether to invalidate indicies that go beyond the provided
+        :param invalidate: Whether to invalidate indices that go beyond the provided
                             span for the cost builder (`CostModelBase.span`). Any
                             invalid indices cost will be set to `np.inf` and efficiency
                             to `0.0`
@@ -265,6 +284,8 @@ class PrimerCostModel(CostBuilder):
         time_cost: float,
         material_mod: float,
         min_span: int,
+        input_data: dict = None,
+        override_span: np.ndarray = None,
     ):
         """Initialize the cost model for primer designs.
 
@@ -279,18 +300,22 @@ class PrimerCostModel(CostBuilder):
         :param material_mod:
         :param min_span:
         """
+        self.input_data = input_data
         self.primer_df = pdf
         self.eff_df = edf
         self.time_cost = time_cost
         self.min_anneal = min_anneal
         max_span = self.primer_df["max"].max() * 2 - min_span
-        span = np.arange(min_span, max_span, dtype=np.int32)
+        if override_span is not None:
+            span = override_span
+        else:
+            span = np.arange(min_span, max_span, dtype=np.int32)
         super().__init__(span)
         self.material_modifier = material_mod
         self.compute()
 
     @classmethod
-    def from_json(cls, params) -> "PrimerCostModel":
+    def from_json(cls, params, override_span: np.ndarray = None) -> "PrimerCostModel":
         """Load from :class:`dasi.cost.params.PrimerParams`.
 
         :param primer_params: parameters
@@ -309,8 +334,12 @@ class PrimerCostModel(CostBuilder):
             material_mod=params["global_material_modifier"],
             min_span=params["_primer_min_span"],
             min_anneal=params["primer_min_anneal"],
+            input_data=params,
+            override_span=override_span,
         )
 
+    # TODO: IMPORTANT!! For extreme values, for extensions material cost should NOT
+    #       BE ZERO
     def compute(self):
         span = self.span
 
@@ -345,6 +374,13 @@ class PrimerCostModel(CostBuilder):
         cost = material_cost / eff
         cost[np.where(np.isnan(cost))] = np.inf
 
+        slice_dict = {
+            (0, 0): slicer[:, :1, :1],
+            (0, 1): slicer[:, :1, 1:],
+            (1, 0): slicer[:, 1:, :1],
+            (1, 1): slicer[:, 1:, 1:],
+        }
+
         for slice_index, slice_obj in slice_dict.items():
             s_eff = eff[slice_obj]
             s_cost = cost[slice_obj]
@@ -374,6 +410,8 @@ class SynthesisCostModel(CostBuilder):
         material_modifier: float,
         step_size=10,
         left_span_range=(-500, 500),
+        input_data: dict = None,
+        override_span: np.ndarray = None,
     ):
         """
 
@@ -385,19 +423,32 @@ class SynthesisCostModel(CostBuilder):
         :param step_size: step size to consider (default: 10)
         :param left_span_range: span range for left primer to consider
                 (default: -500, 500)
+        :param input_data: optional input data used to created the cost model
+        :param override_span: optionally, only compute over the provided span (for
+                debugging/testing)
         """
+        self.input_data = input_data
         self.synthesis_df = sdf
         self.step_size = step_size
         self.material_modifier = (material_modifier,)
         self.lspanrange = left_span_range
         self.primer_cost = primer_cost
         self.time_cost = time_cost
-        super().__init__(None)
-        # self.logger = logger(self)
+        self.syn = df_to_np_ranged("min", "max", self.synthesis_df, dtype=np.float32)
+        if override_span is not None:
+            span = override_span
+        else:
+            span = self.syn[:, 0].reshape(1, -1).astype(np.int32)
+        super().__init__(span)
         self.compute()
 
     @classmethod
-    def from_json(cls, params: dict, primer_cost_model: PrimerCostModel):
+    def from_json(
+        cls,
+        params: dict,
+        primer_cost_model: PrimerCostModel,
+        override_span: np.ndarray = None,
+    ):
         super().from_json(params)
         return SynthesisCostModel(
             sdf=pd.DataFrame(
@@ -409,20 +460,23 @@ class SynthesisCostModel(CostBuilder):
             material_modifier=params["global_material_modifier"],
             step_size=params["_synthesis_step_size"],
             left_span_range=params["_synthesis_left_span_range"],
+            override_span=override_span,
+            input_data=params,
         )
 
     @classmethod
-    def open(cls, path: str = None):
+    def open(cls, path: str = None, primer_cost: PrimerCostModel = None):
         params = open_params(path)
-        return cls.from_json(params, PrimerCostModel.open(path))
+        if not primer_cost:
+            primer_cost = PrimerCostModel.open(path)
+        return cls.from_json(params, primer_cost)
 
     def compute(self):
-        syn = df_to_np_ranged("min", "max", self.synthesis_df, dtype=np.float32)
-        gene_sizes = syn[:, 0].reshape(-1, 1)[:: self.step_size, :].astype(np.int32)
-        gene_costs = syn[:, 1][gene_sizes]
-        gene_times = syn[:, 2][gene_sizes]
-
-        self.span = syn[:, 0].reshape(1, -1).astype(np.int32)
+        gene_sizes = (
+            self.syn[:, 0].reshape(-1, 1)[:: self.step_size, :].astype(np.int32)
+        )
+        gene_costs = self.syn[:, 1][gene_sizes]
+        gene_times = self.syn[:, 2][gene_sizes]
 
         left_span = np.arange(self.lspanrange[0], self.lspanrange[1], self.step_size)[
             ..., np.newaxis, np.newaxis
@@ -441,7 +495,7 @@ class SynthesisCostModel(CostBuilder):
         j: Union[bool, int],
         left_span,
     ):
-        # extension conditions
+        # extension conditions, idk
         left_ext = (i, 0)
         right_ext = (0, j)
         # left primer
@@ -472,30 +526,43 @@ class SynthesisCostModel(CostBuilder):
 
         _gcosts = gene_costs[idx[1]]
         _span = np.squeeze(self.span)[idx[0]]
-
+        _gtimes = syn_time_cost[idx[1]]
         gene_df = NumpyDataFrame(
             dict(
                 cost=_gcosts,
                 material=_gcosts,
+                time=_gtimes,
                 efficiency=np.ones(idx[0].shape[0]),
                 size=gene_sizes[idx[1]],
             ),
             apply=np.squeeze,
         )
 
+        flat_left_jxn = left_jxn[idx[2]].apply(np.squeeze)
+        flat_right_jxn = right_jxn[idx[2], idx[1], idx[0]]
+
+        time = np.vstack(
+            (
+                flat_left_jxn.data["time"],
+                flat_right_jxn.data["time"],
+                gene_df.data["time"],
+            )
+        ).max(axis=0)
+
         gap_df = NumpyDataFrame(
             dict(
                 span=_span,
                 cost=syn_total_cost[idx],
                 efficiency=syn_eff[idx],
+                time=time,
                 material=syn_material_cost[idx],
                 lshift=left_span[idx[2]],
             ),
             apply=np.squeeze,
         )
 
-        gap_df.update(left_jxn[idx[2]].apply(np.squeeze).prefix("lprimer_"))
-        gap_df.update(right_jxn[idx[2], idx[1], idx[0]].prefix("rprimer_"))
+        gap_df.update(flat_left_jxn.prefix("lprimer_"))
+        gap_df.update(flat_right_jxn.prefix("rprimer_"))
         gap_df.update(gene_df.prefix("gene_"))
 
         return gap_df
@@ -510,7 +577,9 @@ class SynthesisCostModel(CostBuilder):
 
 
 class SpanCost(CostBuilder):
-    def __init__(self, syn_cost, input_data=None):
+    def __init__(
+        self, syn_cost, input_data: dict = None, override_span: np.ndarray = None
+    ):
         self.syn_cost = syn_cost
         self.primer_cost = self.syn_cost.primer_cost
         x = [
@@ -519,26 +588,35 @@ class SpanCost(CostBuilder):
             self.primer_cost.span.min(),
             self.primer_cost.span.max(),
         ]
-        span = np.arange(min(x), max(x))
-        super().__init__(span)
+        if override_span is not None:
+            span = override_span
+        else:
+            span = np.arange(min(x), max(x))
         self.input_data = input_data
+        super().__init__(span)
         self.compute()
 
     @classmethod
-    def from_json(cls, params):
+    def from_json(cls, params, override_span: np.ndarray = None):
         super().from_json(params)
         primer_cost_model = PrimerCostModel.from_json(params)
-        synthesis_cost_model = SynthesisCostModel.from_json(params, primer_cost_model)
-        return cls(synthesis_cost_model, params)
+        synthesis_cost_model = SynthesisCostModel.from_json(
+            params, primer_cost_model, override_span=override_span
+        )
+        return cls(
+            syn_cost=synthesis_cost_model,
+            input_data=params,
+            override_span=override_span,
+        )
 
     def compute(self):
         def choose(a, i):
             return np.choose(i, a)
 
-        for s in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+        for ext in [(0, 0), (0, 1), (1, 0), (1, 1)]:
             # numpy data frames for primer cost and syn cost over span
-            df1 = self.primer_cost(self.span, s)
-            df2 = self.syn_cost(self.span, s)
+            df1 = self.primer_cost(self.span, ext)
+            df2 = self.syn_cost(self.span, ext)
 
             # determine the indices of the min cost (0=primer, 1=syn)
             c1 = df1.data["cost"]
@@ -550,7 +628,7 @@ class SpanCost(CostBuilder):
             df4 = NumpyDataFrame.group_apply(
                 (df1, df2), choose, i=y, _fill_value=np.nan
             )
-            self.cost_dict[s] = df4
+            self.cost_dict[ext] = df4
 
     def cost(
         self, bp: Union[int, np.ndarray], ext: Tuple[int, int], invalidate=True

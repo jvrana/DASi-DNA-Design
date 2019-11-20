@@ -44,18 +44,24 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
 
 class TestDesignResult:
     def test_expected_span_length(self, single_processed_results):
+        """[SINGLE PROCESSOR] Test that the input query is the same length as
+        the assembled length the result outputs."""
         design, results = single_processed_results
         for qk, result in results.items():
-            assembly = result.assemblies[0]
-            assembly.print()
+            print(result.query.name)
+            assert result.assemblies
+            for assembly in result.assemblies:
+                assembly.print()
 
-            assert len(result.query) == sum(assembly.to_df()["span"])
+                assert len(result.query) == sum(assembly.to_df()["span"])
 
     def test_multi_expected_span_length(self, multi_processed_results):
+        """[MULTIPROCESSING] Test that the input query is the same length as
+        the assembled length the result outputs."""
         design, results = multi_processed_results
         for qk, result in results.items():
-            assembly = result.assemblies[0]
-            assembly.print()
+            for assembly in result.assemblies:
+                assembly.print()
 
             assert len(result.query) == sum(assembly.to_df()["span"])
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dasi"
-version = "0.0.5"
+version = "0.0.6"
 description = "Automated DNA assembly planner for Python"
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
 classifiers = [
@@ -31,9 +31,9 @@ seaborn = "^0.9.0"
 matplotlib = "^3.1"
 frozendict = "^1.2"
 primer3plus = "^1.0.5"
-pyblastbio = "^0.4.1"
 fire = "^0.1"
 jsonschema = "^3.1"
+pyblastbio = "^0.5.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^18.3-alpha.0", allows-prereleases = true}
@@ -52,8 +52,10 @@ flake8 = "^3.7"
 autodocsumm = "^0.1.11"
 jdna = "^0.1.4"
 dictdiffer = "^0.8.0"
-keats = "0.2.26"
 sphinx-jsonschema = "^1.11"
+
+[tool.poetry.scripts]
+dasi = 'dasi:command_line.main'
 
 [tool.black]
 line-length = 88
@@ -71,17 +73,9 @@ exclude = '''
   | buck-out
   | build
   | dist
-  # The following are specific to Black, you probably don't want those.
-  | blib2to3
-  | tests/data
-  | profiling
 )/
 '''
-
-[tool.poetry.scripts]
-dasi = 'dasi:command_line.main'
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-

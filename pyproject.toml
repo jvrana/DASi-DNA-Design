@@ -43,16 +43,19 @@ pytest-benchmark = "^3.2"
 pygal = "^2.4"
 pygaljs = "^1.0"
 dill = "^0.3.0"
-sphinx = "^2.2"
-sphinx-bootstrap-theme = "^0.7.1"
-nbsphinx = "^0.4.2"
 recommonmark = "^0.6.0"
-sphinx_autodoc_typehints = "^1.8"
 flake8 = "^3.7"
 autodocsumm = "^0.1.11"
 jdna = "^0.1.4"
 dictdiffer = "^0.8.0"
-sphinx-jsonschema = "^1.11"
+nbsphinx = {version = "^0.4.2", optional = true}
+sphinx_autodoc_typehints = {version = "^1.8", optional = true}
+sphinx-jsonschema = {version = "^1.11", optional = true}
+sphinx = {version = "^2.2", optional = true}
+sphinx-bootstrap-theme = {version = "^0.7.1", optional = true}
+
+[tool.poetry.extras]
+documentation = ["nbsphinx", "sphinx_autodoc_typehints", "sphinx-jsonschema", "sphinx", "sphinx-bootstrap-theme"]
 
 [tool.poetry.scripts]
 dasi = 'dasi:command_line.main'

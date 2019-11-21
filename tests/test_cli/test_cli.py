@@ -35,6 +35,6 @@ def outdir(paths):
     # os.remove(os.path.join(out, 'primers.fasta'))
 
 
-def test(outdir):
+def test_cli(outdir):
     cli = DasiCLI(".test_out")
     cli.run()

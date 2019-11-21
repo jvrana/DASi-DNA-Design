@@ -67,20 +67,9 @@ groups whose ends fall within these blacklisted region.
 
 **Multi-plasmid optimization**
 
-0. Find shared edges between assembly graphs, we concatenate all of the queries separated by ???'s and align the subjects.
-We then break down subject alignments to each original query.
-1. We also need to find shared primers somehow. Enumerating every shared primer would be very comp intensive in the
-same way we do with shared edges is probably not possible.
-2. After we align primers to each query
-
-1. For each plasmid, enumerate all possible shared edges. For example, if a assembly graph has a single shared
-edge with another assembly graph, then there are two solutions, one in which the shared edge is not used and 
-the other in which the shared edge is used (A->B cost /= 2). In another example, G1 shares edges with G2 and G3.
-Then there are 3 solutions, not sharing an edge (A-> cost /= 1). Sharing a single edge (A->B cost /= 2) and sharing
-both edges (A->B cost /= 3). The total number of solutions will be equal to `s1*s2*s3*...` where `si` is the maximum
-number of shared edges for edge `i`. We should optionally provide a way to boost solutions that share edges.
-2. Once all solutions have been enumerated with corresponding costs, we find compatible solutions (those with shared edges)
-and simply choose the smallest cost.
+1. Perform design-on-design blast search. GET <BLAST_RESULTS_JSON>
+2. Remove self alignments from blast <BLAST_RESULTS_JSON>
+3. Group alignments in a un-directed graph
 
 **Hierarchical optimization**
 

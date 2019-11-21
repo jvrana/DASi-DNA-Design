@@ -119,33 +119,15 @@ class DesignResult(Iterable):
         """Adds a list of assemblies.
 
         :param paths: list of list of paths
+        :param ignore_invalid: if True, invalid assemblies will be ignored
+        :param allow_invalid: if False, raise DasiInvalidMolecularAssembly error if
+            if assemblies are invalid.
         :return: None
         """
         for path in paths:
             self.add_assembly(
                 path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
             )
-
-    #
-    #
-    #     for a in self.assemblies:
-    #         for n1, n2, edata in a.edges():
-    #             result = edata["sequence_result"]
-    #             mol_type = edata["type_def"]
-    #             if mol_type.int_or_ext == "internal":
-    #                 pass
-    #                 # add a new reaction
-    #                 # add template
-    #                 # add primers
-    #             elif mol_type.use_direct:
-    #                 pass
-    #                 # add fragment
-    #             elif mol_type.synthesize:
-    #                 pass
-    #                 # add synthesize
-    #             else:
-    #                 pass
-    #                 # raise Exception
 
     def __iter__(self) -> Generator[Assembly, None, None]:
         """Yield assemblies.

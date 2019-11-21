@@ -1,13 +1,14 @@
 """NumpyDataFrame."""
 import pprint
-from collections import ItemsView
 from collections import OrderedDict
-from collections.abc import Iterable
-from collections.abc import Mapping
+from collections.abc import Mapping as MappingABC
 from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import Generator
+from typing import ItemsView
+from typing import Iterable
+from typing import Iterable as IterableABC
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -28,7 +29,7 @@ class NumpyDataFrameException(Exception):
     """Generic exceptions for NumpyDataFrame."""
 
 
-class NumpyDataFrame(Mapping):
+class NumpyDataFrame(MappingABC):
     """The NumpyDataFrame is a class halfway between pandas and numpy. It has
     named columns, indexing, slicing, function applications, and mathematical
     operations. Unlike pandas however, it maintains the multi-dimensionality of
@@ -503,7 +504,7 @@ class NumpyDataFrame(Mapping):
     def __len__(self) -> int:
         return self.shape[0]
 
-    def __iter__(self) -> Generator["NumpyDataFrame"]:
+    def __iter__(self) -> Generator["NumpyDataFrame", None, None]:
         for i in range(len(self)):
             yield self[i]
 
@@ -553,7 +554,7 @@ class NumpyDataFrame(Mapping):
         )
 
 
-class NumpyDataFrameIndexer(Mapping):
+class NumpyDataFrameIndexer(MappingABC):
     """The indexer for NumpyDataFrames."""
 
     def __init__(self, df: "NumpyDataFrame"):
@@ -563,7 +564,7 @@ class NumpyDataFrameIndexer(Mapping):
         """Return number of columns."""
         return len(self.df.columns)
 
-    def __iter__(self) -> Generator[str]:
+    def __iter__(self) -> Generator[str, None, None]:
         for c in self.df.columns:
             yield c
 
@@ -585,7 +586,7 @@ class NumpyDataFrameIndexer(Mapping):
     def __getitem__(self, cols: Union[str, Iterable[str]]) -> "NumpyDataFrame":
         if isinstance(cols, str):
             cols = (cols,)
-        elif not isinstance(cols, Iterable):
+        elif not isinstance(cols, IterableABC):
             cols = (cols,)
         data = {k: self.df.data[k] for k in self.df.data if k in cols}
         return self.df.__class__(data)

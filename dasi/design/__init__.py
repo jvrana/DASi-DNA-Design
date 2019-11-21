@@ -7,9 +7,9 @@ Design (:mod:`dasi.design`)
 This module provide DNA assembly functionality for DASi.
 """
 import bisect
-from collections.abc import Iterable
 from typing import Dict
 from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 
@@ -147,7 +147,7 @@ class DesignResult(Iterable):
     #                 pass
     #                 # raise Exception
 
-    def __iter__(self) -> Generator[Assembly]:
+    def __iter__(self) -> Generator[Assembly, None, None]:
         """Yield assemblies.
 
         :yield: assembly

@@ -1,12 +1,12 @@
 import operator
 from collections.abc import Container
-from collections.abc import Iterable
 from collections.abc import Sized
 from functools import reduce
 from itertools import chain
 from typing import Any
 from typing import Callable
 from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -855,7 +855,7 @@ class Span(Container, Iterable, Sized):
     def __len__(self) -> int:
         return sum([r[1] - r[0] for r in self.ranges()])
 
-    def __iter__(self) -> Generator[int]:
+    def __iter__(self) -> Generator[int, None, None]:
         for i in chain(*[range(*x) for x in self.ranges()]):
             yield i
 

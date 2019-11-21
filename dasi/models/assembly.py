@@ -1,5 +1,4 @@
 """Assembly."""
-from collections import Iterable
 from collections import namedtuple
 from copy import deepcopy
 from itertools import groupby
@@ -7,6 +6,7 @@ from itertools import zip_longest
 from typing import Any
 from typing import Dict
 from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -714,6 +714,6 @@ class Assembly(Iterable):
     def __eq__(self, other: "Assembly") -> bool:
         return self.edit_distance(other) == 0
 
-    def __iter__(self) -> Generator[AssemblyNode]:
+    def __iter__(self) -> Generator[AssemblyNode, None, None]:
         for n in self.nodes(data=False):
             yield n

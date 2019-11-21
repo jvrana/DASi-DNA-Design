@@ -314,7 +314,7 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
 
     def __init__(
         self,
-        groupings: List[Dict[str:Alignment]],
+        groupings: List[Dict[str, Alignment]],
         query_region: Region,
         group_type: str,
     ):

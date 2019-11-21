@@ -468,7 +468,7 @@ class Design:
             yield query_key, graph, len(query), cyclic, result
 
     # TODO: order keys
-    def to_df(self, assembly_index=0):
+    def to_df(self, assembly_index: int = 0) -> Tuple[pd.DataFrame, pd.DataFrame]:
         dfs = []
         adfs = []
         for i, (qk, result) in enumerate(self.results.items()):

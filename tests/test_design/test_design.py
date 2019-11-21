@@ -66,18 +66,18 @@ class TestDesignResult:
             assert len(result.query) == sum(assembly.to_df()["span"])
 
 
-class TestSequenceDesign:
+class TestReactions:
     def test_single_design_sequences(self, single_processed_results):
         design, results = single_processed_results
         for qk, result in results.items():
-            result.design_sequences()
-            result.design_sequence_output()
+            for a in result.assemblies:
+                a.reactions
 
     def test_multi_design_sequences(self, multi_processed_results):
         design, results = multi_processed_results
         for qk, result in results.items():
-            result.design_sequences()
-            result.design_sequence_output()
+            for a in result.assemblies:
+                a.reactions
 
 
 class TestMultiProcessing:

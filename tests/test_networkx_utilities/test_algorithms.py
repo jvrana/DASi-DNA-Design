@@ -4,6 +4,7 @@ from itertools import product
 import networkx as nx
 import numpy as np
 import pytest
+from flaky import flaky
 
 from dasi.utils.networkx import floyd_warshall_with_efficiency
 from dasi.utils.networkx import sympy_dijkstras
@@ -247,6 +248,7 @@ class TestSymPyAllPairsShortestPath:
 
     @pytest.mark.parametrize("n", list(range(8)))
     @pytest.mark.parametrize("repeat", range(3))
+    @flaky(max_runs=3, min_passes=2)
     def test_complete(self, n, repeat):
         G, nodelist = complete_graph(n)
         C = sympy_floyd_warshall(

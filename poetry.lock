@@ -2,7 +2,7 @@
 category = "dev"
 description = "A configurable sidebar-enabled Sphinx theme"
 name = "alabaster"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.7.12"
 
@@ -29,7 +29,7 @@ python-dateutil = "*"
 category = "dev"
 description = "A few extensions to pyyaml."
 name = "aspy.yaml"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.3.0"
 
@@ -57,7 +57,7 @@ version = "19.3.0"
 category = "dev"
 description = "Extended sphinx autodoc including automatic autosummaries"
 name = "autodocsumm"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.1.11"
 
@@ -68,7 +68,7 @@ sphinx = "*"
 category = "dev"
 description = "Internationalization utilities"
 name = "babel"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.7.0"
 
@@ -116,7 +116,7 @@ webencodings = "*"
 category = "dev"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
-optional = false
+optional = true
 python-versions = "*"
 version = "2019.9.11"
 
@@ -124,7 +124,7 @@ version = "2019.9.11"
 category = "dev"
 description = "Validate configuration and produce human readable error messages."
 name = "cfgv"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.0.1"
 
@@ -135,7 +135,7 @@ six = "*"
 category = "dev"
 description = "Universal encoding detector for Python 2 and 3"
 name = "chardet"
-optional = false
+optional = true
 python-versions = "*"
 version = "3.0.4"
 
@@ -170,7 +170,7 @@ colorama = "*"
 category = "dev"
 description = "Python parser for the CommonMark Markdown spec"
 name = "commonmark"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.9.1"
 
@@ -221,7 +221,7 @@ version = "0.3.1.1"
 category = "dev"
 description = "Docutils -- Python Documentation Utilities"
 name = "docutils"
-optional = false
+optional = true
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 version = "0.15.2"
 
@@ -229,7 +229,7 @@ version = "0.15.2"
 category = "dev"
 description = "Discover and load entry points from installed packages."
 name = "entrypoints"
-optional = false
+optional = true
 python-versions = ">=2.7"
 version = "0.3"
 
@@ -248,7 +248,7 @@ six = "*"
 category = "dev"
 description = "the modular source code checker: pep8, pyflakes and co"
 name = "flake8"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "3.7.9"
 
@@ -257,6 +257,14 @@ entrypoints = ">=0.3.0,<0.4.0"
 mccabe = ">=0.6.0,<0.7.0"
 pycodestyle = ">=2.5.0,<2.6.0"
 pyflakes = ">=2.1.0,<2.2.0"
+
+[[package]]
+category = "dev"
+description = "Plugin for nose or pytest that automatically reruns flaky tests."
+name = "flaky"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "3.6.1"
 
 [[package]]
 category = "main"
@@ -270,7 +278,7 @@ version = "1.2"
 category = "dev"
 description = "File identification library for Python"
 name = "identify"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.4.7"
 
@@ -278,7 +286,7 @@ version = "1.4.7"
 category = "dev"
 description = "Internationalized Domain Names in Applications (IDNA)"
 name = "idna"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.8"
 
@@ -286,7 +294,7 @@ version = "2.8"
 category = "dev"
 description = "Getting image size from png/jpeg/jpeg2000/gif file"
 name = "imagesize"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.1.0"
 
@@ -307,7 +315,7 @@ category = "dev"
 description = "Read resources from Python packages"
 marker = "python_version < \"3.7\""
 name = "importlib-resources"
-optional = false
+optional = true
 python-versions = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3"
 version = "1.0.2"
 
@@ -338,7 +346,7 @@ webcolors = ">=1.9,<2.0"
 category = "dev"
 description = "A very fast and expressive template engine."
 name = "jinja2"
-optional = false
+optional = true
 python-versions = "*"
 version = "2.10.3"
 
@@ -411,7 +419,7 @@ tqdm = ">=4.32,<5.0"
 category = "dev"
 description = "Safely add untrusted strings to HTML/XML markup."
 name = "markupsafe"
-optional = false
+optional = true
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 version = "1.1.1"
 
@@ -434,7 +442,7 @@ python-dateutil = ">=2.1"
 category = "dev"
 description = "McCabe checker, plugin for flake8"
 name = "mccabe"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.6.1"
 
@@ -556,7 +564,7 @@ decorator = ">=4.3.0"
 category = "dev"
 description = "Node.js virtual environment builder"
 name = "nodeenv"
-optional = false
+optional = true
 python-versions = "*"
 version = "1.3.3"
 
@@ -618,7 +626,7 @@ version = ">=0.12"
 category = "dev"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 name = "pre-commit"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 version = "1.20.0"
 
@@ -695,7 +703,7 @@ termcolor = ">=1.1,<2.0"
 category = "dev"
 description = "Python style guide checker"
 name = "pycodestyle"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.5.0"
 
@@ -703,7 +711,7 @@ version = "2.5.0"
 category = "dev"
 description = "passive checker of Python programs"
 name = "pyflakes"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.1.1"
 
@@ -727,7 +735,7 @@ version = "1.0.1"
 category = "dev"
 description = "Pygments is a syntax highlighting package written in Python."
 name = "pygments"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 version = "2.4.2"
 
@@ -816,7 +824,7 @@ version = "227"
 category = "dev"
 description = "YAML parser and emitter for Python"
 name = "pyyaml"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "5.1.2"
 
@@ -824,7 +832,7 @@ version = "5.1.2"
 category = "dev"
 description = "A docutils-compatibility bridge to CommonMark, enabling you to write CommonMark inside of Docutils & Sphinx projects."
 name = "recommonmark"
-optional = false
+optional = true
 python-versions = "*"
 version = "0.6.0"
 
@@ -837,7 +845,7 @@ sphinx = ">=1.3.1"
 category = "dev"
 description = "Python HTTP for Humans."
 name = "requests"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 version = "2.22.0"
 
@@ -884,7 +892,7 @@ version = "1.13.0"
 category = "dev"
 description = "This package provides 26 stemmers for 25 languages generated from Snowball algorithms."
 name = "snowballstemmer"
-optional = false
+optional = true
 python-versions = "*"
 version = "2.0.0"
 
@@ -900,7 +908,7 @@ version = "2.1.0"
 category = "dev"
 description = "Python documentation generator"
 name = "sphinx"
-optional = false
+optional = true
 python-versions = ">=3.5"
 version = "2.2.1"
 
@@ -963,7 +971,7 @@ requests = "*"
 category = "dev"
 description = ""
 name = "sphinxcontrib-applehelp"
-optional = false
+optional = true
 python-versions = "*"
 version = "1.0.1"
 
@@ -971,7 +979,7 @@ version = "1.0.1"
 category = "dev"
 description = ""
 name = "sphinxcontrib-devhelp"
-optional = false
+optional = true
 python-versions = "*"
 version = "1.0.1"
 
@@ -979,7 +987,7 @@ version = "1.0.1"
 category = "dev"
 description = ""
 name = "sphinxcontrib-htmlhelp"
-optional = false
+optional = true
 python-versions = "*"
 version = "1.0.2"
 
@@ -987,7 +995,7 @@ version = "1.0.2"
 category = "dev"
 description = "A sphinx extension which renders display math in HTML via JavaScript"
 name = "sphinxcontrib-jsmath"
-optional = false
+optional = true
 python-versions = ">=3.5"
 version = "1.0.1"
 
@@ -995,7 +1003,7 @@ version = "1.0.1"
 category = "dev"
 description = ""
 name = "sphinxcontrib-qthelp"
-optional = false
+optional = true
 python-versions = "*"
 version = "1.0.2"
 
@@ -1003,7 +1011,7 @@ version = "1.0.2"
 category = "dev"
 description = ""
 name = "sphinxcontrib-serializinghtml"
-optional = false
+optional = true
 python-versions = "*"
 version = "1.1.3"
 
@@ -1067,7 +1075,7 @@ six = "*"
 category = "dev"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
 version = "1.25.7"
 
@@ -1083,7 +1091,7 @@ version = "0.12.2"
 category = "dev"
 description = "Virtual Python Environment builder"
 name = "virtualenv"
-optional = false
+optional = true
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
 version = "16.7.7"
 
@@ -1128,9 +1136,10 @@ more-itertools = "*"
 
 [extras]
 documentation = []
+styling = []
 
 [metadata]
-content-hash = "ab0f196aff7764279f43745d3e7eeeea1b3376a28480ee3d6188cc499a9050e4"
+content-hash = "d7a56a92124438a5771e067dfed914661f7aa7d465aac960523448fdf059b209"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -1161,6 +1170,7 @@ docutils = ["6c4f696463b79f1fb8ba0c594b63840ebd41f059e92b31957c46b74a4599b6d0", 
 entrypoints = ["589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19", "c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"]
 fire = ["c299d16064ff81cbb649b65988300d4a28b71ecfb789d1fb74d99ea98ae4d2eb"]
 flake8 = ["45681a117ecc81e870cbf1262835ae4af5e7a8b08e40b944a8a6e6b895914cfb", "49356e766643ad15072a789a20915d3c91dc89fd313ccd71802303fd67e4deca"]
+flaky = ["5471615b32b0f8086573de924475b1f0d31e0e8655a089eb9c38a0fbff3f11aa", "8cd5455bb00c677f787da424eaf8c4a58a922d0e97126d3085db5b279a98b698"]
 frozendict = ["774179f22db2ef8a106e9c38d4d1f8503864603db08de2e33be5b778230f6e45"]
 identify = ["4f1fe9a59df4e80fcb0213086fcf502bc1765a01ea4fe8be48da3b65afd2a017", "d8919589bd2a5f99c66302fec0ef9027b12ae150b0b0213999ad3f695fc7296e"]
 idna = ["c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407", "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"]

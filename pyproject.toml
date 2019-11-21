@@ -54,6 +54,7 @@ sphinx_autodoc_typehints = {version = "^1.8", optional = true}
 sphinx-jsonschema = {version = "^1.11", optional = true}
 sphinx = {version = "^2.2", optional = true}
 sphinx-bootstrap-theme = {version = "^0.7.1", optional = true}
+flaky = "^3.6"
 
 [tool.poetry.extras]
 documentation = ["nbsphinx", "sphinx_autodoc_typehints", "sphinx-jsonschema", "sphinx", "sphinx-bootstrap-theme"]

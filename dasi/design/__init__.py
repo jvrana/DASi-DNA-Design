@@ -29,14 +29,12 @@ from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiInvalidMolecularAssembly
-from dasi.exceptions import DASiWarning
 from dasi.log import logger
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
-from dasi.utils import prep_df
 
 BLAST_PENALTY_CONFIG = {"gapopen": 3, "gapextend": 3, "reward": 1, "penalty": -5}
 

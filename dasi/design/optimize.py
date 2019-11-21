@@ -17,8 +17,9 @@ from dasi.utils.networkx.utils import replace_nan_with_inf
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'
 # and 'efficiency' for a given path
+
 path_length_config = {
-    "f": "time + material / efficiency ",
+    "f": "material / efficiency ",
     "accumulators": {"efficiency": "product"},
 }
 

@@ -468,6 +468,7 @@ class Design:
             yield query_key, graph, len(query), cyclic, result
 
     # TODO: order keys
+    # TODO: group identical reactions (identical output sequence)
     def to_df(self, assembly_index: int = 0) -> Tuple[pd.DataFrame, pd.DataFrame]:
         dfs = []
         adfs = []

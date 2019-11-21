@@ -159,12 +159,14 @@ class TestAllPairShortestPath:
 
     @pytest.mark.parametrize("n", [8])
     @pytest.mark.parametrize("repeat", range(3))
+    @flaky(max_runs=3, min_passes=2)
     def test_complete(self, n, repeat):
         C = self.floyd_warshall_compare(*complete_graph(n))
         assert check_symmetric(C)
 
     @pytest.mark.parametrize("n", list(range(2, 8)))
     @pytest.mark.parametrize("repeat", range(3))
+    @flaky(max_runs=3, min_passes=2)
     def test_complete_directed(self, n, repeat):
         """Checks to make sure the return result is not symmetric."""
         G, nodelist = complete_graph(n, create_using=nx.DiGraph)
@@ -184,15 +186,18 @@ class TestAllPairShortestPath:
         M2 = floyd_warshall_with_efficiency(G, "weight", "eff", nodelist=nodelist)
         assert np.allclose(M1, M2)
 
+    @flaky(max_runs=3, min_passes=2)
     def test_complete_large(self):
         self.floyd_warshall_compare(*complete_graph(9))
 
     @pytest.mark.parametrize(
         "dims", [[1, 1, 1], [2, 2, 2], [2, 3, 2], [5, 1, 2], [4, 2, 2]]
     )
+    @flaky(max_runs=3, min_passes=2)
     def test_grid_graph(self, dims):
         self.floyd_warshall_compare(*grid_graph(dims))
 
+    @flaky(max_runs=3, min_passes=2)
     def test_very_large_graph(self):
         G, nodelist = complete_graph(200)
         floyd_warshall_with_efficiency(G, "weight", "eff", nodelist=nodelist)

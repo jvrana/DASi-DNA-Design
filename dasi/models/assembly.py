@@ -488,6 +488,7 @@ class Assembly(Iterable):
         if self.cyclic:
             pair_iter.append((nodes[-1], nodes[0]))
 
+        visited = set()
         for n1, n2 in pair_iter:
             edata = graph.get_edge_data(n1, n2)
             if edata is None:
@@ -518,6 +519,10 @@ class Assembly(Iterable):
 
             rn1 = _resolve(n1, query_region)
             rn2 = _resolve(n2, query_region)
+
+            if rn1 in visited:
+                break
+            visited.add(rn1)
 
             # TODO: add this check
             if do_raise:

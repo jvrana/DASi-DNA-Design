@@ -177,6 +177,15 @@ MoleculeType(
     synthesize=False,
 )
 
+MoleculeType(
+    name=Constants.SHARED_FRAGMENT,
+    design=None,
+    use_direct=True,
+    cost=0.0,
+    efficiency=1.0,
+    synthesize=False,
+)
+
 
 class Molecule:
     """An instance of a molecule type, with a sequence and which alignments are

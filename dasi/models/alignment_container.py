@@ -2,6 +2,7 @@
 from bisect import bisect_left
 from collections.abc import Sized
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -125,10 +126,8 @@ class AlignmentContainer(Sized):
                 "following query keys: {}".format(keys)
             )
 
-    @classmethod
-    def filter_alignments_by_span(
-        cls, alignments, region, key=None, end_inclusive=True
-    ):
+    @staticmethod
+    def filter_alignments_by_span(alignments, region, key=None, end_inclusive=True):
         fwd, fwd_keys = sort_with_keys(alignments, key=key)
         found = []
         for a, b in region.ranges(ignore_wraps=True):
@@ -373,10 +372,11 @@ class AlignmentContainer(Sized):
         alignment_groups: List[AlignmentGroup],
         atype=Constants.PCR_PRODUCT,
         lim_size: bool = True,
+        pass_condition: Callable = None,
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
-        the following three situations:
+        the following two situations:
 
         ::
 
@@ -389,13 +389,12 @@ class AlignmentContainer(Sized):
                  |--------|     alignment 2
                  |---|          new alignment
 
-
-            |--------|          alignment 1
-                 |--------|     alignment 2
-                     |----|     new alignment
-
         :param alignment_groups: list of alignment groups to expand
         :param atype: the alignment type label for expanded alignments
+        :param lim_size: if True, only add alignments that pass the size limitations
+        :param pass_condition: an optional callable that takes group_a (AlignmentGroup)
+            and group_b (AlignmentGroup). If the returned value is False, alignments
+            are skipped.
         :return: list
         """
 
@@ -414,6 +413,9 @@ class AlignmentContainer(Sized):
 
             for group_b in overlapping:
                 if group_b is not group_a:
+                    if pass_condition:
+                        if not pass_condition(group_a, group_b):
+                            continue
                     left = group_a.sub_region(
                         group_a.query_region.a, group_b.query_region.a, atype
                     )

@@ -6,12 +6,10 @@ Design (:mod:`dasi.design`)
 
 This module provide DNA assembly functionality for DASi.
 """
-from __future__ import annotations
-
 import bisect
-from collections.abc import Iterable
 from typing import Dict
 from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 
@@ -36,6 +34,7 @@ from dasi.log import logger
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
+from dasi.models import AlignmentGroup
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
 from dasi.utils import prep_df
@@ -149,7 +148,7 @@ class DesignResult(Iterable):
     #                 pass
     #                 # raise Exception
 
-    def __iter__(self) -> Generator[Assembly]:
+    def __iter__(self) -> Generator[Assembly, None, None]:
         """Yield assemblies.
 
         :yield: assembly
@@ -203,7 +202,7 @@ class Design:
         :param n_jobs:
         :type n_jobs: int
         """
-        self.blast_factory = BioBlastFactory()
+        self.blast_factory = BioBlastFactory(config=BLAST_PENALTY_CONFIG)
         self.logger = logger(self)
 
         # graph by query_key
@@ -277,7 +276,6 @@ class Design:
     def _blast(self):
         # align templates
         template_blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
-        template_blast.update_config(BLAST_PENALTY_CONFIG)
         template_blast.quick_blastn()
         template_results = template_blast.get_perfect()
         self.template_results = template_results
@@ -287,7 +285,6 @@ class Design:
         # align fragments
         if self.blast_factory.record_groups[self.FRAGMENTS]:
             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
-            fragment_blast.update_config(BLAST_PENALTY_CONFIG)
             fragment_blast.quick_blastn()
             fragment_results = self.filter_perfect_subject(fragment_blast.get_perfect())
             self.container_factory.seqdb.update(fragment_blast.seq_db.records)
@@ -301,7 +298,6 @@ class Design:
         # align primers
         if self.blast_factory.record_groups[self.PRIMERS]:
             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
-            primer_blast.update_config(BLAST_PENALTY_CONFIG)
             primer_blast.quick_blastn_short()
             primer_results = self.filter_perfect_subject(primer_blast.get_perfect())
             self.container_factory.seqdb.update(primer_blast.seq_db.records)
@@ -469,7 +465,8 @@ class Design:
             yield query_key, graph, len(query), cyclic, result
 
     # TODO: order keys
-    def to_df(self, assembly_index=0):
+    # TODO: group identical reactions (identical output sequence)
+    def to_df(self, assembly_index: int = 0) -> Tuple[pd.DataFrame, pd.DataFrame]:
         dfs = []
         adfs = []
         for i, (qk, result) in enumerate(self.results.items()):
@@ -555,23 +552,31 @@ class LibraryDesign(Design):
 
         :return:
         """
-        self.logger.info("=== Expanding shared library fragments ===")
 
+        # step 1: get query-on-query alignments
+        self.logger.info("=== Expanding shared library fragments ===")
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
-        blast.update_config(BLAST_PENALTY_CONFIG)
         blast.quick_blastn()
 
         results = blast.get_perfect()
-
         self.logger.info(
             "Found {} shared alignments between the queries".format(len(results))
         )
-        self.shared_alignments = results
 
+        # step 2: eliminate self binding results
+        results = [
+            entry
+            for entry in results
+            if entry["query"]["origin_key"] != entry["subject"]["origin_key"]
+        ]
+
+        # step 3: load results to the container
+        self.shared_alignments = results
         self.container_factory.seqdb.update(blast.seq_db.records)
         self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
 
         # TODO: expand the normal fragments with the shared fragments
+        # step 4: expand shared fragments
         for query_key, container in self.container_factory.containers().items():
             # expand the share fragments using their own endpoints
             original_shared_fragments = container.get_groups_by_types(
@@ -591,6 +596,13 @@ class LibraryDesign(Design):
 
             # TODO: what if there is no template for shared fragment?
             # TODO: shared fragment has to be contained wholly in another fragment
+
+            # step 4.X: expand existing to make new potential PCR_PRODUCTS
+            def is_not_shared(group_a: AlignmentGroup, group_b: AlignmentGroup):
+                if group_a.type == Constants.SHARED_FRAGMENT:
+                    return False
+                return True
+
             new_alignments = container.expand_overlaps(
                 container.get_groups_by_types(
                     [
@@ -600,7 +612,9 @@ class LibraryDesign(Design):
                     ]
                 ),
                 Constants.PCR_PRODUCT,
+                pass_condition=is_not_shared,
             )
+
             self.logger.info(
                 "{}: Expanded {} using {} and found {} new alignments.".format(
                     query_key,
@@ -609,6 +623,7 @@ class LibraryDesign(Design):
                     len(new_alignments),
                 )
             )
+
             # grab the pcr products and expand primer pairs (again)
             templates = container.get_groups_by_types(Constants.PCR_PRODUCT)
             new_primer_pairs = container.expand_primer_pairs(templates)
@@ -621,20 +636,30 @@ class LibraryDesign(Design):
                 )
             )
 
+        # step 5: ensure there are no repeats
         repeats = []
         for query_key, container in self.container_factory.containers().items():
-            # get all shared fragments
-            alignments = container.get_alignments_by_types(Constants.SHARED_FRAGMENT)
-            self.logger.info(
-                "{} shared fragments for {}".format(len(alignments), query_key)
-            )
-            non_repeats = list(self._get_iter_non_repeats(alignments))
-            self.logger.info(
-                "{} non repeats for {}".format(len(non_repeats), query_key)
-            )
-            # add to list of possible repeats
-            # repeats += list(self._get_iter_non_repeats(alignments))
-        self.repeats = repeats
+            for align in container.get_alignments_by_types(Constants.SHARED_FRAGMENT):
+                qk = align.query_key
+                sk = align.subject_key
+                if qk == sk:
+                    repeats.append(align)
+        assert not repeats
+
+        # repeats = []
+        # for query_key, container in self.container_factory.containers().items():
+        #     # get all shared fragments
+        #     alignments = container.get_alignments_by_types(Constants.SHARED_FRAGMENT)
+        #     self.logger.info(
+        #         "{} shared fragments for {}".format(len(alignments), query_key)
+        #     )
+        #     non_repeats = list(self._get_iter_non_repeats(alignments))
+        #     self.logger.info(
+        #         "{} non repeats for {}".format(len(non_repeats), query_key)
+        #     )
+        #     # add to list of possible repeats
+        #     # repeats += list(self._get_iter_non_repeats(alignments))
+        # self.repeats = repeats
 
     def compile_library(self, n_jobs=None):
         """Compile the materials list into assembly graphs."""

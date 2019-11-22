@@ -13,7 +13,6 @@ from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
 from dasi import Design
-from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.utils import Region
 
@@ -544,7 +543,6 @@ def test_case2(span_cost):
         print(a.cost())
         for n1, n2, edata in a.edges():
             print(n1, n2)
-        # print(a.to_df())
 
 
 class TestOutput:

@@ -86,3 +86,8 @@ How do you optimize a plasmid AND then potentially use that as a template for th
 * Find primers that have high sequence similarity. Make internal edge cost high in those cases.
 * Primers with different Tms. Internal edge efficiency.
 * Assembly junctions with high sequence similarity.
+
+**Gap partitioning**
+
+Partition Score:
+https://colab.research.google.com/drive/19YZ7Jnx-4cfJAbNoDF7wgMheCqRCehPZ

@@ -71,6 +71,7 @@ def index_slice(indices, arr):
     return list(zip(*unzipped))
 
 
+# TODO: is this necessary?
 def only_ab(w, nodelist):
     b_array = np.array([n.type == "B" for n in nodelist]).reshape(1, -1)
     w[np.where(~np.logical_xor(b_array, b_array.T))] = np.inf
@@ -160,7 +161,7 @@ def optimize_graph(
         closed_wmatrix = replace_nan_with_inf(closed_wmatrix)
 
         fill_diag_inf(closed_wmatrix)
-        only_ab(closed_wmatrix, nodelist)
+        # only_ab(closed_wmatrix, nodelist)
         weight_matrix = closed_wmatrix
     else:
         raise NotImplementedError("Linear assemblies not yet implemented.")

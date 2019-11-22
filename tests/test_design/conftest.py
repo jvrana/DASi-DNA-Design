@@ -11,10 +11,8 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
-from dasi.cost import SpanCost
 from dasi.design import Design
 from dasi.design import DesignResult
-from dasi.log import logger
 
 here = os.path.abspath(os.path.dirname(__file__))
 do_save = True

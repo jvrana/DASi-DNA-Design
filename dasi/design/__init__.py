@@ -202,7 +202,7 @@ class Design:
         :param n_jobs:
         :type n_jobs: int
         """
-        self.blast_factory = BioBlastFactory()
+        self.blast_factory = BioBlastFactory(config=BLAST_PENALTY_CONFIG)
         self.logger = logger(self)
 
         # graph by query_key
@@ -276,7 +276,6 @@ class Design:
     def _blast(self):
         # align templates
         template_blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
-        template_blast.update_config(BLAST_PENALTY_CONFIG)
         template_blast.quick_blastn()
         template_results = template_blast.get_perfect()
         self.template_results = template_results
@@ -286,7 +285,6 @@ class Design:
         # align fragments
         if self.blast_factory.record_groups[self.FRAGMENTS]:
             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
-            fragment_blast.update_config(BLAST_PENALTY_CONFIG)
             fragment_blast.quick_blastn()
             fragment_results = self.filter_perfect_subject(fragment_blast.get_perfect())
             self.container_factory.seqdb.update(fragment_blast.seq_db.records)
@@ -300,7 +298,6 @@ class Design:
         # align primers
         if self.blast_factory.record_groups[self.PRIMERS]:
             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
-            primer_blast.update_config(BLAST_PENALTY_CONFIG)
             primer_blast.quick_blastn_short()
             primer_results = self.filter_perfect_subject(primer_blast.get_perfect())
             self.container_factory.seqdb.update(primer_blast.seq_db.records)
@@ -559,7 +556,6 @@ class LibraryDesign(Design):
         # step 1: get query-on-query alignments
         self.logger.info("=== Expanding shared library fragments ===")
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
-        blast.update_config(BLAST_PENALTY_CONFIG)
         blast.quick_blastn()
 
         results = blast.get_perfect()

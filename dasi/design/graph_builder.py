@@ -19,6 +19,7 @@ from dasi.models import MoleculeType
 from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
 from dasi.utils import sort_with_keys
+from dasi.utils.sequence_complexity import complexity_score
 
 
 class AssemblyGraphBuilder:

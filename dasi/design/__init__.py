@@ -23,8 +23,9 @@ from pyblast.utils import is_circular
 from .design_algorithms import assemble_graph
 from .design_algorithms import multiprocessing_assemble_graph
 from .design_algorithms import multiprocessing_optimize_graph
-from .design_algorithms import optimize_graph
 from .graph_builder import AssemblyGraphBuilder
+from .optimize import optimize_graph
+from .optimize import post_process
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
@@ -423,6 +424,7 @@ class Design:
             query = container.seqdb[query_key]
             cyclic = is_circular(query)
             results_dict[query_key] = result
+            post_process(graph, query)
             paths, costs = optimize_graph(graph, len(query), cyclic, n_paths)
             if not paths:
                 query_rec = self.blast_factory.db.records[query_key]

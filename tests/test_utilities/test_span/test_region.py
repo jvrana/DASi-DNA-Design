@@ -32,3 +32,9 @@ def test_copy_preserves_direction():
     r2 = r1[:]
 
     assert r2.direction == -1
+
+
+# TODO: finish this test
+def test():
+    r = Region(6001, 6000 - 60, 3000, cyclic=True, direction=1)
+    print(r.slices())

@@ -7,7 +7,9 @@ from typing import Union
 
 import networkx as nx
 import numpy as np
+from Bio.SeqRecord import SeqRecord
 from more_itertools import partition
+from pyblast.utils import is_circular
 
 from dasi.constants import Constants
 from dasi.cost import SpanCost
@@ -18,8 +20,9 @@ from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
+from dasi.utils import Region
 from dasi.utils import sort_with_keys
-from dasi.utils.sequence_complexity import complexity_score
+from dasi.utils.sequence_complexity import DNAStats
 
 
 class AssemblyGraphBuilder:
@@ -334,3 +337,53 @@ class AssemblyGraphBuilder:
 
         nx.freeze(self.G)
         return self.G
+
+
+class AssemblyGraphPostProcessor:
+    def __init__(self, graph: nx.DiGraph, query: SeqRecord):
+        self.graph = graph
+        self.query = query
+        self.stats = DNAStats(
+            self.query + self.query,
+            repeat_window=14,
+            stats_window=20,
+            hairpin_window=20,
+        )
+        self.logged_msgs = []
+        self.COMPLEXITY_THRESHOLD = 12.0
+
+    def update_edge_complexity(self, edata, complexity):
+        edata["complexity"] = complexity
+        if complexity > self.COMPLEXITY_THRESHOLD:
+            edata["efficiency"] = 0.1
+            return True
+        return False
+
+    # @staticmethod
+    # def edge_to_region_helper(n1: int, n2: int, context_length: int, span: int, cyclic: bool):
+    #     if span > 0:
+    #         return Region(n1.index, n2.index, context_length, cyclic=cyclic)
+    #     else:
+    #         return Region(n2.index, n1.indes, context_length, cyclic=cyclic)
+    #
+    # def edge_to_region(self, n1, n2, span):
+    #     cyclic = is_circular(self.query)
+    #     length = len(self.query)
+    #     return self.edge_to_region_helper(n1, n2, length, span, cyclic)
+
+    # TODO: move this to a new class
+    def complexity_update(self) -> nx.DiGraph:
+        """Updates any gaps using the complexity measurements."""
+        g = self.graph
+        query = self.query
+        for n1, n2, edata in g.edges(data=True):
+            if n1.type == "B" and n2.type == "A":
+                span = edata["span"]
+                if span > 0:
+                    r = Region(n1.index, n2.index, len(query), cyclic=True)
+                    score = self.stats.cost(r.a, r.c)
+                    if self.update_edge_complexity(edata, score) is True:
+                        self.logged_msgs.append("High complexity!")
+
+    def __call__(self):
+        self.complexity_update()

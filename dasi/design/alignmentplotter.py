@@ -3,7 +3,7 @@ from matplotlib.lines import Line2D
 
 
 # TODO: plot primers
-class Plotter:
+class AlignmentPlotter:
     def __init__(self, length, starts, ends, types, names, costs, title=""):
         segments = zip(starts, ends, types, names, costs)
         self.segments = list(segments)

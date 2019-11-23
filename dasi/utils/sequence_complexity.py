@@ -121,9 +121,12 @@ def complexity_score(seq: str) -> float:
     return total
 
 
+# TODO: compute cost for extremes of GC content
 class DNAStats:
 
     BASES = "AGCT"
+    np.random.seed(1)
+    BASE_SIGNATURES = np.random.uniform(0.0, 1.0, size=len(BASES)).reshape(-1, 4)
 
     def __init__(self, seq, repeat_window, stats_window, hairpin_window):
         self.seq = seq
@@ -174,18 +177,21 @@ class DNAStats:
         return np.mean(self.rolling_window(self.seq_onehot, window), axis=2)
 
     def get_repeat_signatures(self, window):
-        base_signatures = np.random.uniform(0.0, 1.0, size=4).reshape(-1, 4)
-        seq_signatures = np.sum(np.multiply(self.seq_onehot, base_signatures.T), axis=0)
+        seq_signatures = np.sum(
+            np.multiply(self.seq_onehot, self.BASE_SIGNATURES.T), axis=0
+        )
         x = np.random.uniform(0.0, 100.0, size=window)
         mv = np.convolve(seq_signatures, x, mode="valid")
         signatures = np.concatenate(([np.NaN for _ in range(window - 1)], mv))
         return signatures
 
     def get_hairpin_signatures(self, window):
-        base_signatures = np.random.uniform(0.0, 1.0, size=4).reshape(-1, 4)
-        seq_signatures = np.sum(np.multiply(self.seq_onehot, base_signatures.T), axis=0)
+        seq_signatures = np.sum(
+            np.multiply(self.seq_onehot, self.BASE_SIGNATURES.T), axis=0
+        )
         revcomp_signatures = np.sum(
-            np.multiply(self.seq_onehot[:, ::-1], base_signatures[:, ::-1].T), axis=0
+            np.multiply(self.seq_onehot[:, ::-1], self.BASE_SIGNATURES[:, ::-1].T),
+            axis=0,
         )
         x = np.random.uniform(0.0, 100.0, size=window)
         mv1 = np.convolve(seq_signatures, x, mode="valid")
@@ -216,16 +222,28 @@ class DNAStats:
         b = np.sum(self.rolling_stats[4, i:j] > 0.85)
         return a, b
 
+    # def get_GC_content_complexity(seq):
+    #     gc = get_GC_content(seq)
+    #     return abs(gc * 100.0 - 50) * 17 / 25.0
+
     def __call__(self, i=None, j=None):
+        mn = np.mean(self.seq_onehot[:, i:j], axis=1)
+        gi = self.bases.index("G")
+        ci = self.bases.index("C")
+        gc = mn[gi] + mn[ci]
+        gccost = abs(gc * 100.0 - 50) * 17 / 25.0
         return {
             "n_repeats": self.slice_repeats(i, j),
             "n_hairpins": self.slice_hairpins(i, j),
             "window_cost": self.window_cost(i, j),
+            "gc_cost": gccost,
         }
 
     def cost(self, i=None, j=None):
         d = self(i, j)
         w1 = d["window_cost"][0]
         w2 = d["window_cost"][1]
-        total = d["n_repeats"] + d["n_hairpins"] + np.sum(w1) + np.sum(w2)
+        total = (
+            d["n_repeats"] + d["n_hairpins"] + np.sum(w1) + np.sum(w2) + d["gc_cost"]
+        )
         return total

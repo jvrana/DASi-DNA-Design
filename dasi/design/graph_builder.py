@@ -385,5 +385,14 @@ class AssemblyGraphPostProcessor:
                     if self.update_edge_complexity(edata, score) is True:
                         self.logged_msgs.append("High complexity!")
 
+    # TODO: optimal partition
+    def optimal_partition(self):
+        """Have stats return the dictionary AND GC content Iterate for some
+        window.
+
+        Minimize partition. Early termination.
+        """
+        pass
+
     def __call__(self):
         self.complexity_update()

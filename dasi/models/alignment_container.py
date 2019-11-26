@@ -85,7 +85,7 @@ class AlignmentContainer(Sized):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
@@ -262,7 +262,10 @@ class AlignmentContainer(Sized):
                     else:
                         continue
                 pairs += self._create_primer_extension_alignment(
-                    f, r, Constants.PRIMER_EXTENSION_PRODUCT, lim_size=lim_size
+                    f,
+                    r,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
+                    lim_size=lim_size,
                 )
 
         if only_one_required:
@@ -602,7 +605,7 @@ class AlignmentContainerFactory:
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
-        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
     )  # valid fragment types

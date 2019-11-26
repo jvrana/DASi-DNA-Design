@@ -8,7 +8,6 @@ from typing import Union
 import networkx as nx
 import numpy as np
 from Bio.SeqRecord import SeqRecord
-from loggable import Loggable
 from more_itertools import partition
 from pyblast.utils import is_circular
 
@@ -324,7 +323,7 @@ class AssemblyGraphBuilder:
                     Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.PCR_PRODUCT_WITH_PRIMERS,
-                    Constants.PRIMER_EXTENSION_PRODUCT,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.FRAGMENT,

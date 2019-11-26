@@ -29,8 +29,8 @@ class Constants:
     SHARED_FRAGMENT = (
         "FRAGMENT_SHARED_WITH_OTHER_QUERIES"
     )  #: A fragment alignment that is shared with other queries for potential reuse
-    PRIMER_EXTENSION_PRODUCT = (
-        "PRIMER_EXTENSION_PRODUCT"
+    PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS = (
+        "PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS"
     )  #: a pcr product that uses no template, but extends two primers
     PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER = (
         "PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER"

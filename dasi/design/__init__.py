@@ -483,7 +483,7 @@ class Design:
         dfs = []
         adfs = []
         for i, (qk, result) in enumerate(self.results.items()):
-            if result.assemblies:
+            if result.assemblies[0]:
                 a = result.assemblies[assembly_index]
                 df = a.to_reaction_df()
                 df["DESIGN_ID"] = i

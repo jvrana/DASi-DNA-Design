@@ -14,6 +14,7 @@ def test_library_design(paths, here, span_cost):
 
     query_path = join(here, "data/test_data/genbank/designs/*.gb")
     queries = make_circular(load_genbank_glob(query_path))
+    queries = [queries[-1]]
 
     design = LibraryDesign(span_cost=span_cost)
 
@@ -21,11 +22,9 @@ def test_library_design(paths, here, span_cost):
 
     design.compile_library()
 
-    design.optimize_library()
+    results = design.optimize_library()
 
-    # design.compile()
-    #
-    # assert len(design.graphs) == len(queries)
-    # assert len(design.graphs) > 1
-    #
-    # design.optimize()
+    result = list(results.values())[0]
+    df = result.assemblies[0].to_df()
+
+    print(df)

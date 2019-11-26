@@ -8,6 +8,7 @@ from typing import Union
 import networkx as nx
 import numpy as np
 from Bio.SeqRecord import SeqRecord
+from loggable import Loggable
 from more_itertools import partition
 from pyblast.utils import is_circular
 
@@ -351,6 +352,7 @@ class AssemblyGraphPostProcessor:
         )
         self.logged_msgs = []
         self.COMPLEXITY_THRESHOLD = 12.0
+        self.logger = logger(self)
 
     def update_edge_complexity(self, edata, complexity):
         edata["complexity"] = complexity
@@ -389,6 +391,9 @@ class AssemblyGraphPostProcessor:
                     if self.update_edge_complexity(edata, score) is True:
                         bad_edges.append((n1, n2, edata))
                         self.logged_msgs.append("High complexity!")
+        self.logger.info(
+            "Found {} highly complex synthesis segments".format(len(bad_edges))
+        )
         return bad_edges
 
     @staticmethod

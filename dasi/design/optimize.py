@@ -4,19 +4,15 @@ from typing import Tuple
 
 import networkx as nx
 import numpy as np
-from Bio.SeqRecord import SeqRecord
-from pyblast.utils import is_circular
 
 from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DASiWarning
-from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multipoint_shortest_path
 from dasi.utils.networkx.algorithms import accumulate_helper
 from dasi.utils.networkx.algorithms import str_to_symbols_and_func
 from dasi.utils.networkx.utils import replace_nan_with_inf
-from dasi.utils.sequence_complexity import complexity_score
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'

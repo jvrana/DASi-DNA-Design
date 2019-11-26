@@ -37,6 +37,7 @@ from dasi.models import AlignmentGroup
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
 
+
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
     "gapextend": 3,

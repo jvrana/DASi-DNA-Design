@@ -436,7 +436,7 @@ class AssemblyGraphPostProcessor:
             arg = c.argmin()
             return a[arg], c[arg]
 
-    # TODO: logger
+    # TODO: add logging to graph post processor
     # TODO: partition gaps
     def __call__(self):
         self.complexity_update()

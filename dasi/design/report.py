@@ -73,7 +73,10 @@ class Report:
             x = x - len(query)
             y = np.repeat(costs, step)
 
-            y = y[: -(y.shape[0] - x.shape[0])]
+            delta = -(y.shape[0] - x.shape[0])
+            if delta == 0:
+                delta = None
+            y = y[:delta]
             costs_arr.append(y)
             bp_arr.append(x)
 

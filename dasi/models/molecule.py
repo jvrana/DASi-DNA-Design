@@ -110,42 +110,77 @@ class ExternalType(MoleculeType):
 # TODO: move this to the parameters
 # TODO: efficiencies and base costs could be parameters
 # TODO: min_size and max_size could be parameters
-InternalType(Constants.FRAGMENT, (False, False), True, 0.0, 0.98)
-InternalType(Constants.PCR_PRODUCT, (True, True), False, 10.0, 0.95, min_size=100)
 InternalType(
-    Constants.PCR_PRODUCT_WITH_PRIMERS, (False, False), False, 10.0, 0.95, min_size=100
+    name=Constants.FRAGMENT,
+    design=(False, False),
+    use_direct=True,
+    cost=0.0,
+    efficiency=0.98,
 )
+
 InternalType(
-    Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-    (True, False),
-    False,
-    10.0,
-    0.95,
+    name=Constants.PCR_PRODUCT,
+    design=(True, True),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
+    min_size=100,
+)
+
+InternalType(
+    name=Constants.PCR_PRODUCT_WITH_PRIMERS,
+    design=(False, False),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
+    min_size=100,
+)
+
+InternalType(
+    name=Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+    design=(True, False),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
     min_size=100,
 )
 InternalType(
-    Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
-    (False, True),
-    False,
-    10.0,
-    0.95,
+    name=Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+    design=(False, True),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
     min_size=100,
 )
-InternalType(Constants.PRIMER_EXTENSION_PRODUCT, (False, False), False, 9.0, 0.95)
+
 InternalType(
-    Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER, (False, True), False, 9.0, 0.95
+    name=Constants.PRIMER_EXTENSION_PRODUCT,
+    design=(False, False),
+    use_direct=False,
+    cost=9.0,
+    efficiency=0.95,
 )
+
 InternalType(
-    Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
-    (True, False),
-    False,
-    9.0,
-    0.95,
+    name=Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+    design=(False, True),
+    use_direct=False,
+    cost=9.0,
+    efficiency=0.95,
+)
+
+InternalType(
+    name=Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+    design=(True, False),
+    use_direct=False,
+    cost=9.0,
+    efficiency=0.95,
 )
 
 ExternalType(
     name=Constants.OVERLAP, use_direct=False, cost=0.0, efficiency=1.0, synthesize=False
 )
+
 ExternalType(
     name=Constants.GAP, use_direct=False, cost=0.0, efficiency=1.0, synthesize=True
 )

@@ -385,14 +385,49 @@ class AssemblyGraphPostProcessor:
                     if self.update_edge_complexity(edata, score) is True:
                         self.logged_msgs.append("High complexity!")
 
-    # TODO: optimal partition
-    def optimal_partition(self):
-        """Have stats return the dictionary AND GC content Iterate for some
-        window.
+    @staticmethod
+    def optimize_partition(
+        signatures: np.ndarray, step: int, i: int = None, j: int = None
+    ):
+        """Optimize partition by minimizing the number of signatures in the
+        given array.
 
-        Minimize partition. Early termination.
+        :param signatures: array of signatures
+        :param step: step size
+        :param i:
+        :param j:
+        :return:
         """
-        pass
+        d = []
+
+        if i is None:
+            i = 0
+        if j is None:
+            j = signatures.shape[1]
+
+        for x in range(i, j, step):
+            m1 = np.empty(signatures.shape[1])
+            m2 = m1.copy()
+            m1.fill(np.nan)
+            m2.fill(np.nan)
+
+            m1[:x] = np.random.uniform(1, 10)
+            m2[x:] = np.random.uniform(1, 10)
+
+            d += [m1, m2]
+        d = np.vstack(d)
+        z = np.tile(d, signatures.shape[0]) * signatures.flatten()
+
+        partition_index = np.repeat(
+            np.arange(0, signatures.shape[1], step),
+            signatures.shape[0] * signatures.shape[1] * 2,
+        )
+
+        a, b, c = np.unique(z, return_counts=True, return_index=True)
+        i = b[np.where(c > 1)]
+        a, c = np.unique(partition_index[i], return_counts=True)
+        arg = c.argmin()
+        return a[arg], c[arg]
 
     def __call__(self):
         self.complexity_update()

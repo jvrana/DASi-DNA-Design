@@ -560,36 +560,7 @@ class LibraryDesign(Design):
             if qk == sk:
                 yield (qk, align.query_region.a, align.query_region.b)
 
-    def _share_query_blast(self):
-        """Find and use shared fragments across queries.
-
-        :return:
-        """
-
-        # step 1: get query-on-query alignments
-        self.logger.info("=== Expanding shared library fragments ===")
-        blast = self.blast_factory(self.QUERIES, self.QUERIES)
-        blast.quick_blastn()
-
-        results = blast.get_perfect()
-        self.logger.info(
-            "Found {} shared alignments between the queries".format(len(results))
-        )
-
-        # step 2: eliminate self binding results
-        results = [
-            entry
-            for entry in results
-            if entry["query"]["origin_key"] != entry["subject"]["origin_key"]
-        ]
-
-        # step 3: load results to the container
-        self.shared_alignments = results
-        self.container_factory.seqdb.update(blast.seq_db.records)
-        self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
-
-        # TODO: expand the normal fragments with the shared fragments
-        # step 4: expand shared fragments
+    def _expand_from_shared(self):
         for query_key, container in self.container_factory.containers().items():
             # expand the share fragments using their own endpoints
             original_shared_fragments = container.get_groups_by_types(
@@ -649,7 +620,7 @@ class LibraryDesign(Design):
                 )
             )
 
-        # step 5: ensure there are no repeats
+    def _check_shared_repeats(self):
         repeats = []
         for query_key, container in self.container_factory.containers().items():
             for align in container.get_alignments_by_types(Constants.SHARED_FRAGMENT):
@@ -658,6 +629,41 @@ class LibraryDesign(Design):
                 if qk == sk:
                     repeats.append(align)
         assert not repeats
+
+    def _share_query_blast(self):
+        """Find and use shared fragments across queries.
+
+        :return:
+        """
+
+        # step 1: get query-on-query alignments
+        self.logger.info("=== Expanding shared library fragments ===")
+        blast = self.blast_factory(self.QUERIES, self.QUERIES)
+        blast.quick_blastn()
+
+        results = blast.get_perfect()
+        self.logger.info(
+            "Found {} shared alignments between the queries".format(len(results))
+        )
+
+        # step 2: eliminate self binding results
+        results = [
+            entry
+            for entry in results
+            if entry["query"]["origin_key"] != entry["subject"]["origin_key"]
+        ]
+
+        # step 3: load results to the container
+        self.shared_alignments = results
+        self.container_factory.seqdb.update(blast.seq_db.records)
+        self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
+
+        # TODO: expand the normal fragments with the shared fragments
+        # step 4: expand shared fragments
+        self._expand_from_shared()
+
+        # step 5: ensure there are no repeats
+        self._check_shared_repeats()
 
         # repeats = []
         # for query_key, container in self.container_factory.containers().items():

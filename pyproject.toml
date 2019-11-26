@@ -33,7 +33,7 @@ frozendict = "^1.2"
 primer3plus = "^1.0.5"
 fire = "^0.1"
 jsonschema = "^3.1"
-pyblastbio = "^0.5.2"
+pyblastbio = "^0.5.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"

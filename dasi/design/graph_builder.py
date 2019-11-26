@@ -7,7 +7,9 @@ from typing import Union
 
 import networkx as nx
 import numpy as np
+from Bio.SeqRecord import SeqRecord
 from more_itertools import partition
+from pyblast.utils import is_circular
 
 from dasi.constants import Constants
 from dasi.cost import SpanCost
@@ -18,7 +20,9 @@ from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
+from dasi.utils import Region
 from dasi.utils import sort_with_keys
+from dasi.utils.sequence_complexity import DNAStats
 
 
 class AssemblyGraphBuilder:
@@ -333,3 +337,117 @@ class AssemblyGraphBuilder:
 
         nx.freeze(self.G)
         return self.G
+
+
+class AssemblyGraphPostProcessor:
+    def __init__(self, graph: nx.DiGraph, query: SeqRecord):
+        self.graph = graph
+        self.query = query
+        self.stats = DNAStats(
+            self.query + self.query,
+            repeat_window=14,
+            stats_window=20,
+            hairpin_window=20,
+        )
+        self.logged_msgs = []
+        self.COMPLEXITY_THRESHOLD = 12.0
+
+    def update_edge_complexity(self, edata, complexity):
+        edata["complexity"] = complexity
+        if complexity > self.COMPLEXITY_THRESHOLD:
+            edata["efficiency"] = 0.1
+            return True
+        return False
+
+    # @staticmethod
+    # def edge_to_region_helper(n1: int, n2: int, context_length: int, span: int, cyclic: bool):
+    #     if span > 0:
+    #         return Region(n1.index, n2.index, context_length, cyclic=cyclic)
+    #     else:
+    #         return Region(n2.index, n1.indes, context_length, cyclic=cyclic)
+    #
+    # def edge_to_region(self, n1, n2, span):
+    #     cyclic = is_circular(self.query)
+    #     length = len(self.query)
+    #     return self.edge_to_region_helper(n1, n2, length, span, cyclic)
+
+    # TODO: move this to a new class
+    def complexity_update(self) -> nx.DiGraph:
+        """Updates any gaps using the complexity measurements."""
+        g = self.graph
+        query = self.query
+        bad_edges = []
+        for n1, n2, edata in g.edges(data=True):
+            if n1.type == "B" and n2.type == "A":
+                span = edata["span"]
+                if span > 0:
+                    # TODO: cyclic may not always be tru
+                    r = Region(
+                        n1.index, n2.index, len(query), cyclic=is_circular(query)
+                    )
+                    score = self.stats.cost(r.a, r.c)
+                    if self.update_edge_complexity(edata, score) is True:
+                        bad_edges.append((n1, n2, edata))
+                        self.logged_msgs.append("High complexity!")
+        return bad_edges
+
+    @staticmethod
+    def optimize_partition(
+        signatures: np.ndarray, step: int, i: int = None, j: int = None
+    ):
+        """Optimize partition by minimizing the number of signatures in the
+        given array.
+
+        :param signatures: array of signatures
+        :param step: step size
+        :param i:
+        :param j:
+        :return:
+        """
+        d = []
+
+        if i is None:
+            i = 0
+        if j is None:
+            j = signatures.shape[1]
+
+        for x in range(i, j, step):
+            m1 = np.empty(signatures.shape[1])
+            m2 = m1.copy()
+            m1.fill(np.nan)
+            m2.fill(np.nan)
+
+            m1[:x] = np.random.uniform(1, 10)
+            m2[x:] = np.random.uniform(1, 10)
+
+            d += [m1, m2]
+        d = np.vstack(d)
+        z = np.tile(d, signatures.shape[0]) * signatures.flatten()
+
+        partition_index = np.repeat(
+            np.arange(0, signatures.shape[1], step),
+            signatures.shape[0] * signatures.shape[1] * 2,
+        )
+
+        a, b, c = np.unique(z, return_counts=True, return_index=True)
+        i = b[np.where(c > 1)]
+        a, c = np.unique(partition_index[i], return_counts=True)
+        if len(c):
+            arg = c.argmin()
+            return a[arg], c[arg]
+
+    # TODO: add logging to graph post processor
+    # TODO: partition gaps
+    def __call__(self):
+        self.complexity_update()
+        # if bad_edges:
+        #     fwd = self.stats.fwd_signatures
+        #     rev = self.stats.rev_signatures
+        #     for n1, n2, edata in bad_edges:
+        #         r = Region(
+        #             n1.index, n2.index, len(self.query), cyclic=is_circular(self.query)
+        #         )
+        #         fwd_slice = fwd[r.a : r.c]
+        #         rev_slice = rev[r.a : r.c]
+        #         sig = np.vstack((fwd_slice, rev_slice))
+        #         self.optimize_partition(sig, step=10)

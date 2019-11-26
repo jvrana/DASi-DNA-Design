@@ -436,6 +436,10 @@ class AssemblyGraphPostProcessor:
             arg = c.argmin()
             return a[arg], c[arg]
 
+    # TODO: post-process shared synthesis
+    def process_shared_synthesis(self):
+        pass
+
     # TODO: add logging to graph post processor
     # TODO: partition gaps
     def __call__(self):

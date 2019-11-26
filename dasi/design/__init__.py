@@ -681,7 +681,15 @@ class LibraryDesign(Design):
         self._blast()
         self._share_query_blast()
         self.assemble_graphs(n_jobs=n_jobs)
+        self.post_process_library_graphs()
 
-    def optimize_library(self):
+    def post_process_library_graphs(self):
+        for qk, graph in self.graphs.items():
+            query = self.seqdb[qk]
+            processor = AssemblyGraphPostProcessor(graph, query)
+            processor()
+            processor.process_shared_synthesis()
+
+    def optimize_library(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
         """Optimize the assembly graph for library assembly."""
-        raise NotImplementedError
+        return self.optimize(n_paths=n_paths, n_jobs=n_jobs)

@@ -21,7 +21,7 @@ def test_library_design(paths, here, span_cost):
 
     design.compile_library()
 
-    # design.optimize_library()
+    design.optimize_library()
 
     # design.compile()
     #

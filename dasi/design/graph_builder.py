@@ -376,14 +376,20 @@ class AssemblyGraphPostProcessor:
         """Updates any gaps using the complexity measurements."""
         g = self.graph
         query = self.query
+        bad_edges = []
         for n1, n2, edata in g.edges(data=True):
             if n1.type == "B" and n2.type == "A":
                 span = edata["span"]
                 if span > 0:
-                    r = Region(n1.index, n2.index, len(query), cyclic=True)
+                    # TODO: cyclic may not always be tru
+                    r = Region(
+                        n1.index, n2.index, len(query), cyclic=is_circular(query)
+                    )
                     score = self.stats.cost(r.a, r.c)
                     if self.update_edge_complexity(edata, score) is True:
+                        bad_edges.append((n1, n2, edata))
                         self.logged_msgs.append("High complexity!")
+        return bad_edges
 
     @staticmethod
     def optimize_partition(
@@ -426,8 +432,22 @@ class AssemblyGraphPostProcessor:
         a, b, c = np.unique(z, return_counts=True, return_index=True)
         i = b[np.where(c > 1)]
         a, c = np.unique(partition_index[i], return_counts=True)
-        arg = c.argmin()
-        return a[arg], c[arg]
+        if len(c):
+            arg = c.argmin()
+            return a[arg], c[arg]
 
+    # TODO: logger
+    # TODO: partition gaps
     def __call__(self):
         self.complexity_update()
+        # if bad_edges:
+        #     fwd = self.stats.fwd_signatures
+        #     rev = self.stats.rev_signatures
+        #     for n1, n2, edata in bad_edges:
+        #         r = Region(
+        #             n1.index, n2.index, len(self.query), cyclic=is_circular(self.query)
+        #         )
+        #         fwd_slice = fwd[r.a : r.c]
+        #         rev_slice = rev[r.a : r.c]
+        #         sig = np.vstack((fwd_slice, rev_slice))
+        #         self.optimize_partition(sig, step=10)

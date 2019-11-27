@@ -9,7 +9,10 @@ from pyblast.utils import make_linear
 
 from dasi.constants import Constants
 from dasi.design import LibraryDesign
+from dasi.design.graph_builder import AssemblyGraphPostProcessor
 from dasi.models import AlignmentContainer
+from dasi.models import AlignmentGroup
+from dasi.utils import group_by
 from dasi.utils import sort_with_keys
 
 
@@ -109,9 +112,19 @@ def cluster_graph(design):
         all_groups += container.get_groups_by_types(Constants.SHARED_FRAGMENT)
     for g in all_groups:
         for a in g.alignments:
-            n1 = (a.query_key, a.query_region.a, a.query_region.b)
-            n2 = (a.subject_key, a.subject_region.a, a.subject_region.b)
-            interaction_graph.add_edge(n1, n2, alignment=a)
+            n1 = (a.query_key, a.query_region.a, a.query_region.b, a.query_region.c)
+            n2 = (
+                a.subject_key,
+                a.subject_region.a,
+                a.subject_region.b,
+                a.subject_region.c,
+            )
+            edata = interaction_graph.get_edge_data(n1, n2)
+            if edata:
+                edata.setdefault("alignments", list())
+                edata["alignments"].append(a)
+            else:
+                interaction_graph.add_edge(n1, n2, alignments=[a])
     graphs = get_subgraphs(interaction_graph)
     graphs = [g for g in graphs if not has_repeats(g)]
     graphs.sort(reverse=True, key=lambda x: x.number_of_nodes())
@@ -136,9 +149,82 @@ def test_library_design_draft(paths, here, span_cost):
 
     add_clusters(design)
     graphs = cluster_graph(design)
+
+    for c in design.container_list():
+        c.share_group_tag = {}
+
+    # update the meta data
     for g in graphs:
-        print(g.number_of_nodes())
-        print(list(g.nodes())[0])
+        n_clusters = g.number_of_nodes()
+        alignments = []
+        for n1, n2, edata in g.edges(data=True):
+            alignments = edata["alignments"]
+            for qk, container_alignments in group_by(
+                alignments, key=lambda x: x.query_key
+            ).items():
+                container = design.containers[qk]
+                for a in container_alignments:
+                    group_key = (
+                        a.query_region.a,
+                        a.query_region.b,
+                        Constants.SYNTHESIZED_FRAGMENT,
+                    )
+                    container.group_tags.add(
+                        Constants.SHARE_GROUP_TAG,
+                        group_key,
+                        {
+                            "alignments": container_alignments,
+                            "cross_container_alignments": alignments,
+                            "n_clusters": n_clusters,
+                        },
+                    )
+
+    # for container in design.container_list():
+    #     groups = container.get_groups_by_types(Constants.SHARED_FRAGMENT)
+    #     copied = container.copy_groups(groups, atype=Constants.SYNTHESIZED_FRAGMENT)
+    #     container.add_alignments(copied)
+
+    # def is_not_shared(group_a: AlignmentGroup, group_b: AlignmentGroup):
+    #     if group_a.type == Constants.SHARED_FRAGMENT:
+    #         return False
+    #     if group_b.type == Constants.SYNTHESIZED_FRAGMENT:
+    #         return True
+    #     return False
+
+    # new_alignments = container.expand_overlaps(
+    #     container.get_groups_by_types(
+    #         [
+    #             Constants.FRAGMENT,
+    #             Constants.PCR_PRODUCT,
+    #             Constants.SYNTHESIZED_FRAGMENT,
+    #         ]
+    #     ),
+    #     Constants.PCR_PRODUCT,
+    #     pass_condition=is_not_shared,
+    # )
+    # container.add_alignments(new_alignments, lim_size=True)
+
+    design.assemble_graphs(n_jobs=1)
+
+    adjusted = 0
+    for qk, graph in design.graphs.items():
+        query = design.seqdb[qk]
+        processor = AssemblyGraphPostProcessor(graph, query)
+        processor()
+        for n1, n2, edata in graph.edges(data=True):
+            if edata["type_def"].name == Constants.SYNTHESIZED_FRAGMENT:
+                group = edata["group"]
+                edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
+                edata["material"] = edata["material"] / group.meta["n_clusters"]
+                adjusted += 1
+    print("adjusted " + str(adjusted))
+
+    results = design.optimize()
+
+    for qk, result in results.items():
+        df = result.assemblies[0].to_df()
+        print(design.seqdb[qk].name)
+        print(df)
 
 
 # def test_library_design(paths, here, span_cost):

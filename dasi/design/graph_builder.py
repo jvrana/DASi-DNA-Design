@@ -59,6 +59,7 @@ class AssemblyGraphBuilder:
         atype: str,
         internal_or_external: str,
         condition: Tuple[bool, bool],
+        group: Union[AlignmentGroup, PCRProductAlignmentGroup],
     ):
         """Add an edge between two assembly nodes.
 
@@ -85,14 +86,16 @@ class AssemblyGraphBuilder:
             efficiency=efficiency,
             span=span,
             type_def=atype,
+            group=group,
+            notes="",
         )
 
     def iter_internal_edge_data(
-        self, align: Union[AlignmentGroup, PCRProductAlignmentGroup]
+        self, group: Union[AlignmentGroup, PCRProductAlignmentGroup]
     ) -> dict:
-        q = align.query_region
+        q = group.query_region
 
-        mtype = MoleculeType.types[align.type]
+        mtype = MoleculeType.types[group.type]
         a_expand, b_expand = mtype.design
         internal_cost = mtype.cost
         internal_efficiency = mtype.efficiency
@@ -124,10 +127,11 @@ class AssemblyGraphBuilder:
                             cost=internal_cost / internal_efficiency,
                             time=0.1,
                             internal_or_external="internal",
-                            span=len(align.query_region),
-                            atype=MoleculeType.types[align.type],
+                            span=len(group.query_region),
+                            atype=MoleculeType.types[group.type],
                             efficiency=internal_efficiency,
                             condition=(a_expand, b_expand),
+                            group=group,
                         ),
                     )
                     # edges.append(edge)
@@ -253,6 +257,7 @@ class AssemblyGraphBuilder:
                     atype=MoleculeType.types[Constants.OVERLAP](condition),
                     condition=condition,
                     span=span,
+                    group=None,
                 )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
@@ -274,6 +279,7 @@ class AssemblyGraphBuilder:
                 atype=MoleculeType.types[Constants.GAP](condition),
                 span=span,
                 condition=condition,
+                group=None,
             )
 
     def _batch_add_edge_costs(self, edges):
@@ -321,6 +327,7 @@ class AssemblyGraphBuilder:
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.FRAGMENT,
+                    Constants.SYNTHESIZED_FRAGMENT,
                 ]
             ),
             key=lambda g: g.query_region.a,

@@ -65,3 +65,9 @@ class Constants:
     MIN_OVERLAP = 15  #: minimum overlap for searching for overlapping alignments
     MAX_HOMOLOGY = 100  #: maximum overlap for searching for overlapping alignments
     INF = 10.0 ** 6  #: almost infinity
+
+    ############
+    # GROUP TAGS
+    ############
+    PCR_GROUP_TAG = "PCR"
+    SHARE_GROUP_TAG = "SHARE"

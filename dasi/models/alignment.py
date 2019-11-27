@@ -51,6 +51,7 @@ class Alignment(RepresentsMolecule, Sized):
         atype: str,
         query_key: str,
         subject_key: str,
+        meta: dict = None,
     ):
         """Makes an alignment between two regions of sequences. Validates the
         regions are the same length.
@@ -67,6 +68,9 @@ class Alignment(RepresentsMolecule, Sized):
         self.validate()
         self.query_key = query_key
         self.subject_key = subject_key
+        if meta is None:
+            meta = {}
+        self.meta = meta
 
     def validate(self):
         if not len(self.query_region) == len(self.subject_region):
@@ -186,6 +190,8 @@ class AlignmentGroupBase(RepresentsMolecule):
         super().__init__(query_region, group_type)
         self.alignments = alignments
         self.name = name
+        if meta is None:
+            meta = {}
         self.meta = meta
 
     @property

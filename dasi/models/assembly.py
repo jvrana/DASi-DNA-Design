@@ -640,6 +640,7 @@ class Assembly(Iterable):
                     "type": edata["type_def"].name,
                     "internal_or_external": edata["type_def"].int_or_ext,
                     "efficiency": edata.get("efficiency", np.nan),
+                    "notes": edata.get("notes", ""),
                 }
             )
 

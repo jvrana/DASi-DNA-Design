@@ -1,5 +1,6 @@
 """Alignment container."""
 from bisect import bisect_left
+from collections.abc import Mapping
 from collections.abc import Sized
 from typing import Any
 from typing import Callable
@@ -61,6 +62,46 @@ def blast_to_region(query_or_subject: dict, seqdb: Dict[str, SeqRecord]) -> Regi
     return region
 
 
+class GroupTags(Mapping):
+    def __init__(self):
+        self.tags = {}
+        self.constructors = {}
+        self.cached = {}
+
+    def new_tag(self, name: str, constructor: Callable):
+        self.tags[name] = {}
+        self.cached[name] = {}
+        self.constructors[name] = constructor
+
+    def add(self, name, key, data):
+        self.tags[name].setdefault(key, list())
+        self.tags[name][key].append(data)
+        self.cached[name] = None
+
+    def all(self):
+        groups = []
+        for tag in self.tags:
+            groups += self[tag]
+        return groups
+
+    def __getitem__(self, name):
+        if self.cached[name]:
+            return self.cached[name]
+        else:
+            results = self.constructors[name](self.tags[name])
+            self.cached[name] = results
+            return results
+
+    def __contains__(self, name):
+        return name in self.tags
+
+    def __iter__(self):
+        return self.tags.__iter__()
+
+    def __len__(self):
+        return len(self.tags)
+
+
 class AlignmentContainer(Sized):
     """Container for a set of query-to-subject alignments for a single query.
 
@@ -103,7 +144,48 @@ class AlignmentContainer(Sized):
             self.set_alignments(alignments)
         self.seqdb = seqdb
         self.logger = logger(self)
-        self.multi_grouping_tags = {}
+
+        self.group_tags = GroupTags()
+        self.group_tags.new_tag(Constants.PCR_GROUP_TAG, self.pcr_constructor)
+        self.group_tags.new_tag(Constants.SHARE_GROUP_TAG, self.share_constructor)
+
+    @staticmethod
+    def pcr_constructor(data):
+        groups = []
+        for (a, b, group_type), adict_list in data.items():
+            g = [
+                {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
+                for d in adict_list
+            ]
+
+            regions = [d["query_region"] for d in adict_list]
+            assert len({(q.a, q.b) for q in regions}) == 1
+
+            groups.append(
+                MultiPCRProductAlignmentGroup(
+                    g, query_region=adict_list[0]["query_region"], group_type=group_type
+                )
+            )
+        return groups
+
+    @staticmethod
+    def share_constructor(data):
+        groups = []
+        for (a, b, group_type), entry in data.items():
+            if entry:
+                groups.append(
+                    AlignmentGroup(
+                        entry[0]["alignments"],
+                        group_type=group_type,
+                        meta={
+                            "n_clusters": entry[0]["n_clusters"],
+                            "cross_container_alignments": entry[0][
+                                "cross_container_alignments"
+                            ],
+                        },
+                    )
+                )
+        return groups
 
     @property
     def alignments(self):
@@ -239,7 +321,7 @@ class AlignmentContainer(Sized):
 
             if lim_size and not product_group.size_ok():
                 continue
-            self._new_multi_pcr_grouping_tag(product_group)
+            self._new_pcr_grouping_tag(product_group)
             groups.append(product_group)
         return groups
 
@@ -259,7 +341,7 @@ class AlignmentContainer(Sized):
         )
         if lim_size and not product_group.size_ok():
             return []
-        self._new_multi_pcr_grouping_tag(product_group)
+        self._new_pcr_grouping_tag(product_group)
         return [product_group]
 
     def _make_subgroup(
@@ -530,17 +612,15 @@ class AlignmentContainer(Sized):
             )
             self.add_alignments(expanded, lim_size=lim_size)
 
-    def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
+    def _new_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
         group_key = (group.query_region.a, group.query_region.b, group.type)
-        self.multi_grouping_tags.setdefault(group_key, list())
-        self.multi_grouping_tags[group_key].append(
-            {
-                "fwd": group.fwd,
-                "template": group.raw_template,
-                "rev": group.rev,
-                "query_region": group.query_region,
-            }
-        )
+        data = {
+            "fwd": group.fwd,
+            "template": group.raw_template,
+            "rev": group.rev,
+            "query_region": group.query_region,
+        }
+        self.group_tags.add(Constants.PCR_GROUP_TAG, group_key, data)
 
     @staticmethod
     def _alignment_hash(a):
@@ -548,22 +628,7 @@ class AlignmentContainer(Sized):
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
     def pcr_alignment_groups(self):
-        groups = []
-        for (a, b, group_type), adict_list in self.multi_grouping_tags.items():
-            g = [
-                {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
-                for d in adict_list
-            ]
-
-            regions = [d["query_region"] for d in adict_list]
-            assert len({(q.a, q.b) for q in regions}) == 1
-
-            groups.append(
-                MultiPCRProductAlignmentGroup(
-                    g, query_region=adict_list[0]["query_region"], group_type=group_type
-                )
-            )
-        return groups
+        return self.group_tags[Constants.PCR_GROUP_TAG]
 
     def clean_alignments(self):
         """Remove redundant alignments."""
@@ -603,7 +668,7 @@ class AlignmentContainer(Sized):
         else:
             allgroups = []
             allgroups += self.redundent_alignment_groups(self.alignments)
-            allgroups += self.pcr_alignment_groups()
+            allgroups += self.group_tags.all()
             self._frozen_groups = allgroups
             return allgroups
 

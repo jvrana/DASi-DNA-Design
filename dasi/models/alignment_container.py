@@ -26,7 +26,7 @@ from dasi.utils import Region
 from dasi.utils import sort_with_keys
 
 
-def blast_to_region(query_or_subject, seqdb):
+def blast_to_region(query_or_subject: dict, seqdb: Dict[str, SeqRecord]) -> Region:
     """Converts a blast data result to a Region. Blast results are indicated by
     two positions with index starting at 1 and positions being inclusive. This
     returns a Region with index starting at 0 and the end point position being
@@ -484,6 +484,7 @@ class AlignmentContainer(Sized):
         return alignments
 
     def copy_groups(self, alignment_groups: List[AlignmentGroup], atype: str):
+        """Copy alignments from the list of groups to a new alignment type."""
         alignments = []
         for g in alignment_groups:
             for align in g.alignments:
@@ -498,12 +499,14 @@ class AlignmentContainer(Sized):
         expand_primer_dimers=False,
         lim_size: bool = True,
     ):
-        """Expand the number of alignments in this container using overlaps or
-        primers.
+        """Alignment expansion algorithm.
 
-        :param expand_overlaps:
-        :param expand_primers:
-        :return:
+        :param expand_overlaps: if True, expand overlaps
+        :param expand_primers: if True, expand primer pairs
+        :param expand_primer_dimers: if True, expand primer dimer pairs
+        :param lim_size: if True, limit the size of the alignment according to theri
+            Molecule definitions
+        :return: None
         """
 
         templates = self.get_groups_by_types(
@@ -526,8 +529,6 @@ class AlignmentContainer(Sized):
                 templates, atype=Constants.PCR_PRODUCT, lim_size=lim_size
             )
             self.add_alignments(expanded, lim_size=lim_size)
-
-        # TODO: make a 'set' of all alignments
 
     def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
         group_key = (group.query_region.a, group.query_region.b, group.type)
@@ -704,15 +705,14 @@ class AlignmentContainerFactory:
         return frozendict(self._alignments)
 
     def add_alignments(self, alignments: List[Alignment]):
-        grouped = []
+        grouped = {}
         for align in alignments:
             grouped.setdefault(align.query_key, list())
             grouped[align.query_key].append(align)
 
         for k, v in grouped.items():
-            hashes = [a.eq_hash() for a in self._alignments[k]]
             for a in v:
-                if a not in hashes:
+                if a not in self._alignments[k]:
                     self._alignments[k].append(a)
 
     def load_blast_json(self, data: List[Dict], atype: str):

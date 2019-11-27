@@ -92,6 +92,7 @@ class AlignmentContainer(Sized):
         Constants.GAP,
         Constants.OVERLAP,
         Constants.MISSING,
+        Constants.SYNTHESIZED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -99,7 +100,7 @@ class AlignmentContainer(Sized):
         self._frozen = False
         self._frozen_groups = None
         if alignments is not None:
-            self.alignments = alignments
+            self.set_alignments(alignments)
         self.seqdb = seqdb
         self.logger = logger(self)
         self.multi_grouping_tags = {}
@@ -108,14 +109,34 @@ class AlignmentContainer(Sized):
     def alignments(self):
         return self._alignments
 
-    @alignments.setter
-    def alignments(self, v):
+    # @alignments.setter
+    # def alignments(self, v):
+    #     if self._frozen:
+    #         raise AlignmentContainerException(
+    #             "Cannot set alignments. Container is frozen."
+    #         )
+    #     self._alignments = v
+    #     self._check_single_query_key(self._alignments)
+
+    def set_alignments(self, alignments: List[Alignment], lim_size: bool = False):
         if self._frozen:
             raise AlignmentContainerException(
                 "Cannot set alignments. Container is frozen."
             )
-        self._alignments = v
+        if lim_size:
+            alignments = [a for a in alignments if a.size_ok()]
+        self._alignments = alignments
         self._check_single_query_key(self._alignments)
+
+    def add_alignments(self, alignments: List[Alignment], lim_size: bool = False):
+        hashes = [align.eq_hash() for align in self.alignments]
+        new_alignments = []
+        for align in alignments:
+            if not lim_size or align.size_ok():
+                if align.eq_hash() not in hashes:
+                    new_alignments.append(align)
+        self.set_alignments(self.alignments + new_alignments)
+        return new_alignments
 
     @staticmethod
     def _check_single_query_key(alignments):
@@ -376,6 +397,7 @@ class AlignmentContainer(Sized):
         atype=Constants.PCR_PRODUCT,
         lim_size: bool = True,
         pass_condition: Callable = None,
+        include_left: bool = True,
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
@@ -383,6 +405,7 @@ class AlignmentContainer(Sized):
 
         ::
 
+            if `include_left`
             |--------|          alignment 1
                 |--------|      alignment 2
             |---|               new alignment
@@ -398,6 +421,8 @@ class AlignmentContainer(Sized):
         :param pass_condition: an optional callable that takes group_a (AlignmentGroup)
             and group_b (AlignmentGroup). If the returned value is False, alignments
             are skipped.
+        :param include_left: if True, will add overlapping region and the left
+            region up to the overlap.
         :return: list
         """
 
@@ -419,20 +444,28 @@ class AlignmentContainer(Sized):
                     if pass_condition:
                         if not pass_condition(group_a, group_b):
                             continue
-                    left = group_a.sub_region(
-                        group_a.query_region.a, group_b.query_region.a, atype
-                    )
+
+                    if include_left:
+                        left = group_a.sub_region(
+                            group_a.query_region.a, group_b.query_region.a, atype
+                        )
+                        if len(left.query_region) > min_overlap:
+                            alignments += left.alignments
+
                     overlap = group_a.sub_region(
                         group_b.query_region.a, group_a.query_region.b, atype
                     )
-
-                    if len(left.query_region) > min_overlap:
-                        alignments += left.alignments
-
                     if len(overlap.query_region) > min_overlap:
                         alignments += overlap.alignments
         if lim_size:
             alignments = [a for a in alignments if a.size_ok()]
+        return alignments
+
+    def copy_groups(self, alignment_groups: List[AlignmentGroup], atype: str):
+        alignments = []
+        for g in alignment_groups:
+            for align in g.alignments:
+                alignments.append(align.copy(atype))
         return alignments
 
     # TODO: break apart long alignments
@@ -458,9 +491,11 @@ class AlignmentContainer(Sized):
             templates = [t for t in templates if t.size_ok()]
 
         if expand_primers:
+            # NOTE: does not need to append alignments
             self.expand_primer_pairs(templates, lim_size=lim_size)
 
         if expand_primer_dimers:
+            # NOTE: this does not need to append alignments
             self.expand_primer_extension_products(lim_size=lim_size)
 
         # TODO: why not expand overlaps using the primer pairs???
@@ -468,7 +503,7 @@ class AlignmentContainer(Sized):
             expanded = self.expand_overlaps(
                 templates, atype=Constants.PCR_PRODUCT, lim_size=lim_size
             )
-            self.alignments += expanded
+            self.add_alignments(expanded, lim_size=lim_size)
 
         # TODO: make a 'set' of all alignments
 
@@ -506,6 +541,21 @@ class AlignmentContainer(Sized):
                 )
             )
         return groups
+
+    def clean_alignments(self):
+        """Remove redundant alignments."""
+        grouped = {}
+        for a in self.alignments:
+            key = a.eq_hash()
+
+            assert isinstance(key, tuple)
+            try:
+                grouped.setdefault(key, list())
+            except Exception as e:
+                raise e
+            grouped[key].append(a)
+
+        self.set_alignments([v[0] for v in grouped.values()])
 
     @classmethod
     def redundent_alignment_groups(
@@ -608,6 +658,7 @@ class AlignmentContainerFactory:
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SYNTHESIZED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):

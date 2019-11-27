@@ -14,10 +14,10 @@ def test_library_design(paths, here, span_cost):
 
     query_path = join(here, "data/test_data/genbank/designs/*.gb")
     queries = make_circular(load_genbank_glob(query_path))
-    queries = [queries[-1]]
+    queries = queries[:3]
 
     design = LibraryDesign(span_cost=span_cost)
-
+    design.n_jobs = 1
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
     design.compile_library()

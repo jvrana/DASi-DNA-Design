@@ -622,5 +622,6 @@ class TestPostProcess:
         result = list(design.optimize().values())[0]
         assembly = result.assemblies[0]
         df = assembly.to_df()
+        print(df)
         assert list(df["query_start"]) == [200, 500, 750, 1000, 2000, 3100]
         assert list(df["query_end"]) == [500, 750, 1000, 2000, 3100, 200]

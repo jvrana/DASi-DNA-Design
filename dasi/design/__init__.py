@@ -560,65 +560,80 @@ class LibraryDesign(Design):
             if qk == sk:
                 yield (qk, align.query_region.a, align.query_region.b)
 
-    def _expand_from_shared(self):
+    def _expand_from_synthesized(self):
+        """Expand PCR products that are next to SYNTHESIZED_FRAGMENTS.
+
+        :return:
+        """
         for query_key, container in self.container_factory.containers().items():
-            # expand the share fragments using their own endpoints
-            original_shared_fragments = container.get_groups_by_types(
-                Constants.SHARED_FRAGMENT
-            )
-            new_shared_fragments = container.expand_overlaps(
-                original_shared_fragments, Constants.SHARED_FRAGMENT
-            )
 
-            self.logger.info(
-                "{}: Expanded {} shared from original {} shared fragments".format(
-                    query_key, len(new_shared_fragments), len(original_shared_fragments)
-                )
-            )
-
-            # expand the existing fragments with endpoints from the share alignments
-
-            # TODO: what if there is no template for shared fragment?
-            # TODO: shared fragment has to be contained wholly in another fragment
-
-            # step 4.X: expand existing to make new potential PCR_PRODUCTS
             def is_not_shared(group_a: AlignmentGroup, group_b: AlignmentGroup):
-                if group_a.type == Constants.SHARED_FRAGMENT:
+                if group_a.type == Constants.SYNTHESIZED_FRAGMENT:
                     return False
-                return True
+                if group_b.type == Constants.SYNTHESIZED_FRAGMENT:
+                    return True
+                return False
 
             new_alignments = container.expand_overlaps(
                 container.get_groups_by_types(
                     [
                         Constants.FRAGMENT,
                         Constants.PCR_PRODUCT,
-                        Constants.SHARED_FRAGMENT,
+                        Constants.SYNTHESIZED_FRAGMENT,
                     ]
                 ),
                 Constants.PCR_PRODUCT,
                 pass_condition=is_not_shared,
             )
+            container.add_alignments(new_alignments, lim_size=True)
 
             self.logger.info(
                 "{}: Expanded {} using {} and found {} new alignments.".format(
                     query_key,
                     Constants.PCR_PRODUCT,
-                    Constants.SHARED_FRAGMENT,
+                    Constants.SYNTHESIZED_FRAGMENT,
                     len(new_alignments),
                 )
             )
 
-            # grab the pcr products and expand primer pairs (again)
-            templates = container.get_groups_by_types(Constants.PCR_PRODUCT)
-            new_primer_pairs = container.expand_primer_pairs(templates)
+            # # grab the pcr products and expand primer pairs (again)
+            # templates = container.get_groups_by_types(Constants.PCR_PRODUCT)
+            # new_primer_pairs = container.expand_primer_pairs(templates)
+            # self.logger.info(
+            #     "{}: Expanded {} {} using {}".format(
+            #         query_key,
+            #         len(new_primer_pairs),
+            #         Constants.PCR_PRODUCT,
+            #         Constants.SYNTHESIZED_FRAGMENT,
+            #     )
+            # )
+
+    def _expand_synthesized_fragments(self):
+        """
+            1. copy groups from SHARED_FRAGMENTS to SYNTHESIZED_FRAGMENT
+            2. expand overlaps for SYNTHESIZED_FRAGMENTS
+        """
+        for query_key, container in self.container_factory.containers().items():
+            # expand the share fragments using their own endpoints
+            original_shared_fragments = container.get_groups_by_types(
+                Constants.SHARED_FRAGMENT
+            )
+            copied_alignments = container.copy_groups(
+                original_shared_fragments, Constants.SYNTHESIZED_FRAGMENT
+            )
+            container.add_alignments(copied_alignments, lim_size=True)
+
+            new_alignments = container.expand_overlaps(
+                container.get_groups_by_types(Constants.SYNTHESIZED_FRAGMENT),
+                atype=Constants.SYNTHESIZED_FRAGMENT,
+            )
+
             self.logger.info(
-                "{}: Expanded {} {} using {}".format(
-                    query_key,
-                    len(new_primer_pairs),
-                    "PRODUCTS_WITH_PRIMERS",
-                    Constants.SHARED_FRAGMENT,
+                "{}: Expanded {} new {} alignments.".format(
+                    query_key, len(new_alignments), Constants.SYNTHESIZED_FRAGMENT
                 )
             )
+            container.add_alignments(new_alignments, lim_size=True)
 
     def _check_shared_repeats(self):
         repeats = []
@@ -642,9 +657,6 @@ class LibraryDesign(Design):
         blast.quick_blastn()
 
         results = blast.get_perfect()
-        self.logger.info(
-            "Found {} shared alignments between the queries".format(len(results))
-        )
 
         # step 2: eliminate self binding results
         results = [
@@ -653,39 +665,27 @@ class LibraryDesign(Design):
             if entry["query"]["origin_key"] != entry["subject"]["origin_key"]
         ]
 
+        self.logger.info(
+            "Found {} shared alignments between the queries".format(len(results))
+        )
+
         # step 3: load results to the container
         self.shared_alignments = results
         self.container_factory.seqdb.update(blast.seq_db.records)
         self.container_factory.load_blast_json(results, Constants.SHARED_FRAGMENT)
 
-        # TODO: expand the normal fragments with the shared fragments
-        # step 4: expand shared fragments
-        self._expand_from_shared()
-
-        # step 5: ensure there are no repeats
+    def _precompile_library_expansion(self):
+        self._share_query_blast()
+        self._expand_synthesized_fragments()
+        self._expand_from_synthesized()
         self._check_shared_repeats()
-
-        # repeats = []
-        # for query_key, container in self.container_factory.containers().items():
-        #     # get all shared fragments
-        #     alignments = container.get_alignments_by_types(Constants.SHARED_FRAGMENT)
-        #     self.logger.info(
-        #         "{} shared fragments for {}".format(len(alignments), query_key)
-        #     )
-        #     non_repeats = list(self._get_iter_non_repeats(alignments))
-        #     self.logger.info(
-        #         "{} non repeats for {}".format(len(non_repeats), query_key)
-        #     )
-        #     # add to list of possible repeats
-        #     # repeats += list(self._get_iter_non_repeats(alignments))
-        # self.repeats = repeats
 
     def compile_library(self, n_jobs=None):
         """Compile the materials list into assembly graphs."""
         n_jobs = n_jobs or self.DEFAULT_N_JOBS
         self.graphs = {}
         self._blast()
-        self._share_query_blast()
+        self._precompile_library_expansion()
         self.assemble_graphs(n_jobs=n_jobs)
         self.post_process_library_graphs()
 

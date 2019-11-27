@@ -227,6 +227,17 @@ InternalType(
     ),
 )
 
+# TODO: SYNTHESIZED_FRAGMENT description
+InternalType(
+    name=Constants.SYNTHESIZED_FRAGMENT,
+    design=(False, False),
+    use_direct=True,
+    cost=1000.0,
+    efficiency=0.1,
+    description=(""),
+    min_size=100,
+)
+
 ExternalType(
     name=Constants.OVERLAP,
     use_direct=False,

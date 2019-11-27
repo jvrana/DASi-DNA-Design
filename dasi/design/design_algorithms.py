@@ -38,6 +38,7 @@ def assemble_graph(
 ) -> Tuple[nx.DiGraph, AlignmentContainer]:
     """Build an assembly graph for a specified query."""
     container.expand(expand_overlaps=True, expand_primers=True)
+    container.clean_alignments()
     container.groups()
     container.freeze()
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)

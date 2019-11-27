@@ -144,8 +144,19 @@ class Alignment(RepresentsMolecule, Sized):
             self.__class__.__name__, self.type, self.query_region, self.subject_region
         )
 
-    # def __setstate__(self, state):
-    #     self._registry[self.uid] = self
+    @staticmethod
+    def _rhash(region: Region):
+        return (region.a, region.b, region.c, region.context_length, region.cyclic)
+
+    def eq_hash(self):
+        return (
+            (self.query_key, self.subject_key, self.type)
+            + self._rhash(self.query_region)
+            + self._rhash(self.subject_region)
+        )
+
+    def __eq__(self, other: "Alignment"):
+        return self.eq_hash() == other.eq_hash()
 
     def __repr__(self) -> str:
         return str(self)

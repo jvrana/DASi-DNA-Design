@@ -221,7 +221,6 @@ class AssemblyGraphBuilder:
             )
         for bnode, anode in gap_origin_iter:
             self.add_gap_edge(bnode, anode, query_region, origin=True)
-        self._batch_add_edge_costs()
 
     def add_overlap_edge(
         self, bnode, anode, query_region, group_keys, groups, origin=False
@@ -277,28 +276,23 @@ class AssemblyGraphBuilder:
                 condition=condition,
             )
 
-    def _batch_add_edge_costs(self):
-        """Add costs to all edges at once batch.
+    def _batch_add_edge_costs(self, edges):
+        """Add costs to all edges at once.
 
         :return:
         """
         # add external_edge_costs
         edge_dict = {}
-        for n1, n2, edata in self.G.edges(data=True):
-            if edata["cost"] is None:
-                condition = edata["type_def"].design
-                edge_dict.setdefault(condition, []).append(
-                    ((n1, n2), edata, edata["span"])
-                )
-        edges_to_remove = []
+        for n1, n2, edata in edges:
+            condition = edata["type_def"].design
+            edge_dict.setdefault(condition, []).append(((n1, n2), edata, edata["span"]))
 
+        edges_to_remove = []
         for condition, info in edge_dict.items():
             edges, edata, spans = zip(*info)
             npdf = self.span_cost.cost(np.array(spans), condition)
             data = npdf.aggregate(np.vstack)
             cost_i = [i for i, col in enumerate(npdf.columns) if col == "cost"][0]
-            self.logger.debug(data.shape)
-            # update each edge
 
             for i, (e, edge) in enumerate(zip(edata, edges)):
                 if data[cost_i, i] > self.COST_THRESHOLD:
@@ -334,6 +328,14 @@ class AssemblyGraphBuilder:
 
         self.add_internal_edges(groups)
         self.add_external_edges(groups, group_keys, self.G.nodes())
+
+        edges = []
+        for n1, n2, edata in self.G.edges(data=True):
+            if edata["cost"] is None:
+                edges.append((n1, n2, edata))
+            elif edata["type_def"].name == Constants.SYNTHESIZED_FRAGMENT:
+                edges.append((n1, n2, edata))
+        self._batch_add_edge_costs(edges)
 
         nx.freeze(self.G)
         return self.G
@@ -371,6 +373,21 @@ class AssemblyGraphPostProcessor:
     #     cyclic = is_circular(self.query)
     #     length = len(self.query)
     #     return self.edge_to_region_helper(n1, n2, length, span, cyclic)
+
+    def process_synthesized_fragments(self):
+        g = self.graph
+        for n1, n2, edata in g.edges(data=True):
+            if edata["type_def"].name == Constants.SYNTHESIZED_FRAGMENT:
+                # then we have to update the efficiency of the fragment
+                # update the material cost of the internal fragment
+                # as if its an external edge
+
+                # cost = None,
+                # material = None,
+                # time = None,
+                # efficiency = None,
+
+                pass
 
     # TODO: move this to a new class
     def complexity_update(self) -> nx.DiGraph:

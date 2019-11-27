@@ -13,6 +13,8 @@ from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
 from dasi import Design
+from dasi import LibraryDesign
+from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
 from dasi.utils import Region
 
@@ -625,3 +627,38 @@ class TestPostProcess:
         print(df)
         assert list(df["query_start"]) == [200, 500, 750, 1000, 2000, 3100]
         assert list(df["query_end"]) == [500, 750, 1000, 2000, 3100, 200]
+
+
+def test_library(span_cost):
+    goal1 = random_record(4000)
+    goal2 = random_record(2000) + goal1[2000:3000] + random_record(2000)
+    goal3 = goal2 + random_record(100)
+    make_circular_and_id([goal1, goal2, goal3])
+
+    r1 = goal1[:2000]
+    r2 = goal1[3000:4000]
+    r3 = goal2[-2000:]
+    r4 = goal2[:2000]
+
+    r5 = goal1[:2100]
+
+    make_linear([r1, r2, r3, r4, r5])
+
+    design = LibraryDesign(span_cost)
+
+    design.add_materials(
+        primers=[],
+        templates=[r1, r2, r3, r4, r5],
+        queries=[goal1, goal2, goal3],
+        fragments=[],
+    )
+
+    design.compile_library()
+    results = design.optimize_library()
+
+    for result in results.values():
+        print(result.assemblies[0].cost())
+        df = result.assemblies[0].to_df()
+        print(df)
+        assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
+        # assert df

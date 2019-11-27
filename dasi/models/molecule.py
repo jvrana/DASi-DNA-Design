@@ -229,7 +229,7 @@ InternalType(
 
 # TODO: SYNTHESIZED_FRAGMENT description
 InternalType(
-    name=Constants.SYNTHESIZED_FRAGMENT,
+    name=Constants.SHARED_SYNTHESIZED_FRAGMENT,
     design=(False, False),
     use_direct=True,
     cost=1000.0,

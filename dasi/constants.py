@@ -38,8 +38,8 @@ class Constants:
     PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER = (
         "PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER"
     )  #: a pcr product that uses no template, but extends an existing rev primer.
-    SYNTHESIZED_FRAGMENT = (
-        "SYNTHESIZED_FRAGMENT"
+    SHARED_SYNTHESIZED_FRAGMENT = (
+        "SHARED_SYNTHESIZED_FRAGMENT"
     )  #: explicit definition of a synthesized DNA fragment
 
     ################

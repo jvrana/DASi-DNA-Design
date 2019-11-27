@@ -327,7 +327,7 @@ class AssemblyGraphBuilder:
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.FRAGMENT,
-                    Constants.SYNTHESIZED_FRAGMENT,
+                    Constants.SHARED_SYNTHESIZED_FRAGMENT,
                 ]
             ),
             key=lambda g: g.query_region.a,
@@ -340,7 +340,7 @@ class AssemblyGraphBuilder:
         for n1, n2, edata in self.G.edges(data=True):
             if edata["cost"] is None:
                 edges.append((n1, n2, edata))
-            elif edata["type_def"].name == Constants.SYNTHESIZED_FRAGMENT:
+            elif edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
                 edges.append((n1, n2, edata))
         self._batch_add_edge_costs(edges)
 
@@ -384,7 +384,7 @@ class AssemblyGraphPostProcessor:
     def process_synthesized_fragments(self):
         g = self.graph
         for n1, n2, edata in g.edges(data=True):
-            if edata["type_def"].name == Constants.SYNTHESIZED_FRAGMENT:
+            if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
                 # then we have to update the efficiency of the fragment
                 # update the material cost of the internal fragment
                 # as if its an external edge

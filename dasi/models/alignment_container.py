@@ -133,7 +133,7 @@ class AlignmentContainer(Sized):
         Constants.GAP,
         Constants.OVERLAP,
         Constants.MISSING,
-        Constants.SYNTHESIZED_FRAGMENT,
+        Constants.SHARED_SYNTHESIZED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -746,7 +746,7 @@ class AlignmentContainerFactory:
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
-        Constants.SYNTHESIZED_FRAGMENT,
+        Constants.SHARED_SYNTHESIZED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):

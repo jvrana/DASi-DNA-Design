@@ -262,6 +262,22 @@ class AlignmentContainer(Sized):
         self._new_multi_pcr_grouping_tag(product_group)
         return [product_group]
 
+    def _make_subgroup(
+        self, group: AlignmentGroup, a: int, b: int, atype: str
+    ) -> Union[AlignmentGroup, None]:
+        """Make a subgroup at the specified indices.
+
+        Returns None if a, b and the indices of the group.query_region
+        or if a == b
+        """
+        region = group.query_region
+        if region.a == a and region.b == b:
+            return None
+        elif a == b:
+            return None
+        subgroup = group.sub_region(a, b, atype)
+        return subgroup
+
     def expand_primer_extension_products(self, only_one_required=False, lim_size=True):
         primers = self.get_alignments_by_types(Constants.PRIMER)
 
@@ -446,16 +462,19 @@ class AlignmentContainer(Sized):
                             continue
 
                     if include_left:
-                        left = group_a.sub_region(
-                            group_a.query_region.a, group_b.query_region.a, atype
+                        left = self._make_subgroup(
+                            group_a,
+                            group_a.query_region.a,
+                            group_b.query_region.a,
+                            atype,
                         )
-                        if len(left.query_region) > min_overlap:
+                        if left and len(left.query_region) > min_overlap:
                             alignments += left.alignments
 
-                    overlap = group_a.sub_region(
-                        group_b.query_region.a, group_a.query_region.b, atype
+                    overlap = self._make_subgroup(
+                        group_a, group_b.query_region.a, group_a.query_region.b, atype
                     )
-                    if len(overlap.query_region) > min_overlap:
+                    if overlap and len(overlap.query_region) > min_overlap:
                         alignments += overlap.alignments
         if lim_size:
             alignments = [a for a in alignments if a.size_ok()]
@@ -681,6 +700,18 @@ class AlignmentContainerFactory:
         """
         return frozendict(self._alignments)
 
+    def add_alignments(self, alignments: List[Alignment]):
+        grouped = []
+        for align in alignments:
+            grouped.setdefault(align.query_key, list())
+            grouped[align.query_key].append(align)
+
+        for k, v in grouped.items():
+            hashes = [a.eq_hash() for a in self._alignments[k]]
+            for a in v:
+                if a not in hashes:
+                    self._alignments[k].append(a)
+
     def load_blast_json(self, data: List[Dict], atype: str):
         """Create alignments from a formatted BLAST JSON result.
 
@@ -723,6 +754,6 @@ class AlignmentContainerFactory:
             self._containers = container_dict
         return frozendict(self._containers)
 
-    def set_alignments(self, alignments):
-        self._alignments = alignments
-        self._containers = None
+    # def set_alignments(self, alignments):
+    #     self._alignments = alignments
+    #     self._containers = None

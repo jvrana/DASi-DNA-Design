@@ -1,4 +1,9 @@
 {
+  "0.0.7a0": {
+    "description": "features for LibraryDesign",
+    "date": "2019-11-27T09:44:03.094130",
+    "changes": []
+  },
   "0.0.6": {
     "description": "update API breaking dependencies",
     "date": "2019-10-18T12:49:46.896456",

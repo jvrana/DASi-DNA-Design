@@ -439,7 +439,7 @@ class AlignmentContainer(Sized):
             are skipped.
         :param include_left: if True, will add overlapping region and the left
             region up to the overlap.
-        :return: list
+        :return: list of new alignments
         """
 
         min_overlap = Constants.MIN_OVERLAP

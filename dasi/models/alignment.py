@@ -133,7 +133,7 @@ class Alignment(RepresentsMolecule, Sized):
             self.subject_region,
             atype,
             self.query_key,
-            self.subject_region,
+            self.subject_key,
         )
 
     def __len__(self) -> int:

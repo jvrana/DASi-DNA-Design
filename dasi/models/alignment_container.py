@@ -457,6 +457,9 @@ class AlignmentContainer(Sized):
 
             for group_b in overlapping:
                 if group_b is not group_a:
+                    # ignore groups that are completely contained in region
+                    if group_b.query_region.b in group_a.query_region:
+                        continue
                     if pass_condition:
                         if not pass_condition(group_a, group_b):
                             continue

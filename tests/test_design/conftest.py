@@ -88,7 +88,7 @@ def multi_compiled_results(_multi_compiled_design) -> Design:
 def single_processed_results(
     _single_processed_results
 ) -> Tuple[Design, Dict[str, DesignResult]]:
-    return deepcopy(_single_processed_results)
+    return _single_processed_results
 
 
 @pytest.fixture(scope="session")

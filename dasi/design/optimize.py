@@ -64,7 +64,7 @@ def fill_diag_inf(w):
 
 
 def index_slice(indices, arr):
-    """From tuple of incides, return zipped items."""
+    """From tuple of indices, return zipped items."""
     unzipped = []
     for i in indices:
         unzipped.append([arr[_i] for _i in i])
@@ -166,15 +166,20 @@ def optimize_graph(
     else:
         raise NotImplementedError("Linear assemblies not yet implemented.")
 
-    costs = weight_matrix.ravel().copy()
-    costs.sort()
-    nodes = index_slice(argmin(weight_matrix), nodelist)
+    min_index = [i[:n_paths] for i in argmin(weight_matrix)]
+    costs = weight_matrix[min_index]
+    costs = [c for c in costs if c != np.inf]
+    a_nodes = [nodelist[i] for i in min_index[0]]
+    b_nodes = [nodelist[i] for i in min_index[1]]
+    nodes = list(zip(a_nodes, b_nodes))
 
     nodes_and_costs = list(zip(nodes, costs))
-    nodes_and_costs = [x for x in nodes_and_costs if x[1] != np.inf]
-    paths = _nodes_to_fullpaths(
-        graph, [n[0] for n in nodes_and_costs], False, n_paths=n_paths
-    )
+
+    if nodes_and_costs:
+        trimmed_nodes, trimmed_costs = zip(*nodes_and_costs)
+    else:
+        trimmed_nodes, trimmed_costs = [], []
+    paths = _nodes_to_fullpaths(graph, trimmed_nodes, False, n_paths=n_paths)
 
     if len(paths) < n_paths:
         DASiWarning(
@@ -184,4 +189,4 @@ def optimize_graph(
         )
 
     _check_paths(paths)
-    return paths, [n[1] for n in nodes_and_costs]
+    return paths, trimmed_costs

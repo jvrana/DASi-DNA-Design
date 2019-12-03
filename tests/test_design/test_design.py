@@ -93,12 +93,20 @@ class TestMultiProcessing:
 
             d1 = dict(e1[2])
             d2 = dict(e2[2])
+
             del d1["groups"]
             del d2["groups"]
 
             d1["type_def"] = d1["type_def"].__dict__
             d2["type_def"] = d2["type_def"].__dict__
+
+            d1["group"] = str(d1["group"])
+            d2["group"] = str(d2["group"])
+
             diff = list(dictdiffer.diff(d1, d2))
+
+            print(d1)
+            print(d2)
 
             assert not diff
 

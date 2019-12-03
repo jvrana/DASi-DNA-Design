@@ -14,9 +14,7 @@ from pyblast.utils import make_linear
 
 from dasi import Design
 from dasi import LibraryDesign
-from dasi.constants import Constants
 from dasi.design.graph_builder import AssemblyNode
-from dasi.utils import Region
 
 
 def make_linear_and_id(rlist):
@@ -103,7 +101,6 @@ def check_design_result(
     check_path=True,
     skip_compile=False,
 ):
-
     expected_path = [AssemblyNode(*t) for t in expected_path]
 
     # compile the design
@@ -331,7 +328,6 @@ def test_design_task_with_gaps(span_cost):
 
 @pytest.mark.parametrize("repeat", range(3))
 def test_design_with_overhang_primers(repeat, span_cost):
-
     goal = random_record(3000)
     make_circular_and_id([goal])
 
@@ -495,7 +491,6 @@ def test_case(span_cost):
 
 
 def test_a_reverse_pcr_fragment(span_cost):
-
     goal = random_record(3000)
     make_circular_and_id([goal])
 
@@ -513,7 +508,6 @@ def test_a_reverse_pcr_fragment(span_cost):
 
 
 def test_case2(span_cost):
-
     goal = random_record(5000)
     make_circular_and_id([goal])
 
@@ -582,53 +576,6 @@ class TestOutput:
         print(df)
 
 
-class TestPostProcess:
-    def test_requires_synthesis(self, span_cost):
-        goal = random_record(4000)
-        make_circular_and_id([goal])
-
-        r1 = goal[1000:2000]
-        r2 = goal[200:500]
-
-        make_linear_and_id([r1, r2])
-
-        design = Design(span_cost)
-        design.add_materials(
-            primers=[], templates=[r1, r2], queries=[goal], fragments=[]
-        )
-
-        design.compile()
-
-        import networkx as nx
-
-        for qk, g in design.graphs.items():
-            query = design.seqdb[qk]
-            gcopy = nx.DiGraph(g)
-            for n1, n2, edata in g.edges(data=True):
-                r = Region(n1.index, n2.index, len(query.seq), cyclic=True)
-                if n1.type == "B" and n2.type == "A":
-                    # index = int((n1.index + n2.index) / 2)
-                    delta = int(len(r) / 2)
-                    index = r.t(delta + n1.index)
-                    n3 = AssemblyNode(index, False, str(uuid4()), overhang=True)
-                    edata1 = dict(edata)
-                    edata2 = dict(edata)
-                    edata1["material"] = edata["material"] / 10.0
-                    edata2["material"] = edata["material"] / 10.0
-                    edata1["span"] = 0
-
-                    gcopy.add_edge(n1, n3, **edata1)
-                    gcopy.add_edge(n3, n2, **edata2)
-            design.graphs[qk] = gcopy
-
-        result = list(design.optimize().values())[0]
-        assembly = result.assemblies[0]
-        df = assembly.to_df()
-        print(df)
-        assert list(df["query_start"]) == [200, 500, 750, 1000, 2000, 3100]
-        assert list(df["query_end"]) == [500, 750, 1000, 2000, 3100, 200]
-
-
 def test_library(span_cost):
     goal1 = random_record(4000)
     goal2 = random_record(2000) + goal1[2000:3000] + random_record(2000)
@@ -660,5 +607,7 @@ def test_library(span_cost):
         print(result.assemblies[0].cost())
         df = result.assemblies[0].to_df()
         print(df)
-        assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
+        notes = list(df["notes"])
+        assert "n_clusters: 3" in notes
+        # assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
         # assert df

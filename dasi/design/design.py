@@ -281,7 +281,7 @@ class Design:
     def _blast(self):
         # align templates
         template_blast = self.blast_factory(self.TEMPLATES, self.QUERIES)
-        template_blast.quick_blastn()
+        template_blast.blastn()
         template_results = template_blast.get_perfect()
         self.template_results = template_results
         self.logger.info("Number of template matches: {}".format(len(template_results)))
@@ -290,7 +290,7 @@ class Design:
         # align fragments
         if self.blast_factory.record_groups[self.FRAGMENTS]:
             fragment_blast = self.blast_factory(self.FRAGMENTS, self.QUERIES)
-            fragment_blast.quick_blastn()
+            fragment_blast.blastn()
             fragment_results = self.filter_perfect_subject(fragment_blast.get_perfect())
             self.container_factory.seqdb.update(fragment_blast.seq_db.records)
             self.logger.info(
@@ -303,7 +303,7 @@ class Design:
         # align primers
         if self.blast_factory.record_groups[self.PRIMERS]:
             primer_blast = self.blast_factory(self.PRIMERS, self.QUERIES)
-            primer_blast.quick_blastn_short()
+            primer_blast.blastn_short()
             primer_results = self.filter_perfect_subject(primer_blast.get_perfect())
             self.container_factory.seqdb.update(primer_blast.seq_db.records)
             self.logger.info(

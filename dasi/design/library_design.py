@@ -262,7 +262,7 @@ class LibraryDesign(Design):
         # step 1: get query-on-query alignments
         self.logger.info("=== Expanding shared library fragments ===")
         blast = self.blast_factory(self.QUERIES, self.QUERIES)
-        blast.quick_blastn()
+        blast.blastn()
 
         results = blast.get_perfect()
 

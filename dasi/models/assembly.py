@@ -233,6 +233,9 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         template = group.alignments[0]
     else:
+        if not hasattr(group, "groupings"):
+            print(group)
+            print(group.type)
         grouping = group.groupings[0]
         template = group.get_template(0)
         assert grouping["template"].subject_key == template.subject_key
@@ -336,7 +339,7 @@ def _design_edge(
                 return None
         else:
             return None
-    if edge[-1]["type_def"].name == Constants.FRAGMENT:
+    elif edge[-1]["type_def"].name == Constants.FRAGMENT:
         query_region = edge[2]["query_region"]
         group = edge[2]["group"]
         fragment = Molecule(
@@ -346,6 +349,16 @@ def _design_edge(
             query_region=query_region,
         )
         return Reaction("Retrieve Fragment", inputs=[], outputs=[fragment])
+    elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
+        query_region = edge[2]["query_region"]
+        group = edge[2]["group"]
+        synthesis_mol = Molecule(
+            MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT],
+            alignment_group=group,
+            sequence=query_region.get_slice(seqdb[query_key]),
+            query_region=query_region,
+        )
+        return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
     else:
         pairs, explain, group, query_region = _design_pcr_product_primers(
             edge, graph, moltype.design, seqdb

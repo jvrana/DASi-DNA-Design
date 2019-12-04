@@ -236,6 +236,7 @@ InternalType(
     efficiency=0.1,
     description=(""),
     min_size=100,
+    synthesize=True,
 )
 
 ExternalType(
@@ -304,10 +305,10 @@ MoleculeType(
     use_direct=True,
     cost=0.0,
     efficiency=1.0,
-    synthesize=False,
+    synthesize=True,
     description=(
-        "A SHARED_FRAGMENT is a theoretical molecule that is shared between "
-        "several designs. This information can be used to reduce costs via "
+        "A SHARED_FRAGMENT is a DNA piece that is shared "
+        "between several designs. This information can be used to reduce costs via "
         "'coalition design'. "
     ),
 )

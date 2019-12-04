@@ -195,6 +195,20 @@ class TestReactions:
                 a.reactions
 
 
+class TestDesignToDf:
+    def test_multi_reactions(self, multi_processed_results):
+        design, results = multi_processed_results
+        a, b = design.to_df()
+        print(a)
+        print(b)
+
+    def test_single_reactions(self, single_processed_results):
+        design, results = single_processed_results
+        a, b = design.to_df()
+        print(a)
+        print(b)
+
+
 class TestOutput:
     def test_csv_output(self, multi_processed_results):
         design, results = multi_processed_results

@@ -402,7 +402,15 @@ class AssemblyGraphPostProcessor:
         g = self.graph
         query = self.query
         bad_edges = []
-        for n1, n2, edata in g.edges(data=True):
+
+        e_iter = self.logger.tqdm(
+            g.edges(data=True),
+            "INFO",
+            total=g.number_of_edges(),
+            desc="computing synthesis complexity",
+        )
+
+        for n1, n2, edata in e_iter:
             if n1.type == "B" and n2.type == "A":
                 span = edata["span"]
                 if span > 0:
@@ -471,6 +479,7 @@ class AssemblyGraphPostProcessor:
     # TODO: add logging to graph post processor
     # TODO: partition gaps
     def __call__(self):
+        self.logger.info("Post processing graph for {}".format(self.query.name))
         self.complexity_update()
         # if bad_edges:
         #     fwd = self.stats.fwd_signatures

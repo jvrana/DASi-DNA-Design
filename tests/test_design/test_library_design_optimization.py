@@ -135,7 +135,7 @@ def test_library_design_draft(paths, here, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
-    query_path = join(here, "data/test_data/genbank/designs/*.gb")
+    query_path = join(here, "data/test_data/genbank/library_designs/*.gb")
     queries = make_circular(load_genbank_glob(query_path))
     queries = queries
 
@@ -145,7 +145,8 @@ def test_library_design_draft(paths, here, span_cost):
     design.compile_library()
     results = design.optimize_library()
 
-    for qk, result in results.items():
-        df = result.assemblies[0].to_df()
-        print(design.seqdb[qk].name)
-        print(df)
+    design.to_df()
+    # for qk, result in results.items():
+    #     df = result.assemblies[0].to_df()
+    #     print(design.seqdb[qk].name)
+    #     print(df)

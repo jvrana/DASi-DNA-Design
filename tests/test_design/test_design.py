@@ -42,6 +42,22 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     print(len(a_arr) * len(b_arr))
 
 
+class TestBenchmark:
+    """Benchmarks the compilation and optimization of assembly graphs."""
+
+    def test_single_compiled_benchmark(self, single_compiled_results):
+        pass
+
+    def test_multi_compiled_benchmark(self, multi_compiled_results):
+        pass
+
+    def test_single_processed_benchmark(self, single_processed_results):
+        pass
+
+    def test_multi_processed_benchmark(self, multi_processed_results):
+        pass
+
+
 class TestDesignResult:
     def test_expected_span_length(self, single_processed_results):
         """[SINGLE PROCESSOR] Test that the input query is the same length as

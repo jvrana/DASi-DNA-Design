@@ -33,7 +33,6 @@ Specialized networkx algorithms for path and cycle finding.
 
 """
 import bisect
-import functools
 from typing import Any
 from typing import Callable
 from typing import Iterable

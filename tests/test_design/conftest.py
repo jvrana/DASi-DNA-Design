@@ -76,12 +76,12 @@ def _multi_processed_results(
 
 @pytest.fixture(scope="session")
 def single_compiled_results(_single_compiled_design) -> Design:
-    return deepcopy(_single_compiled_design)
+    return _single_compiled_design
 
 
 @pytest.fixture(scope="session")
 def multi_compiled_results(_multi_compiled_design) -> Design:
-    return deepcopy(_multi_compiled_design)
+    return _multi_compiled_design
 
 
 @pytest.fixture(scope="session")
@@ -95,4 +95,4 @@ def single_processed_results(
 def multi_processed_results(
     _multi_processed_results
 ) -> Tuple[Design, Dict[str, DesignResult]]:
-    return deepcopy(_multi_processed_results)
+    return _multi_processed_results

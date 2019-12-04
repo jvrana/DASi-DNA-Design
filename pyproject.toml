@@ -15,7 +15,6 @@ documentation = "https://jvrana.github.io/dasi-dna-design"
 [tool.poetry.dependencies]
 python = "^3.6"
 networkx = "^2.3"
-more-itertools = "^7.1"
 tqdm = "^4.32"
 sortedcontainers = "^2.1"
 loggable-jdv = "^0.1.5"
@@ -33,7 +32,8 @@ frozendict = "^1.2"
 primer3plus = "^1.0.5"
 fire = "^0.1"
 jsonschema = "^3.1"
-pyblastbio = "=0.6"
+pyblastbio = "^0.6.0"
+more-itertools = "^8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"

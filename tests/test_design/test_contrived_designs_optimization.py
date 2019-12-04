@@ -153,6 +153,8 @@ def check_design_result(
         assert best_solution.cost() <= expected_solution.cost()
         assert expected_solution.cost() != np.inf
 
+    design.to_df()
+
 
 def test_blast_has_same_results(span_cost):
     goal = random_record(3000)

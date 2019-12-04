@@ -336,6 +336,16 @@ def _design_edge(
                 return None
         else:
             return None
+    if edge[-1]["type_def"].name == Constants.FRAGMENT:
+        query_region = edge[2]["query_region"]
+        group = edge[2]["group"]
+        fragment = Molecule(
+            MoleculeType.types[Constants.FRAGMENT],
+            alignment_group=group,
+            sequence=query_region.get_slice(seqdb[query_key]),
+            query_region=query_region,
+        )
+        return Reaction("Retrieve Fragment", inputs=[], outputs=[fragment])
     else:
         pairs, explain, group, query_region = _design_pcr_product_primers(
             edge, graph, moltype.design, seqdb
@@ -652,12 +662,19 @@ class Assembly(Iterable):
     ):
         mtype = m.type.name
         group = m.alignment_group
-        if group and group.subject_key:
-            key = group.subject_key
-            name = self.seqdb[key].name
-        else:
-            key = None
-            name = None
+
+        key = None
+        name = None
+        if group:
+            if hasattr(group, "subject_key"):
+                if group.subject_key:
+                    key = group.subject_key
+                    name = self.seqdb[key].name
+            else:
+                # TODO: select best subject here
+                key = group.subject_keys[0]
+                name = self.seqdb[key].name
+
         if m.query_region:
             q = (m.query_region.a, m.query_region.b, m.query_region.context_length)
         else:

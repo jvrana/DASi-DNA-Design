@@ -436,6 +436,9 @@ class AssemblyGraphPostProcessor:
             elif span > 5000:
                 edata["efficiency"] *= 0.5
 
+    def synthesis_partitioner(self):
+        pass
+
     def update(self):
         bad_edges = []
         for n1, n2, edata in self.graph.edges(data=True):

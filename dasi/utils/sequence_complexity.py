@@ -271,41 +271,55 @@ class DNAStats:
             arg = c.argmin()
             return a[arg], c[arg]
 
-    def partition(self, step, overlap, i=None, j=None, border=100):
+    def partition(
+        self,
+        step,
+        overlap,
+        i=None,
+        j=None,
+        border=100,
+        stopping_threshold=10,
+        recursive=True,
+    ):
         if j is None:
             j = len(self.seq)
         if i is None:
             i = 0
         window = (i, j)
         to_search = []
-        for i in range(window[0], window[1], step):
-            i1 = i
-            i2 = i - overlap
+        for index in range(window[0], window[1], step):
+            i1 = index
+            i2 = index - overlap
             if i2 <= border:
                 continue
             if i1 > len(self.seq) - border:
                 continue
             to_search.append((i1, i2))
 
-        i = int(len(to_search) / 2)
+        search_index = int(len(to_search) / 2)
+        searched_costs = []
         searched = []
-        while i not in searched:
-            i1, i2 = to_search.pop(i)
+        while search_index not in searched:
+
+            searched.append(search_index)
+
+            i1, i2 = to_search[search_index]
 
             c1 = self.cost(None, i1)
             c2 = self.cost(i2, None)
             c = c1 + c2
 
+            searched_costs.append((c, c1, c2, i1, i2, search_index))
+
             if c1 > c2:
-                i = int(i / 2)
+                search_index = int(search_index / 2)
             elif c2 > c1:
-                i = int((len(to_search) - i) / 2)
+                search_index = int((len(to_search) - search_index) / 2) + search_index
 
-            searched.append(i)
-
-            if c < 10:
+            if c < stopping_threshold:
                 break
 
+        c, c1, c2, i1, i2, search_index = sorted(searched_costs)[0]
         return self.partition_scan(
             1, overlap=overlap, i=i, j=j, window=(min(i1, i2), max(i1, i2))
         )

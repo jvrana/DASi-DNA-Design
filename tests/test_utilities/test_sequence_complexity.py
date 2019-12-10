@@ -120,7 +120,7 @@ class TestDNAStats:
     def test_partitioner(self):
         repeat = random_seq(40)
         seq = (
-            random_seq(1000)
+            random_seq(2000)
             + repeat
             + random_seq(100)
             + revcomp(repeat)
@@ -129,5 +129,5 @@ class TestDNAStats:
 
         stats = DNAStats(seq, 14, 20, 20)
 
-        print(stats.partition(10, overlap=25))
+        print(stats.partition(10, overlap=25, stopping_threshold=10))
         print(stats.cost())

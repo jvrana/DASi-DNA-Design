@@ -631,7 +631,7 @@ class Assembly(Iterable):
                 desc = True
             print("{} {} {}".format(desc, n1, n2))
 
-    def to_df(self):
+    def to_df(self) -> pd.DataFrame:
         rows = []
         for n1, n2, edata in self.edges():
             groups = edata["groups"]
@@ -663,6 +663,7 @@ class Assembly(Iterable):
                     "type": edata["type_def"].name,
                     "internal_or_external": edata["type_def"].int_or_ext,
                     "efficiency": edata.get("efficiency", np.nan),
+                    "complexity": edata.get("complexity", np.nan),
                     "notes": edata.get("notes", ""),
                 }
             )
@@ -671,8 +672,13 @@ class Assembly(Iterable):
         return df
 
     def _csv_row(
-        self, m: Molecule, role: str, reaction_id: Union[str, int], meta: dict = None
-    ):
+        self,
+        m: Molecule,
+        role: str,
+        reaction_id: Union[str, int],
+        reaction_name: str,
+        meta: dict = None,
+    ) -> dict:
         mtype = m.type.name
         group = m.alignment_group
 
@@ -702,22 +708,25 @@ class Assembly(Iterable):
             "REGION": q,
             "ROLE": role,
             "REACTION_ID": reaction_id,
+            "REACTION_NAME": reaction_name,
         }
         if meta:
             data.update({"META": deepcopy(meta)})
         return data
 
     @property
-    def molecules(self):
+    def molecules(self) -> Generator[Tuple[int, str, Molecule], None, None]:
         for i, r in enumerate(self.reactions):
             for m in r.inputs:
                 yield (i, "input", m)
             for m in r.outputs:
                 yield (i, "output", m)
 
-    def to_reaction_df(self):
+    def to_reaction_df(self) -> pd.DataFrame:
         rows = []
-        for i, role, m in self.molecules:
+        reactions = self.reactions
+        for reaction_id, role, m in self.molecules:
+            reaction = reactions[reaction_id]
             if m.type.name == "PRIMER":
                 meta = deepcopy(m.metadata)
                 meta["ANNEAL"] = meta["SEQUENCE"]
@@ -725,12 +734,13 @@ class Assembly(Iterable):
                 meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
             else:
                 meta = None
-            rows.append(self._csv_row(m, role, i, meta))
+            rows.append(self._csv_row(m, role, reaction_id, reaction.name, meta))
         colnames = [
             "DESIGN_ID",
             "DESIGN_KEY",
             "ASSEMBLY_ID",
             "REACTION_ID",
+            "REACTION_NAME",
             "NAME",
             "TYPE",
             "KEY",
@@ -742,7 +752,15 @@ class Assembly(Iterable):
         ]
         df = pd.DataFrame(rows, columns=colnames)
         df.sort_values(
-            by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
+            by=[
+                "TYPE",
+                "DESIGN_ID",
+                "ASSEMBLY_ID",
+                "REACTION_ID",
+                "REACTION_NAME",
+                "NAME",
+                "ROLE",
+            ],
             inplace=True,
         )
         return df

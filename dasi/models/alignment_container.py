@@ -800,8 +800,8 @@ class AlignmentContainerFactory:
             subject_key = d["subject"]["origin_key"]
 
             alignment = Alignment(
-                query_region,
-                subject_region,
+                query_region=query_region,
+                subject_region=subject_region,
                 atype=atype,
                 query_key=query_key,
                 subject_key=subject_key,

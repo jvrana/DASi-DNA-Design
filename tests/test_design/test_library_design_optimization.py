@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 from os.path import join
 
@@ -9,10 +10,7 @@ from pyblast.utils import make_linear
 
 from dasi.constants import Constants
 from dasi.design import LibraryDesign
-from dasi.design.graph_builder import AssemblyGraphPostProcessor
 from dasi.models import AlignmentContainer
-from dasi.models import AlignmentGroup
-from dasi.utils import group_by
 from dasi.utils import sort_with_keys
 
 
@@ -131,7 +129,7 @@ def cluster_graph(design):
     return graphs
 
 
-def test_library_design_draft(paths, here, span_cost):
+def test_library_design_to_df(paths, here, span_cost):
     primers = make_linear(load_fasta_glob(paths["primers"]))
     templates = load_genbank_glob(paths["templates"])
 
@@ -145,7 +143,14 @@ def test_library_design_draft(paths, here, span_cost):
     design.compile_library()
     results = design.optimize_library()
 
-    design.to_df()
+    a, b, c = design.to_df()
+    a.to_csv("library_design.csv")
+    b.to_csv("library_summary.csv")
+    with open("designs.json", "w") as f:
+        json.dump(c, f)
+    print(a)
+    print(b)
+    print(c)
     # for qk, result in results.items():
     #     df = result.assemblies[0].to_df()
     #     print(design.seqdb[qk].name)

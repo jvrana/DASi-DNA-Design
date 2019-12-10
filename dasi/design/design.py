@@ -480,32 +480,39 @@ class Design:
     # TODO: order keys
     # TODO: group identical reactions (identical output sequence)
     def to_df(self, assembly_index: int = 0) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        dfs = []
-        adfs = []
+        reaction_dfs = []
+        summary_dfs = []
+        design_json = {}
         for i, (qk, result) in enumerate(self.results.items()):
             if result.assemblies[0]:
-                a = result.assemblies[assembly_index]
-                df = a.to_reaction_df()
-                df["DESIGN_ID"] = i
-                df["DESIGN_KEY"] = qk
-                df["ASSEMBLY_ID"] = assembly_index
-                dfs.append(df)
+                assembly = result.assemblies[assembly_index]
+                react_df = assembly.to_reaction_df()
+                react_df["DESIGN_ID"] = i
+                react_df["DESIGN_KEY"] = qk
+                react_df["ASSEMBLY_ID"] = assembly_index
+                reaction_dfs.append(react_df)
 
-                adf = a.to_df()
-                adf["DESIGN_ID"] = i
-                adf["DESIGN_KEY"] = qk
-                adf["ASSEMBLY_ID"] = assembly_index
-                adfs.append(adf)
+                summ_df = assembly.to_df()
+                summ_df["DESIGN_ID"] = i
+                summ_df["DESIGN_KEY"] = qk
+                summ_df["ASSEMBLY_ID"] = assembly_index
+                summary_dfs.append(summ_df)
+
+                rec = self.seqdb[qk]
+                design_json[qk] = {"NAME": rec.name, "FILE": None}
+                if hasattr(rec, "from_file"):
+                    design_json[qk]["FILE"] = rec.from_file
             else:
                 msg = "Query {} {} yielded no assembly".format(self.seqdb[qk].name, i)
                 self.logger.error(msg)
 
-        df = pd.concat(dfs)
+        react_df = pd.concat(reaction_dfs)
         colnames = [
             "DESIGN_ID",
             "DESIGN_KEY",
             "ASSEMBLY_ID",
             "REACTION_ID",
+            "REACTION_NAME",
             "NAME",
             "TYPE",
             "KEY",
@@ -515,11 +522,12 @@ class Design:
             "LENGTH",
             "META",
         ]
-        df.columns = colnames
-        df.sort_values(
+        react_df.columns = colnames
+        react_df.sort_values(
             by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
             inplace=True,
         )
 
-        adf = pd.concat(adfs)
-        return df, adf
+        summ_df = pd.concat(summary_dfs)
+
+        return react_df, summ_df, design_json

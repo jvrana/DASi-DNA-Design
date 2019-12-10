@@ -359,7 +359,7 @@ class AssemblyGraphPostProcessor:
             hairpin_window=20,
         )
         self.logged_msgs = []
-        self.COMPLEXITY_THRESHOLD = 12.0
+        self.COMPLEXITY_THRESHOLD = 10.0
         self.logger = logger(self)
 
     def update_edge_complexity(self, edata, complexity):
@@ -411,6 +411,8 @@ class AssemblyGraphPostProcessor:
         )
 
         for n1, n2, edata in e_iter:
+            # TODO: should be using the TYPE.synthesize here to
+            #  determine whether complexity is assessed.
             if n1.type == "B" and n2.type == "A":
                 span = edata["span"]
                 if span > 0:

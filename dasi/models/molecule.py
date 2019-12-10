@@ -1,5 +1,6 @@
 """classes representing *molecules* and types of *molecules*"""
 from copy import copy
+from copy import deepcopy
 from typing import Dict
 from typing import List
 from typing import Tuple

@@ -25,6 +25,8 @@ def test_library_design_to_df(paths, here, span_cost):
     design = LibraryDesign(span_cost=span_cost)
     design.n_jobs = 1
     design.add_materials(primers=primers, templates=templates, queries=queries)
+
+    design.logger.set_level("DEBUG")
     design.compile_library()
     results = design.optimize_library()
 

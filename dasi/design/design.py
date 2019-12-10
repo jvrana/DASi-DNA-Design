@@ -346,7 +346,7 @@ class Design:
     def post_process_graphs(self):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(graph, query)
+            processor = AssemblyGraphPostProcessor(graph, query, self.span_cost)
             processor()
 
     def _assemble_graphs_without_threads(self):
@@ -420,7 +420,13 @@ class Design:
                 self._results = self._optimize_with_threads(n_paths, n_jobs)
         else:
             self._results = self._optimize_without_threads(n_paths)
+
+        self._freeze_graphs()
         return self._results
+
+    def _freeze_graphs(self):
+        for graph in self.graphs.values():
+            nx.freeze(graph)
 
     def _optimize_without_threads(self, n_paths) -> Dict[str, DesignResult]:
         """Finds the optimal paths for each query in the design."""

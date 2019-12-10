@@ -166,7 +166,7 @@ def optimize_graph(
     else:
         raise NotImplementedError("Linear assemblies not yet implemented.")
 
-    min_index = [i[:n_paths] for i in argmin(weight_matrix)]
+    min_index = tuple([i[:n_paths] for i in argmin(weight_matrix)])
     costs = weight_matrix[min_index]
     costs = [c for c in costs if c != np.inf]
     a_nodes = [nodelist[i] for i in min_index[0]]

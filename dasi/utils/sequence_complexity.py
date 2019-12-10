@@ -152,6 +152,7 @@ class DNAStats:
         self.fwd_signatures, self.rev_signatures = self.get_hairpin_signatures(
             hairpin_window
         )
+        self.cached_partitions = []
 
     @staticmethod
     def one_hot(sequence, categories):
@@ -279,13 +280,29 @@ class DNAStats:
         j=None,
         border=100,
         stopping_threshold=10,
-        recursive=True,
+        window=None,
+        use_cache=True,
     ):
         if j is None:
             j = len(self.seq)
         if i is None:
             i = 0
-        window = (i, j)
+
+        if use_cache:
+            for cached in self.cached_partitions:
+                if i >= cached[0] and j <= cached[1]:
+                    if cached[2]["cost"] < stopping_threshold:
+                        window = (
+                            cached[2]["index_1"][1] - overlap,
+                            cached[2]["index_2"][0] + overlap,
+                        )
+                elif i <= cached[0] and j >= cached[1]:
+                    if cached[2]["cost"] > stopping_threshold:
+                        return []
+
+        if not window:
+            window = (i, j)
+
         to_search = []
         for index in range(window[0], window[1], step):
             i1 = index
@@ -296,6 +313,9 @@ class DNAStats:
                 continue
             to_search.append((i1, i2))
 
+        if not to_search:
+            return []
+
         search_index = int(len(to_search) / 2)
         searched_costs = []
         searched = []
@@ -303,7 +323,12 @@ class DNAStats:
 
             searched.append(search_index)
 
-            i1, i2 = to_search[search_index]
+            try:
+                i1, i2 = to_search[search_index]
+            except IndexError:
+                print(search_index)
+                print(len(to_search))
+                raise IndexError
 
             c1 = self.cost(None, i1)
             c2 = self.cost(i2, None)
@@ -319,10 +344,19 @@ class DNAStats:
             if c < stopping_threshold:
                 break
 
-        c, c1, c2, i1, i2, search_index = sorted(searched_costs)[0]
-        return self.partition_scan(
-            1, overlap=overlap, i=i, j=j, window=(min(i1, i2), max(i1, i2))
+        searched_costs = sorted(searched_costs)
+        c, c1, c2, i1, i2, search_index = searched_costs[0]
+
+        partitions = self.partition_scan(
+            1,
+            overlap=overlap,
+            i=i,
+            j=j,
+            window=(min(i1, i2) - overlap, max(i1, i2) + overlap),
         )
+        if use_cache:
+            self.cached_partitions.append((i, j, partitions[0]))
+        return partitions
 
     def partition_scan(self, step, overlap, i=None, j=None, window=None):
         if j is None:

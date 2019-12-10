@@ -290,12 +290,42 @@ class LibraryDesign(Design):
 
     def compile_library(self, n_jobs=None):
         """Compile the materials list into assembly graphs."""
+        tracker = self.logger.track("INFO", desc="Compiling library", total=4).enter()
+
         n_jobs = n_jobs or self.DEFAULT_N_JOBS
         self.graphs = {}
+
+        tracker.update(0, "Running blast")
         self._blast()
 
+        tracker.update(1, "Running shared fragment blast")
         self._share_query_blast()
 
+        tracker.update(2, "Finding shared clusters")
+        self.update_library_metadata()
+
+        tracker.update(3, "Assembling graphs")
+        self.assemble_graphs(n_jobs=n_jobs)
+
+        # TODO: adjust n_clusters in the graph instead
+
+        tracker.update(4, "Post processing")
+        adjusted = 0
+        for qk, graph in self.graphs.items():
+            query = self.seqdb[qk]
+            processor = AssemblyGraphPostProcessor(graph, query, self.span_cost)
+            processor()
+            for n1, n2, edata in graph.edges(data=True):
+                if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
+                    group = edata["group"]
+                    edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
+                    edata["material"] = edata["material"] / group.meta["n_clusters"]
+                    edata["cost"] = edata["material"] / edata["efficiency"]
+                    adjusted += 1
+        tracker.update(4, "Post processing complete")
+        tracker.update(4, "Compilation complete")
+
+    def update_library_metadata(self):
         add_clusters(self)
         graphs = cluster_graph(self)
 
@@ -352,29 +382,11 @@ class LibraryDesign(Design):
         # )
         # container.add_alignments(new_alignments, lim_size=True)
 
-        self.assemble_graphs(n_jobs=n_jobs)
-
-        adjusted = 0
-        for qk, graph in self.graphs.items():
-            query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(graph, query)
-            processor()
-            for n1, n2, edata in graph.edges(data=True):
-                if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
-                    group = edata["group"]
-                    edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
-                    edata["material"] = edata["material"] / group.meta["n_clusters"]
-                    edata["cost"] = edata["material"] / edata["efficiency"]
-                    adjusted += 1
-        print("adjusted " + str(adjusted))
-
-        self.post_process_library_graphs()
-
-    def post_process_library_graphs(self):
-        for qk, graph in self.graphs.items():
-            query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(graph, query)
-            processor()
+    # def post_process_library_graphs(self):
+    #     for qk, graph in self.graphs.items():
+    #         query = self.seqdb[qk]
+    #         processor = AssemblyGraphPostProcessor(graph, query)
+    #         processor()
 
     def optimize_library(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
         """Optimize the assembly graph for library assembly."""

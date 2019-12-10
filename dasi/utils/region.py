@@ -324,6 +324,10 @@ class Span(Container, Iterable, Sized):
                             are valid. If False and the starting wrap is greater than
                             the ending wrap, an IndexError is thrown.
         """
+        if isinstance(a, tuple):
+            print(a)
+        if isinstance(b, tuple):
+            print(b)
         a = int(a)
         b = int(b)
         self._context_length = int(l)

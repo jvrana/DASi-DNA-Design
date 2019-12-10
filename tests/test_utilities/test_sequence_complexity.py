@@ -116,3 +116,18 @@ class TestDNAStats:
 
         print(stats.cost(1000, 1500))
         print(stats.cost(None, None))
+
+    def test_partitioner(self):
+        repeat = random_seq(40)
+        seq = (
+            random_seq(1000)
+            + repeat
+            + random_seq(100)
+            + revcomp(repeat)
+            + random_seq(1000)
+        )
+
+        stats = DNAStats(seq, 14, 20, 20)
+
+        print(stats.partition(10, overlap=25))
+        print(stats.cost())

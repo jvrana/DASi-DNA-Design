@@ -226,6 +226,88 @@ class DNAStats:
     #     gc = get_GC_content(seq)
     #     return abs(gc * 100.0 - 50) * 17 / 25.0
 
+    @staticmethod
+    def _optimize_partition_helper(
+        signatures: np.ndarray, step: int, i: int = None, j: int = None
+    ):
+        """Optimize partition by minimizing the number of signatures in the
+        given array.
+
+        :param signatures: array of signatures
+        :param step: step size
+        :param i:
+        :param j:
+        :return:
+        """
+        d = []
+
+        if i is None:
+            i = 0
+        if j is None:
+            j = signatures.shape[1]
+
+        for x in range(i, j, step):
+            m1 = np.empty(signatures.shape[1])
+            m2 = m1.copy()
+            m1.fill(np.nan)
+            m2.fill(np.nan)
+
+            m1[:x] = np.random.uniform(1, 10)
+            m2[x:] = np.random.uniform(1, 10)
+
+            d += [m1, m2]
+        d = np.vstack(d)
+        z = np.tile(d, signatures.shape[0]) * signatures.flatten()
+
+        partition_index = np.repeat(
+            np.arange(0, signatures.shape[1], step),
+            signatures.shape[0] * signatures.shape[1] * 2,
+        )
+
+        a, b, c = np.unique(z, return_counts=True, return_index=True)
+        i = b[np.where(c > 1)]
+        a, c = np.unique(partition_index[i], return_counts=True)
+        if len(c):
+            arg = c.argmin()
+            return a[arg], c[arg]
+
+    def partition(self, step, overlap, i=None, j=None, border=100):
+        if j is None:
+            j = len(self.seq)
+        if i is None:
+            i = 0
+        window = (i, j)
+        costs = []
+        for i in range(window[0], window[1], step):
+            i1 = i
+            i2 = i - overlap
+            if i2 <= border:
+                continue
+            if i1 > len(self.seq) - border:
+                continue
+            c1 = self.cost(None, i1)
+            c2 = self.cost(i2, None)
+            costs.append(
+                {
+                    "cost": c1 + c2,
+                    "cost_1": c1,
+                    "cost_2": c2,
+                    "index_1": (window[0], i1),
+                    "index_2": (i2, window[1]),
+                }
+            )
+        costs = sorted(costs, key=lambda x: x["cost"])
+        return costs
+
+    def cost(self, i=None, j=None):
+        d = self(i, j)
+        w1 = d["window_cost"][0]
+        w2 = d["window_cost"][1]
+        total = (
+            d["n_repeats"] + d["n_hairpins"] + np.sum(w1) + np.sum(w2) + d["gc_cost"]
+        )
+        return total
+
     def __call__(self, i=None, j=None):
         mn = np.mean(self.seq_onehot[:, i:j], axis=1)
         gi = self.bases.index("G")
@@ -238,12 +320,3 @@ class DNAStats:
             "window_cost": self.window_cost(i, j),
             "gc_cost": gccost,
         }
-
-    def cost(self, i=None, j=None):
-        d = self(i, j)
-        w1 = d["window_cost"][0]
-        w2 = d["window_cost"][1]
-        total = (
-            d["n_repeats"] + d["n_hairpins"] + np.sum(w1) + np.sum(w2) + d["gc_cost"]
-        )
-        return total

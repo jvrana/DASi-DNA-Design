@@ -362,73 +362,6 @@ class AssemblyGraphPostProcessor:
         self.COMPLEXITY_THRESHOLD = 10.0
         self.logger = logger(self)
 
-    def update_edge_complexity(self, edata, complexity):
-        edata["complexity"] = complexity
-        if complexity > self.COMPLEXITY_THRESHOLD:
-            edata["efficiency"] = 0.1
-            return True
-        return False
-
-    # @staticmethod
-    # def edge_to_region_helper(n1: int, n2: int, context_length: int, span: int, cyclic: bool):
-    #     if span > 0:
-    #         return Region(n1.index, n2.index, context_length, cyclic=cyclic)
-    #     else:
-    #         return Region(n2.index, n1.indes, context_length, cyclic=cyclic)
-    #
-    # def edge_to_region(self, n1, n2, span):
-    #     cyclic = is_circular(self.query)
-    #     length = len(self.query)
-    #     return self.edge_to_region_helper(n1, n2, length, span, cyclic)
-
-    def process_synthesized_fragments(self):
-        g = self.graph
-        for n1, n2, edata in g.edges(data=True):
-            if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
-                # then we have to update the efficiency of the fragment
-                # update the material cost of the internal fragment
-                # as if its an external edge
-
-                # cost = None,
-                # material = None,
-                # time = None,
-                # efficiency = None,
-
-                pass
-
-    # TODO: move this to a new class
-    def complexity_update(self) -> nx.DiGraph:
-        """Updates any gaps using the complexity measurements."""
-        g = self.graph
-        query = self.query
-        bad_edges = []
-
-        e_iter = self.logger.tqdm(
-            g.edges(data=True),
-            "INFO",
-            total=g.number_of_edges(),
-            desc="computing synthesis complexity",
-        )
-
-        for n1, n2, edata in e_iter:
-            # TODO: should be using the TYPE.synthesize here to
-            #  determine whether complexity is assessed.
-            if n1.type == "B" and n2.type == "A":
-                span = edata["span"]
-                if span > 0:
-                    # TODO: cyclic may not always be tru
-                    r = Region(
-                        n1.index, n2.index, len(query), cyclic=is_circular(query)
-                    )
-                    score = self.stats.cost(r.a, r.c)
-                    if self.update_edge_complexity(edata, score) is True:
-                        bad_edges.append((n1, n2, edata))
-                        self.logged_msgs.append("High complexity!")
-        self.logger.info(
-            "Found {} highly complex synthesis segments".format(len(bad_edges))
-        )
-        return bad_edges
-
     @staticmethod
     def optimize_partition(
         signatures: np.ndarray, step: int, i: int = None, j: int = None
@@ -474,23 +407,47 @@ class AssemblyGraphPostProcessor:
             arg = c.argmin()
             return a[arg], c[arg]
 
-    # TODO: post-process shared synthesis
-    def process_shared_synthesis(self):
-        pass
+    def update_complexity(self, n1, n2, edata):
+        bad_edges = []
+        if edata["type_def"].synthesize:
+            span = edata["span"]
+            if span > 0:
+                # TODO: cyclic may not always be tru
+                r = Region(
+                    n1.index, n2.index, len(self.query), cyclic=is_circular(self.query)
+                )
+                complexity = self.stats.cost(r.a, r.c)
+                edata["complexity"] = complexity
+                if complexity > self.COMPLEXITY_THRESHOLD:
+                    edata["efficiency"] = 0.1
+                    bad_edges.append((n1, n2, edata))
+        return bad_edges
+
+    def update_long_pcr_products(self, n1, n2, edata):
+        if edata["type_def"].name in [
+            Constants.PCR_PRODUCT,
+            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_PRIMERS,
+        ]:
+            span = edata["span"]
+            if span > 4000:
+                edata["efficiency"] *= 0.8
+            elif span > 5000:
+                edata["efficiency"] *= 0.5
+
+    def update(self):
+        bad_edges = []
+        for n1, n2, edata in self.graph.edges(data=True):
+            self.update_long_pcr_products(n1, n2, edata)
+            bad_edges += self.update_complexity(n1, n2, edata)
+
+        self.logger.info(
+            "Found {} highly complex synthesis segments".format(len(bad_edges))
+        )
 
     # TODO: add logging to graph post processor
     # TODO: partition gaps
     def __call__(self):
         self.logger.info("Post processing graph for {}".format(self.query.name))
-        self.complexity_update()
-        # if bad_edges:
-        #     fwd = self.stats.fwd_signatures
-        #     rev = self.stats.rev_signatures
-        #     for n1, n2, edata in bad_edges:
-        #         r = Region(
-        #             n1.index, n2.index, len(self.query), cyclic=is_circular(self.query)
-        #         )
-        #         fwd_slice = fwd[r.a : r.c]
-        #         rev_slice = rev[r.a : r.c]
-        #         sig = np.vstack((fwd_slice, rev_slice))
-        #         self.optimize_partition(sig, step=10)
+        self.update()

@@ -375,7 +375,6 @@ class LibraryDesign(Design):
             query = self.seqdb[qk]
             processor = AssemblyGraphPostProcessor(graph, query)
             processor()
-            processor.process_shared_synthesis()
 
     def optimize_library(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
         """Optimize the assembly graph for library assembly."""

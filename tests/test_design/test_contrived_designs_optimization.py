@@ -594,7 +594,7 @@ def test_library(span_cost):
     make_linear([r1, r2, r3, r4, r5])
 
     design = LibraryDesign(span_cost)
-
+    design.n_jobs = 1
     design.add_materials(
         primers=[],
         templates=[r1, r2, r3, r4, r5],

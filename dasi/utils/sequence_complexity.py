@@ -277,7 +277,7 @@ class DNAStats:
         if i is None:
             i = 0
         window = (i, j)
-        costs = []
+        to_search = []
         for i in range(window[0], window[1], step):
             i1 = i
             i2 = i - overlap
@@ -285,15 +285,53 @@ class DNAStats:
                 continue
             if i1 > len(self.seq) - border:
                 continue
+            to_search.append((i1, i2))
+
+        i = int(len(to_search) / 2)
+        searched = []
+        while i not in searched:
+            i1, i2 = to_search.pop(i)
+
             c1 = self.cost(None, i1)
             c2 = self.cost(i2, None)
+            c = c1 + c2
+
+            if c1 > c2:
+                i = int(i / 2)
+            elif c2 > c1:
+                i = int((len(to_search) - i) / 2)
+
+            searched.append(i)
+
+            if c < 10:
+                break
+
+        return self.partition_scan(
+            1, overlap=overlap, i=i, j=j, window=(min(i1, i2), max(i1, i2))
+        )
+
+    def partition_scan(self, step, overlap, i=None, j=None, window=None):
+        if j is None:
+            j = len(self.seq)
+        if i is None:
+            i = 0
+
+        if not window:
+            window = (i, j)
+
+        costs = []
+        for x in range(window[0], window[1], step):
+            i2, j2 = x, x - overlap
+
+            c1 = self.cost(i, i2)
+            c2 = self.cost(j2, j)
             costs.append(
                 {
                     "cost": c1 + c2,
                     "cost_1": c1,
                     "cost_2": c2,
-                    "index_1": (window[0], i1),
-                    "index_2": (i2, window[1]),
+                    "index_1": (i, i2),
+                    "index_2": (j2, j),
                 }
             )
         costs = sorted(costs, key=lambda x: x["cost"])

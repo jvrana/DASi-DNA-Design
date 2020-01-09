@@ -1,0 +1,22 @@
+LOCUS       aquwbf32712              382 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_hqKjaFKo
+VERSION     seq_hqKjaFKo
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..382
+                     /label="15d042653dc9_fragment_10"
+                     /ApEinfo_fwdcolor="#a75cf7"
+                     /ApEinfo_revcolor="#a75cf7"
+ORIGIN
+        1 acctccctta accagattcg aaaagcggcg ccgatacgaa ggttttctcc agcgctttgg
+       61 ccgcgaatcg atatgtcgag tttactccct atcagtgata gagaacgtat gtcgagttta
+      121 ctccctatca gtgatagaga acgatgtcga gtttactccc tatcagtgat agagaacgta
+      181 tgtcgagttt actccctatc agtgatagag aacgtatgtc gagtttactc cctatcagtg
+      241 atagagaacg tatgtcgagt ttatccctat cagtgataga gaacgtatgt cgagtttact
+      301 ccctatcagt gatagagaac gtatgtcgag gtaggcgtgt acgaaagtga aagtcgagct
+      361 cggtacgatc ctatggcatg ca
+//

@@ -13,7 +13,7 @@ from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
 from dasi import Design
-from dasi.cost import SpanCost
+from dasi import LibraryDesign
 from dasi.design.graph_builder import AssemblyNode
 
 
@@ -95,13 +95,17 @@ class NoSolution(Exception):
 
 
 def check_design_result(
-    design, expected_path: List[Tuple], check_cost=False, check_path=True
+    design,
+    expected_path: List[Tuple],
+    check_cost=False,
+    check_path=True,
+    skip_compile=False,
 ):
-
     expected_path = [AssemblyNode(*t) for t in expected_path]
 
     # compile the design
-    design.compile()
+    if not skip_compile:
+        design.compile()
 
     # get the results
     results = list(design.optimize().values())
@@ -148,6 +152,8 @@ def check_design_result(
     if check_cost:
         assert best_solution.cost() <= expected_solution.cost()
         assert expected_solution.cost() != np.inf
+
+    design.to_df()
 
 
 def test_blast_has_same_results(span_cost):
@@ -324,7 +330,6 @@ def test_design_task_with_gaps(span_cost):
 
 @pytest.mark.parametrize("repeat", range(3))
 def test_design_with_overhang_primers(repeat, span_cost):
-
     goal = random_record(3000)
     make_circular_and_id([goal])
 
@@ -488,7 +493,6 @@ def test_case(span_cost):
 
 
 def test_a_reverse_pcr_fragment(span_cost):
-
     goal = random_record(3000)
     make_circular_and_id([goal])
 
@@ -506,7 +510,6 @@ def test_a_reverse_pcr_fragment(span_cost):
 
 
 def test_case2(span_cost):
-
     goal = random_record(5000)
     make_circular_and_id([goal])
 
@@ -538,7 +541,6 @@ def test_case2(span_cost):
         print(a.cost())
         for n1, n2, edata in a.edges():
             print(n1, n2)
-        # print(a.to_df())
 
 
 class TestOutput:
@@ -574,3 +576,40 @@ class TestOutput:
         design, results = example_design
         df = design.to_df()
         print(df)
+
+
+def test_library(span_cost):
+    goal1 = random_record(4000)
+    goal2 = random_record(2000) + goal1[2000:3000] + random_record(2000)
+    goal3 = goal2 + random_record(100)
+    make_circular_and_id([goal1, goal2, goal3])
+
+    r1 = goal1[:2000]
+    r2 = goal1[3000:4000]
+    r3 = goal2[-2000:]
+    r4 = goal2[:2000]
+
+    r5 = goal1[:2100]
+
+    make_linear([r1, r2, r3, r4, r5])
+
+    design = LibraryDesign(span_cost)
+    design.n_jobs = 1
+    design.add_materials(
+        primers=[],
+        templates=[r1, r2, r3, r4, r5],
+        queries=[goal1, goal2, goal3],
+        fragments=[],
+    )
+
+    design.compile_library()
+    results = design.optimize_library()
+
+    for result in results.values():
+        print(result.assemblies[0].cost())
+        df = result.assemblies[0].to_df()
+        print(df)
+        notes = list(df["notes"])
+        assert "n_clusters: 3" in notes
+        # assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
+        # assert df

@@ -1,40 +1,46 @@
-import os
 import shutil
+from os import mkdir
+from os import remove
+from os.path import abspath
+from os.path import dirname
+from os.path import isdir
+from os.path import isfile
+from os.path import join
 
 import pytest
 
 from dasi.command_line import DasiCLI
 
-here = os.path.abspath(os.path.dirname(__file__))
+here = abspath(dirname(__file__))
 
 
 @pytest.fixture
 def outdir(paths):
-    out = os.path.join(here, ".test_out")
-    if not os.path.isdir(out):
-        os.mkdir(out)
-    templates = os.path.join(out, "templates")
-    goals = os.path.join(out, "goals")
-    primers = os.path.join(out, "primers.fasta")
+    out = join(here, ".test_out")
+    if not isdir(out):
+        mkdir(out)
+    templates = join(out, "templates")
+    goals = join(out, "goals")
+    primers = join(out, "primers.fasta")
 
-    if os.path.isdir(templates):
+    if isdir(templates):
         shutil.rmtree(templates)
 
-    if os.path.isdir(goals):
+    if isdir(goals):
         shutil.rmtree(goals)
 
-    if os.path.isfile(primers):
-        os.remove(primers)
+    if isfile(primers):
+        remove(primers)
 
-    shutil.copytree(os.path.dirname(paths["registry"]), templates)
-    shutil.copytree(os.path.dirname(paths["queries"]), goals)
-    shutil.copy(paths["primers"], os.path.join(out, primers))
+    shutil.copytree(dirname(paths["registry"]), templates)
+    shutil.copytree(dirname(paths["queries"]), goals)
+    shutil.copy(paths["primers"], join(out, primers))
     yield out
-    # shutil.rmtree(os.path.join(out, 'templates'))
-    # shutil.rmtree(os.path.join(out, 'goals'))
-    # os.remove(os.path.join(out, 'primers.fasta'))
+    # shutil.rmtree(join(out, 'templates'))
+    # shutil.rmtree(join(out, 'goals'))
+    # os.remove(join(out, 'primers.fasta'))
 
 
-def test(outdir):
-    cli = DasiCLI(".test_out")
+def test_cli(outdir):
+    cli = DasiCLI(join(here, ".test_out"))
     cli.run()

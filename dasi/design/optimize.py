@@ -17,8 +17,9 @@ from dasi.utils.networkx.utils import replace_nan_with_inf
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'
 # and 'efficiency' for a given path
+
 path_length_config = {
-    "f": "time + material / efficiency ",
+    "f": "material / efficiency ",
     "accumulators": {"efficiency": "product"},
 }
 
@@ -63,13 +64,14 @@ def fill_diag_inf(w):
 
 
 def index_slice(indices, arr):
-    """From tuple of incides, return zipped items."""
+    """From tuple of indices, return zipped items."""
     unzipped = []
     for i in indices:
         unzipped.append([arr[_i] for _i in i])
     return list(zip(*unzipped))
 
 
+# TODO: is this necessary?
 def only_ab(w, nodelist):
     b_array = np.array([n.type == "B" for n in nodelist]).reshape(1, -1)
     w[np.where(~np.logical_xor(b_array, b_array.T))] = np.inf
@@ -159,20 +161,25 @@ def optimize_graph(
         closed_wmatrix = replace_nan_with_inf(closed_wmatrix)
 
         fill_diag_inf(closed_wmatrix)
-        only_ab(closed_wmatrix, nodelist)
+        # only_ab(closed_wmatrix, nodelist)
         weight_matrix = closed_wmatrix
     else:
         raise NotImplementedError("Linear assemblies not yet implemented.")
 
-    costs = weight_matrix.ravel().copy()
-    costs.sort()
-    nodes = index_slice(argmin(weight_matrix), nodelist)
+    min_index = tuple([i[:n_paths] for i in argmin(weight_matrix)])
+    costs = weight_matrix[min_index]
+    costs = [c for c in costs if c != np.inf]
+    a_nodes = [nodelist[i] for i in min_index[0]]
+    b_nodes = [nodelist[i] for i in min_index[1]]
+    nodes = list(zip(a_nodes, b_nodes))
 
     nodes_and_costs = list(zip(nodes, costs))
-    nodes_and_costs = [x for x in nodes_and_costs if x[1] != np.inf]
-    paths = _nodes_to_fullpaths(
-        graph, [n[0] for n in nodes_and_costs], False, n_paths=n_paths
-    )
+
+    if nodes_and_costs:
+        trimmed_nodes, trimmed_costs = zip(*nodes_and_costs)
+    else:
+        trimmed_nodes, trimmed_costs = [], []
+    paths = _nodes_to_fullpaths(graph, trimmed_nodes, False, n_paths=n_paths)
 
     if len(paths) < n_paths:
         DASiWarning(
@@ -182,4 +189,4 @@ def optimize_graph(
         )
 
     _check_paths(paths)
-    return paths, [n[1] for n in nodes_and_costs]
+    return paths, trimmed_costs

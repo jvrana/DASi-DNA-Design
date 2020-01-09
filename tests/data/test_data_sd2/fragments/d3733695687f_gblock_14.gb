@@ -1,0 +1,33 @@
+LOCUS       d3733695687f_gblock_14  1050 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_EbgDLsGJ
+VERSION     seq_EbgDLsGJ
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..1050
+                     /label="d3733695687f_gblock_14"
+                     /ApEinfo_fwdcolor="#3205fa"
+                     /ApEinfo_revcolor="#3205fa"
+ORIGIN
+        1 attacccatg gtatggatga attgtacaaa ggcagcggcg ccacaaactt ctctctgcta
+       61 aagcaagcag gtgatgttga agaaaacccc gggcctggct ccggcgaggg caggggaagt
+      121 cttctaacat gcggggacgt ggaggaaaat cccggcccag ctccttccgg tccaccaagg
+      181 tccagaggga ctaggtacct tgcgcagcct agtggcaata ctagttctag tgccctaatg
+      241 caaggtcaaa aggctcccca aaagccttca cagaacctag tccctgtcac tccctcaaca
+      301 actaagtctt ttaaaaatgc gccattatta gcacctccca attcgaacat gggtatgacc
+      361 tctccattta atgggcttac ggctcctcaa cgctcgccgt ttccaaaatc ttcagtgaag
+      421 aggacactat tccaatttga aagtcatgat aatggaacag taagggaaga gcaggaacca
+      481 ttgggtcgtg taaataggat attgtttccc acgcagcaaa atgtggatat agatgcagca
+      541 gaagaagaag aagaaggaga agttcttctt ccccccagca gacctacatc tgccaggcag
+      601 ttacatttat cacttgaaag agatgagttt gatcagacac atagaaagaa gattattaaa
+      661 gatgtacctg gtacgcccag cgacaaggtg ataacatttg aattggcaaa aaattggaac
+      721 aacaactctc cgaaaaatga cgccaggagt caagaaagtg aagacgagga agacatcatc
+      781 atcaatccag tgcgggtggg taaaaatccc tttgcatcag atgaactggt cactcaggaa
+      841 attagaaatg aacgtaaaag ggcaatgttg agagaaaacc cagatataga agacgtaata
+      901 acatatgtca ataagaaggg agaggtggta gagaaacgaa ggttaacgga tgaagaaaag
+      961 agaagattca agccaaaggc attgtttcaa tctagggatc aagagcatta gtgataccgt
+     1021 cgacctcgag tcaattagtt atgtcacgct
+//

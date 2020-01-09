@@ -1,0 +1,19 @@
+LOCUS       e1f1d8ba33e6_fragment_5  191 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_KRjwr7vI
+VERSION     seq_KRjwr7vI
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..191
+                     /label="e1f1d8ba33e6_fragment_5"
+                     /ApEinfo_fwdcolor="#30270e"
+                     /ApEinfo_revcolor="#30270e"
+ORIGIN
+        1 acctccctta accagattcg aaaagcggcc gcttaactgc tcattgctat attgaagtgc
+       61 ggccgcggcg gaggagtgcg gcggaggagg agcggcggag gagtgcggcg gaggaggagc
+      121 ggcggaggag tgcggcggag gagtctagac cgtgcgtcct cgaaagtgaa agtcgagctc
+      181 ggtacgatcc t
+//

@@ -1,0 +1,16 @@
+LOCUS       ldkjfl                   300 bp    DNA     circular UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_ennW4Hbp
+VERSION     seq_ennW4Hbp
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+ORIGIN
+        1 tctaagcccg tatcccttgt atggatcgaa tacagactgc gcgctaaacg agggggaaac
+       61 tttattagta taggcagggc ggtgatatgg taaaaacagc gagcaaagat ggaaacagcg
+      121 ctaaaccaat tttttccctg ccccacggcc cacattacca cggttctgtg attcggcggg
+      181 tgtaaccctt ctttaatttg agcggatgga acccatgcgc gatatggtga atcggggagg
+      241 atgtggagat gagggccccc tttgagagtt ttcttaatct aattgacttt gtccaaatta
+//

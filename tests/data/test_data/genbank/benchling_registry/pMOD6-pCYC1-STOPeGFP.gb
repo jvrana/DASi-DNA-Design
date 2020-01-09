@@ -1,198 +1,198 @@
 LOCUS       pMOD6-pCYC1-STOPeGFP    6238 bp ds-DNA     circular     28-AUG-2019
 DEFINITION  .
 FEATURES             Location/Qualifiers
-     misc_feature    950..950
-                     /label="mut?"
-                     /ApEinfo_revcolor=#c008ff
-                     /ApEinfo_fwdcolor=#c008ff
-     ligation        4665..4668
-                     /label="Ligation"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     promoter        2598..2626
-                     /label="AmpR_promoter"
-                     /ApEinfo_revcolor=#faac61
-                     /ApEinfo_fwdcolor=#faac61
-     site            5978..5998
-                     /label="TP"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     misc_feature    5182..5182
-                     /label="TSS"
-                     /ApEinfo_revcolor=#ff1b32
-                     /ApEinfo_fwdcolor=#ff1b32
-     misc_feature    2943..2950
-                     /label="PmeI"
-                     /ApEinfo_revcolor=#75c6a9
-                     /ApEinfo_fwdcolor=#75c6a9
-     terminator      4003..4184
-                     /label="ADH1 Terminator"
-                     /ApEinfo_revcolor=#85dae9
-                     /ApEinfo_fwdcolor=#85dae9
-     misc_feature    2785..2807
-                     /label="pGEX_3_primer"
-                     /ApEinfo_revcolor=#c008ff
-                     /ApEinfo_fwdcolor=#c008ff
-     primer_bind     4312..4338
-                     /label="JP117"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
-     promoter        5225..5229
-                     /label="promoter"
-                     /ApEinfo_revcolor=#b7e6d7
-                     /ApEinfo_fwdcolor=#b7e6d7
-     primer_bind     4594..4614
-                     /label="OP153"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
-     rep_origin      922..949
-                     /label="pBR322_origin"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     site            5234..5237
-                     /label="PS"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     primer_bind     1..22
-                     /label="TS"
-                     /ApEinfo_revcolor=#ff0000
-                     /ApEinfo_fwdcolor=#ff0000
-     misc_feature    5138..5144
-                     /label="TATA"
-                     /ApEinfo_revcolor=#ff27e7
-                     /ApEinfo_fwdcolor=#ff27e7
      site            5239..5260
                      /label="PS"
                      /ApEinfo_revcolor=#ff9ccd
                      /ApEinfo_fwdcolor=#ff9ccd
-     primer_bind     4884..4907
-                     /label="JP80"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
-     primer_bind     4545..4564
-                     /label="JP36"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
+     misc_feature    523..530
+                     /label="PmeI"
+                     /ApEinfo_revcolor=#b1ff67
+                     /ApEinfo_fwdcolor=#b1ff67
+     terminator      4003..4184
+                     /label="ADH1 Terminator"
+                     /ApEinfo_revcolor=#85dae9
+                     /ApEinfo_fwdcolor=#85dae9
+     promoter        2598..2626
+                     /label="AmpR_promoter"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
      CDS             1696..2556
                      /label="Ampicillin"
                      /ApEinfo_revcolor=#ff9ccd
                      /ApEinfo_fwdcolor=#ff9ccd
-     misc_feature    590..590
-                     /label="mutant?"
-                     /ApEinfo_revcolor=#c008ff
-                     /ApEinfo_fwdcolor=#c008ff
-     primer_bind     4961..4984
-                     /label="D119"
+     primer_bind     4699..4718
+                     /label="JP107"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     primer_bind     4594..4614
+                     /label="OP153"
                      /ApEinfo_revcolor=#0502cc
                      /ApEinfo_fwdcolor=#0502cc
      gene            5264..5977
                      /label="yeGFP"
                      /ApEinfo_revcolor=#ff10fc
                      /ApEinfo_fwdcolor=#ff10fc
-     misc_feature    531..2942
-                     /label="ampR and ori"
-                     /ApEinfo_revcolor=#003232
-                     /ApEinfo_fwdcolor=#003232
-     gene            3883..4002
-                     /label="URA3"
-                     /ApEinfo_revcolor=#ffef86
-                     /ApEinfo_fwdcolor=#ffef86
-     promoter        5234..5237
-                     /label="Actual GPD Promoter"
-                     /ApEinfo_revcolor=#b7e6d7
-                     /ApEinfo_fwdcolor=#b7e6d7
-     promoter        2951..3198
-                     /label="URA3 promoter (kind of)"
-                     /ApEinfo_revcolor=#faac61
-                     /ApEinfo_fwdcolor=#faac61
-     primer_bind     4545..4564
-                     /label="JP36"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
-     misc_feature    523..530
-                     /label="PmeI"
-                     /ApEinfo_revcolor=#b1ff67
-                     /ApEinfo_fwdcolor=#b1ff67
-     primer_bind     4312..4338
-                     /label="JP117"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
-     primer_bind     4884..4907
-                     /label="JP80"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
-     Mutation        5426..5428
-                     /label="STOP"
-                     /ApEinfo_revcolor=#d59687
-                     /ApEinfo_fwdcolor=#d59687
-     primer_bind     4961..4984
-                     /label="D119"
-                     /ApEinfo_revcolor=#0502cc
-                     /ApEinfo_fwdcolor=#0502cc
      3'UTR           23..522
                      /label="URA3 3' UTR"
                      /ApEinfo_revcolor=#84b0dc
                      /ApEinfo_fwdcolor=#84b0dc
-     misc_feature    5353..5379
-                     /label="JP51"
-                     /ApEinfo_revcolor=#f58a5e
-                     /ApEinfo_fwdcolor=#f58a5e
-     site            4185..4208
-                     /label="PP2"
-                     /ApEinfo_revcolor=#f58a5e
-                     /ApEinfo_fwdcolor=#f58a5e
-     ligation        5225..5228
-                     /label="Ligation"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     terminator      5999..6238
-                     /label="CYC1_terminator"
-                     /ApEinfo_revcolor=#ff9ccd
-                     /ApEinfo_fwdcolor=#ff9ccd
-     misc_feature    5409..5428
-                     /label="gRNA-egFPs2"
-                     /ApEinfo_revcolor=#c7b0e3
-                     /ApEinfo_fwdcolor=#c7b0e3
-     gene            3199..3882
-                     /label="URA3"
-                     /ApEinfo_revcolor=#ffef86
-                     /ApEinfo_fwdcolor=#ffef86
-     misc_feature    2951..4184
-                     /label="URA3"
-                     /ApEinfo_revcolor=#84b0dc
-                     /ApEinfo_fwdcolor=#84b0dc
+     promoter        2951..3198
+                     /label="URA3 promoter (kind of)"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
      misc_difference 3899..3899
                      /label="mutated to A in ura3-1 strains"
                      /ApEinfo_revcolor=#ff9ccd
                      /ApEinfo_fwdcolor=#ff9ccd
-     promoter        535..551
-                     /label="M13 Reverse primer"
-                     /ApEinfo_revcolor=#faac61
-                     /ApEinfo_fwdcolor=#faac61
      rep_origin      951..1541
                      /label="pBR322_origin"
                      /ApEinfo_revcolor=#ff9ccd
                      /ApEinfo_fwdcolor=#ff9ccd
-     misc_feature    4961..4984
-                     /label="OP23"
-                     /ApEinfo_revcolor=#ff27e7
-                     /ApEinfo_fwdcolor=#ff27e7
-     promoter        5079..5224
-                     /label="promoter"
+     promoter        5234..5237
+                     /label="Actual GPD Promoter"
                      /ApEinfo_revcolor=#b7e6d7
                      /ApEinfo_fwdcolor=#b7e6d7
+     misc_feature    950..950
+                     /label="mut?"
+                     /ApEinfo_revcolor=#c008ff
+                     /ApEinfo_fwdcolor=#c008ff
+     misc_feature    2951..4184
+                     /label="URA3"
+                     /ApEinfo_revcolor=#84b0dc
+                     /ApEinfo_fwdcolor=#84b0dc
+     site            4185..4208
+                     /label="PP2"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     gene            3199..3882
+                     /label="URA3"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     misc_feature    5353..5379
+                     /label="JP51"
+                     /ApEinfo_revcolor=#f58a5e
+                     /ApEinfo_fwdcolor=#f58a5e
+     terminator      5999..6238
+                     /label="CYC1_terminator"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     misc_feature    2943..2950
+                     /label="PmeI"
+                     /ApEinfo_revcolor=#75c6a9
+                     /ApEinfo_fwdcolor=#75c6a9
+     misc_feature    531..2942
+                     /label="ampR and ori"
+                     /ApEinfo_revcolor=#003232
+                     /ApEinfo_fwdcolor=#003232
      misc_feature    5108..5116
                      /label="TATA"
                      /ApEinfo_revcolor=#ff27e7
                      /ApEinfo_fwdcolor=#ff27e7
-     primer_bind     4699..4718
-                     /label="JP107"
+     misc_feature    5138..5144
+                     /label="TATA"
+                     /ApEinfo_revcolor=#ff27e7
+                     /ApEinfo_fwdcolor=#ff27e7
+     primer_bind     4884..4907
+                     /label="JP80"
                      /ApEinfo_revcolor=#0502cc
                      /ApEinfo_fwdcolor=#0502cc
+     primer_bind     4312..4338
+                     /label="JP117"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     site            5234..5237
+                     /label="PS"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     misc_feature    590..590
+                     /label="mutant?"
+                     /ApEinfo_revcolor=#c008ff
+                     /ApEinfo_fwdcolor=#c008ff
+     misc_feature    2785..2807
+                     /label="pGEX_3_primer"
+                     /ApEinfo_revcolor=#c008ff
+                     /ApEinfo_fwdcolor=#c008ff
+     rep_origin      922..949
+                     /label="pBR322_origin"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     site            5978..5998
+                     /label="TP"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
+     primer_bind     4545..4564
+                     /label="JP36"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     primer_bind     4545..4564
+                     /label="JP36"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     primer_bind     1..22
+                     /label="TS"
+                     /ApEinfo_revcolor=#ff0000
+                     /ApEinfo_fwdcolor=#ff0000
+     misc_feature    5409..5428
+                     /label="gRNA-egFPs2"
+                     /ApEinfo_revcolor=#c7b0e3
+                     /ApEinfo_fwdcolor=#c7b0e3
+     primer_bind     4312..4338
+                     /label="JP117"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     primer_bind     4961..4984
+                     /label="D119"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     promoter        5079..5224
+                     /label="promoter"
+                     /ApEinfo_revcolor=#b7e6d7
+                     /ApEinfo_fwdcolor=#b7e6d7
+     gene            3883..4002
+                     /label="URA3"
+                     /ApEinfo_revcolor=#ffef86
+                     /ApEinfo_fwdcolor=#ffef86
+     ligation        5225..5228
+                     /label="Ligation"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
      misc_feature    548..570
                      /label="M13_pUC_rev_primer"
                      /ApEinfo_revcolor=#c008ff
                      /ApEinfo_fwdcolor=#c008ff
+     promoter        5225..5229
+                     /label="promoter"
+                     /ApEinfo_revcolor=#b7e6d7
+                     /ApEinfo_fwdcolor=#b7e6d7
+     misc_feature    4961..4984
+                     /label="OP23"
+                     /ApEinfo_revcolor=#ff27e7
+                     /ApEinfo_fwdcolor=#ff27e7
+     promoter        535..551
+                     /label="M13 Reverse primer"
+                     /ApEinfo_revcolor=#faac61
+                     /ApEinfo_fwdcolor=#faac61
+     Mutation        5426..5428
+                     /label="STOP"
+                     /ApEinfo_revcolor=#d59687
+                     /ApEinfo_fwdcolor=#d59687
+     primer_bind     4884..4907
+                     /label="JP80"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     misc_feature    5182..5182
+                     /label="TSS"
+                     /ApEinfo_revcolor=#ff1b32
+                     /ApEinfo_fwdcolor=#ff1b32
+     primer_bind     4961..4984
+                     /label="D119"
+                     /ApEinfo_revcolor=#0502cc
+                     /ApEinfo_fwdcolor=#0502cc
+     ligation        4665..4668
+                     /label="Ligation"
+                     /ApEinfo_revcolor=#ff9ccd
+                     /ApEinfo_fwdcolor=#ff9ccd
 ORIGIN
         1 atgtcgtaat aaccccgccc cgaaaactgt attataagta aatgcatgta tactaaactc
        61 acaaattaga gcttcaattt aattatatca gttattaccc gggaatctcg gtcgtaatga

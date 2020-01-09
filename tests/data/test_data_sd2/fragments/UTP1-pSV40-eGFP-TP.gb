@@ -1,0 +1,82 @@
+LOCUS       utp1-psv40-egfp-tp      1110 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_iRITRmPs
+VERSION     seq_iRITRmPs
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..25
+                     /label="UTP1"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    301..320
+                     /label="SV40-GFP NT1"
+                     /ApEinfo_fwdcolor="#690f96"
+                     /ApEinfo_revcolor="#690f96"
+     promoter        169..365
+                     /label="SV40 early promoter"
+                     /ApEinfo_fwdcolor="#84B0DC"
+                     /ApEinfo_revcolor="#84B0DC"
+     misc_feature    375..1088
+                     /label="EGFP"
+                     /ApEinfo_fwdcolor="#B1FF67"
+                     /ApEinfo_revcolor="#B1FF67"
+     misc_feature    403..422
+                     /label="GFP NT2"
+                     /ApEinfo_fwdcolor="#690f96"
+                     /ApEinfo_revcolor="#690f96"
+     misc_feature    318
+                     /label="Transcription start site +1"
+                     /ApEinfo_fwdcolor="#B1FF67"
+                     /ApEinfo_revcolor="#B1FF67"
+     misc_feature    49..120
+                     /label="AP1 enhancer"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     misc_feature    196..216
+                     /label="SP1 enhancer"
+                     /ApEinfo_fwdcolor="#B1FF67"
+                     /ApEinfo_revcolor="#B1FF67"
+     misc_feature    64..90
+                     /label="SV40 P1"
+                     /ApEinfo_fwdcolor="#730e8c"
+                     /ApEinfo_revcolor="#730e8c"
+     gibson_assembly 1089..1110
+                     /label="tp"
+                     /ApEinfo_fwdcolor="#f58a5e"
+                     /ApEinfo_revcolor="#f58a5e"
+     misc_feature    278..284
+                     /label="TATA box"
+                     /ApEinfo_fwdcolor="#800080"
+                     /ApEinfo_revcolor="#800080"
+     promoter        49
+                     /label="SV40 promoter"
+                     /ApEinfo_fwdcolor="#84B0DC"
+                     /ApEinfo_revcolor="#84B0DC"
+     misc_feature    49..365
+                     /label="SV40 promoter"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+ORIGIN
+        1 gccgatacga aggttttctc cagcgcctgt ggaatgtgtg tcagttaggg tgtggaaagt
+       61 ccccaggctc cccagcaggc agaagtatgc aaagcatgca tctcaattag tcagcaacca
+      121 ggtgtggaaa gtccccaggc tccccagcag gcagaagtat gcaaagcatg catctcaatt
+      181 agtcagcaac catagtcccg cccctaactc cgcccatccc gcccctaact ccgcccagtt
+      241 ccgcccattc tccgccccat ggctgactaa ttttttttat ttatgcagag gccgaggccg
+      301 cctcggcctc tgagctattc cagaagtagt gaggaggctt ttttggaggc ctaggctttt
+      361 gcaaaaagct catggtgagc aagggcgagg agctgttcac cggggtggtg cccatcctgg
+      421 tcgagctgga cggcgacgta aacggccaca agttcagcgt gtccggcgag ggcgagggcg
+      481 atgccaccta cggcaagctg accctgaagt tcatctgcac caccggcaag ctgcccgtgc
+      541 cctggcccac cctcgtgacc accctgacct acggcgtgca gtgcttcagc cgctaccccg
+      601 accacatgaa gcagcacgac ttcttcaagt ccgccatgcc cgaaggctac gtccaggagc
+      661 gcaccatctt cttcaaggac gacggcaact acaagacccg cgccgaggtg aagttcgagg
+      721 gcgacaccct ggtgaaccgc atcgagctga agggcatcga cttcaaggag gacggcaaca
+      781 tcctggggca caagctggag tacaactaca acagccacaa cgtctatatc atggccgaca
+      841 agcagaagaa cggcatcaag gtgaacttca agatccgcca caacatcgag gacggcagcg
+      901 tgcagctcgc cgaccactac cagcagaaca cccccatcgg cgacggcccc gtgctgctgc
+      961 ccgacaacca ctacctgagc acccagtccg ccctgagcaa agaccccaac gagaagcgcg
+     1021 atcacatggt cctgctggag ttcgtgaccg ccgccgggat cactctcggc atggacgagc
+     1081 tgtacaagtg ataccgtcga cctcgagtca
+//

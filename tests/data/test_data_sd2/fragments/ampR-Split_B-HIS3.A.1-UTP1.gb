@@ -1,0 +1,81 @@
+LOCUS       ampr-split_b-his3-a-1   2013 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_ky70fvhb
+VERSION     seq_ky70fvhb
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1989..2013
+                     /label="UTP1"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    1..972
+                     /label="Amp and ori"
+                     /ApEinfo_fwdcolor="#004c4c"
+                     /ApEinfo_revcolor="#004c4c"
+     misc_feature    998..1988
+                     /label="HIS3.A.1 5'"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc            1989..2013
+                     /label="Tm: 60.2°C"
+                     /ApEinfo_fwdcolor="#d65bf7"
+                     /ApEinfo_revcolor="#d65bf7"
+     gene            1
+                     /label="Ampicillin"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     CDS             1..586
+                     /label="Ampicillin"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc            1..169
+                     /label="Tm: 77.2°C"
+                     /ApEinfo_fwdcolor="#0265a2"
+                     /ApEinfo_revcolor="#0265a2"
+     misc            973..997
+                     /label="Tm: 61.5°C"
+                     /ApEinfo_fwdcolor="#2e7beb"
+                     /ApEinfo_revcolor="#2e7beb"
+     promoter        628..656
+                     /label="AmpR_promoter"
+                     /ApEinfo_fwdcolor="#ff3e3e"
+                     /ApEinfo_revcolor="#ff3e3e"
+ORIGIN
+        1 gttcgccagt taatagtttg cgcaacgttg ttgccattgc tacaggcatc gtggtgtcac
+       61 gctcgtcgtt tggtatggct tcattcagct ccggttccca acgatcaagg cgagttacat
+      121 gatcccccat gttgtgaaaa aaagcggtta gctccttcgg tcctccgatc gttgtcagaa
+      181 gtaagttggc cgcagtgtta tcactcatgg ttatggcagc actgcataat tctcttactg
+      241 tcatgccatc cgtaagatgc ttttctgtga ctggtgagta ctcaaccaag tcattctgag
+      301 aatagtgtat gcggcgaccg agttgctctt gcccggcgtc aatacgggat aataccgcgc
+      361 cacatagcag aactttaaaa gtgctcatca ttggaaaacg ttcttcgggg cgaaaactct
+      421 caaggatctt accgctgttg agatccagtt cgatgtaacc cactcgtgca cccaactgat
+      481 cttcagcatc ttttactttc accagcgttt ctgggtgagc aaaaacagga aggcaaaatg
+      541 ccgcaaaaaa gggaataagg gcgacacgga aatgttgaat actcatactc ttcctttttc
+      601 aatattattg aagcatttat cagggttatt gtctcatgag cggatacata tttgaatgta
+      661 tttagaaaaa taaacaaata ggggttccgc gcacatttcc ccgaaaagtg ccacctgacg
+      721 tctaagaaac cattattatc atgacattaa cctataaaaa taggcgtatc acgaggccct
+      781 ttcgtctcgc gcgtttcggt gatgacggtg aaaacctctg acacatgcag ctcccggaga
+      841 cggtcacagc ttgtctgtaa gcggatgccg ggagcagaca agcccgtcag ggcgcgtcag
+      901 cgggtgttgg cgggtgtcgg ggctggctta actatgcggc atcagagcag attgtactga
+      961 gagtgcacca tagtcggcgg gaccagggag tttaaacggg cagctcgtga atgcttaatg
+     1021 ctgctgaact ggtgtccatg tcgcctaggt acgcaatctc cacaggctgc aaaggttttg
+     1081 tctcaagagc aatgttattg tgcaccccgt aattggtcaa caagtttaat ctgtgcttgt
+     1141 ccaccagctc tgtcgtaacc ttcagttcat cgactatctg aagaaattta ctaggaatag
+     1201 tgccatggta cagcaaccga gaatggcaat ttctactcgg gttcagcaac gctgcataaa
+     1261 cgctgttggt gccgtagaca tattcgaaga taggattatc attcataagt ttcagagcaa
+     1321 tgtccttatt ctggaacttg gatttatggc tcttttggtt taatttcgcc tgattcttga
+     1381 tctcctttag cttctcgacg tgggcctttt tcttgccata tggatccgct gcacggtcct
+     1441 gttccctagc atgtacgtga gcgtatttcc ttttaaacca cgacgctttg tcttcattca
+     1501 acgtttccca ttgttttttt ctactattgc tttgctgtgg gaaaaactta tcgaaagatg
+     1561 acgacttttt cttaattctc gttttaagag cttggtgagc gctaggagtc actgccaggt
+     1621 atcgtttgaa cacggcatta gtcagggaag tcataacaca gtcctttccc gcaattttct
+     1681 ttttctatta ctcttggcct cctctagtac actctatatt tttttatgcc tcggtaatga
+     1741 ttttcatttt tttttttcca cctagcggat gactcttttt ttttcttagc gattggcatt
+     1801 atcacataat gaattataca ttatataaag taatgtgatt tcttcgaaga atatactaaa
+     1861 aaatgagcag gcaagataaa cgaaggcaaa gatgacagag cagaaagccc tagtaaagcg
+     1921 tattacaaat gaaaccaaga ttcagattgc gatctcttta aagggtggtc ccctagcgat
+     1981 agagcactgc cgatacgaag gttttctcca gcg
+//

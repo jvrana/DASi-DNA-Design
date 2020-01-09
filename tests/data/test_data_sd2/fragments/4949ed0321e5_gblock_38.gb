@@ -1,0 +1,43 @@
+LOCUS       4949ed0321e5_gblock_38   956 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_xhEjWdSM
+VERSION     seq_xhEjWdSM
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     http://identifie55..214
+                     /label="CYC1 minimal promoter"
+                     /ApEinfo_fwdcolor="#515616"
+                     /ApEinfo_revcolor="#515616"
+     misc_feature    1..956
+                     /label="4949ed0321e5_gblock_38"
+                     /ApEinfo_fwdcolor="#da95dc"
+                     /ApEinfo_revcolor="#da95dc"
+     gibson_linker   221..242
+                     /label="ps"
+                     /ApEinfo_fwdcolor="#f58a5e"
+                     /ApEinfo_revcolor="#f58a5e"
+     misc_feature    129..148
+                     /label="c3 site"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+ORIGIN
+        1 gctaggtaag caaacccatc acgcaactgg taaagtgaaa gtcgagctcg gtacgatcct
+       61 atggcatgca tgtgctctgt atgtatataa aactcttgtt ttcttctttt ctctaaatat
+      121 tctttcctta tacattagga cctttgcagc ataaattact atacttctat agacacacaa
+      181 acacaaatac acacactaat ctagatattg gattcggatt ctagaactag tggatctaca
+      241 aaatgtctaa aggtgaagaa ttattcactg gtgttgtccc aattttggtt gaattagatg
+      301 gtgatgttaa tggtcacaaa ttttctgtct ccggtgaagg tgaaggtgat gctacttacg
+      361 gtaaattgac cttaaaattt atttgtacta ctggtaaatt gccagttcca tggccaacct
+      421 tagtcactac tttcggttat ggtgttcaat gttttgcgag atacccagat catatgaaac
+      481 aacatgactt tttcaagtct gccatgccag aaggttatgt tcaagaaaga actatttttt
+      541 tcaaagatga cggtaactac aagaccagag ctgaagtcaa gtttgaaggt gataccttag
+      601 ttaatagaat cgaattaaaa ggtattgatt ttaaagaaga tggtaacatt ttaggtcaca
+      661 aattggaata caactataac tctcacaatg tttacatcat ggctgacaaa caaaagaatg
+      721 gtatcaaagt taacttcaaa attagacaca acattgaaga tggttctgtt caattagctg
+      781 accattatca acaaaatact ccaattggtg atggtccagt cttgttacca gacaaccatt
+      841 acttatccac tcaatctgcc ttatccaaag atccaaacga aaagagagac cacatggtct
+      901 tgttagaatt tgttactgct gctggtatta cccatggtat ggatgaattg tacaaa
+//

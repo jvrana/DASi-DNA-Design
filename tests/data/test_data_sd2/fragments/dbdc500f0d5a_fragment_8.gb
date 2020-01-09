@@ -1,0 +1,57 @@
+LOCUS       dbdc500f0d5a_fragment_8  343 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_GMIpJ8vx
+VERSION     seq_GMIpJ8vx
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     responsive_eleme300..318
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     responsive_eleme264..282
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     misc_feature    30..54
+                     /label="UTP1"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     responsive_eleme122..140
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     misc_feature    6..29
+                     /label="PP2"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     responsive_eleme157..175
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     responsive_eleme86..104
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     misc_feature    1..343
+                     /label="dbdc500f0d5a_fragment_8"
+                     /ApEinfo_fwdcolor="#3bede3"
+                     /ApEinfo_revcolor="#3bede3"
+     responsive_eleme193..211
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     responsive_eleme229..247
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+ORIGIN
+        1 acctccctta accagattcg aaaagcggcg ccgatacgaa ggttttctcc agcgctttgg
+       61 ccgcgaatcg atatgtcgag tttactccct atcagtgata gagaacgtat gtcgagttta
+      121 ctccctatca gtgatagaga acgatgtcga gtttactccc tatcagtgat agagaacgta
+      181 tgtcgagttt actccctatc agtgatagag aacgtatgtc gagtttactc cctatcagtg
+      241 atagagaacg tatgtcgagt ttatccctat cagtgataga gaacgtatgt cgagtttact
+      301 ccctatcagt gatagagaac gtatgtcgag gtaggcgtgt acg
+//

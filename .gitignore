@@ -687,3 +687,8 @@ MigrationBackup/
 
 # ignore output test directories
 */**/.test*
+tests/summary.csv
+tests/sequence_design.csv
+tests/test_design/designs.json
+tests/test_design/library_design.csv
+tests/test_design/library_summary.csv

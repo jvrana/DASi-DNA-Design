@@ -42,6 +42,22 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     print(len(a_arr) * len(b_arr))
 
 
+class TestBenchmark:
+    """Benchmarks the compilation and optimization of assembly graphs."""
+
+    def test_single_compiled_benchmark(self, single_compiled_results):
+        pass
+
+    def test_multi_compiled_benchmark(self, multi_compiled_results):
+        pass
+
+    def test_single_processed_benchmark(self, single_processed_results):
+        pass
+
+    def test_multi_processed_benchmark(self, multi_processed_results):
+        pass
+
+
 class TestDesignResult:
     def test_expected_span_length(self, single_processed_results):
         """[SINGLE PROCESSOR] Test that the input query is the same length as
@@ -66,18 +82,18 @@ class TestDesignResult:
             assert len(result.query) == sum(assembly.to_df()["span"])
 
 
-class TestSequenceDesign:
+class TestReactions:
     def test_single_design_sequences(self, single_processed_results):
         design, results = single_processed_results
         for qk, result in results.items():
-            result.design_sequences()
-            result.design_sequence_output()
+            for a in result.assemblies:
+                a.reactions
 
     def test_multi_design_sequences(self, multi_processed_results):
         design, results = multi_processed_results
         for qk, result in results.items():
-            result.design_sequences()
-            result.design_sequence_output()
+            for a in result.assemblies:
+                a.reactions
 
 
 class TestMultiProcessing:
@@ -93,12 +109,20 @@ class TestMultiProcessing:
 
             d1 = dict(e1[2])
             d2 = dict(e2[2])
+
             del d1["groups"]
             del d2["groups"]
 
             d1["type_def"] = d1["type_def"].__dict__
             d2["type_def"] = d2["type_def"].__dict__
+
+            d1["group"] = str(d1["group"])
+            d2["group"] = str(d2["group"])
+
             diff = list(dictdiffer.diff(d1, d2))
+
+            print(d1)
+            print(d2)
 
             assert not diff
 
@@ -169,6 +193,20 @@ class TestReactions:
         for result in results.values():
             for a in result.assemblies:
                 a.reactions
+
+
+class TestDesignToDf:
+    def test_multi_reactions(self, multi_processed_results):
+        design, results = multi_processed_results
+        a, b = design.to_df()
+        print(a)
+        print(b)
+
+    def test_single_reactions(self, single_processed_results):
+        design, results = single_processed_results
+        a, b = design.to_df()
+        print(a)
+        print(b)
 
 
 class TestOutput:

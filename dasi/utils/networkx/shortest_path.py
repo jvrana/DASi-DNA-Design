@@ -22,7 +22,7 @@ def _weight_function(v, u, e, k):
 def sympy_multisource_dijkstras(
     g, sources, f, accumulators=None, init=None, target=None, cutoff=None
 ):
-    if not sources:
+    if sources is None or not len(sources):
         raise ValueError("sources must not be empty")
     if target in sources:
         return (0, [target])

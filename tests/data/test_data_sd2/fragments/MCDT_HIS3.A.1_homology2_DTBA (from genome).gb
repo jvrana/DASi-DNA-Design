@@ -1,0 +1,49 @@
+LOCUS       mcdt_his3-a-1_homology2_dtba-from-genome 1029 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_y0CtsAFT
+VERSION     seq_y0CtsAFT
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     gene            521..874
+                     /label="YOR203W"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+     exon            521..874
+                     /label="S000005729 Exon 1"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     exon            26..564
+                     /label="S000005728 Exon 1"
+                     /ApEinfo_fwdcolor="#85DAE9"
+                     /ApEinfo_revcolor="#85DAE9"
+     gene            26..564
+                     /label="HIS3"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+     misc            1..1029
+                     /label="MCDT_HIS3.A.1_homology2_DTBA (from genome)"
+                     /ApEinfo_fwdcolor="#71d000"
+                     /ApEinfo_revcolor="#71d000"
+ORIGIN
+        1 cagaagcgag gcgaataaag gtggccagta gcagaacagg ccacacaatc gcaagtgatt
+       61 aacgtccaca caggtatagg gtttctggac catatgatac atgctctggc caagcattcc
+      121 ggctggtcgc taatcgttga gtgcattggt gacttacaca tagacgacca tcacaccact
+      181 gaagactgcg ggattgctct cggtcaagct tttaaagagg ccctaggggc cgtgcgtgga
+      241 gtaaaaaggt ttggatcagg atttgcgcct ttggatgagg cactttccag agcggtggta
+      301 gatctttcga acaggccgta cgcagttgtc gaacttggtt tgcaaaggga gaaagtagga
+      361 gatctctctt gcgagatgat cccgcatttt cttgaaagct ttgcagaggc tagcagaatt
+      421 accctccacg ttgattgtct gcgaggcaag aatgatcatc accgtagtga gagtgcgttc
+      481 aaggctcttg cggttgccat aagagaagcc acctcgccca atggtaccaa cgatgttccc
+      541 tccaccaaag gtgttcttat gtagtgacac cgattattta aagctgcagc atacgatata
+      601 tatacatgtg tatatatgta tacctatgaa tgtcagtaag tatgtatacg aacagtatga
+      661 tactgaagat gacaaggtaa tgcatcattc tatacgtgtc attctgaacg aggcgcgctt
+      721 tccttttttc tttttgcttt ttcttttttt ttctcttgaa ctcgagaaaa aaaatataaa
+      781 agagatggag gaacgggaaa aagttagttg tggtgatagg tggcaagtgg tattccgtaa
+      841 gaacaacaag aaaagcattt catattatgg ctgaactgag cgaacaagtg caaaatttaa
+      901 gcatcaacga caacaacgag aatggttatg ttcctcctca cttaagagga aaaccaagaa
+      961 gtgccagaaa taacagtagc aactacaata acaacaacgg cggcgtttaa actggctgct
+     1021 acccacgcc
+//

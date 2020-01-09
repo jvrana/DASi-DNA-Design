@@ -10,11 +10,13 @@ from dasi.cost import SpanCost
 from dasi.design import Design
 
 
+@pytest.mark.benchmark
 class TestBenchmarkCosts:
     def test_span_cost_constructor(self, benchmark):
         benchmark.pedantic(SpanCost.open, rounds=1, iterations=1)
 
 
+@pytest.mark.benchmark
 @pytest.mark.parametrize(
     "query", ["pmodkan-ho-pact1-z4-er-vpr.gb", "plko-pef1a-frt-tdtomato-wpre.gb"]
 )

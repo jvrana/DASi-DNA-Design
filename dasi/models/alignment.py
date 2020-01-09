@@ -1,6 +1,4 @@
 """Alignments."""
-from __future__ import annotations
-
 from collections.abc import Sized
 from typing import Dict
 from typing import List
@@ -53,6 +51,7 @@ class Alignment(RepresentsMolecule, Sized):
         atype: str,
         query_key: str,
         subject_key: str,
+        meta: dict = None,
     ):
         """Makes an alignment between two regions of sequences. Validates the
         regions are the same length.
@@ -69,6 +68,9 @@ class Alignment(RepresentsMolecule, Sized):
         self.validate()
         self.query_key = query_key
         self.subject_key = subject_key
+        if meta is None:
+            meta = {}
+        self.meta = meta
 
     def validate(self):
         if not len(self.query_region) == len(self.subject_region):
@@ -84,7 +86,7 @@ class Alignment(RepresentsMolecule, Sized):
     def is_perfect_subject(self):
         return len(self.subject_region) == self.subject_region.context_length
 
-    def sub_region(self, qstart: int, qend: int, atype=None) -> Alignment:
+    def sub_region(self, qstart: int, qend: int, atype=None) -> "Alignment":
         """Returns a copy of the alignment between the inclusive start and end
         relative to the query region.
 
@@ -121,7 +123,7 @@ class Alignment(RepresentsMolecule, Sized):
             subject_key=self.subject_key,
         )
 
-    def copy(self, atype=None) -> Alignment:
+    def copy(self, atype=None) -> "Alignment":
         """Do shallow copy of this alignment. Query and subject regions between
         this and the copied alignment will be identical.
 
@@ -135,7 +137,7 @@ class Alignment(RepresentsMolecule, Sized):
             self.subject_region,
             atype,
             self.query_key,
-            self.subject_region,
+            self.subject_key,
         )
 
     def __len__(self) -> int:
@@ -146,8 +148,19 @@ class Alignment(RepresentsMolecule, Sized):
             self.__class__.__name__, self.type, self.query_region, self.subject_region
         )
 
-    # def __setstate__(self, state):
-    #     self._registry[self.uid] = self
+    @staticmethod
+    def _rhash(region: Region):
+        return (region.a, region.b, region.c, region.context_length, region.cyclic)
+
+    def eq_hash(self):
+        return (
+            (self.query_key, self.subject_key, self.type)
+            + self._rhash(self.query_region)
+            + self._rhash(self.subject_region)
+        )
+
+    def __eq__(self, other: "Alignment"):
+        return self.eq_hash() == other.eq_hash()
 
     def __repr__(self) -> str:
         return str(self)
@@ -177,6 +190,8 @@ class AlignmentGroupBase(RepresentsMolecule):
         super().__init__(query_region, group_type)
         self.alignments = alignments
         self.name = name
+        if meta is None:
+            meta = {}
         self.meta = meta
 
     @property
@@ -194,7 +209,7 @@ class AlignmentGroupBase(RepresentsMolecule):
         """Return the list of subject keys in this alignment group."""
         return [a.subject_key for a in self.alignments]
 
-    def sub_region(self, qstart: int, qend: int, atype: str) -> AlignmentGroupBase:
+    def sub_region(self, qstart: int, qend: int, atype: str) -> "AlignmentGroupBase":
         """Produce a new alignment group with sub-regions of the query region
         and subject regions at the specified new indicies."""
         alignments_copy = []
@@ -316,7 +331,7 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
 
     def __init__(
         self,
-        groupings: List[Dict[str:Alignment]],
+        groupings: List[Dict[str, Alignment]],
         query_region: Region,
         group_type: str,
     ):

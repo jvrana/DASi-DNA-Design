@@ -1,0 +1,19 @@
+LOCUS       dbdc500f0d5a_fragment_35 191 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_mKVbSF7A
+VERSION     seq_mKVbSF7A
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..191
+                     /label="dbdc500f0d5a_fragment_35"
+                     /ApEinfo_fwdcolor="#8a19e3"
+                     /ApEinfo_revcolor="#8a19e3"
+ORIGIN
+        1 gagaacgtat gtcgaggtag gcgtgtacgc gcttaactgc tcattgctat attgaagtgc
+       61 ggccgcggcg gaggagtgcg gcggaggagg agcggcggag gagtgcggcg gaggaggagc
+      121 ggcggaggag tgcggcggag gagtctagac cgtgcgtcct cgaaagtgaa agtcgagctc
+      181 ggtacgatcc t
+//

@@ -1,9 +1,9 @@
 """Alignment container."""
-from __future__ import annotations
-
 from bisect import bisect_left
+from collections.abc import Mapping
 from collections.abc import Sized
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -27,7 +27,7 @@ from dasi.utils import Region
 from dasi.utils import sort_with_keys
 
 
-def blast_to_region(query_or_subject, seqdb):
+def blast_to_region(query_or_subject: dict, seqdb: Dict[str, SeqRecord]) -> Region:
     """Converts a blast data result to a Region. Blast results are indicated by
     two positions with index starting at 1 and positions being inclusive. This
     returns a Region with index starting at 0 and the end point position being
@@ -62,6 +62,46 @@ def blast_to_region(query_or_subject, seqdb):
     return region
 
 
+class GroupTags(Mapping):
+    def __init__(self):
+        self.tags = {}
+        self.constructors = {}
+        self.cached = {}
+
+    def new_tag(self, name: str, constructor: Callable):
+        self.tags[name] = {}
+        self.cached[name] = {}
+        self.constructors[name] = constructor
+
+    def add(self, name, key, data):
+        self.tags[name].setdefault(key, list())
+        self.tags[name][key].append(data)
+        self.cached[name] = None
+
+    def all(self):
+        groups = []
+        for tag in self.tags:
+            groups += self[tag]
+        return groups
+
+    def __getitem__(self, name):
+        if self.cached[name]:
+            return self.cached[name]
+        else:
+            results = self.constructors[name](self.tags[name])
+            self.cached[name] = results
+            return results
+
+    def __contains__(self, name):
+        return name in self.tags
+
+    def __iter__(self):
+        return self.tags.__iter__()
+
+    def __len__(self):
+        return len(self.tags)
+
+
 class AlignmentContainer(Sized):
     """Container for a set of query-to-subject alignments for a single query.
 
@@ -86,13 +126,14 @@ class AlignmentContainer(Sized):
         Constants.PCR_PRODUCT_WITH_PRIMERS,
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
-        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
         Constants.GAP,
         Constants.OVERLAP,
         Constants.MISSING,
+        Constants.SHARED_SYNTHESIZED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord], alignments=None):
@@ -100,23 +141,84 @@ class AlignmentContainer(Sized):
         self._frozen = False
         self._frozen_groups = None
         if alignments is not None:
-            self.alignments = alignments
+            self.set_alignments(alignments)
         self.seqdb = seqdb
         self.logger = logger(self)
-        self.multi_grouping_tags = {}
+
+        self.group_tags = GroupTags()
+        self.group_tags.new_tag(Constants.PCR_GROUP_TAG, self.pcr_constructor)
+        self.group_tags.new_tag(Constants.SHARE_GROUP_TAG, self.share_constructor)
+
+    @staticmethod
+    def pcr_constructor(data):
+        groups = []
+        for (a, b, group_type), adict_list in data.items():
+            g = [
+                {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
+                for d in adict_list
+            ]
+
+            regions = [d["query_region"] for d in adict_list]
+            assert len({(q.a, q.b) for q in regions}) == 1
+
+            groups.append(
+                MultiPCRProductAlignmentGroup(
+                    g, query_region=adict_list[0]["query_region"], group_type=group_type
+                )
+            )
+        return groups
+
+    @staticmethod
+    def share_constructor(data):
+        groups = []
+        for (a, b, group_type), entry in data.items():
+            if entry:
+                groups.append(
+                    AlignmentGroup(
+                        entry[0]["alignments"],
+                        group_type=group_type,
+                        meta={
+                            "n_clusters": entry[0]["n_clusters"],
+                            "cross_container_alignments": entry[0][
+                                "cross_container_alignments"
+                            ],
+                        },
+                    )
+                )
+        return groups
 
     @property
     def alignments(self):
         return self._alignments
 
-    @alignments.setter
-    def alignments(self, v):
+    # @alignments.setter
+    # def alignments(self, v):
+    #     if self._frozen:
+    #         raise AlignmentContainerException(
+    #             "Cannot set alignments. Container is frozen."
+    #         )
+    #     self._alignments = v
+    #     self._check_single_query_key(self._alignments)
+
+    def set_alignments(self, alignments: List[Alignment], lim_size: bool = False):
         if self._frozen:
             raise AlignmentContainerException(
                 "Cannot set alignments. Container is frozen."
             )
-        self._alignments = v
+        if lim_size:
+            alignments = [a for a in alignments if a.size_ok()]
+        self._alignments = alignments
         self._check_single_query_key(self._alignments)
+
+    def add_alignments(self, alignments: List[Alignment], lim_size: bool = False):
+        hashes = [align.eq_hash() for align in self.alignments]
+        new_alignments = []
+        for align in alignments:
+            if not lim_size or align.size_ok():
+                if align.eq_hash() not in hashes:
+                    new_alignments.append(align)
+        self.set_alignments(self.alignments + new_alignments)
+        return new_alignments
 
     @staticmethod
     def _check_single_query_key(alignments):
@@ -127,10 +229,8 @@ class AlignmentContainer(Sized):
                 "following query keys: {}".format(keys)
             )
 
-    @classmethod
-    def filter_alignments_by_span(
-        cls, alignments, region, key=None, end_inclusive=True
-    ):
+    @staticmethod
+    def filter_alignments_by_span(alignments, region, key=None, end_inclusive=True):
         fwd, fwd_keys = sort_with_keys(alignments, key=key)
         found = []
         for a, b in region.ranges(ignore_wraps=True):
@@ -221,7 +321,7 @@ class AlignmentContainer(Sized):
 
             if lim_size and not product_group.size_ok():
                 continue
-            self._new_multi_pcr_grouping_tag(product_group)
+            self._new_pcr_grouping_tag(product_group)
             groups.append(product_group)
         return groups
 
@@ -241,8 +341,24 @@ class AlignmentContainer(Sized):
         )
         if lim_size and not product_group.size_ok():
             return []
-        self._new_multi_pcr_grouping_tag(product_group)
+        self._new_pcr_grouping_tag(product_group)
         return [product_group]
+
+    def _make_subgroup(
+        self, group: AlignmentGroup, a: int, b: int, atype: str
+    ) -> Union[AlignmentGroup, None]:
+        """Make a subgroup at the specified indices.
+
+        Returns None if a, b and the indices of the group.query_region
+        or if a == b
+        """
+        region = group.query_region
+        if region.a == a and region.b == b:
+            return None
+        elif a == b:
+            return None
+        subgroup = group.sub_region(a, b, atype)
+        return subgroup
 
     def expand_primer_extension_products(self, only_one_required=False, lim_size=True):
         primers = self.get_alignments_by_types(Constants.PRIMER)
@@ -265,7 +381,10 @@ class AlignmentContainer(Sized):
                     else:
                         continue
                 pairs += self._create_primer_extension_alignment(
-                    f, r, Constants.PRIMER_EXTENSION_PRODUCT, lim_size=lim_size
+                    f,
+                    r,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
+                    lim_size=lim_size,
                 )
 
         if only_one_required:
@@ -375,13 +494,16 @@ class AlignmentContainer(Sized):
         alignment_groups: List[AlignmentGroup],
         atype=Constants.PCR_PRODUCT,
         lim_size: bool = True,
+        pass_condition: Callable = None,
+        include_left: bool = True,
     ) -> List[Alignment]:
         """
         Expand the list of alignments from existing regions. Produces new fragments in
-        the following three situations:
+        the following two situations:
 
         ::
 
+            if `include_left`
             |--------|          alignment 1
                 |--------|      alignment 2
             |---|               new alignment
@@ -391,14 +513,15 @@ class AlignmentContainer(Sized):
                  |--------|     alignment 2
                  |---|          new alignment
 
-
-            |--------|          alignment 1
-                 |--------|     alignment 2
-                     |----|     new alignment
-
         :param alignment_groups: list of alignment groups to expand
         :param atype: the alignment type label for expanded alignments
-        :return: list
+        :param lim_size: if True, only add alignments that pass the size limitations
+        :param pass_condition: an optional callable that takes group_a (AlignmentGroup)
+            and group_b (AlignmentGroup). If the returned value is False, alignments
+            are skipped.
+        :param include_left: if True, will add overlapping region and the left
+            region up to the overlap.
+        :return: list of new alignments
         """
 
         min_overlap = Constants.MIN_OVERLAP
@@ -416,20 +539,38 @@ class AlignmentContainer(Sized):
 
             for group_b in overlapping:
                 if group_b is not group_a:
-                    left = group_a.sub_region(
-                        group_a.query_region.a, group_b.query_region.a, atype
-                    )
-                    overlap = group_a.sub_region(
-                        group_b.query_region.a, group_a.query_region.b, atype
-                    )
+                    # ignore groups that are completely contained in region
+                    if group_b.query_region.b in group_a.query_region:
+                        continue
+                    if pass_condition:
+                        if not pass_condition(group_a, group_b):
+                            continue
 
-                    if len(left.query_region) > min_overlap:
-                        alignments += left.alignments
+                    if include_left:
+                        left = self._make_subgroup(
+                            group_a,
+                            group_a.query_region.a,
+                            group_b.query_region.a,
+                            atype,
+                        )
+                        if left and len(left.query_region) > min_overlap:
+                            alignments += left.alignments
 
-                    if len(overlap.query_region) > min_overlap:
+                    overlap = self._make_subgroup(
+                        group_a, group_b.query_region.a, group_a.query_region.b, atype
+                    )
+                    if overlap and len(overlap.query_region) > min_overlap:
                         alignments += overlap.alignments
         if lim_size:
             alignments = [a for a in alignments if a.size_ok()]
+        return alignments
+
+    def copy_groups(self, alignment_groups: List[AlignmentGroup], atype: str):
+        """Copy alignments from the list of groups to a new alignment type."""
+        alignments = []
+        for g in alignment_groups:
+            for align in g.alignments:
+                alignments.append(align.copy(atype))
         return alignments
 
     # TODO: break apart long alignments
@@ -440,12 +581,14 @@ class AlignmentContainer(Sized):
         expand_primer_dimers=False,
         lim_size: bool = True,
     ):
-        """Expand the number of alignments in this container using overlaps or
-        primers.
+        """Alignment expansion algorithm.
 
-        :param expand_overlaps:
-        :param expand_primers:
-        :return:
+        :param expand_overlaps: if True, expand overlaps
+        :param expand_primers: if True, expand primer pairs
+        :param expand_primer_dimers: if True, expand primer dimer pairs
+        :param lim_size: if True, limit the size of the alignment according to theri
+            Molecule definitions
+        :return: None
         """
 
         templates = self.get_groups_by_types(
@@ -455,9 +598,11 @@ class AlignmentContainer(Sized):
             templates = [t for t in templates if t.size_ok()]
 
         if expand_primers:
+            # NOTE: does not need to append alignments
             self.expand_primer_pairs(templates, lim_size=lim_size)
 
         if expand_primer_dimers:
+            # NOTE: this does not need to append alignments
             self.expand_primer_extension_products(lim_size=lim_size)
 
         # TODO: why not expand overlaps using the primer pairs???
@@ -465,21 +610,17 @@ class AlignmentContainer(Sized):
             expanded = self.expand_overlaps(
                 templates, atype=Constants.PCR_PRODUCT, lim_size=lim_size
             )
-            self.alignments += expanded
+            self.add_alignments(expanded, lim_size=lim_size)
 
-        # TODO: make a 'set' of all alignments
-
-    def _new_multi_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
+    def _new_pcr_grouping_tag(self, group: PCRProductAlignmentGroup):
         group_key = (group.query_region.a, group.query_region.b, group.type)
-        self.multi_grouping_tags.setdefault(group_key, list())
-        self.multi_grouping_tags[group_key].append(
-            {
-                "fwd": group.fwd,
-                "template": group.raw_template,
-                "rev": group.rev,
-                "query_region": group.query_region,
-            }
-        )
+        data = {
+            "fwd": group.fwd,
+            "template": group.raw_template,
+            "rev": group.rev,
+            "query_region": group.query_region,
+        }
+        self.group_tags.add(Constants.PCR_GROUP_TAG, group_key, data)
 
     @staticmethod
     def _alignment_hash(a):
@@ -487,22 +628,22 @@ class AlignmentContainer(Sized):
         return a.query_region.a, a.query_region.b, a.query_region.direction, a.type
 
     def pcr_alignment_groups(self):
-        groups = []
-        for (a, b, group_type), adict_list in self.multi_grouping_tags.items():
-            g = [
-                {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
-                for d in adict_list
-            ]
+        return self.group_tags[Constants.PCR_GROUP_TAG]
 
-            regions = [d["query_region"] for d in adict_list]
-            assert len({(q.a, q.b) for q in regions}) == 1
+    def clean_alignments(self):
+        """Remove redundant alignments."""
+        grouped = {}
+        for a in self.alignments:
+            key = a.eq_hash()
 
-            groups.append(
-                MultiPCRProductAlignmentGroup(
-                    g, query_region=adict_list[0]["query_region"], group_type=group_type
-                )
-            )
-        return groups
+            assert isinstance(key, tuple)
+            try:
+                grouped.setdefault(key, list())
+            except Exception as e:
+                raise e
+            grouped[key].append(a)
+
+        self.set_alignments([v[0] for v in grouped.values()])
 
     @classmethod
     def redundent_alignment_groups(
@@ -527,7 +668,7 @@ class AlignmentContainer(Sized):
         else:
             allgroups = []
             allgroups += self.redundent_alignment_groups(self.alignments)
-            allgroups += self.pcr_alignment_groups()
+            allgroups += self.group_tags.all()
             self._frozen_groups = allgroups
             return allgroups
 
@@ -602,9 +743,10 @@ class AlignmentContainerFactory:
         Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
         Constants.SHARED_FRAGMENT,
-        Constants.PRIMER_EXTENSION_PRODUCT,
+        Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
         Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+        Constants.SHARED_SYNTHESIZED_FRAGMENT,
     )  # valid fragment types
 
     def __init__(self, seqdb: Dict[str, SeqRecord]):
@@ -627,6 +769,17 @@ class AlignmentContainerFactory:
         """
         return frozendict(self._alignments)
 
+    def add_alignments(self, alignments: List[Alignment]):
+        grouped = {}
+        for align in alignments:
+            grouped.setdefault(align.query_key, list())
+            grouped[align.query_key].append(align)
+
+        for k, v in grouped.items():
+            for a in v:
+                if a not in self._alignments[k]:
+                    self._alignments[k].append(a)
+
     def load_blast_json(self, data: List[Dict], atype: str):
         """Create alignments from a formatted BLAST JSON result.
 
@@ -647,8 +800,8 @@ class AlignmentContainerFactory:
             subject_key = d["subject"]["origin_key"]
 
             alignment = Alignment(
-                query_region,
-                subject_region,
+                query_region=query_region,
+                subject_region=subject_region,
                 atype=atype,
                 query_key=query_key,
                 subject_key=subject_key,
@@ -669,6 +822,6 @@ class AlignmentContainerFactory:
             self._containers = container_dict
         return frozendict(self._containers)
 
-    def set_alignments(self, alignments):
-        self._alignments = alignments
-        self._containers = None
+    # def set_alignments(self, alignments):
+    #     self._alignments = alignments
+    #     self._containers = None

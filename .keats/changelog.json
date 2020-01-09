@@ -1,4 +1,9 @@
 {
+  "0.0.9": {
+    "description": "bug fixes for gaps on edge of region",
+    "date": "2020-01-09T15:58:22.196391",
+    "changes": []
+  },
   "0.0.8": {
     "description": "library design support",
     "date": "2020-01-09T14:32:35.169279",

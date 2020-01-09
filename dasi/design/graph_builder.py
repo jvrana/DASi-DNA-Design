@@ -305,10 +305,23 @@ class AssemblyGraphBuilder:
                 )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
-        if not origin:
-            span = anode.index - bnode.index
-        else:
-            span = len(query_region.new(bnode.index, anode.index))
+        try:
+            if not origin:
+                span = anode.index - bnode.index
+            else:
+                if bnode.index == query_region.context_length:
+                    span = len(query_region.new(0, anode.index))
+                else:
+                    span = len(query_region.new(bnode.index, anode.index))
+        except Exception as e:
+            print(
+                "An exception was raised while attempting to create a abstract region"
+            )
+            print("origin == " + str(origin))
+            print("bnode == " + str(bnode))
+            print("anode == " + str(anode))
+            print("query_region == " + str(query_region))
+            raise e
         if span >= 0:
             condition = (bnode.expandable, anode.expandable)
             # cost_dict = self._get_cost(span, condition)
@@ -457,9 +470,13 @@ class AssemblyGraphPostProcessor:
             return a[arg], c[arg]
 
     def _edge_to_region(self, n1, n2):
-        return Region(
-            n1.index, n2.index, len(self.query), cyclic=is_circular(self.query)
-        )
+        if n1.index == len(self.query) and is_circular(self.query):
+            a = 0
+            b = n2.index
+        else:
+            a = n1.index
+            b = n2.index
+        return Region(a, b, len(self.query), cyclic=is_circular(self.query))
 
     def _complexity_to_efficiency(self, edata):
         if edata["complexity"] > self.COMPLEXITY_THRESHOLD:

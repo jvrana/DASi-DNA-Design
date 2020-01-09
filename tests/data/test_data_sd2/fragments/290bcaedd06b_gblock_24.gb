@@ -1,0 +1,36 @@
+LOCUS       290bcaedd06b_gblock_24   268 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_Pf07jBsV
+VERSION     seq_Pf07jBsV
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    152..171
+                     /label="c3 site"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+     gibson_linker   244..265
+                     /label="ps"
+                     /ApEinfo_fwdcolor="#f58a5e"
+                     /ApEinfo_revcolor="#f58a5e"
+     misc_feature    1..268
+                     /label="290bcaedd06b_gblock_24"
+                     /ApEinfo_fwdcolor="#9eb171"
+                     /ApEinfo_revcolor="#9eb171"
+     misc_feature    1..24
+                     /label="PP2"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     http://identifie78..237
+                     /label="CYC1 minimal promoter"
+                     /ApEinfo_fwdcolor="#515616"
+                     /ApEinfo_revcolor="#515616"
+ORIGIN
+        1 ccttaaccag attcgaaaag cggccggggt tacgtacggc acacgcaacc gtgcaaagtg
+       61 aaagtcgagc tcggtacgat cctatggcat gcatgtgctc tgtatgtata taaaactctt
+      121 gttttcttct tttctctaaa tattctttcc ttatacatta ggacctttgc agcataaatt
+      181 actatacttc tatagacaca caaacacaaa tacacacact aatctagata ttggattcgg
+      241 attctagaac tagtggatct acaaaatg
+//

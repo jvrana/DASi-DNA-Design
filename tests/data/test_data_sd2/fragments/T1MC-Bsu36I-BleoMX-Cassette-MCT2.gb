@@ -1,0 +1,57 @@
+LOCUS       t1mc-bsu36i-bleomx-cassette-mct2 1079 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_4TDAQy2l
+VERSION     seq_4TDAQy2l
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     terminator      821..1054
+                     /label="TEF terminator"
+                     /ApEinfo_fwdcolor="#B4ABAC"
+                     /ApEinfo_revcolor="#B4ABAC"
+     promoter        43..427
+                     /label="TEF promoter"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     primer_bind     33..53
+                     /label="2037 (aquarium; Tm 64)"
+                     /ApEinfo_fwdcolor="#F8D3A9"
+                     /ApEinfo_revcolor="#F8D3A9"
+     CDS             430..816
+                     /label="BLEOMX"
+                     /ApEinfo_fwdcolor="#D6B295"
+                     /ApEinfo_revcolor="#D6B295"
+     misc_feature    817..820
+                     /label="scar"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     misc_feature    33..1054
+                     /label="BleoMX_cassette"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+     site            1055
+                     /label="PP2"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+ORIGIN
+        1 gcttcaataa aggagcgagc acccgcctga ggggcgcgcc agatctgttt agcttgcctc
+       61 gtccccgccg ggtcacccgg ccagcgacat ggaggcccag aataccctcc ttgacagtct
+      121 tgacgtgcgc agctcagggg catgatgtga ctgtcgcccg tacatttagc ccatacatcc
+      181 ccatgtataa tcatttgcat ccatacattt tgatggccgc acggcgcgaa gcaaaaatta
+      241 cggctcctcg ctgcagacct gcgagcaggg aaacgctccc ctcacagacg cgttgaattg
+      301 tccccacgcc gcgcccctgt agagaaatat aaaaggttag gatttgccac tgaggttctt
+      361 ctttcatata cttcctttta aaatcttgct aggatacagt tctcacatca catccgaaca
+      421 taaacaacca tgggtatgac cgaccaagcg acgcccaacc tgccatcacg agatttcgat
+      481 cccaccgccg ccttctatga aaggttgggc ttcggaatcg ttttccggga cgccggctgg
+      541 atgatcctcc agcgcgggga tctcatgctg gagttcttcg cccaccccgg gctcgatccc
+      601 ctcgcgagtt ggttcagctg ctgcctgagg ctggacgacc tcgcggagtt ctaccggcag
+      661 tgcaaatccg tcggcatcca ggaaaccagc agcggctatc cgcgcatcca tgcccccgaa
+      721 ctgcaggagt ggggaggcac gatggccgct ttggtcgacc cggacgggac gctcctgcgc
+      781 ctgatacaga acgaattgct tgcaggcatc tcatgatcag tactgacaat aaaaagattc
+      841 ttgttttcaa gaacttgtca tttgtatagt ttttttatat tgtagttgtt ctattttaat
+      901 caaatgttag cgtgatttat attttttttc gcctcgacat catctgccca gatgcgaagt
+      961 taagtgcgca gaaagtaata tcatgcgtca atcgtatgtg aatgctggtc gctatactgc
+     1021 tgtcgattcg atactaacgc cgccatccag tgtccagaag cgaggcgaat aaaggtggc
+//

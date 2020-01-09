@@ -11,10 +11,8 @@ from pyblast.utils import load_genbank_glob
 from pyblast.utils import make_circular
 from pyblast.utils import make_linear
 
-from dasi.cost import SpanCost
 from dasi.design import Design
 from dasi.design import DesignResult
-from dasi.log import logger
 
 here = os.path.abspath(os.path.dirname(__file__))
 do_save = True
@@ -78,23 +76,23 @@ def _multi_processed_results(
 
 @pytest.fixture(scope="session")
 def single_compiled_results(_single_compiled_design) -> Design:
-    return deepcopy(_single_compiled_design)
+    return _single_compiled_design
 
 
 @pytest.fixture(scope="session")
 def multi_compiled_results(_multi_compiled_design) -> Design:
-    return deepcopy(_multi_compiled_design)
+    return _multi_compiled_design
 
 
 @pytest.fixture(scope="session")
 def single_processed_results(
     _single_processed_results
 ) -> Tuple[Design, Dict[str, DesignResult]]:
-    return deepcopy(_single_processed_results)
+    return _single_processed_results
 
 
 @pytest.fixture(scope="session")
 def multi_processed_results(
     _multi_processed_results
 ) -> Tuple[Design, Dict[str, DesignResult]]:
-    return deepcopy(_multi_processed_results)
+    return _multi_processed_results

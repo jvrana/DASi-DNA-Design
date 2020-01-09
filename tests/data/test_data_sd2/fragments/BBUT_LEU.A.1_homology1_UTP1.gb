@@ -1,0 +1,33 @@
+LOCUS       bbut_leu-a-1_homology1_utp1 1044 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_zAua8JIX
+VERSION     seq_zAua8JIX
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc            1..1044
+                     /label="BBUT_LEU.A.1_homology1_UTP1"
+                     /ApEinfo_fwdcolor="#23861e"
+                     /ApEinfo_revcolor="#23861e"
+ORIGIN
+        1 gtcggcggga ccagggagtt taaacttttg ccaggtgacc acgttggtca agaaatcaca
+       61 gccgaagcca ttaaggttct taaagctatt tctgatgttc gttccaatgt caagttcgat
+      121 ttcgaaaatc atttaattgg tggtgctgct atcgatgcta caggtgttcc acttccagat
+      181 gaggcgctgg aagcctccaa gaaggctgat gccgttttgt taggtgctgt gggtggtcct
+      241 aaatggggta ccggtagtgt tagacctgaa caaggtttac taaaaatccg taaagaactt
+      301 caattgtacg ccaacttaag accatgtaac tttgcatccg actctctttt agacttatct
+      361 ccaatcaagc cacaatttgc taaaggtact gacttcgttg ttgtcagaga attagtggga
+      421 ggtatttact ttggtaagag aaaggaagac gatggtgatg gtgtcgcttg ggatagtgaa
+      481 caatacaccg ttccagaagt gcaaagaatc acaagaatgg ccgctttcat ggccctacaa
+      541 catgagccac cattgcctat ttggtccttg gataaagcta atgttttggc ctcttcaaga
+      601 ttatggagaa aaactgtgga ggaaaccatc aagaacgaat tccctacatt gaaggttcaa
+      661 catcaattga ttgattctgc cgccatgatc ctagttaaga acccaaccca cctaaatggt
+      721 attataatca ccagcaacat gtttggtgat atcatctccg atgaagcctc cgttatccca
+      781 ggttccttgg gtttgttgcc atctgcgtcc ttggcctctt tgccagacaa gaacaccgca
+      841 tttggtttgt acgaaccatg ccacggttct gctccagatt tgccaaagaa taaggtcaac
+      901 cctatcgcca ctatcttgtc tgctgcaatg atgttgaaat tgtcattgaa cttgcctgaa
+      961 gaaggtaagg ccattgaaga tgcagttaaa aaggttttgg atgcaggtat cagaactggg
+     1021 ccgatacgaa ggttttctcc agcg
+//

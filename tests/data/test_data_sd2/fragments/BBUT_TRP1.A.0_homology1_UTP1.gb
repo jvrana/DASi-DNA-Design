@@ -1,0 +1,33 @@
+LOCUS       bbut_trp1-a-0_homology1_utp1 1031 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_53PJIqaI
+VERSION     seq_53PJIqaI
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc            1..1031
+                     /label="BBUT_TRP1.A.0_homology1_UTP1"
+                     /ApEinfo_fwdcolor="#f8c513"
+                     /ApEinfo_revcolor="#f8c513"
+ORIGIN
+        1 gtcggcggga ccagggagtt taaacaactt ttcaaacggc agccccgatc taaaagagct
+       61 gacagggaaa tggtcagaaa aagaaacgtg cacccgcccg tctggacgcg ccgctcaccc
+      121 gcacggcaga gaccaatcag taaaaatcaa cggttaacga cattactata tatataatat
+      181 aggaagcatt taatagaaca gcatcgtaat atatgtgtac tttgcagtta tgacgccaga
+      241 tggcagtagt ggaagatatt ctttattgaa aaatagcttg tcaccttacg tacaatcttg
+      301 atccggagct tttctttttt tgccgattaa gaattcggtc gaaaaaagaa aaggagaggg
+      361 ccaagaggga gggcattggt gactattgag cacgtgagta tacgtgatta agcacacaaa
+      421 ggcagcttgg agtatgtctg ttattaattt cacaggtagt tctggtccat tggtgaaagt
+      481 ttgcggcttg cagagcacag aggccgcaga atgtgctcta gattccgatg ctgacttgct
+      541 gggtattata tgtgtgccca atagaaagag aacaattgac ccggttattg caaggaaaat
+      601 ttcaagtctt gtaaaagcat ataaaaatag ttcaggcact ccgaaatact tggttggcgt
+      661 gtttcgtaat caacctaagg aggatgtttt ggctctggtc aatgattacg gcattgatat
+      721 cgtccaactg catggagatg agtcgtggca agaataccaa gagttcctcg gtttgccagt
+      781 tattaaaaga ctcgtatttc caaaagactg caacatacta ctcagtgcag cttcacagaa
+      841 acctcattcg tttattccct tgtttgattc agaagcaggt gggacaggtg aacttttgga
+      901 ttggaactcg atttctgact gggttggaag gcaagagagc cccgaaagct tacattttat
+      961 gttagctggt ggactgacgc cagaaaatgt tggtgatgcg cttagagccg atacgaaggt
+     1021 tttctccagc g
+//

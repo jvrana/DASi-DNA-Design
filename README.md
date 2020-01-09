@@ -1,5 +1,7 @@
 # DASi DNA Design
 
+[![PyPI version](https://badge.fury.io/py/dasi.svg)](https://badge.fury.io/py/dasi)
+
 **DASi** is an automatic DNA cloning plan designer aimed for operating on small budgets
 by focusing on material re-use.
 
@@ -15,7 +17,7 @@ algorithm.
 ### Planned Features
 
 * Golden-gate support
-* heirarchical assembly
+* heirarchical a~~~~ssembly
 * library support (with bayesian search to optimize shared parts)
 * front-end
 * connection to fabrication facility

@@ -64,6 +64,7 @@ PRIMERS = "primers"
 TEMPLATES = "templates"
 QUERIES = "queries"
 REGISTRY = "registry"
+TEST_DATA = "test_data"
 
 
 @pytest.fixture(scope="session")
@@ -73,6 +74,7 @@ def paths(here) -> Dict[str, str]:
         TEMPLATES: join(here, "data/test_data/genbank/templates/*.gb"),
         QUERIES: join(here, "data/test_data/genbank/designs/*.gb"),
         REGISTRY: join(here, "data/test_data/genbank/benchling_registry/*.gb"),
+        TEST_DATA: join(here, "data/test_data"),
     }
 
 

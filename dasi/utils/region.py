@@ -1,14 +1,12 @@
-from __future__ import annotations
-
 import operator
 from collections.abc import Container
-from collections.abc import Iterable
 from collections.abc import Sized
 from functools import reduce
 from itertools import chain
 from typing import Any
 from typing import Callable
 from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -326,6 +324,10 @@ class Span(Container, Iterable, Sized):
                             are valid. If False and the starting wrap is greater than
                             the ending wrap, an IndexError is thrown.
         """
+        if isinstance(a, tuple):
+            print(a)
+        if isinstance(b, tuple):
+            print(b)
         a = int(a)
         b = int(b)
         self._context_length = int(l)
@@ -576,7 +578,7 @@ class Span(Container, Iterable, Sized):
         index=None,
         strict=None,
         abs_wrap=None,
-    ) -> Span:
+    ) -> "Span":
         """Create a new span using the same context."""
         if a is None:
             a = self._a
@@ -609,7 +611,7 @@ class Span(Container, Iterable, Sized):
             abs_wrap=abs_wrap,
         )
 
-    def sub(self, a: int, b: int) -> Span:
+    def sub(self, a: int, b: int) -> "Span":
         """Create a sub region starting from a to b.
 
         :param a: starting pos
@@ -656,14 +658,14 @@ class Span(Container, Iterable, Sized):
             raise IndexError("Cannot make subspan.")
         return subregion
 
-    def same_context(self, other: Span) -> bool:
+    def same_context(self, other: "Span") -> bool:
         """Return if another Span as an equivalent context."""
         return (
             other.context_length == self._context_length
             and self._cyclic == other.cyclic
         )
 
-    def force_context(self, other: Span) -> None:
+    def force_context(self, other: "Span") -> None:
         """Raise error if another Span has different context.
 
         :param other: The other span
@@ -673,7 +675,7 @@ class Span(Container, Iterable, Sized):
         if not self.same_context(other):
             raise SpanError("Cannot compare with different contexts")
 
-    def overlaps_with(self, other: Span) -> bool:
+    def overlaps_with(self, other: "Span") -> bool:
         """Returns True if other span has an overlap with this span.
 
         :param other: The other span
@@ -693,7 +695,7 @@ class Span(Container, Iterable, Sized):
             return True
         return False
 
-    def differences(self, other: Span) -> Union[Tuple[Span], Tuple[Span, Span]]:
+    def differences(self, other: "Span") -> Union[Tuple["Span"], Tuple["Span", "Span"]]:
         """Return a tuple of differences between this span and the other
         span."""
         self.force_context(other)
@@ -708,7 +710,7 @@ class Span(Container, Iterable, Sized):
         else:
             return (self[:],)
 
-    def intersection(self, other: Span) -> Span:
+    def intersection(self, other: "Span") -> "Span":
         """Return the span inersection between this span and the other span."""
         self.force_context(other)
         if other.a in self and other.b not in self:
@@ -720,7 +722,7 @@ class Span(Container, Iterable, Sized):
         elif self in other:
             return self[:]
 
-    def consecutive(self, other: Span) -> bool:
+    def consecutive(self, other: "Span") -> bool:
         """Returns True if other span is immediately consecutive with this
         span."""
         self.force_context(other)
@@ -729,7 +731,7 @@ class Span(Container, Iterable, Sized):
         except IndexError:
             return False
 
-    def connecting_span(self, other: Span) -> Union[Span, None]:
+    def connecting_span(self, other: "Span") -> Union["Span", None]:
         """Return the span that connects the two spans. Returns None.
 
         :param other:
@@ -782,7 +784,7 @@ class Span(Container, Iterable, Sized):
     #         else:
     # return
 
-    def invert(self) -> Union[Tuple[Span, Span], Tuple[Span, None]]:
+    def invert(self) -> Union[Tuple["Span", "Span"], Tuple["Span", None]]:
         """Invert the region, returning a tuple of the remaining spans from the
         context. If cyclic, a tuple (span, None) tuple is returned. If linear,
         a (span, span) is returned.
@@ -797,7 +799,7 @@ class Span(Container, Iterable, Sized):
         else:
             return self[:, self._a], self[self._b, :]
 
-    def __eq__(self, other: Span) -> bool:
+    def __eq__(self, other: "Span") -> bool:
         return (
             self.same_context(other)
             and self._a == other._a
@@ -805,7 +807,7 @@ class Span(Container, Iterable, Sized):
             and self._c == other._c
         )
 
-    def __ne__(self, other: Span) -> bool:
+    def __ne__(self, other: "Span") -> bool:
         return not (self.__eq__(other))
 
     @classmethod
@@ -823,7 +825,7 @@ class Span(Container, Iterable, Sized):
         """
         return self._pos_in_ranges(pos, self.ranges())
 
-    def contains_span(self, other: Span) -> bool:
+    def contains_span(self, other: "Span") -> bool:
         """Checks if this span encompasses another span.
 
         :param other: other span
@@ -848,7 +850,7 @@ class Span(Container, Iterable, Sized):
             return True
         return self._b < self._a and self._cyclic
 
-    def __contains__(self, other: Union[Span, int]):
+    def __contains__(self, other: Union["Span", int]):
         if isinstance(other, int):
             return self.contains_pos(other)
         elif issubclass(type(other), Span):
@@ -857,7 +859,7 @@ class Span(Container, Iterable, Sized):
     def __len__(self) -> int:
         return sum([r[1] - r[0] for r in self.ranges()])
 
-    def __iter__(self) -> Generator[int]:
+    def __iter__(self) -> Generator[int, None, None]:
         for i in chain(*[range(*x) for x in self.ranges()]):
             yield i
 
@@ -1024,7 +1026,7 @@ class Region(Span):
             abs_wrap=abs_wrap,
         )
 
-    def flip(self) -> Region:
+    def flip(self) -> "Region":
         """Flip the indices of the region."""
         flipped = self.new(self.context_length - self.b, self.context_length - self.a)
         flipped.direction *= -1

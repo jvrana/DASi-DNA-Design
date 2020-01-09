@@ -4,10 +4,13 @@ from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
+from uuid import uuid4
 
 import networkx as nx
 import numpy as np
+from Bio.SeqRecord import SeqRecord
 from more_itertools import partition
+from pyblast.utils import is_circular
 
 from dasi.constants import Constants
 from dasi.cost import SpanCost
@@ -18,7 +21,9 @@ from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
+from dasi.utils import Region
 from dasi.utils import sort_with_keys
+from dasi.utils.sequence_complexity import DNAStats
 
 
 class AssemblyGraphBuilder:
@@ -43,8 +48,9 @@ class AssemblyGraphBuilder:
         """
         self.G.add_node(AssemblyNode(*node))
 
-    def add_edge(
-        self,
+    @staticmethod
+    def add_edge_to_graph(
+        graph,
         n1: AssemblyNode,
         n2: AssemblyNode,
         cost: Union[float, None],
@@ -52,9 +58,9 @@ class AssemblyGraphBuilder:
         time: Union[float, None],
         efficiency: Union[float, None],
         span: int,
-        atype: str,
-        internal_or_external: str,
-        condition: Tuple[bool, bool],
+        atype: MoleculeType,
+        group: Union[AlignmentGroup, PCRProductAlignmentGroup],
+        notes: str = "",
     ):
         """Add an edge between two assembly nodes.
 
@@ -70,9 +76,7 @@ class AssemblyGraphBuilder:
         :param kwargs: additional kwargs for the edge data
         :return:
         """
-        assert condition == atype.design
-        assert internal_or_external == atype.int_or_ext
-        self.G.add_edge(
+        return graph.add_edge(
             n1,
             n2,
             cost=cost,
@@ -81,14 +85,61 @@ class AssemblyGraphBuilder:
             efficiency=efficiency,
             span=span,
             type_def=atype,
+            group=group,
+            notes=notes,
+        )
+
+    def add_edge(
+        self,
+        n1: AssemblyNode,
+        n2: AssemblyNode,
+        cost: Union[float, None],
+        material: Union[float, None],
+        time: Union[float, None],
+        efficiency: Union[float, None],
+        span: int,
+        atype: MoleculeType,
+        internal_or_external: str,
+        condition: Tuple[bool, bool],
+        group: Union[AlignmentGroup, PCRProductAlignmentGroup],
+    ):
+        """Add an edge between two assembly nodes.
+
+        :param n1: src node
+        :param n2: dest node
+        :param name: name of the edge
+        :param cost: overall cost of the edge
+        :param material: material cost of the edge. Used in path calculations.
+        :param time: time cost of the edge. Used in path calculations.
+        :param efficiency: efficiency of the edge. Used in path calculations.
+        :param span: spanning distance (in bp) of the edge.
+        :param atype: alignment type of the edge.
+        :param kwargs: additional kwargs for the edge data
+        :return:
+        """
+
+        assert condition == atype.design
+        assert internal_or_external == atype.int_or_ext
+        return self.add_edge_to_graph(
+            graph=self.G,
+            n1=n1,
+            n2=n2,
+            cost=cost,
+            material=material,
+            time=time,
+            efficiency=efficiency,
+            span=span,
+            atype=atype,
+            group=group,
+            notes="",
         )
 
     def iter_internal_edge_data(
-        self, align: Union[AlignmentGroup, PCRProductAlignmentGroup]
+        self, group: Union[AlignmentGroup, PCRProductAlignmentGroup]
     ) -> dict:
-        q = align.query_region
+        q = group.query_region
 
-        mtype = MoleculeType.types[align.type]
+        mtype = MoleculeType.types[group.type]
         a_expand, b_expand = mtype.design
         internal_cost = mtype.cost
         internal_efficiency = mtype.efficiency
@@ -120,10 +171,11 @@ class AssemblyGraphBuilder:
                             cost=internal_cost / internal_efficiency,
                             time=0.1,
                             internal_or_external="internal",
-                            span=len(align.query_region),
-                            atype=MoleculeType.types[align.type],
+                            span=len(group.query_region),
+                            atype=MoleculeType.types[group.type],
                             efficiency=internal_efficiency,
                             condition=(a_expand, b_expand),
+                            group=group,
                         ),
                     )
                     # edges.append(edge)
@@ -217,7 +269,6 @@ class AssemblyGraphBuilder:
             )
         for bnode, anode in gap_origin_iter:
             self.add_gap_edge(bnode, anode, query_region, origin=True)
-        self._batch_add_edge_costs()
 
     def add_overlap_edge(
         self, bnode, anode, query_region, group_keys, groups, origin=False
@@ -250,6 +301,7 @@ class AssemblyGraphBuilder:
                     atype=MoleculeType.types[Constants.OVERLAP](condition),
                     condition=condition,
                     span=span,
+                    group=None,
                 )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
@@ -271,38 +323,37 @@ class AssemblyGraphBuilder:
                 atype=MoleculeType.types[Constants.GAP](condition),
                 span=span,
                 condition=condition,
+                group=None,
             )
 
-    def _batch_add_edge_costs(self):
-        """Add costs to all edges at once batch.
+    @staticmethod
+    def batch_add_edge_costs(graph, edges, span_cost, cost_threshold: float = None):
+        """Add costs to all edges at once.
 
         :return:
         """
         # add external_edge_costs
         edge_dict = {}
-        for n1, n2, edata in self.G.edges(data=True):
-            if edata["cost"] is None:
-                condition = edata["type_def"].design
-                edge_dict.setdefault(condition, []).append(
-                    ((n1, n2), edata, edata["span"])
-                )
-        edges_to_remove = []
+        for n1, n2, edata in edges:
+            condition = edata["type_def"].design
+            assert isinstance(condition, tuple)
+            edge_dict.setdefault(condition, []).append(((n1, n2), edata, edata["span"]))
 
+        edges_to_remove = []
         for condition, info in edge_dict.items():
             edges, edata, spans = zip(*info)
-            npdf = self.span_cost.cost(np.array(spans), condition)
+            npdf = span_cost.cost(np.array(spans), condition)
             data = npdf.aggregate(np.vstack)
             cost_i = [i for i, col in enumerate(npdf.columns) if col == "cost"][0]
-            self.logger.debug(data.shape)
-            # update each edge
 
             for i, (e, edge) in enumerate(zip(edata, edges)):
-                if data[cost_i, i] > self.COST_THRESHOLD:
+                if cost_threshold is not None and data[cost_i, i] > cost_threshold:
                     edges_to_remove.append(edge)
                 else:
                     _d = {c: data[col_i, i] for col_i, c in enumerate(npdf.columns)}
                     e.update(_d)
-        self.G.remove_edges_from(edges_to_remove)
+        if cost_threshold is not None:
+            graph.remove_edges_from(edges_to_remove)
 
     def _get_cost(self, bp, ext):
         data = self.span_cost(bp, ext).data
@@ -319,10 +370,11 @@ class AssemblyGraphBuilder:
                     Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.PCR_PRODUCT_WITH_PRIMERS,
-                    Constants.PRIMER_EXTENSION_PRODUCT,
+                    Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
                     Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
                     Constants.FRAGMENT,
+                    Constants.SHARED_SYNTHESIZED_FRAGMENT,
                 ]
             ),
             key=lambda g: g.query_region.a,
@@ -331,5 +383,228 @@ class AssemblyGraphBuilder:
         self.add_internal_edges(groups)
         self.add_external_edges(groups, group_keys, self.G.nodes())
 
-        nx.freeze(self.G)
+        edges = []
+        for n1, n2, edata in self.G.edges(data=True):
+            if edata["cost"] is None:
+                edges.append((n1, n2, edata))
+            elif edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
+                edges.append((n1, n2, edata))
+        self.batch_add_edge_costs(self.G, edges, self.span_cost, self.COST_THRESHOLD)
+
+        # TODO: freeze?
+        # nx.freeze(self.G)
         return self.G
+
+
+class AssemblyGraphPostProcessor:
+    def __init__(self, graph: nx.DiGraph, query: SeqRecord, span_cost: SpanCost):
+        self.graph = graph
+        self.query = query
+        self.stats = DNAStats(
+            self.query + self.query,
+            repeat_window=14,
+            stats_window=20,
+            hairpin_window=20,
+        )
+        self.logged_msgs = []
+        self.COMPLEXITY_THRESHOLD = 10.0
+        self.logger = logger(self)
+        self.span_cost = span_cost
+
+    @staticmethod
+    def optimize_partition(
+        signatures: np.ndarray, step: int, i: int = None, j: int = None
+    ):
+        """Optimize partition by minimizing the number of signatures in the
+        given array.
+
+        :param signatures: array of signatures
+        :param step: step size
+        :param i:
+        :param j:
+        :return:
+        """
+        d = []
+
+        if i is None:
+            i = 0
+        if j is None:
+            j = signatures.shape[1]
+
+        for x in range(i, j, step):
+            m1 = np.empty(signatures.shape[1])
+            m2 = m1.copy()
+            m1.fill(np.nan)
+            m2.fill(np.nan)
+
+            m1[:x] = np.random.uniform(1, 10)
+            m2[x:] = np.random.uniform(1, 10)
+
+            d += [m1, m2]
+        d = np.vstack(d)
+        z = np.tile(d, signatures.shape[0]) * signatures.flatten()
+
+        partition_index = np.repeat(
+            np.arange(0, signatures.shape[1], step),
+            signatures.shape[0] * signatures.shape[1] * 2,
+        )
+
+        a, b, c = np.unique(z, return_counts=True, return_index=True)
+        i = b[np.where(c > 1)]
+        a, c = np.unique(partition_index[i], return_counts=True)
+        if len(c):
+            arg = c.argmin()
+            return a[arg], c[arg]
+
+    def _edge_to_region(self, n1, n2):
+        return Region(
+            n1.index, n2.index, len(self.query), cyclic=is_circular(self.query)
+        )
+
+    def _complexity_to_efficiency(self, edata):
+        if edata["complexity"] > self.COMPLEXITY_THRESHOLD:
+            edata["efficiency"] = 0.1
+            return True
+        return False
+
+    def update_complexity(self, n1, n2, edata):
+        bad_edges = []
+        if edata["type_def"].synthesize:
+            span = edata["span"]
+            if span > 0:
+                # TODO: cyclic may not always be tru
+                r = self._edge_to_region(n1, n2)
+                complexity = self.stats.cost(r.a, r.c)
+                edata["complexity"] = complexity
+                if self._complexity_to_efficiency(edata):
+                    bad_edges.append((n1, n2, edata))
+        return bad_edges
+
+    def update_long_pcr_products(self, n1, n2, edata):
+        if edata["type_def"].name in [
+            Constants.PCR_PRODUCT,
+            Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+            Constants.PCR_PRODUCT_WITH_PRIMERS,
+        ]:
+            span = edata["span"]
+            if span > 4000:
+                edata["efficiency"] *= 0.8
+            elif span > 5000:
+                edata["efficiency"] *= 0.5
+
+    def synthesis_partitioner(self, n1, n2, edata, border):
+        r = self._edge_to_region(n1, n2)
+        partitions = self.stats.partition(
+            10,
+            25,
+            i=r.a,
+            j=r.c,
+            border=border,
+            stopping_threshold=self.COMPLEXITY_THRESHOLD,
+        )
+
+        if not partitions:
+            return []
+
+        best_partition = partitions[0]
+        n3 = AssemblyNode(
+            best_partition["index_1"][1], False, str(uuid4()), overhang=True
+        )
+        n4 = AssemblyNode(
+            best_partition["index_2"][0], False, str(uuid4()), overhang=True
+        )
+
+        AssemblyGraphBuilder.add_edge_to_graph(
+            self.graph,
+            n1,
+            n3,
+            cost=None,
+            material=None,
+            time=None,
+            efficiency=None,
+            span=len(self._edge_to_region(n1, n3)),
+            atype=edata["type_def"],
+            group=edata["group"],
+        )
+
+        # internal edge
+        AssemblyGraphBuilder.add_edge_to_graph(
+            self.graph,
+            n3,
+            n4,
+            cost=None,
+            material=None,
+            time=None,
+            efficiency=None,
+            span=-len(self._edge_to_region(n4, n3)),
+            atype=MoleculeType.types[Constants.OVERLAP],
+            group=None,
+        )
+
+        # overlap edge
+        AssemblyGraphBuilder.add_edge_to_graph(
+            self.graph,
+            n4,
+            n2,
+            cost=None,
+            material=None,
+            time=None,
+            efficiency=None,
+            span=-len(self._edge_to_region(n4, n2)),
+            atype=edata["type_def"],
+            group=edata["group"],
+        )
+
+        edata1 = self.graph.get_edge_data(n1, n3)
+        edata2 = self.graph.get_edge_data(n3, n4)
+        edata3 = self.graph.get_edge_data(n4, n2)
+
+        edata1["complexity"] = best_partition["cost_1"]
+        edata3["complexity"] = best_partition["cost_2"]
+        edata3["notes"] += " Partitioned"
+        edata2["notes"] += " Partitioned"
+        edata1["notes"] += " Partitioned"
+
+        edge1 = (n1, n3, edata1)
+        edge2 = (n3, n4, edata2)
+        edge3 = (n4, n2, edata3)
+        return [edge1, edge2, edge3]
+
+    def partition(self, edges):
+        new_edges = []
+        for n1, n2, edata in self.logger.tqdm(
+            edges, "INFO", desc="Paritioning sequences..."
+        ):
+            min_size = (
+                edata["type_def"].min_size
+                or MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT].min_size
+            )
+            if edata["span"] > min_size * 2:
+                new_edges += self.synthesis_partitioner(n1, n2, edata, border=min_size)
+
+        syn_edges = [e for e in new_edges if e[2]["type_def"].design]
+        AssemblyGraphBuilder.batch_add_edge_costs(
+            self.graph, syn_edges, self.span_cost, None
+        )
+
+        for n1, n2, edata in syn_edges:
+            self._complexity_to_efficiency(edata)
+
+    def update(self):
+        bad_edges = []
+        for n1, n2, edata in self.graph.edges(data=True):
+            self.update_long_pcr_products(n1, n2, edata)
+            bad_edges += self.update_complexity(n1, n2, edata)
+
+        self.logger.info(
+            "Found {} highly complex synthesis segments".format(len(bad_edges))
+        )
+
+        # self.partition(bad_edges)
+
+    # TODO: add logging to graph post processor
+    # TODO: partition gaps
+    def __call__(self):
+        self.logger.info("Post processing graph for {}".format(self.query.name))
+        self.update()

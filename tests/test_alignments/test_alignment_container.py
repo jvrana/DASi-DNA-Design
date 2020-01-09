@@ -94,9 +94,9 @@ def new_alignment_in_container(container, a, b, type, direction=1):
 
 
 test_container = random_container(100, 1, Constants.PCR_PRODUCT)
-test_container.alignments = [
-    new_alignment_in_container(test_container, 100, 1000, Constants.PCR_PRODUCT)
-]
+test_container.set_alignments(
+    [new_alignment_in_container(test_container, 100, 1000, Constants.PCR_PRODUCT)]
+)
 
 
 @pytest.fixture(scope="function")
@@ -112,9 +112,9 @@ def test_init():
 def test_init_raise_error_with_different_queries():
     container = random_container(100, 300, Constants.PCR_PRODUCT)
     with pytest.raises(AlignmentContainerException):
-        container.alignments = container.alignments + [
-            random_alignment(Constants.PCR_PRODUCT)
-        ]
+        container.set_alignments(
+            container.alignments + [random_alignment(Constants.PCR_PRODUCT)]
+        )
 
 
 def test_group():
@@ -382,9 +382,13 @@ class TestExpandPrimers:
 
     def test_expand_over_origin(self, container):
         container = random_container(2, 1, Constants.PCR_PRODUCT)
-        container.alignments = [
-            new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)
-        ]
+        container.set_alignments(
+            [
+                new_alignment_in_container(
+                    container, 9000, 1000, Constants.PCR_PRODUCT, 1
+                )
+            ]
+        )
 
         new_alignment_in_container(container, 9500, 9530, Constants.PRIMER, 1)
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, -1)
@@ -403,9 +407,13 @@ class TestExpandPrimers:
 
     def test_expand_over_origin2(self, container):
         container = random_container(2, 1, Constants.PCR_PRODUCT)
-        container.alignments = [
-            new_alignment_in_container(container, 9000, 1000, Constants.PCR_PRODUCT, 1)
-        ]
+        container.set_alignments(
+            [
+                new_alignment_in_container(
+                    container, 9000, 1000, Constants.PCR_PRODUCT, 1
+                )
+            ]
+        )
 
         new_alignment_in_container(container, 9500, 9530, Constants.PRIMER, -1)
         new_alignment_in_container(container, 800, 830, Constants.PRIMER, 1)
@@ -453,9 +461,9 @@ class TestExpandPrimers:
 
     def test_expand_pair_over_origin(self, container):
         container = deepcopy(container)
-        container.alignments = [
-            new_alignment_in_container(container, 474, 25, Constants.PCR_PRODUCT)
-        ]
+        container.set_alignments(
+            [new_alignment_in_container(container, 474, 25, Constants.PCR_PRODUCT)]
+        )
 
         new_alignment_in_container(container, 900, 930, Constants.PRIMER)
         new_alignment_in_container(container, 485, 500, Constants.PRIMER, -1)
@@ -587,9 +595,9 @@ class TestExpandPrimerExtensions:
 
 class TestExpandOverlaps:
     def overlap_container(self, container, x1, x2, x3, x4):
-        container.alignments = [
-            new_alignment_in_container(container, x1, x2, Constants.PCR_PRODUCT)
-        ]
+        container.set_alignments(
+            [new_alignment_in_container(container, x1, x2, Constants.PCR_PRODUCT)]
+        )
         new_alignment_in_container(container, x3, x4, Constants.PCR_PRODUCT)
         return deepcopy(container)
 
@@ -614,9 +622,9 @@ class TestExpandOverlaps:
 
 
 def test_find_alignments(container):
-    container.alignments = [
-        new_alignment_in_container(container, 1000, 2000, Constants.PCR_PRODUCT)
-    ]
+    container.set_alignments(
+        [new_alignment_in_container(container, 1000, 2000, Constants.PCR_PRODUCT)]
+    )
     a1 = container.alignments[0]
     a2 = new_alignment_in_container(container, 1001, 2000, Constants.PCR_PRODUCT)
     a3 = new_alignment_in_container(container, 1000, 2001, Constants.PCR_PRODUCT)

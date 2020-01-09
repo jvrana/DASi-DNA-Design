@@ -1,0 +1,36 @@
+LOCUS       dbdc500f0d5a_gblock_0   1240 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_0qCFtr9F
+VERSION     seq_0qCFtr9F
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..1240
+                     /label="dbdc500f0d5a_gblock_0"
+                     /ApEinfo_fwdcolor="#50f99d"
+                     /ApEinfo_revcolor="#50f99d"
+ORIGIN
+        1 aaagtgaaag tcgagctcgg tacgatccta tggcatgcat gtgctctgta tgtatataaa
+       61 actcttgttt tcttcttttc tctaaatatt ctttccttat acattaggac ctttgcagca
+      121 taaattacta tacttctata gacacacaaa cacaaataca cacactaatc tagatattgg
+      181 attcggattc tagaactagt ggatctacaa aatgatggat aaagcggaat taattcccga
+      241 gcctccaaaa aagaagagaa aggtcgaatt gggtaccgcc gattacgagg catcaagaat
+      301 cgtcgaaatg gtagaagatg aagaacatat agatctacca ccaggattca gatttcaccc
+      361 tactgatgaa gaactcataa ctcactacct caaaccaaag gttttcaaca ctttcttctc
+      421 tgctactgcc attggtgaag ttgatctcaa caagattgag ccttgggact taccatggaa
+      481 ggctaagatg ggagaaaaag aatggtattt cttctgtgtg agagaccgga aatacccgac
+      541 cggtttaagg acaaaccggg cgacagaagc cggttattgg aaagccacag gaaaagacaa
+      601 agagatattc aagggaaaat cacttgtggg tatgaagaaa actttggttt tctataaagg
+      661 aagagctcct aaaggagtta aaaccaattg ggttatgcat gaatatcgtt tagaaggcaa
+      721 atattgtatt gaaaatcttc cccaaacagc taagaacgaa tgggttatat gtcgtgtttt
+      781 ccaaaaacgt gccgatggta caaaggttcc aatgtcaatg cttgatccac acattaaccg
+      841 aatggaacca gccggtttac cttcgttaat ggattgttct caacgagact ccttcaccgg
+      901 ttcgtcgtct cacgtgacct gcttctccga ccaagaaacc gaagacaaaa gacttgtcca
+      961 cgagtccaaa gacggttttg gttctctgtt ttactcggat cctctgtttt tacaagacaa
+     1021 ttattcgcta atgaagctgt tgcttgacgg tcaagaaact caattctccg gcaaaccttt
+     1081 cgacggtcgt gattcgtccg gtacagaaga attggattgc gtttggaatt tcgaagtctt
+     1141 cgaatttgaa tatcttgacg ataaagtttt agaggaacta ttggattctg aagagagaaa
+     1201 gaggtagtga taccgtcgac ctcgagtcaa ttagttatgt
+//

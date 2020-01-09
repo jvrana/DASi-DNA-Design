@@ -1,0 +1,117 @@
+LOCUS       utp1__pol-iii-norv1-hu6-r1-r5-c1-nt1-grna-f-e-c-b-h-__t1mc 565 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_cflkaiKk
+VERSION     seq_cflkaiKk
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    509..514
+                     /label="barcode 2"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     misc_feature    470..501
+                     /label="Insulated Csy4 1"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+     misc_feature    476..495
+                     /label="iCsy4i_v1"
+                     /ApEinfo_fwdcolor="#84B0DC"
+                     /ApEinfo_revcolor="#84B0DC"
+     misc_feature    502..508
+                     /label="Barcode"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     misc_feature    365..383
+                     /label="NT1"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     primer          212..231
+                     /label="LKO1_5_primer"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+     misc_feature    303..305
+                     /label="PAM"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc            309..328
+                     /label="r5(W17) gRNA target"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+     misc_feature    481..495
+                     /label="Minimal Hairpin"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    341..355
+                     /label="Minimal Hairpin"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     promoter        26..282
+                     /label="hU6_promoter"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    364
+                     /label="sgTet3g"
+                     /ApEinfo_fwdcolor="#800080"
+                     /ApEinfo_revcolor="#800080"
+     misc_feature    515..530
+                     /label="Handle"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    1..25
+                     /label="UTP1"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    306..308
+                     /label="PAM"
+                     /ApEinfo_fwdcolor="#B4ABAC"
+                     /ApEinfo_revcolor="#B4ABAC"
+     misc_feature    329..363
+                     /label="iCsy4i_v1"
+                     /ApEinfo_fwdcolor="#84B0DC"
+                     /ApEinfo_revcolor="#84B0DC"
+     misc            283..302
+                     /label="r1(W5) gRNA target"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     misc_feature    541..565
+                     /label="T1MC"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    329..335
+                     /label="INS3"
+                     /ApEinfo_fwdcolor="#D6B295"
+                     /ApEinfo_revcolor="#D6B295"
+     misc_feature    336..355
+                     /label="Csy4 site (20bp)"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    476..495
+                     /label="Csy4 site (20bp)"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    384..469
+                     /label="optimized gRNA handle (F+E)"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+     misc_feature    356..363
+                     /label="INS4"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    531..540
+                     /label="u6 terminator?"
+                     /ApEinfo_fwdcolor="#D59687"
+                     /ApEinfo_revcolor="#D59687"
+ORIGIN
+        1 gccgatacga aggttttctc cagcgaaggt cgggcaggaa gagggcctat ttcccatgat
+       61 tccttcatat ttgcatatac gatacaaggc tgttagagag ataattagaa ttaatttgac
+      121 tgtaaacaca aagatattag tacaaaatac gtgacgtaga aagtaataat ttcttgggta
+      181 gtttgcagtt ttaaaattat gttttaaaat ggactatcat atgcttaccg taacttgaaa
+      241 gtatttcgat ttcttggctt tatatatctt gtggaaagga cgggaacgtg attgaataac
+      301 tttggcctcg actctgtcaa ctgacttccc ccgtcgttca ctgccgtata ggcagcatct
+      361 ttagaatagc tcagaggccg agggtttaag agctatgctg gaaacagcat agcaagttta
+      421 aataaggcta gtccgttatc aacttgaaaa agtggcaccg agtcggtgca ttcctgttca
+      481 ctgccgtata ggcagccctt tatctcccac gtgcgctttc tcccttctcc ttttttctag
+      541 gcttcaataa aggagcgagc acccg
+//

@@ -1,7 +1,4 @@
 """Assembly."""
-from __future__ import annotations
-
-from collections import Iterable
 from collections import namedtuple
 from copy import deepcopy
 from itertools import groupby
@@ -9,6 +6,7 @@ from itertools import zip_longest
 from typing import Any
 from typing import Dict
 from typing import Generator
+from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -68,7 +66,7 @@ def _design_primers(
     :return: tuple of pairs and the 'explain' dictionary.
     """
     design = primer3plus.new()
-    design.presets.as_cloning_task()
+    design.settings.as_cloning_task()
     if region.direction == -1:
         region = region.flip()
         template = rc(template)
@@ -82,29 +80,29 @@ def _design_primers(
         adjusted_template = region.get_slice(template) + region.invert()[0].get_slice(
             template
         )
-        design.presets.template(adjusted_template)
-        design.presets.included((0, len(region)))
+        design.settings.template(adjusted_template)
+        design.settings.included((0, len(region)))
         index = list(region) + list(region.invert()[0])
     else:
-        design.presets.template(template)
-        design.presets.included((region.a, len(region)))
+        design.settings.template(template)
+        design.settings.included((region.a, len(region)))
         index = None
     if lseq:
-        design.presets.left_sequence(lseq)
+        design.settings.left_sequence(lseq)
     if rseq:
-        design.presets.right_sequence(rseq)
+        design.settings.right_sequence(rseq)
 
     if left_overhang is None:
         left_overhang = ""
     if right_overhang is None:
         right_overhang = ""
 
-    design.presets.product_size((len(region), len(region)))
-    design.presets.left_overhang(left_overhang)
-    design.presets.right_overhang(right_overhang)
+    design.settings.product_size((len(region), len(region)))
+    design.settings.left_overhang(left_overhang)
+    design.settings.right_overhang(right_overhang)
     design.PRIMER_PICK_ANYWAY = True
-    design.presets.use_overhangs()
-    design.presets.long_ok()
+    design.settings.use_overhangs()
+    design.settings.long_ok()
 
     design.logger.set_level("INFO")
     pairs, explain = design.run_and_optimize(15)
@@ -129,7 +127,7 @@ def _no_none_or_nan(*i):
 
 
 def _get_primer_extensions(
-    graph: nx.DiGraph, n1: AssemblyNode, n2: AssemblyNode, cyclic: bool = True
+    graph: nx.DiGraph, n1: "AssemblyNode", n2: "AssemblyNode", cyclic: bool = True
 ) -> Tuple[int, int]:
     """Return the left and right primer extensions for the given *internal*
     fragment. To get the extensions, we look for the left predecessor edge and
@@ -165,7 +163,7 @@ def _get_primer_extensions(
 
 
 def _use_direct(
-    edge: Tuple[AssemblyNode, AssemblyNode, dict], seqdb: Dict[str, SeqRecord]
+    edge: Tuple["AssemblyNode", "AssemblyNode", dict], seqdb: Dict[str, SeqRecord]
 ) -> Tuple[SeqRecord, AlignmentGroup]:
     group = edge[2]["groups"][0]
     alignment = group.alignments[0]
@@ -175,7 +173,7 @@ def _use_direct(
 
 
 def _design_gap(
-    edge: Tuple[AssemblyNode, AssemblyNode, dict], qrecord: SeqRecord
+    edge: Tuple["AssemblyNode", "AssemblyNode", dict], qrecord: SeqRecord
 ) -> Union[Tuple[SeqRecord, Region], Tuple[None, None]]:
     n1, _, edge_data = edge
     gene_size = edge_data["gene_size"]
@@ -192,7 +190,7 @@ def _design_gap(
 
 
 def _design_pcr_product_primers(
-    edge: Tuple[AssemblyNode, AssemblyNode, dict],
+    edge: Tuple["AssemblyNode", "AssemblyNode", dict],
     graph: nx.DiGraph,
     design: Tuple[bool, bool],
     seqdb: Dict[str, SeqRecord],
@@ -235,6 +233,9 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         template = group.alignments[0]
     else:
+        if not hasattr(group, "groupings"):
+            print(group)
+            print(group.type)
         grouping = group.groupings[0]
         template = group.get_template(0)
         assert grouping["template"].subject_key == template.subject_key
@@ -297,7 +298,10 @@ def _design_pcr_product_primers(
 
 
 def _design_edge(
-    assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
+    assembly: "Assembly",
+    n1: "AssemblyNode",
+    n2: "AssemblyNode",
+    seqdb: Dict[str, SeqRecord],
 ) -> Union[Reaction, None]:
     query_key = assembly.query_key
     graph = assembly.graph
@@ -335,6 +339,24 @@ def _design_edge(
                 return None
         else:
             return None
+    elif edge[-1]["type_def"].name == Constants.FRAGMENT:
+        group = edge[2]["groups"][0]
+        alignment = group.alignments[0]
+        sk = alignment.subject_key
+        frag_seq = seqdb[sk]
+        query_region = edge[2]["query_region"]
+        frag_mol = Molecule(moltype, alignment, frag_seq, query_region=query_region)
+        return Reaction("Retrieve Fragment", inputs=[], outputs=[frag_mol])
+    elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
+        query_region = edge[2]["query_region"]
+        group = edge[2]["group"]
+        synthesis_mol = Molecule(
+            MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT],
+            alignment_group=group,
+            sequence=query_region.get_slice(seqdb[query_key]),
+            query_region=query_region,
+        )
+        return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
     else:
         pairs, explain, group, query_region = _design_pcr_product_primers(
             edge, graph, moltype.design, seqdb
@@ -413,6 +435,7 @@ class Assembly(Iterable):
         if not self._reactions:
             reactions = []
             for n1, n2, edata in self.edges():
+                print(n1, n2)
                 reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
                     reactions.append(reaction)
@@ -467,7 +490,7 @@ class Assembly(Iterable):
     def _subgraph(
         self, graph: nx.DiGraph, nodes: List[AssemblyNode], do_raise: bool = True
     ):
-        def _resolve(node: AssemblyNode, qregion) -> Tuple[AssemblyNode, dict]:
+        def _resolve(node: "AssemblyNode", qregion) -> Tuple[AssemblyNode, dict]:
             new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
             return new_node
 
@@ -487,6 +510,7 @@ class Assembly(Iterable):
         if self.cyclic:
             pair_iter.append((nodes[-1], nodes[0]))
 
+        visited = set()
         for n1, n2 in pair_iter:
             edata = graph.get_edge_data(n1, n2)
             if edata is None:
@@ -517,6 +541,10 @@ class Assembly(Iterable):
 
             rn1 = _resolve(n1, query_region)
             rn2 = _resolve(n2, query_region)
+
+            if rn1 in visited:
+                break
+            visited.add(rn1)
 
             # TODO: add this check
             if do_raise:
@@ -559,7 +587,7 @@ class Assembly(Iterable):
         return self.graph.nodes(data=data)
 
     def edit_distance(
-        self, other: Assembly, explain=False
+        self, other: "Assembly", explain=False
     ) -> Union[int, Tuple[int, List[Tuple[int, str]]]]:
         differences = []
         for i, (n1, n2) in enumerate(
@@ -592,7 +620,7 @@ class Assembly(Iterable):
         df = self.to_df()
         print(df)
 
-    def print_diff(self, other: Assembly):
+    def print_diff(self, other: "Assembly"):
         for i, (n1, n2) in enumerate(
             zip_longest(self.nodes(data=False), other.nodes(data=False))
         ):
@@ -602,7 +630,7 @@ class Assembly(Iterable):
                 desc = True
             print("{} {} {}".format(desc, n1, n2))
 
-    def to_df(self):
+    def to_df(self) -> pd.DataFrame:
         rows = []
         for n1, n2, edata in self.edges():
             groups = edata["groups"]
@@ -634,6 +662,8 @@ class Assembly(Iterable):
                     "type": edata["type_def"].name,
                     "internal_or_external": edata["type_def"].int_or_ext,
                     "efficiency": edata.get("efficiency", np.nan),
+                    "complexity": edata.get("complexity", np.nan),
+                    "notes": edata.get("notes", ""),
                 }
             )
 
@@ -641,16 +671,28 @@ class Assembly(Iterable):
         return df
 
     def _csv_row(
-        self, m: Molecule, role: str, reaction_id: Union[str, int], meta: dict = None
-    ):
+        self,
+        m: Molecule,
+        role: str,
+        reaction_id: Union[str, int],
+        reaction_name: str,
+        meta: dict = None,
+    ) -> dict:
         mtype = m.type.name
         group = m.alignment_group
-        if group and group.subject_key:
-            key = group.subject_key
-            name = self.seqdb[key].name
-        else:
-            key = None
-            name = None
+
+        key = None
+        name = None
+        if group:
+            if hasattr(group, "subject_key"):
+                if group.subject_key:
+                    key = group.subject_key
+                    name = self.seqdb[key].name
+            else:
+                # TODO: select best subject here
+                key = group.subject_keys[0]
+                name = self.seqdb[key].name
+
         if m.query_region:
             q = (m.query_region.a, m.query_region.b, m.query_region.context_length)
         else:
@@ -665,22 +707,25 @@ class Assembly(Iterable):
             "REGION": q,
             "ROLE": role,
             "REACTION_ID": reaction_id,
+            "REACTION_NAME": reaction_name,
         }
         if meta:
             data.update({"META": deepcopy(meta)})
         return data
 
     @property
-    def molecules(self):
+    def molecules(self) -> Generator[Tuple[int, str, Molecule], None, None]:
         for i, r in enumerate(self.reactions):
             for m in r.inputs:
                 yield (i, "input", m)
             for m in r.outputs:
                 yield (i, "output", m)
 
-    def to_reaction_df(self):
+    def to_reaction_df(self) -> pd.DataFrame:
         rows = []
-        for i, role, m in self.molecules:
+        reactions = self.reactions
+        for reaction_id, role, m in self.molecules:
+            reaction = reactions[reaction_id]
             if m.type.name == "PRIMER":
                 meta = deepcopy(m.metadata)
                 meta["ANNEAL"] = meta["SEQUENCE"]
@@ -688,12 +733,13 @@ class Assembly(Iterable):
                 meta = {"PRIMER_{}".format(k): v for k, v in meta.items()}
             else:
                 meta = None
-            rows.append(self._csv_row(m, role, i, meta))
+            rows.append(self._csv_row(m, role, reaction_id, reaction.name, meta))
         colnames = [
             "DESIGN_ID",
             "DESIGN_KEY",
             "ASSEMBLY_ID",
             "REACTION_ID",
+            "REACTION_NAME",
             "NAME",
             "TYPE",
             "KEY",
@@ -705,14 +751,22 @@ class Assembly(Iterable):
         ]
         df = pd.DataFrame(rows, columns=colnames)
         df.sort_values(
-            by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
+            by=[
+                "TYPE",
+                "DESIGN_ID",
+                "ASSEMBLY_ID",
+                "REACTION_ID",
+                "REACTION_NAME",
+                "NAME",
+                "ROLE",
+            ],
             inplace=True,
         )
         return df
 
-    def __eq__(self, other: Assembly) -> bool:
+    def __eq__(self, other: "Assembly") -> bool:
         return self.edit_distance(other) == 0
 
-    def __iter__(self) -> Generator[AssemblyNode]:
+    def __iter__(self) -> Generator[AssemblyNode, None, None]:
         for n in self.nodes(data=False):
             yield n

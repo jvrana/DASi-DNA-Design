@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Any
 from typing import Dict
 from typing import Tuple
@@ -51,7 +49,7 @@ def design_primers(
     :return: tuple of pairs and the 'explain' dictionary.
     """
     design = primer3plus.new()
-    design.presets.as_cloning_task()
+    design.settings.as_cloning_task()
     if region.direction == -1:
         region = region.flip()
         template = rc(template)
@@ -65,29 +63,29 @@ def design_primers(
         adjusted_template = region.get_slice(template) + region.invert()[0].get_slice(
             template
         )
-        design.presets.template(adjusted_template)
-        design.presets.included((0, len(region)))
+        design.settings.template(adjusted_template)
+        design.settings.included((0, len(region)))
         index = list(region) + list(region.invert()[0])
     else:
-        design.presets.template(template)
-        design.presets.included((region.a, len(region)))
+        design.settings.template(template)
+        design.settings.included((region.a, len(region)))
         index = None
     if lseq:
-        design.presets.left_sequence(lseq)
+        design.settings.left_sequence(lseq)
     if rseq:
-        design.presets.right_sequence(rseq)
+        design.settings.right_sequence(rseq)
 
     if left_overhang is None:
         left_overhang = ""
     if right_overhang is None:
         right_overhang = ""
 
-    design.presets.product_size((len(region), len(region)))
-    design.presets.left_overhang(left_overhang)
-    design.presets.right_overhang(right_overhang)
+    design.settings.product_size((len(region), len(region)))
+    design.settings.left_overhang(left_overhang)
+    design.settings.right_overhang(right_overhang)
     design.PRIMER_PICK_ANYWAY = True
-    design.presets.use_overhangs()
-    design.presets.long_ok()
+    design.settings.use_overhangs()
+    design.settings.long_ok()
 
     design.logger.set_level("INFO")
     pairs, explain = design.run_and_optimize(15)

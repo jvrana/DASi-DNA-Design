@@ -1,0 +1,19 @@
+LOCUS       2f28d7dc47de_fragment_36 201 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_TpwB51CI
+VERSION     seq_TpwB51CI
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..201
+                     /label="2f28d7dc47de_fragment_36"
+                     /ApEinfo_fwdcolor="#321768"
+                     /ApEinfo_revcolor="#321768"
+ORIGIN
+        1 gagaacgtat gtcgaggtag gcgtgtacgc gcttaactgc tcattgctat attgaagtgc
+       61 ggccgcggcg gaggagtgcg gcggaggagg agcggcggag gagtgcggcg gaggaggagc
+      121 ggcggaggag tgcggcggag gagtctagac cgtgcgtcct cgaaagtgaa agtcgagctc
+      181 ggtacgatcc tatggcatgc a
+//

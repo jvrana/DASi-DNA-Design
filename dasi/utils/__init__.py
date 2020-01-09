@@ -33,7 +33,6 @@ Specialized networkx algorithms for path and cycle finding.
 
 """
 import bisect
-import functools
 from typing import Any
 from typing import Callable
 from typing import Iterable
@@ -117,3 +116,13 @@ def prep_df(df):
     df.columns = colnames
     df.sort_values(by=["TYPE", "DESIGN_ID", "REACTION_ID", "ASSEMBLY_ID", "ROLE"])
     return df
+
+
+def group_by(arr: List[Any], key: Callable):
+    """Group a list by some key."""
+    grouped = {}
+    for x in arr:
+        k = key(x)
+        grouped.setdefault(k, list())
+        grouped[k].append(x)
+    return grouped

@@ -27,6 +27,6 @@ def test(paths):
 
     blast = factory(TEMPLATES, QUERIES)
 
-    results = blast.quick_blastn()
+    results = blast.blastn()
     assert results[0]["subject"]["strand"] == -1
     assert results[0]["subject"]["start"] == len(templates[0])

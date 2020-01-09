@@ -1,0 +1,40 @@
+LOCUS       t1mc-ggpos1-cole1-ampsplit 999 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_rowgPhOg
+VERSION     seq_rowgPhOg
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     gene            839..982
+                     /label="Ampicillin"
+                     /ApEinfo_fwdcolor="#85DAE9"
+                     /ApEinfo_revcolor="#85DAE9"
+     CDS             842..982
+                     /label="AmpR"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     rep_origin      62..744
+                     /label="ColE1 origin"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+ORIGIN
+        1 gcttcaataa aggagcgagc acccgtgccg gagacccaca aaaggccagg aaccgtaaaa
+       61 aggccgcgtt gctggcgttt ttccataggc tccgcccccc tgacgagcat cacaaaaatc
+      121 gacgctcaag tcagaggtgg cgaaacccga caggactata aagataccag gcgtttcccc
+      181 ctggaagctc cctcgtgcgc tctcctgttc cgaccctgcc gcttaccgga tacctgtccg
+      241 cctttctccc ttcgggaagc gtggcgcttt ctcatagctc acgctgtagg tatctcagtt
+      301 cggtgtaggt cgttcgctcc aagctgggct gtgtgcacga accccccgtt cagcccgacc
+      361 gctgcgcctt atccggtaac tatcgtcttg agtccaaccc ggtaagacac gacttatcgc
+      421 cactggcagc agccactggt aacaggatta gcagagcgag gtatgtaggc ggtgctacag
+      481 agttcttgaa gtggtggcct aactacggct acactagaag gacagtattt ggtatctgcg
+      541 ctctgctgaa gccagttacc ttcggaaaaa gagttggtag ctcttgatcc ggcaaacaaa
+      601 ccaccgctgg tagcggtggt ttttttgttt gcaagcagca gattacgcgc agaaaaaaag
+      661 gatctcaaga agatcctttg atcttttcta cggggtctga cgctcagtgg aacgaaaact
+      721 cacgttaagg gattttggtc atgagattat caaaaaggat cttcacctag atccttttaa
+      781 attaaaaatg aagttttaaa tcaatctaaa gtatatatga gtaaacttgg tctgacagtt
+      841 accaatgctt aatcagtgag gcacctatct cagcgatctg tctatttcgt tcatccatag
+      901 ttgcctgact ccccgtcgtg tagataacta cgatacggga gggcttacca tctggcccca
+      961 gtgctgcaat gataccgcga gatccacgct caccggctc
+//

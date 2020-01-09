@@ -1,0 +1,75 @@
+LOCUS       utp1-hu6-w5-grna-t1mc    458 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_r8zOdXE9
+VERSION     seq_r8zOdXE9
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    416..423
+                     /label="INS4"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    389..423
+                     /label="iCsy4i_v2"
+                     /ApEinfo_fwdcolor="#84B0DC"
+                     /ApEinfo_revcolor="#84B0DC"
+     misc_feature    434..458
+                     /label="T1MC"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    396..415
+                     /label="Csy4 site (20bp)"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    1..25
+                     /label="UTP1"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    401..415
+                     /label="Minimal Hairpin"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    303..388
+                     /label="optimized gRNA handle (F+E)"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+     primer          212..231
+                     /label="LKO1_5_primer"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+     promoter        26..282
+                     /label="hU6_promoter"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    283..302
+                     /label="W5(c3)"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     misc_feature    424..433
+                     /label="u6 terminator?"
+                     /ApEinfo_fwdcolor="#D59687"
+                     /ApEinfo_revcolor="#D59687"
+     misc_feature    344..364
+                     /label="Assembly Junction"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+     misc_feature    349..360
+                     /label="unstructured"
+                     /ApEinfo_fwdcolor="#FF9CCD"
+                     /ApEinfo_revcolor="#FF9CCD"
+     misc_feature    389..395
+                     /label="INS3"
+                     /ApEinfo_fwdcolor="#D6B295"
+                     /ApEinfo_revcolor="#D6B295"
+ORIGIN
+        1 gccgatacga aggttttctc cagcgaaggt cgggcaggaa gagggcctat ttcccatgat
+       61 tccttcatat ttgcatatac gatacaaggc tgttagagag ataattagaa ttaatttgac
+      121 tgtaaacaca aagatattag tacaaaatac gtgacgtaga aagtaataat ttcttgggta
+      181 gtttgcagtt ttaaaattat gttttaaaat ggactatcat atgcttaccg taacttgaaa
+      241 gtatttcgat ttcttggctt tatatatctt gtggaaagga cgggaacgtg attgaataac
+      301 ttgtttaaga gctatgctgg aaacagcata gcaagtttaa ataaggctag tccgttatca
+      361 acttgaaaaa gtggcaccga gtcggtgccc ccgtcgttca ctgccgtata ggcagcatct
+      421 ttattttttc taggcttcaa taaaggagcg agcacccg
+//

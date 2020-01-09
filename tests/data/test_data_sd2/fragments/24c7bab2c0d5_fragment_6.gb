@@ -1,0 +1,19 @@
+LOCUS       24c7bab2c0d5_fragment_6  201 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_nMxFxkUM
+VERSION     seq_nMxFxkUM
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..201
+                     /label="24c7bab2c0d5_fragment_6"
+                     /ApEinfo_fwdcolor="#678977"
+                     /ApEinfo_revcolor="#678977"
+ORIGIN
+        1 acctccctta accagattcg aaaagcggcc gcttaactgc tcattgctat attgaagtgc
+       61 ggccgcggcg gaggagtgcg gcggaggagg agcggcggag gagtgcggcg gaggaggagc
+      121 ggcggaggag tgcggcggag gagtctagac cgtgcgtcct cgaaagtgaa agtcgagctc
+      181 ggtacgatcc tatggcatgc a
+//

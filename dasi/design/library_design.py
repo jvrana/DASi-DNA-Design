@@ -319,7 +319,10 @@ class LibraryDesign(Design):
                 if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
                     group = edata["group"]
                     edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
-                    edata["material"] = edata["material"] / group.meta["n_clusters"]
+                    # TODO: adjust n_clusters
+                    edata["material"] = (
+                        edata["material"] / (group.meta["n_clusters"]) / 2.0
+                    )
                     edata["cost"] = edata["material"] / edata["efficiency"]
                     adjusted += 1
         tracker.update(4, "Post processing complete")

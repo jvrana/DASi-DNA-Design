@@ -1,0 +1,55 @@
+LOCUS       9f0cba638694_gblock_15  1160 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_EKfRcAsL
+VERSION     seq_EKfRcAsL
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     gibson_linker   250..271
+                     /label="ps"
+                     /ApEinfo_fwdcolor="#f58a5e"
+                     /ApEinfo_revcolor="#f58a5e"
+     misc_feature    1..1160
+                     /label="9f0cba638694_gblock_15"
+                     /ApEinfo_fwdcolor="#19534e"
+                     /ApEinfo_revcolor="#19534e"
+     misc_feature    158..177
+                     /label="c3 site"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+     gibson_assembly 1127..1148
+                     /label="tp"
+                     /ApEinfo_fwdcolor="#f58a5e"
+                     /ApEinfo_revcolor="#f58a5e"
+     http://identifie84..243
+                     /label="CYC1 minimal promoter"
+                     /ApEinfo_fwdcolor="#515616"
+                     /ApEinfo_revcolor="#515616"
+     misc_feature    7..30
+                     /label="PP2"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+ORIGIN
+        1 cacctccctt aaccagattc gaaaagcggc cggggttacg tacggcacac gcaaccgtgc
+       61 aaagtgaaag tcgagctcgg tacgatccta tggcatgcat gtgctctgta tgtatataaa
+      121 actcttgttt tcttcttttc tctaaatatt ctttccttat acattaggac ctttgcagca
+      181 taaattacta tacttctata gacacacaaa cacaaataca cacactaatc tagatattgg
+      241 attcggattc tagaactagt ggatctacaa aatggctcct tccggtccac caaggtccag
+      301 agggactagg taccttgcgc agcctagtgg caatactagt tctagtgccc taatgcaagg
+      361 tcaaaaggct ccccaaaagc cttcacagaa cctagtccct gtcactccct caacaactaa
+      421 gtcttttaaa aatgcgccat tattagcacc tcccaattcg aacatgggta tgacctctcc
+      481 atttaatggg cttacggctc ctcaacgctc gccgtttcca aaatcttcag tgaagaggac
+      541 actattccaa tttgaaagtc atgataatgg aacagtaagg gaagagcagg aaccattggg
+      601 tcgtgtaaat aggatattgt ttcccacgca gcaaaatgtg gatatagatg cagcagaaga
+      661 agaagaagaa ggagaagttc ttcttccccc cagcagacct acatctgcca ggcagttaca
+      721 tttatcactt gaaagagatg agtttgatca gacacataga aagaagatta ttaaagatgt
+      781 acctggtacg cccagcgaca aggtgataac atttgaattg gcaaaaaatt ggaacaacaa
+      841 ctctccgaaa aatgacgcca ggagtcaaga aagtgaagac gaggaagaca tcatcatcaa
+      901 tccagtgcgg gtgggtaaaa atccctttgc atcagatgaa ctggtcactc aggaaattag
+      961 aaatgaacgt aaaagggcaa tgttgagaga aaacccagat atagaagacg taataacata
+     1021 tgtcaataag aagggagagg tggtagagaa acgaaggtta acggatgaag aaaagagaag
+     1081 attcaagcca aaggcattgt ttcaatctag ggatcaagag cattagtgat accgtcgacc
+     1141 tcgagtcaat tagttatgtc
+//

@@ -235,7 +235,7 @@ InternalType(
     use_direct=True,
     cost=1000.0,
     efficiency=0.1,
-    description=(""),
+    description="",
     min_size=100,
     synthesize=True,
 )

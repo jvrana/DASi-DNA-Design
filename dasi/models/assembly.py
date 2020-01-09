@@ -340,15 +340,13 @@ def _design_edge(
         else:
             return None
     elif edge[-1]["type_def"].name == Constants.FRAGMENT:
+        group = edge[2]["groups"][0]
+        alignment = group.alignments[0]
+        sk = alignment.subject_key
+        frag_seq = seqdb[sk]
         query_region = edge[2]["query_region"]
-        group = edge[2]["group"]
-        fragment = Molecule(
-            MoleculeType.types[Constants.FRAGMENT],
-            alignment_group=group,
-            sequence=query_region.get_slice(seqdb[query_key]),
-            query_region=query_region,
-        )
-        return Reaction("Retrieve Fragment", inputs=[], outputs=[fragment])
+        frag_mol = Molecule(moltype, alignment, frag_seq, query_region=query_region)
+        return Reaction("Retrieve Fragment", inputs=[], outputs=[frag_mol])
     elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
         query_region = edge[2]["query_region"]
         group = edge[2]["group"]
@@ -437,6 +435,7 @@ class Assembly(Iterable):
         if not self._reactions:
             reactions = []
             for n1, n2, edata in self.edges():
+                print(n1, n2)
                 reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
                     reactions.append(reaction)

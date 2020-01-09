@@ -1,0 +1,46 @@
+LOCUS       p1g1-kozak-sv40nls-hcsy4-tp 641 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_Rr77GchM
+VERSION     seq_Rr77GchM
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    620..641
+                     /label="TP"
+                     /ApEinfo_fwdcolor="#F8D3A9"
+                     /ApEinfo_revcolor="#F8D3A9"
+     misc_feature    26..31
+                     /label="Kozak"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    32..34
+                     /label="START"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    35..58
+                     /label="SV40 NLS"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    59..619
+                     /label="Csy4"
+                     /ApEinfo_fwdcolor="#D59687"
+                     /ApEinfo_revcolor="#D59687"
+     misc_feature    1..25
+                     /label="P1G1"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+ORIGIN
+        1 gggaccgtca accctgaacc acaaagccac catgggacca aagaaaaaac gtaaagtggg
+       61 tgatcattat ctggatattc ggctgaggcc tgatccagag ttcccacctg cgcagctgat
+      121 gtctgtcctt tttggcaaac ttcatcaggc cctggttgcc cagggcggag atcggatagg
+      181 ggtaagcttt ccagacctcg acgaaagccg gagccgcctg ggagaacgcc tgcggatcca
+      241 cgcttctgcc gacgatctga gagccttgct ggcaaggcca tggcttgagg ggctccggga
+      301 tcacctgcag tttggcgaac ccgccgttgt tccccaccca accccttatc ggcaggtgtc
+      361 tagagtgcag gccaaatcta atccagaacg gctgcgacgg cgactcatgc ggcgacatga
+      421 tcttagcgag gaagaggccc gaaaaagaat ccctgatacc gtggcccgcg cccttgactt
+      481 gccttttgtc acactgcggt cccagagtac ggggcagcat ttcagacttt tcattcgaca
+      541 cgggccactg caagttaccg ccgaagaagg aggctttact tgttatggac tctccaaggg
+      601 aggtttcgtg ccctggtttt gataccgtcg acctcgagtc a
+//

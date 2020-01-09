@@ -92,7 +92,7 @@ class DasiCLI:
         design.optimize()
 
         self._logger.info("Designing assembly primers and fragments")
-        df, adf = design.to_df()
+        df, adf, design_json = design.to_df()
         adf.to_csv("summary.csv")
         df.to_csv("sequence_design.csv")
 

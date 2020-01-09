@@ -1,0 +1,50 @@
+LOCUS       uwbf_chr11_xi-3_dw_94003-94538 608 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_tZ2VEJLb
+VERSION     seq_tZ2VEJLb
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    26..31
+                     /label="BsaI"
+                     /ApEinfo_fwdcolor="#c7b4f5"
+                     /ApEinfo_revcolor="#c7b4f5"
+     misc_feature    33..36
+                     /label="part8b1"
+                     /ApEinfo_fwdcolor="#32debb"
+                     /ApEinfo_revcolor="#32debb"
+     misc_feature    1..25
+                     /label="T1MC"
+                     /ApEinfo_fwdcolor="#dc90f"
+                     /ApEinfo_revcolor="#dc90f"
+     misc_feature    573..576
+                     /label="part8b2"
+                     /ApEinfo_fwdcolor="#5dd6c9"
+                     /ApEinfo_revcolor="#5dd6c9"
+     misc_feature    complement(578..583)
+                     /label="BsaI"
+                     /ApEinfo_fwdcolor="#c7b4f5"
+                     /ApEinfo_revcolor="#c7b4f5"
+     misc_feature    complement(584..608)
+                     /label="MCDT"
+                     /ApEinfo_fwdcolor="#3d0048"
+                     /ApEinfo_revcolor="#3d0048"
+     misc_feature    37..572
+                     /label="chr11_XI-3_dw_94003:94538"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+ORIGIN
+        1 gcttcaataa aggagcgagc acccgggtct cagttattac gtggattgag ccagcaatac
+       61 agatcattat taaactgttt tgtacatgat gttagtatat aatcgtaaag cttttctaat
+      121 atgtatacct tatacatgga actccacaga acttgcaaac ataccaaaaa tcctttattc
+      181 ttgttcactc attttacatc aaaaaataat atttcagtta ttaaggaaaa taaaaaaata
+      241 gattagagaa gcattttgaa gaaatagtat attcttttat tgaacctaag agcgtgatat
+      301 ttttactcga aataaaatac gaaaaatcta tacactcatc tttccgacta ctattggctc
+      361 ctgctcaaaa aaagagggaa aaaaagctcc aaaattctat cttttcctat cgctcctgtc
+      421 ctatccttat tacgttcatt actattttaa tactatccat tcttttattt tcagtctaaa
+      481 aaaaacattt ctcataacgg gaaaagcaaa aaaatgtcaa gcttatacat caaaacacca
+      541 ctgcatgcat tatctgctgg tccggattct cacccttgag accgccacct ttattcgcct
+      601 cgcttctg
+//

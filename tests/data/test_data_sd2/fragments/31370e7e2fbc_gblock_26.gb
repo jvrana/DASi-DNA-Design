@@ -1,0 +1,36 @@
+LOCUS       31370e7e2fbc_gblock_26   297 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_Ig5162ed
+VERSION     seq_Ig5162ed
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     gibson_linker   273..294
+                     /label="ps"
+                     /ApEinfo_fwdcolor="#f58a5e"
+                     /ApEinfo_revcolor="#f58a5e"
+     http://identifie107..266
+                     /label="CYC1 minimal promoter"
+                     /ApEinfo_fwdcolor="#515616"
+                     /ApEinfo_revcolor="#515616"
+     misc_feature    1..297
+                     /label="31370e7e2fbc_gblock_26"
+                     /ApEinfo_fwdcolor="#018fa0"
+                     /ApEinfo_revcolor="#018fa0"
+     misc_feature    181..200
+                     /label="c3 site"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+     misc_feature    1..24
+                     /label="PP2"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+ORIGIN
+        1 ccttaaccag attcgaaaag cggccggggt tacgtacggc acacgcaacc gtgctaggta
+       61 agcaaaccca tcacgcaact ggtaaagtga aagtcgagct cggtacgatc ctatggcatg
+      121 catgtgctct gtatgtatat aaaactcttg ttttcttctt ttctctaaat attctttcct
+      181 tatacattag gacctttgca gcataaatta ctatacttct atagacacac aaacacaaat
+      241 acacacacta atctagatat tggattcgga ttctagaact agtggatcta caaaatg
+//

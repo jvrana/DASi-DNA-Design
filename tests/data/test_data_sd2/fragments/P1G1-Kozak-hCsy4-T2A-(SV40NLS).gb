@@ -1,0 +1,72 @@
+LOCUS       p1g1-kozak-hcsy4-t2a-sv40nls 726 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_g9ISPax7
+VERSION     seq_g9ISPax7
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    35..58
+                     /label="SV40 NLS"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     feature         683..697
+                     /label="NLS [0,14,15]"
+                     /ApEinfo_fwdcolor="#F8D3A9"
+                     /ApEinfo_revcolor="#F8D3A9"
+     misc_feature    26..31
+                     /label="Kozak"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    57..619
+                     /label="hCsy4 [1,563,564]"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    620..673
+                     /label="T2A"
+                     /ApEinfo_fwdcolor="#C7B0E3"
+                     /ApEinfo_revcolor="#C7B0E3"
+     misc_feature    674..697
+                     /label="FokI [0,23,618]"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     misc_feature    32..34
+                     /label="START"
+                     /ApEinfo_fwdcolor="#F58A5E"
+                     /ApEinfo_revcolor="#F58A5E"
+     misc_feature    1..25
+                     /label="P1G1"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    59..619
+                     /label="Csy4"
+                     /ApEinfo_fwdcolor="#D59687"
+                     /ApEinfo_revcolor="#D59687"
+     misc_feature    620..673
+                     /label="T2A [0,53,54]"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+     misc_feature    35..56
+                     /label="SV40 NLS"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     feature         677..697
+                     /label="SV40 NLS [0,20,21]"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+ORIGIN
+        1 gggaccgtca accctgaacc acaaagccac catgggacca aagaaaaaac gtaaagtggg
+       61 tgatcattat ctggatattc ggctgaggcc tgatccagag ttcccacctg cgcagctgat
+      121 gtctgtcctt tttggcaaac ttcatcaggc cctggttgcc cagggcggag atcggatagg
+      181 ggtaagcttt ccagacctcg acgaaagccg gagccgcctg ggagaacgcc tgcggatcca
+      241 cgcttctgcc gacgatctga gagccttgct ggcaaggcca tggcttgagg ggctccggga
+      301 tcacctgcag tttggcgaac ccgccgttgt tccccaccca accccttatc ggcaggtgtc
+      361 tagagtgcag gccaaatcta atccagaacg gctgcgacgg cgactcatgc ggcgacatga
+      421 tcttagcgag gaagaggccc gaaaaagaat ccctgatacc gtggcccgcg cccttgactt
+      481 gccttttgtc acactgcggt cccagagtac ggggcagcat ttcagacttt tcattcgaca
+      541 cgggccactg caagttaccg ccgaagaagg aggctttact tgttatggac tctccaaggg
+      601 aggtttcgtg ccctggtttg agggcagagg aagtctgtta acatgcggtg acgtcgagga
+      661 gaatcctggc ccaatgccta agaagaagcg gaaggtgggt ggcggtggat ccgataaaaa
+      721 gtattc
+//

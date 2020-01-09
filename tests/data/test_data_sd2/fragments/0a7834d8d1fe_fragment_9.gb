@@ -1,0 +1,66 @@
+LOCUS       0a7834d8d1fe_fragment_9  372 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_MVTDykO0
+VERSION     seq_MVTDykO0
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     responsive_eleme300..318
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     misc_feature    1..372
+                     /label="0a7834d8d1fe_fragment_9"
+                     /ApEinfo_fwdcolor="#3431d9"
+                     /ApEinfo_revcolor="#3431d9"
+     misc_feature    30..54
+                     /label="UTP1"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     responsive_eleme264..282
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     misc_feature    344..366
+                     /label="Cyc1 Spacer"
+                     /ApEinfo_fwdcolor="#B4ABAC"
+                     /ApEinfo_revcolor="#B4ABAC"
+     misc_feature    6..29
+                     /label="PP2"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     responsive_eleme193..211
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     misc_feature    30..343
+                     /label="7x TetO"
+                     /ApEinfo_fwdcolor="#85DAE9"
+                     /ApEinfo_revcolor="#85DAE9"
+     responsive_eleme122..140
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     responsive_eleme157..175
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     responsive_eleme229..247
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+     responsive_eleme86..104
+                     /label="TetO"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /ApEinfo_revcolor="#d59687"
+ORIGIN
+        1 acctccctta accagattcg aaaagcggcg ccgatacgaa ggttttctcc agcgctttgg
+       61 ccgcgaatcg atatgtcgag tttactccct atcagtgata gagaacgtat gtcgagttta
+      121 ctccctatca gtgatagaga acgatgtcga gtttactccc tatcagtgat agagaacgta
+      181 tgtcgagttt actccctatc agtgatagag aacgtatgtc gagtttactc cctatcagtg
+      241 atagagaacg tatgtcgagt ttatccctat cagtgataga gaacgtatgt cgagtttact
+      301 ccctatcagt gatagagaac gtatgtcgag gtaggcgtgt acgaaagtga aagtcgagct
+      361 cggtacgatc ct
+//

@@ -1,0 +1,95 @@
+LOCUS       r5-w17-grna-f-e-c-b-h-u6term-t1mc-ggpos1-cole1-ampsplit 1176 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_FjgTMPcd
+VERSION     seq_FjgTMPcd
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     rep_origin      complement(239..921)
+                     /label="ColE1 origin"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+     misc_feature    139..145
+                     /label="Barcode"
+                     /ApEinfo_fwdcolor="#FAAC61"
+                     /ApEinfo_revcolor="#FAAC61"
+     misc_feature    152..167
+                     /label="Handle"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    118..132
+                     /label="Minimal Hairpin"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc_feature    178..202
+                     /label="T1MC"
+                     /ApEinfo_fwdcolor="#FFEF86"
+                     /ApEinfo_revcolor="#FFEF86"
+     misc            complement(178..202)
+                     /label="Tm: 60.4°C"
+                     /ApEinfo_fwdcolor="#102262"
+                     /ApEinfo_revcolor="#102262"
+     misc_feature    21..106
+                     /label="optimized gRNA handle (F+E)"
+                     /ApEinfo_fwdcolor="#B7E6D7"
+                     /ApEinfo_revcolor="#B7E6D7"
+     misc_feature    146..151
+                     /label="barcode 2"
+                     /ApEinfo_fwdcolor="#75C6A9"
+                     /ApEinfo_revcolor="#75C6A9"
+     misc_feature    113..132
+                     /label="iCsy4i_v1"
+                     /ApEinfo_fwdcolor="#84B0DC"
+                     /ApEinfo_revcolor="#84B0DC"
+     misc            complement(1152..1176)
+                     /label="Tm: 67.0°C"
+                     /ApEinfo_fwdcolor="#b13b8b"
+                     /ApEinfo_revcolor="#b13b8b"
+     misc_feature    1..20
+                     /label="r5(W17)_optgRNA_fwd_overhang"
+                     /ApEinfo_fwdcolor="#633fc6"
+                     /ApEinfo_revcolor="#633fc6"
+     gene            complement(1016..1151)
+                     /label="Ampicillin"
+                     /ApEinfo_fwdcolor="#85DAE9"
+                     /ApEinfo_revcolor="#85DAE9"
+     misc_feature    1160
+                     /label="c>t mutation"
+                     /ApEinfo_fwdcolor="#D59687"
+                     /ApEinfo_revcolor="#D59687"
+     misc_feature    168..177
+                     /label="u6 terminator?"
+                     /ApEinfo_fwdcolor="#D59687"
+                     /ApEinfo_revcolor="#D59687"
+     misc_feature    113..132
+                     /label="Csy4 site (20bp)"
+                     /ApEinfo_fwdcolor="#C6C9D1"
+                     /ApEinfo_revcolor="#C6C9D1"
+     misc_feature    107..138
+                     /label="Insulated Csy4 1"
+                     /ApEinfo_fwdcolor="#9EAFD2"
+                     /ApEinfo_revcolor="#9EAFD2"
+ORIGIN
+        1 gaagtcagtt gacagagtcg gtttaagagc tatgctggaa acagcatagc aagtttaaat
+       61 aaggctagtc cgttatcaac ttgaaaaagt ggcaccgagt cggtgcattc ctgttcactg
+      121 ccgtataggc agccctttat ctcccacgtg cgctttctcc cttctccttt tttctaggct
+      181 tcaataaagg agcgagcacc cgtgccggag acccacaaaa ggccaggaac cgtaaaaagg
+      241 ccgcgttgct ggcgtttttc cataggctcc gcccccctga cgagcatcac aaaaatcgac
+      301 gctcaagtca gaggtggcga aacccgacag gactataaag ataccaggcg tttccccctg
+      361 gaagctccct cgtgcgctct cctgttccga ccctgccgct taccggatac ctgtccgcct
+      421 ttctcccttc gggaagcgtg gcgctttctc atagctcacg ctgtaggtat ctcagttcgg
+      481 tgtaggtcgt tcgctccaag ctgggctgtg tgcacgaacc ccccgttcag cccgaccgct
+      541 gcgccttatc cggtaactat cgtcttgagt ccaacccggt aagacacgac ttatcgccac
+      601 tggcagcagc cactggtaac aggattagca gagcgaggta tgtaggcggt gctacagagt
+      661 tcttgaagtg gtggcctaac tacggctaca ctagaaggac agtatttggt atctgcgctc
+      721 tgctgaagcc agttaccttc ggaaaaagag ttggtagctc ttgatccggc aaacaaacca
+      781 ccgctggtag cggtggtttt tttgtttgca agcagcagat tacgcgcaga aaaaaaggat
+      841 ctcaagaaga tcctttgatc ttttctacgg ggtctgacgc tcagtggaac gaaaactcac
+      901 gttaagggat tttggtcatg agattatcaa aaaggatctt cacctagatc cttttaaatt
+      961 aaaaatgaag ttttaaatca atctaaagta tatatgagta aacttggtct gacagttacc
+     1021 aatgcttaat cagtgaggca cctatctcag cgatctgtct atttcgttca tccatagttg
+     1081 cctgactccc cgtcgtgtag ataactacga tacgggaggg cttaccatct ggccccagtg
+     1141 ctgcaatgat accgcgagat ccacgctcac cggctc
+//

@@ -1,0 +1,28 @@
+LOCUS       43604fda5c5f_fragment_31 744 bp    DNA     linear   UNK 01-JAN-1980
+DEFINITION  .
+ACCESSION   seq_q5Q6ZcTy
+VERSION     seq_q5Q6ZcTy
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     misc_feature    1..744
+                     /label="43604fda5c5f_fragment_31"
+                     /ApEinfo_fwdcolor="#83bac1"
+                     /ApEinfo_revcolor="#83bac1"
+ORIGIN
+        1 cggattctag aactagtgga tctacaaaat gtctaaaggt gaagaattat tcactggtgt
+       61 tgtcccaatt ttggttgaat tagatggtga tgttaatggt cacaaatttt ctgtctccgg
+      121 tgaaggtgaa ggtgatgcta cttacggtaa attgacctta aaatttattt gtactactgg
+      181 taaattgcca gttccatggc caaccttagt cactactttc ggttatggtg ttcaatgttt
+      241 tgcgagatac ccagatcata tgaaacaaca tgactttttc aagtctgcca tgccagaagg
+      301 ttatgttcaa gaaagaacta tttttttcaa agatgacggt aactacaaga ccagagctga
+      361 agtcaagttt gaaggtgata ccttagttaa tagaatcgaa ttaaaaggta ttgattttaa
+      421 agaagatggt aacattttag gtcacaaatt ggaatacaac tataactctc acaatgttta
+      481 catcatggct gacaaacaaa agaatggtat caaagttaac ttcaaaatta gacacaacat
+      541 tgaagatggt tctgttcaat tagctgacca ttatcaacaa aatactccaa ttggtgatgg
+      601 tccagtcttg ttaccagaca accattactt atccactcaa tctgccttat ccaaagatcc
+      661 aaacgaaaag agagaccaca tggtcttgtt agaatttgtt actgctgctg gtattaccca
+      721 tggtatggat gaattgtaca aata
+//

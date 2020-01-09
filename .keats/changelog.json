@@ -1,4 +1,9 @@
 {
+  "0.0.8": {
+    "description": "library design support",
+    "date": "2020-01-09T14:32:35.169279",
+    "changes": []
+  },
   "0.0.7a0": {
     "description": "features for LibraryDesign",
     "date": "2019-11-27T09:44:03.094130",

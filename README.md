@@ -17,7 +17,7 @@ algorithm.
 
 ### Status
 
-DASi is currently under development.
+DASi is currently under development funded by the DARPA Synergistic Discovery and Design program. DASi is currently being used to connect automatically generate DNA designs to automated biological fabrication facilities (e.g. University of Washington Biofab).
 
 ### Usage
 
@@ -48,16 +48,3 @@ DASi optimization parameters are completely customizable. The following are exam
 * library support (with bayesian search to optimize shared parts)
 * front-end
 * connection to fabrication facility
-
-### Use cases
-
-* developing cloning plans from computer-generated sequences
-* developing cloning plans for human-generated sequences
-* developing plans for users that do not know the intricacies of molecular biology
-
-### Other related repos used in this project:
-
-* pyblastbio - python BLAST wrapper
-* primer3-py-plus - python wrapper around Primer3
-* loggable-jdv - logging class
-* benchlingapi - Python BenchlingAPI

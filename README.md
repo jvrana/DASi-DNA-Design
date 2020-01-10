@@ -6,8 +6,9 @@
 by focusing on material re-use.
 
 The software converts a nucleotide sequence, or a library of sequences, to an executable
- molecular assembly plan while
-optimizing material cost, assembly efficiency, and assembly time.
+ molecular assembly plan while optimizing material cost, assembly efficiency, and assembly time.
+
+The key design paradigm for DASi is that *no molecular biology expertise is required to use DASi*. Complete novices should be able to use the software to design and construct new genetic sequences.
 
 The software goals are reminiscent of j5 or Teselegen but focused on:
 1. having a dead-simple user interface and
@@ -22,9 +23,22 @@ DASi is currently under development.
 
 DASi completely automates the cloning design work, finding approximately optimal solutions for cloning steps, preferentially using existing plasmids, linear DNA fragments, and primers to design semi-optimal cloning steps and designs.
 
+The following command designs the cloning steps for a library of designs. The user only needs to specify the sequences they wish to construct and currently available primers, DNA templates, and linear DNA as *.genbank* or *.fasta* files. DASi handles all design aspects. *No molecular biology expertise is required to use DASi.*
+
 ```bash
 dasi library_design --designs mydesigns/*.gb --fragments fragments/*.gb --primers primers.fasta --templates plasmids/*.gb --cost_model cost.b --out results
 ```
+
+#### Customization
+
+DASi optimization parameters are completely customizable. The following
+
+* primer synthesis costs
+* primer design parameters
+* synthetic fragment costs
+* vendor-specific synthetic fragment complexity
+* sequence dependent plasmid assembly efficiencies
+* optimizing over efficiency vs material costs
 
 ### Planned Features
 

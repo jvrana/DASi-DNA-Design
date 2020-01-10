@@ -23,7 +23,7 @@ DASi is currently under development funded by the DARPA Synergistic Discovery an
 
 DASi completely automates the cloning design work, finding approximately optimal solutions for cloning steps, preferentially using existing plasmids, linear DNA fragments, and primers to design semi-optimal cloning steps and designs.
 
-The following command designs the cloning steps for a library of designs. The user only needs to specify the sequences they wish to construct and currently available primers, DNA templates, and linear DNA as *.genbank* or *.fasta* files. DASi handles all design aspects. *No molecular biology expertise is required to use DASi.*
+The following command designs the cloning steps for a library of designs. The user only needs to specify the sequences they wish to construct and currently available primers and DNA templates as *.genbank* or *.fasta* files. DASi handles all design aspects. *No molecular biology expertise is required to use DASi.*
 
 ```bash
 dasi library_design --designs mydesigns/*.gb --fragments fragments/*.gb --primers primers.fasta --templates plasmids/*.gb --cost_model cost.b --out results

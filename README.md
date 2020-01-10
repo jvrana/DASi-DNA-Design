@@ -17,7 +17,7 @@ algorithm.
 ### Planned Features
 
 * Golden-gate support
-* heirarchical a~~~~ssembly
+* heirarchical assembly
 * library support (with bayesian search to optimize shared parts)
 * front-end
 * connection to fabrication facility

@@ -48,3 +48,11 @@ DASi optimization parameters are completely customizable. The following are exam
 * library support (with bayesian search to optimize shared parts)
 * front-end
 * connection to fabrication facility
+
+### DASi optimization problem
+
+Briefly, DASi solves the following optimization problem: 
+
+```Given a set of 'goal' double-stranded sequences, a set of available single-stranded and double-strand sequences, and a set of actions that can create new sequences, what is the optimal set of operations that produces the 'goal' sequences.```
+
+Formalization of this optimization problem is coming soon.

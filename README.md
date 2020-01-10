@@ -14,6 +14,18 @@ The software goals are reminiscent of j5 or Teselegen but focused on:
 1. utilizing information about current laboratory inventory in its optimization
 algorithm.
 
+### Status
+
+DASi is currently under development.
+
+### Usage
+
+DASi completely automates the cloning design work, finding approximately optimal solutions for cloning steps, preferentially using existing plasmids, linear DNA fragments, and primers to design semi-optimal cloning steps and designs.
+
+```python
+dasi library_design --designs mydesigns/*.gb --fragments fragments/*.gb --primers primers.fasta --templates plasmids/*.gb --cost_model cost.b --out results
+```
+
 ### Planned Features
 
 * Golden-gate support

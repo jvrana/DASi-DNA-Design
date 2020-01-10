@@ -8,7 +8,7 @@ by focusing on material re-use.
 The software converts a nucleotide sequence, or a library of sequences, to an executable
  molecular assembly plan while optimizing material cost, assembly efficiency, and assembly time.
 
-The key design paradigm for DASi is that *no molecular biology expertise is required to use DASi*. Complete novices should be able to use the software to design and construct new genetic sequences.
+The key design paradigm for DASi is that *no molecular biology expertise* is required to use DASi. Complete novices should be able to use the software to design and construct new genetic sequences. This also enables automated software programs to automatically design and construct new genetic sequences.
 
 The software goals are reminiscent of j5 or Teselegen but focused on:
 1. having a dead-simple user interface and
@@ -31,7 +31,7 @@ dasi library_design --designs mydesigns/*.gb --fragments fragments/*.gb --primer
 
 #### Customization
 
-DASi optimization parameters are completely customizable. The following
+DASi optimization parameters are completely customizable. The following are examples of parameters and aspects of DASi that are customizable:
 
 * primer synthesis costs
 * primer design parameters
@@ -39,6 +39,7 @@ DASi optimization parameters are completely customizable. The following
 * vendor-specific synthetic fragment complexity
 * sequence dependent plasmid assembly efficiencies
 * optimizing over efficiency vs material costs
+* etc.
 
 ### Planned Features
 

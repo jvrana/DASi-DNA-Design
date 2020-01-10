@@ -11,9 +11,9 @@ The software converts a nucleotide sequence, or a library of sequences, to an ex
 The key design paradigm for DASi is that *no molecular biology expertise* is required to use DASi. Complete novices should be able to use the software to design and construct new genetic sequences. This also enables automated software programs to automatically design and construct new genetic sequences.
 
 The software goals are reminiscent of j5 or Teselegen but focused on:
-1. having a dead-simple user interface and
-1. utilizing information about current laboratory inventory in its optimization
-algorithm.
+1. A dead-simple API
+1. Utilizing information about current laboratory inventory in its optimization
+algorithm to minimize costs and turn-around time
 
 ### Status
 

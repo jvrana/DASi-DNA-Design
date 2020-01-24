@@ -33,7 +33,7 @@ primer3plus = "^1.0.5"
 fire = "^0.1"
 jsonschema = "^3.1"
 more-itertools = "^8.0"
-pyblastbio = "^0.6.1"
+pyblastbio = "^0.6.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"

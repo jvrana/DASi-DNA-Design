@@ -690,7 +690,7 @@ description = ""
 name = "pyblastbio"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "0.6.1"
+version = "0.6.3"
 
 [package.dependencies]
 biopython = ">=1.73,<2.0"
@@ -1147,7 +1147,7 @@ documentation = []
 styling = []
 
 [metadata]
-content-hash = "90a520446649d4e1d4fe9f68a8c8ecfb0c63acc126c8a14441db334d0d5a3d81"
+content-hash = "7f46c27167c827f465688f75fb39e789783dff23fdf0aaef745ce0c5d19f15d7"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -1217,7 +1217,7 @@ primer3-py = ["17660778a70479dff6cd7ff91337caf843c0dff98e21669716feda2b6bbccf0e"
 primer3plus = ["9dda23b3e2a83f90be15a67cb94f1c3f0a49faad201d9eccb42ebf5fa5899cf8", "b44e1dac531d2817a79385f90eaf5d58773c17da781cfbe5956c53ac4e221653"]
 py = ["64f65755aee5b381cea27766a3a147c3f15b9b6b9ac88676de66ba2ae36793fa", "dc639b046a6e2cff5bbe40194ad65936d6ba360b52b3c3fe1d08a82dd50b5e53"]
 py-cpuinfo = ["2cf6426f776625b21d1db8397d3297ef7acfa59018f02a8779123f3190f18500"]
-pyblastbio = ["7a9307c57229c432297c3e47e57a01176aa2c1eb7f5123b0dbf90a9a54c1f696", "b674fbf7d4f3ddfbddb2bda74dfa22051adf9405413b3b532b5d7bd889f3a66e"]
+pyblastbio = ["588edeb31bfa7fa32a01a7dbaa7ede9e9e28d7cb9adf70685539a62e136161a4", "ebd37dcfeb8563d55342be3a0f020694d1c794e321c754678bf2ab00a4de017a"]
 pycallgraph = ["b1262b0f9831da889c6e9a9a82a22267df497013cd2f5b36c39359a607c91e71"]
 pycodestyle = ["95a2219d12372f05704562a14ec30bc76b05a5b297b21a5dfe3f6fac3491ae56", "e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c"]
 pyflakes = ["17dbeb2e3f4d772725c777fabc446d5634d1038f234e77343108ce445ea69ce0", "d976835886f8c5b31d47970ed689944a0262b5f3afa00a5a7b4dc81e5449f8a2"]

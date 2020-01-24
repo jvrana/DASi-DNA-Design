@@ -490,7 +490,7 @@ class Design:
         summary_dfs = []
         design_json = {}
         for i, (qk, result) in enumerate(self.results.items()):
-            if result.assemblies[0]:
+            if result.assemblies and result.assemblies[0]:
                 assembly = result.assemblies[assembly_index]
                 react_df = assembly.to_reaction_df()
                 react_df["DESIGN_ID"] = i

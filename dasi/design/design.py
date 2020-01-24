@@ -223,6 +223,26 @@ class Design:
         self.container_factory = AlignmentContainerFactory(self.seqdb)
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
 
+    def _get_design_status(self, qk):
+        status = {"compiled": False, "run": False, "failed": False, "success": False}
+        if self.graphs.get(qk, None) is not None:
+            status["compiled"] = True
+
+        if self.results.get(qk, None) is not None:
+            status["run"] = True
+            if self.results[qk].assemblies:
+                status["success"] = True
+            else:
+                status["failed"] = True
+        return status
+
+    @property
+    def status(self):
+        statuses = {}
+        for qk in self.container_factory.containers():
+            statuses[qk] = self.get_design_status(qk)
+        return statuses
+
     @property
     def seqdb(self) -> Dict[str, SeqRecord]:
         return self._seqdb

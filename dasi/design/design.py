@@ -7,6 +7,7 @@ Design (:mod:`dasi.design`)
 This module provide DNA assembly functionality for DASi.
 """
 import bisect
+import functools
 from typing import Dict
 from typing import Generator
 from typing import Iterable
@@ -36,7 +37,7 @@ from dasi.models import AlignmentContainerFactory
 from dasi.models import AlignmentGroup
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
-
+from dasi.utils.testing_utils import fake_designs
 
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
@@ -250,6 +251,38 @@ class Design:
     @property
     def results(self):
         return dict(self._results)
+
+    @classmethod
+    @functools.wraps(fake_designs)
+    def fake(
+        cls,
+        n_designs: int,
+        circular: bool = True,
+        n_linear_seqs: int = 50,
+        n_cyclic_seqs: int = 50,
+        n_primers: int = 50,
+        n_primers_from_templates: int = 50,
+        **kwargs,
+    ):
+        library = fake_designs(
+            n_designs=n_designs,
+            circular=circular,
+            n_linear_seqs=n_linear_seqs,
+            n_cyclic_seqs=n_cyclic_seqs,
+            n_primers=n_primers,
+            n_primers_from_templates=n_primers_from_templates,
+            **kwargs,
+        )
+        designs = library["design"]
+        plasmids = library["cyclic"]
+        fragments = library["linear"]
+        primers = library["short"]
+
+        design = cls()
+        design.add_materials(
+            primers=primers, fragments=fragments, templates=plasmids, queries=designs
+        )
+        return design
 
     def add_materials(
         self,

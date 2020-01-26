@@ -8,6 +8,7 @@ This module provide DNA assembly functionality for DASi.
 """
 import bisect
 import functools
+import operator
 from typing import Dict
 from typing import Generator
 from typing import Iterable
@@ -225,7 +226,22 @@ class Design:
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
 
     def _get_design_status(self, qk):
-        status = {"compiled": False, "run": False, "failed": False, "success": False}
+        status = {
+            "compiled": False,
+            "run": False,
+            "failed": False,
+            "success": False,
+            "cost": {},
+        }
+
+        record = self.seqdb[qk]
+        status["record"] = {
+            "name": record.name,
+            "length": len(record.seq),
+            "id": record.id,
+            "is_circular": is_circular(record),
+        }
+
         if self.graphs.get(qk, None) is not None:
             status["compiled"] = True
 
@@ -233,6 +249,22 @@ class Design:
             status["run"] = True
             if self.results[qk].assemblies:
                 status["success"] = True
+                summ_df = self.results[qk].assemblies[0].to_df()
+                material = sum(list(summ_df["material"]))
+                eff = functools.reduce(operator.mul, summ_df["efficiency"])
+
+                comp = 0
+                for c in summ_df["complexity"]:
+                    if not c:
+                        continue
+                    elif c > comp:
+                        comp = c
+
+                status["cost"] = {
+                    "material": round(material, 2),
+                    "efficiency": round(eff, 2),
+                    "max_synth_complexity": round(comp, 2),
+                }
             else:
                 status["failed"] = True
         return status
@@ -241,7 +273,7 @@ class Design:
     def status(self):
         statuses = {}
         for qk in self.container_factory.containers():
-            statuses[qk] = self.get_design_status(qk)
+            statuses[qk] = self._get_design_status(qk)
         return statuses
 
     @property
@@ -257,11 +289,19 @@ class Design:
     def fake(
         cls,
         n_designs: int,
+        span_cost: SpanCost = None,
         circular: bool = True,
         n_linear_seqs: int = 50,
         n_cyclic_seqs: int = 50,
         n_primers: int = 50,
         n_primers_from_templates: int = 50,
+        cyclic_size_int: Tuple[int, int] = (3000, 10000),
+        linear_size_int: Tuple[int, int] = (100, 4000),
+        primer_size_int: Tuple[int, int] = (15, 60),
+        plasmid_size_interval: Tuple[int, int] = (5000, 10000),
+        chunk_size_interval: Tuple[int, int] = (100, 3000),
+        random_chunk_prob_int: Tuple[float, float] = (0, 0.5),
+        random_chunk_size_int: Tuple[int, int] = (100, 1000),
         **kwargs,
     ):
         library = fake_designs(
@@ -271,6 +311,13 @@ class Design:
             n_cyclic_seqs=n_cyclic_seqs,
             n_primers=n_primers,
             n_primers_from_templates=n_primers_from_templates,
+            cyclic_size_int=cyclic_size_int,
+            linear_size_int=linear_size_int,
+            primer_size_int=primer_size_int,
+            plasmid_size_interval=plasmid_size_interval,
+            chunk_size_interval=chunk_size_interval,
+            random_chunk_prob_int=random_chunk_prob_int,
+            random_chunk_size_int=random_chunk_size_int,
             **kwargs,
         )
         designs = library["design"]
@@ -278,7 +325,7 @@ class Design:
         fragments = library["linear"]
         primers = library["short"]
 
-        design = cls()
+        design = cls(span_cost=span_cost)
         design.add_materials(
             primers=primers, fragments=fragments, templates=plasmids, queries=designs
         )
@@ -366,6 +413,12 @@ class Design:
             primer_results = []
         self.primer_results = primer_results
 
+        # initialize container factory
+        query_keys = [rec.id for rec in self.blast_factory.record_groups[self.QUERIES]]
+        query_keys = [self.blast_factory.db.get_origin_key(k) for k in query_keys]
+        self.container_factory.initialize_empty(query_keys)
+
+        # load results
         self.container_factory.load_blast_json(fragment_results, Constants.FRAGMENT)
         self.container_factory.load_blast_json(template_results, Constants.PCR_PRODUCT)
         self.container_factory.load_blast_json(primer_results, Constants.PRIMER)
@@ -565,7 +618,6 @@ class Design:
                 msg = "Query {} {} yielded no assembly".format(self.seqdb[qk].name, i)
                 self.logger.error(msg)
 
-        react_df = pd.concat(reaction_dfs)
         colnames = [
             "DESIGN_ID",
             "DESIGN_KEY",
@@ -581,12 +633,19 @@ class Design:
             "LENGTH",
             "META",
         ]
+        if reaction_dfs:
+            react_df = pd.concat(reaction_dfs)
+        else:
+            react_df = pd.DataFrame(columns=colnames)
         react_df.columns = colnames
         react_df.sort_values(
             by=["TYPE", "DESIGN_ID", "ASSEMBLY_ID", "REACTION_ID", "NAME", "ROLE"],
             inplace=True,
         )
 
-        summ_df = pd.concat(summary_dfs)
+        if summary_dfs:
+            summ_df = pd.concat(summary_dfs)
+        else:
+            summ_df = pd.DataFrame()
 
         return react_df, summ_df, design_json

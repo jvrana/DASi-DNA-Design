@@ -780,6 +780,10 @@ class AlignmentContainerFactory:
                 if a not in self._alignments[k]:
                     self._alignments[k].append(a)
 
+    def initialize_empty(self, query_keys: List[str]):
+        for query_key in query_keys:
+            self._alignments[query_key] = []
+
     def load_blast_json(self, data: List[Dict], atype: str):
         """Create alignments from a formatted BLAST JSON result.
 

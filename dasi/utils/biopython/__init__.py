@@ -640,7 +640,7 @@ def random_record_from_library(
 
         i = random.randint(0, len(rand_rec.seq) - rand_chunk_len)
         rand_chunk = rand_rec[i : i + rand_chunk_len]
-        if random.uniform() < 0.5:
+        if random.random() < 0.5:
             rand_chunk = rand_chunk.reverse_complement()
 
         new_record += rand_chunk

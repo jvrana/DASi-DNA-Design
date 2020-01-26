@@ -43,7 +43,6 @@ def assemble_graph(
     container.freeze()
     graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
     graph = graph_builder.build_assembly_graph()
-    assert graph.number_of_edges()
     return graph, container
 
 

@@ -140,7 +140,7 @@ def _get_primer_extensions(
     :param cyclic: whether the
     :return: tuple of left and right extensions
     """
-    # the successors 'left' primer is the fragments 'right' primer extension
+    # NOTE: the successors 'left' primer is the fragments 'right' primer extension
     successors = list(graph.successors(n2))
     if successors:
         sedge = graph[n2][successors[0]]
@@ -401,6 +401,47 @@ class Assembly(Iterable):
     """Should take in a path, graph, container, seqdb to produce relevant
     information."""
 
+    REACTION_DF_COLS = (
+        "DESIGN_ID",
+        "DESIGN_KEY",
+        "ASSEMBLY_ID",
+        "REACTION_ID",
+        "REACTION_NAME",
+        "NAME",
+        "TYPE",
+        "KEY",
+        "ROLE",
+        "REGION",
+        "SEQUENCE",
+        "LENGTH",
+        "META",
+    )
+    REACTION_DF_SORT_BY = (
+        "TYPE",
+        "DESIGN_ID",
+        "ASSEMBLY_ID",
+        "REACTION_ID",
+        "REACTION_NAME",
+        "NAME",
+        "ROLE",
+    )
+    SUMMARY_DF_COLS = (
+        "query_start",
+        "query_end",
+        "subject_names",
+        "subject_keys",
+        "subject_starts",
+        "subject_ends",
+        "cost",
+        "material",
+        "span",
+        "type",
+        "internal_or_external",
+        "efficiency",
+        "complexity",
+        "notes",
+    )
+
     def __init__(
         self,
         nodes: List[AssemblyNode],
@@ -654,7 +695,7 @@ class Assembly(Iterable):
                     "query_end": edata["query_region"].b,
                     "subject_names": subject_names,
                     "subject_keys": subject_keys,
-                    "subject_start": subject_starts,
+                    "subject_starts": subject_starts,
                     "subject_ends": subject_ends,
                     "cost": edata["cost"],
                     "material": edata["material"],
@@ -668,6 +709,9 @@ class Assembly(Iterable):
             )
 
         df = pd.DataFrame(rows)
+        print(sorted(df.columns))
+        print(sorted(self.SUMMARY_DF_COLS))
+        assert set(df.columns) == set(self.SUMMARY_DF_COLS)
         return df
 
     def _csv_row(
@@ -734,34 +778,9 @@ class Assembly(Iterable):
             else:
                 meta = None
             rows.append(self._csv_row(m, role, reaction_id, reaction.name, meta))
-        colnames = [
-            "DESIGN_ID",
-            "DESIGN_KEY",
-            "ASSEMBLY_ID",
-            "REACTION_ID",
-            "REACTION_NAME",
-            "NAME",
-            "TYPE",
-            "KEY",
-            "ROLE",
-            "REGION",
-            "SEQUENCE",
-            "LENGTH",
-            "META",
-        ]
+        colnames = self.REACTION_DF_COLS
         df = pd.DataFrame(rows, columns=colnames)
-        df.sort_values(
-            by=[
-                "TYPE",
-                "DESIGN_ID",
-                "ASSEMBLY_ID",
-                "REACTION_ID",
-                "REACTION_NAME",
-                "NAME",
-                "ROLE",
-            ],
-            inplace=True,
-        )
+        df.sort_values(by=list(self.REACTION_DF_SORT_BY), inplace=True)
         return df
 
     def __eq__(self, other: "Assembly") -> bool:

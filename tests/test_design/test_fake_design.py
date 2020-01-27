@@ -60,7 +60,15 @@ def test_fake_design_short(cached_span_cost):
     run(design)
 
 
-@parametrize_designs
+@pytest.mark.parametrize(
+    "synth_prob",
+    [0, 0.3, 0.5, 0.9],
+    ids=["0% synthetic", "30% synthetic", "50% synthetic", "90% synthetic"],
+)
+@pytest.mark.parametrize("n_designs", [1, 3], ids=["1 design", "3 designs"])
+@pytest.mark.parametrize(
+    "synth_size", [100, 500, 1000], ids=["100bp", "500bp", "1000bp"]
+)
 @pytest.mark.parametrize("design_cls", [LibraryDesign, Design])
 def test_fake_design(cached_span_cost, n_designs, synth_prob, synth_size, design_cls):
     design = design_cls.fake(

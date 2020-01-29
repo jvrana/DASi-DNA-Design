@@ -1,4 +1,11 @@
 {
+  "0.0.11": {
+    "description": "feature",
+    "date": "2020-01-29T07:42:52.819562",
+    "changes": [
+      "cached span cost in dasi.cost module"
+    ]
+  },
   "0.0.10": {
     "description": "bug fixes for failed builds",
     "date": "2020-01-28T14:02:29.086775",

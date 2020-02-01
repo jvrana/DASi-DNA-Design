@@ -317,7 +317,7 @@ def _design_edge(
             # this is a fragment used directly in an assembly
             frag_seq, frag_alignment = _use_direct(edge, seqdb)
             frag_mol = Molecule(moltype, frag_alignment, frag_seq)
-            return Reaction("Use Direct", inputs=[], outputs=[frag_mol])
+            return Reaction(Reaction.Types.Direct, inputs=[], outputs=[frag_mol])
         elif moltype.synthesize:
             # this is either a gene synthesis fragment or already covered by the primers.
             synthesis_seq, synthesis_region = _design_gap(edge, qrecord)
@@ -334,7 +334,9 @@ def _design_edge(
                     synthesis_seq,
                     query_region=synthesis_region,
                 )
-                return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
+                return Reaction(
+                    Reaction.Types.Synthesize, inputs=[], outputs=[synthesis_mol]
+                )
             else:
                 return None
         else:
@@ -346,7 +348,7 @@ def _design_edge(
         frag_seq = seqdb[sk]
         query_region = edge[2]["query_region"]
         frag_mol = Molecule(moltype, alignment, frag_seq, query_region=query_region)
-        return Reaction("Retrieve Fragment", inputs=[], outputs=[frag_mol])
+        return Reaction(Reaction.Types.Direct, inputs=[], outputs=[frag_mol])
     elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
         query_region = edge[2]["query_region"]
         group = edge[2]["group"]
@@ -356,7 +358,7 @@ def _design_edge(
             sequence=query_region.get_slice(seqdb[query_key]),
             query_region=query_region,
         )
-        return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
+        return Reaction(Reaction.Types.Synthesize, inputs=[], outputs=[synthesis_mol])
     else:
         pairs, explain, group, query_region = _design_pcr_product_primers(
             edge, graph, moltype.design, seqdb
@@ -389,7 +391,9 @@ def _design_edge(
             query_region=query_region,
         )
 
-        return Reaction("PCR", inputs=primers + [template], outputs=[product])
+        return Reaction(
+            Reaction.Types.PCR, inputs=primers + [template], outputs=[product]
+        )
 
 
 AssemblyNode = namedtuple(

@@ -345,7 +345,18 @@ class Reaction:
     """An activity that takes in several Molecules and produces other
     Molecules."""
 
+    class Types:
+        Direct = "Use Direct"
+        Synthesize = "Synthesize"
+        Retrieve = "Retrieve Fragment"
+        PCR = "PCR"
+        _Valid = [Direct, Synthesize, Retrieve, PCR]
+
     def __init__(self, name: str, inputs: List[Molecule], outputs: List[Molecule]):
+        if name not in self.Types._Valid:
+            raise ValueError(
+                "Name '{}' must be one of {}".format(name, self.Types._Valid)
+            )
         self.name = name
         self.inputs = inputs  #: input molecules to the reaction
         self.outputs = outputs  #: output molecule of the reaction

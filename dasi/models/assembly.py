@@ -477,10 +477,22 @@ class Assembly(Iterable):
 
     @property
     def reactions(self):
+
+        top_level_reaction = Reaction(Reaction.Types.Assembly, inputs=[], outputs=[])
+        top_level_reaction.outputs = [
+            Molecule(
+                molecule_type=MoleculeType.types[Constants.PLASMID],
+                sequence=deepcopy(self.query),
+                alignment_group=None,
+            )
+        ]
+
         if not self._reactions:
-            reactions = []
+            reactions = [top_level_reaction]
             for n1, n2, edata in self.edges():
                 reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
+                for _mol in reaction.outputs:
+                    top_level_reaction.inputs.append(_mol)
                 if reaction:
                     reactions.append(reaction)
             self._reactions = tuple(reactions)

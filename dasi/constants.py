@@ -41,6 +41,7 @@ class Constants:
     SHARED_SYNTHESIZED_FRAGMENT = (
         "SHARED_SYNTHESIZED_FRAGMENT"
     )  #: explicit definition of a synthesized DNA fragment
+    PLASMID = "PLASMID"  #: the designed plasmid
 
     ################
     # EXTERNAL TYPES

@@ -1,6 +1,5 @@
 """classes representing *molecules* and types of *molecules*"""
 from copy import copy
-from copy import deepcopy
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -14,6 +13,7 @@ from dasi.constants import Constants
 from dasi.utils import Region
 
 
+# TODO: refactor Molecule and MoleculeTypes, as this is confusing
 class MoleculeType:
     """Molecule metatype."""
 
@@ -293,7 +293,7 @@ MoleculeType(
 MoleculeType(
     name=Constants.TEMPLATE,
     design=None,
-    use_direct=False,
+    use_direct=True,
     cost=0.0,
     efficiency=0.0,
     synthesize=False,
@@ -312,6 +312,17 @@ MoleculeType(
         "between several designs. This information can be used to reduce costs via "
         "'coalition design'. "
     ),
+)
+
+
+MoleculeType(
+    name=Constants.PLASMID,
+    design=None,
+    use_direct=False,
+    cost=0.0,
+    efficiency=1.0,
+    synthesize=False,
+    description=("A PLASMID is a designed DNA sequence."),
 )
 
 
@@ -350,7 +361,8 @@ class Reaction:
         Synthesize = "Synthesize"
         Retrieve = "Retrieve Fragment"
         PCR = "PCR"
-        _Valid = [Direct, Synthesize, Retrieve, PCR]
+        Assembly = "Assembly"
+        _Valid = [Direct, Synthesize, Retrieve, PCR, Assembly]
 
     def __init__(self, name: str, inputs: List[Molecule], outputs: List[Molecule]):
         if name not in self.Types._Valid:

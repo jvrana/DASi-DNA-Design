@@ -28,6 +28,7 @@ from .design_algorithms import multiprocessing_optimize_graph
 from .graph_builder import AssemblyGraphPostProcessor
 from .optimize import optimize_graph
 from dasi.constants import Constants
+from dasi.cost import cached_span_cost
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
 from dasi.exceptions import DasiInvalidMolecularAssembly
@@ -216,6 +217,8 @@ class Design:
         if seqdb is None:
             seqdb = {}
         self._seqdb = seqdb  #: Sequence dict registry
+        if span_cost is None:
+            span_cost = cached_span_cost()
         self.span_cost = span_cost  #: span cost df
         self.graphs = {}  #: Dict[str, nx.DiGraph]
         self._results = {}  #: Dict[str, DesignResult]

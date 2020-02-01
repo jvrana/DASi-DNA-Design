@@ -476,7 +476,6 @@ class Assembly(Iterable):
         if not self._reactions:
             reactions = []
             for n1, n2, edata in self.edges():
-                print(n1, n2)
                 reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
                     reactions.append(reaction)
@@ -709,8 +708,6 @@ class Assembly(Iterable):
             )
 
         df = pd.DataFrame(rows)
-        print(sorted(df.columns))
-        print(sorted(self.SUMMARY_DF_COLS))
         assert set(df.columns) == set(self.SUMMARY_DF_COLS)
         return df
 

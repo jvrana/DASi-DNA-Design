@@ -409,6 +409,7 @@ class AssemblyGraphBuilder:
         return self.G
 
 
+# TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
 class AssemblyGraphPostProcessor:
     def __init__(self, graph: nx.DiGraph, query: SeqRecord, span_cost: SpanCost):
         self.graph = graph

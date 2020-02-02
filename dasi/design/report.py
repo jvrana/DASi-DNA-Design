@@ -25,14 +25,17 @@ class Report:
     def __init__(self, design: Union["Design", "LibraryDesign"]):
         self.design = design
 
-    def plot_coverage(self, keys: List = None):
+    def plot_coverage(self, keys: List = None, show: bool = False):
         if not keys:
             keys = self.design.query_keys
         plots = {}
         for qk in keys:
             container = self.design.containers[qk]
             query = self.design.seqdb[qk]
-            plots[qk] = self.plot_coverage_of_container(container, query)
+            fig, axes = self.plot_coverage_of_container(container, query)
+            plots[qk] = fig, axes
+            if show:
+                plt.show()
         return plots
 
     @staticmethod

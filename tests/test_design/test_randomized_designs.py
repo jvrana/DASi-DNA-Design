@@ -91,8 +91,8 @@ def test_cost_comparison_library():
         n_designs=3,
         n_linear_seqs=50,
         n_cyclic_seqs=50,
-        n_primers_from_templates=1000,
-        shared_length=100,
+        n_primers_from_templates=500,
+        shared_length=500,
         return_with_library=True,
     )
     design2 = LibraryDesign(seqdb=design1.seqdb)
@@ -115,6 +115,15 @@ def test_cost_comparison_library():
     print("#" * 10 + "\nLibraryDesign\n" + "#" * 10)
     print(json.dumps(design2.status, indent=2))
 
+    print("%" * 10 + "\nDesign Cost\n" + "%" * 10)
+    for qk, s in design1.status.items():
+        print(s["assemblies"])
+
+    print("%" * 10 + "\nLibraryDesign Cost\n" + "%" * 10)
+    for qk, s in design2.status.items():
+        print(s["assemblies"])
+
+    design2.report().plot_coverage(show=True)
     print(design2.to_df()[1])
 
 

@@ -135,6 +135,7 @@ class LibraryDesign(Design):
     """Design class for producing assemblies for libraries."""
 
     DEFAULT_N_JOBS = 10
+    FAVOR_SHARED_SEQUENCES = 2
 
     def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
         super().__init__(span_cost=span_cost, seqdb=seqdb, n_jobs=n_jobs)
@@ -322,7 +323,9 @@ class LibraryDesign(Design):
                     edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
                     # TODO: adjust n_clusters
                     edata["material"] = (
-                        edata["material"] / (group.meta["n_clusters"]) / 2.0
+                        edata["material"]
+                        / (group.meta["n_clusters"])
+                        / self.FAVOR_SHARED_SEQUENCES
                     )
                     edata["cost"] = edata["material"] / edata["efficiency"]
                     adjusted += 1

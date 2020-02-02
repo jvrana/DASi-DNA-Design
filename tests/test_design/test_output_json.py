@@ -154,8 +154,20 @@ def test_output():
     #       1. information about molecule and how it relates to the design
     #       2. how many fragments are used
     #       3. information about input parameters
+    status = design.status
+
+    for qk, qstatus in status.items():
+        for a_i, adata in enumerate(qstatus["assemblies"]):
+            assembly = design.results[qk].assemblies[a_i]
+            adata["nonassembly_reactions"] = [
+                reaction_node_dict[rxn_key(r, a_i)]
+                for r in assembly.nonassembly_reactions
+            ]
+            adata["assembly_reactions"] = [
+                reaction_node_dict[rxn_key(r, a_i)] for r in assembly.assembly_reactions
+            ]
     output_json = {
-        "designs": design.status,
+        "designs": status,
         "reactions": property_reaction,
         "molecules": property_molecule,
     }

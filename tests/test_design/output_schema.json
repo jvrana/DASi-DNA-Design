@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Output",
+  "description": "This schema validates a json output for the DASi design",
+  "type": "object",
+  "properties": {
+    "molecules": {
+      "description": "Molecules in the design.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Type of molecule",
+            "type": "string"
+          },
+          "sequences": {
+            "description": "The sequence of the molecule",
+            "type": "string"
+          },
+          "index": {
+            "description": "The index of the molecule",
+            "type": "integer"
+          }
+        },
+        "required": ["name", "sequence", "index"]
+      }
+    },
+    "reactions": {
+      "type": "array",
+      "items": {
+        "description": "Reactions in the design",
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "index of the reaction"
+          },
+          "name": {
+            "type": "string",
+            "description": "name of the reaction"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "description": "The index of the molecules used as inputs to this reaction"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "description": "The index of the molecules used as outputs to this reaction"
+            }
+          }
+        },
+        "required": ["name", "inputs", "outputs"]
+      }
+    }
+  },
+  "required": ["molecules", "reactions"]
+}

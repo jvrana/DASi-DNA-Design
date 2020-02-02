@@ -502,6 +502,14 @@ class Assembly(Iterable):
             self._reactions = tuple(reactions)
         return self._reactions
 
+    @property
+    def assembly_reactions(self):
+        return [r for r in self.reactions if r.name == Reaction.Types.Assembly]
+
+    @property
+    def nonassembly_reactions(self):
+        return [r for r in self.reactions if r.name != Reaction.Types.Assembly]
+
     def post_validate(self):
         total_span = 0
         for n1, n2, edata in self.edges():

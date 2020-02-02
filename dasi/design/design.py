@@ -104,6 +104,7 @@ class DesignResult(Iterable):
 
         assembly = self._add_assembly_from_path(path)
 
+        # Validate the assembly
         try:
             assembly.post_validate()
         except DasiInvalidMolecularAssembly as e:

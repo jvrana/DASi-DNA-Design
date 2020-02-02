@@ -1,4 +1,13 @@
 {
+  "0.0.12": {
+    "description": "keats changelog new",
+    "date": "2020-02-02T11:34:39.337111",
+    "changes": [
+      "added JSON output and JSON output schema",
+      "LibraryDesign no longer has `optimize_library` and `compile_library` methods. Use `optimize` and `compile` indead.",
+      "Reports are not accessible via Design and LibraryDesign instances via `design.report()`. Plot coverage can be plotted (and optionally shown) via `design.report().plot_coverage(show=True)`."
+    ]
+  },
   "0.0.11": {
     "description": "feature",
     "date": "2020-01-29T07:42:52.819562",

@@ -31,15 +31,16 @@ from dasi.constants import Constants
 from dasi.cost import cached_span_cost
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
+from dasi.design.report import Report
+from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
-from dasi.models import AlignmentGroup
 from dasi.models import Assembly
 from dasi.utils import perfect_subject
-from dasi.utils.testing_utils import fake_designs
+from dasi.utils.sequence_generator import fake_designs
 
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
@@ -229,13 +230,7 @@ class Design:
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
 
     def _get_design_status(self, qk):
-        status = {
-            "compiled": False,
-            "run": False,
-            "failed": False,
-            "success": False,
-            "cost": {},
-        }
+        status = {"compiled": False, "run": False, "success": False, "assemblies": []}
 
         record = self.seqdb[qk]
         status["record"] = {
@@ -250,9 +245,9 @@ class Design:
 
         if self.results.get(qk, None) is not None:
             status["run"] = True
-            if self.results[qk].assemblies:
+            for a in self.results[qk].assemblies:
                 status["success"] = True
-                summ_df = self.results[qk].assemblies[0].to_df()
+                summ_df = a.to_df()
                 material = sum(list(summ_df["material"]))
                 eff = functools.reduce(operator.mul, summ_df["efficiency"])
 
@@ -263,13 +258,15 @@ class Design:
                     elif c > comp:
                         comp = c
 
-                status["cost"] = {
-                    "material": round(material, 2),
-                    "efficiency": round(eff, 2),
-                    "max_synth_complexity": round(comp, 2),
-                }
-            else:
-                status["failed"] = True
+                status["assemblies"].append(
+                    {
+                        "cost": {
+                            "material cost": round(material, 2),
+                            "assembly efficiency": round(eff, 2),
+                            "max synthesis complexity": round(comp, 2),
+                        }
+                    }
+                )
         return status
 
     @property
@@ -298,6 +295,7 @@ class Design:
         n_cyclic_seqs: int = 50,
         n_primers: int = 50,
         n_primers_from_templates: int = 50,
+        shared_length: int = 0,
         cyclic_size_int: Tuple[int, int] = (3000, 10000),
         linear_size_int: Tuple[int, int] = (100, 4000),
         primer_size_int: Tuple[int, int] = (15, 60),
@@ -305,6 +303,7 @@ class Design:
         chunk_size_interval: Tuple[int, int] = (100, 3000),
         random_chunk_prob_int: Tuple[float, float] = (0, 0.5),
         random_chunk_size_int: Tuple[int, int] = (100, 1000),
+        return_with_library: bool = False,
         **kwargs,
     ):
         library = fake_designs(
@@ -321,6 +320,7 @@ class Design:
             chunk_size_interval=chunk_size_interval,
             random_chunk_prob_int=random_chunk_prob_int,
             random_chunk_size_int=random_chunk_size_int,
+            design_sequence_similarity_length=shared_length,
             **kwargs,
         )
         designs = library["design"]
@@ -332,6 +332,8 @@ class Design:
         design.add_materials(
             primers=primers, fragments=fragments, templates=plasmids, queries=designs
         )
+        if return_with_library:
+            return design, library
         return design
 
     def add_materials(
@@ -431,10 +433,12 @@ class Design:
         """Iterable of alignment containers in this design."""
         return self.container_factory.containers()
 
+    @property
     def container_list(self) -> List[AlignmentContainer]:
         """List of alignment containers in this design."""
         return list(self.container_factory.containers().values())
 
+    @property
     def query_keys(self) -> List[str]:
         """List of query keys in this design."""
         return list(self.container_factory.containers())
@@ -445,7 +449,7 @@ class Design:
             with self.logger.timeit(
                 "DEBUG",
                 "assembling graphs (n_graphs={}, threads={})".format(
-                    len(self.container_list()), n_jobs
+                    len(self.container_list), n_jobs
                 ),
             ):
                 self._assemble_graphs_with_threads(n_jobs)
@@ -478,13 +482,27 @@ class Design:
         for qk, g, c in zip(query_keys, graphs, containers):
             self.graphs[qk] = g
 
+    def _uncompile(self):
+        self.container_factory.reset()
+        self._results = {}
+
     def compile(self, n_jobs=None):
         """Compile materials to assembly graph."""
-        self._results = {}
+        self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
         self.post_process_graphs()
+
+    def run(self, n_paths: int = 3, n_jobs: int = None):
+        self.compile(n_jobs)
+        return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
+
+    @property
+    def is_compiled(self):
+        if self.container_list:
+            return True
+        return False
 
     # def plot_matrix(self, matrix):
     # plot matrix
@@ -518,6 +536,10 @@ class Design:
         return arr
 
     def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
+        if not self.container_list:
+            raise DasiDesignException(
+                "Design must be compiled before running optimization.'"
+            )
         n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
             with self.logger.timeit(
@@ -652,3 +674,6 @@ class Design:
             summ_df = pd.DataFrame()
 
         return react_df, summ_df, design_json
+
+    def report(self):
+        return Report(self)

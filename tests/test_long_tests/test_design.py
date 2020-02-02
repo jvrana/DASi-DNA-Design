@@ -42,6 +42,7 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     print(len(a_arr) * len(b_arr))
 
 
+@pytest.mark.slow
 class TestBenchmark:
     """Benchmarks the compilation and optimization of assembly graphs."""
 
@@ -82,6 +83,7 @@ class TestDesignResult:
             assert len(result.query) == sum(assembly.to_df()["span"])
 
 
+@pytest.mark.slow
 class TestReactions:
     def test_single_design_sequences(self, single_processed_results):
         design, results = single_processed_results
@@ -96,6 +98,7 @@ class TestReactions:
                 a.reactions
 
 
+@pytest.mark.slow
 class TestMultiProcessing:
     def groups_equivalent(self, g1, g2):
         assert g1.query_region == g2.query_region
@@ -169,6 +172,7 @@ class TestMultiProcessing:
                 self.eq_assemblies(a1, a2)
 
 
+@pytest.mark.slow
 class TestHasAssemblies:
     def test_multi_has_assemblies(self, multi_processed_results):
         design, results = multi_processed_results
@@ -181,6 +185,7 @@ class TestHasAssemblies:
             assert result.assemblies
 
 
+@pytest.mark.slow
 class TestReactions:
     def test_multi_reactions(self, multi_processed_results):
         design, results = multi_processed_results
@@ -195,6 +200,7 @@ class TestReactions:
                 a.reactions
 
 
+@pytest.mark.slow
 class TestDesignToDf:
     def test_multi_reactions(self, multi_processed_results):
         design, results = multi_processed_results
@@ -209,6 +215,7 @@ class TestDesignToDf:
         print(b)
 
 
+@pytest.mark.slow
 class TestOutput:
     def test_csv_output(self, multi_processed_results):
         design, results = multi_processed_results

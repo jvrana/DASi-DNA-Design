@@ -411,6 +411,13 @@ class AssemblyGraphBuilder:
 
 # TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
 class AssemblyGraphPostProcessor:
+    """Post-processing for assembly graphs. Evaluates:
+
+    1. synthesis complexity and weights corresponding edge
+    2. pcr product efficiency
+    3. (optional) optimal partitions for synthesis fragments
+    """
+
     def __init__(self, graph: nx.DiGraph, query: SeqRecord, span_cost: SpanCost):
         self.graph = graph
         self.query = query
@@ -421,6 +428,8 @@ class AssemblyGraphPostProcessor:
             hairpin_window=20,
         )
         self.logged_msgs = []
+        # TODO: make a more sophisticated complexity function?
+        # TODO: expose this to input parameters
         self.COMPLEXITY_THRESHOLD = 10.0
         self.logger = logger(self)
         self.span_cost = span_cost

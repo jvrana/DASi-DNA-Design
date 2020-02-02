@@ -146,7 +146,9 @@ def _get_primer_extensions(
         sedge = graph[n2][successors[0]]
         right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
-        raise DasiSequenceDesignException
+        raise DasiSequenceDesignException(
+            "Sequence is cyclic but there are no " "successors for {}".format(n2)
+        )
     else:
         right_ext = 0
 
@@ -156,7 +158,9 @@ def _get_primer_extensions(
         pedge = graph[predecessors[0]][n1]
         left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
-        raise DasiSequenceDesignException
+        raise DasiSequenceDesignException(
+            "Sequence is cyclic but there are no " "precessors for {}".format(n1)
+        )
     else:
         left_ext = 0
     return int(left_ext), int(right_ext)
@@ -491,9 +495,9 @@ class Assembly(Iterable):
             reactions = [top_level_reaction]
             for n1, n2, edata in self.edges():
                 reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
-                for _mol in reaction.outputs:
-                    top_level_reaction.inputs.append(_mol)
                 if reaction:
+                    for _mol in reaction.outputs:
+                        top_level_reaction.inputs.append(_mol)
                     reactions.append(reaction)
             self._reactions = tuple(reactions)
         return self._reactions

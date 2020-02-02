@@ -826,6 +826,9 @@ class AlignmentContainerFactory:
             self._containers = container_dict
         return frozendict(self._containers)
 
+    def reset(self):
+        self._containers = None
+
     # def set_alignments(self, alignments):
     #     self._alignments = alignments
     #     self._containers = None

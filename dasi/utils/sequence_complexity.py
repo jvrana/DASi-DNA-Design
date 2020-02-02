@@ -18,6 +18,7 @@ from typing import Union
 import numpy as np
 
 
+# TODO: remove unnecessary code below
 class ComplexityConfig:
     HOMOPOLYMERIC_AT = 10
     HOMOPOLYMERIC_GC = 6
@@ -122,7 +123,20 @@ def complexity_score(seq: str) -> float:
 
 
 # TODO: compute cost for extremes of GC content
+# TODO: this could be a separate library
 class DNAStats:
+    """
+    Class for computing statistics for DNA Sequences.
+
+    ::
+
+        {
+            "n_repeats",
+            "n_hairpins",
+            "window_cost",
+            "gc_cost"
+        }
+    """
 
     BASES = "AGCT"
     np.random.seed(1)

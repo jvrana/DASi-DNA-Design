@@ -17,6 +17,7 @@ class TestBenchmarkCosts:
 
 
 @pytest.mark.benchmark
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "query", ["pmodkan-ho-pact1-z4-er-vpr.gb", "plko-pef1a-frt-tdtomato-wpre.gb"]
 )

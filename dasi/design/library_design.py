@@ -136,8 +136,8 @@ class LibraryDesign(Design):
 
     DEFAULT_N_JOBS = 10
 
-    def __init__(self, span_cost=None, n_jobs=None):
-        super().__init__(span_cost=span_cost, n_jobs=n_jobs)
+    def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
+        super().__init__(span_cost=span_cost, seqdb=seqdb, n_jobs=n_jobs)
         self.shared_alignments = []
         self._edges = []
 
@@ -288,8 +288,9 @@ class LibraryDesign(Design):
         self._expand_from_synthesized()
         self._check_shared_repeats()
 
-    def compile_library(self, n_jobs=None):
+    def compile(self, n_jobs=None):
         """Compile the materials list into assembly graphs."""
+        self._uncompile()
         tracker = self.logger.track("INFO", desc="Compiling library", total=4).enter()
 
         n_jobs = n_jobs or self.DEFAULT_N_JOBS
@@ -332,7 +333,7 @@ class LibraryDesign(Design):
         add_clusters(self)
         graphs = cluster_graph(self)
 
-        for c in self.container_list():
+        for c in self.container_list:
             c.share_group_tag = {}
 
         # update the meta data
@@ -391,6 +392,6 @@ class LibraryDesign(Design):
     #         processor = AssemblyGraphPostProcessor(graph, query)
     #         processor()
 
-    def optimize_library(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
+    def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
         """Optimize the assembly graph for library assembly."""
-        return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
+        return super().optimize(n_paths=n_paths, n_jobs=n_jobs)

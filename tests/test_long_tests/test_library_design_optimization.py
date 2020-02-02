@@ -27,8 +27,8 @@ def test_library_design_to_df(paths, here, span_cost):
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
     design.logger.set_level("DEBUG")
-    design.compile_library()
-    results = design.optimize_library()
+    design.compile()
+    results = design.optimize()
 
     a, b, c = design.to_df()
     a.to_csv("library_design.csv")
@@ -66,9 +66,9 @@ def test_library_design_to_df_2(paths, here, span_cost):
     )
 
     design.logger.set_level("DEBUG")
-    design.compile_library()
+    design.compile()
 
-    results = design.optimize_library()
+    results = design.optimize()
 
     for result in results.values():
         assembly = result.assemblies[0]

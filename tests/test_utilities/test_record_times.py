@@ -3,7 +3,7 @@ from dasi.utils import log_times
 
 class Foo:
     def __init__(self):
-        self._method_run_times = {}
+        self._method_trace = {}
 
     @log_times()
     def bar(self):
@@ -13,4 +13,4 @@ class Foo:
 def test_log_times():
     foo = Foo()
     foo.bar()
-    print(foo._method_run_times)
+    print(foo._method_trace)

@@ -67,6 +67,7 @@ def dasi_design_to_dag(design: Union["Design", "LibraryDesign"]) -> nx.DiGraph:
                     graph.add_node(n2, molecule=out_mol)
                     graph.nodes[n2].setdefault("design_keys", set()).add(dk)
                     graph.add_edge(r1, n2)
+    _validate_dag_graph(graph)
     return graph
 
 

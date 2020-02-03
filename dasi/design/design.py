@@ -513,11 +513,22 @@ class Design:
         self.post_process_graphs()
 
     def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS):
+        """Run the design. Runs `compile` and `optimize`, returning results
+        that can be accessed by `design.results` or by `design.out()`
+
+        :param n_paths: max number of assemblies per design to design
+        :param n_jobs: number of concurrent threads to run
+        :return: results
+        """
         self.compile(n_jobs)
         return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
 
     @property
     def is_compiled(self):
+        """Return whether the design has been compiled.
+
+        :return: True if compiled. False if otherwise.
+        """
         if self.container_list:
             return True
         return False
@@ -729,7 +740,16 @@ class Design:
         else:
             return x[1]
 
-    def out_json(self):
-        output = dasi_design_to_output_json(self)
-        validate_output(output)
-        return output
+    def out(self, fmt: str = "json"):
+        """Return the results of the design as a validates output JSON.
+
+        The output JSON is follows the following schema, see
+        :param fmt:
+        :return:
+        """
+        if fmt.lower() == "json":
+            output = dasi_design_to_output_json(self)
+            validate_output(output)
+            return output
+        else:
+            raise ValueError("Format '{}' not recognized".format(fmt))

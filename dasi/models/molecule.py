@@ -364,7 +364,13 @@ class Reaction:
         Assembly = "Assembly"
         _Valid = [Direct, Synthesize, Retrieve, PCR, Assembly]
 
-    def __init__(self, name: str, inputs: List[Molecule], outputs: List[Molecule]):
+    def __init__(
+        self,
+        name: str,
+        inputs: List[Molecule],
+        outputs: List[Molecule],
+        metadata: dict = None,
+    ):
         if name not in self.Types._Valid:
             raise ValueError(
                 "Name '{}' must be one of {}".format(name, self.Types._Valid)
@@ -372,6 +378,7 @@ class Reaction:
         self.name = name
         self.inputs = inputs  #: input molecules to the reaction
         self.outputs = outputs  #: output molecule of the reaction
+        self.metadata = metadata
 
     def __repr__(self):
         return "<{cls} name='{name}' outputs={products} regions={outputs}>".format(

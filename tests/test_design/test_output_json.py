@@ -1,4 +1,3 @@
-import hashlib
 import json
 
 import pytest
@@ -9,7 +8,9 @@ from dasi.design.output import dasi_design_to_output_json
 from dasi.design.output import validate_output
 
 
-@pytest.fixture(params=[Design, LibraryDesign], ids=["Design", "LibraryDesign"])
+@pytest.fixture(
+    scope="module", params=[Design, LibraryDesign], ids=["Design", "LibraryDesign"]
+)
 def design(request):
     _Design = request.param
     design = _Design.fake(
@@ -19,15 +20,15 @@ def design(request):
     return design
 
 
-def test_output(design):
-    out = dasi_design_to_output_json(design)
-    print(json.dumps(out, indent=2))
+class TestOutput:
+    def test_output(self, design):
+        out = dasi_design_to_output_json(design)
+        print(json.dumps(out, indent=2))
 
+    def test_validate_output(self, design):
+        out = dasi_design_to_output_json(design)
+        validate_output(out)
 
-def test_validate_output(design):
-    out = dasi_design_to_output_json(design)
-    validate_output(out)
-
-
-def test_to_out_json(design):
-    out = design.out_json()
+    def test_to_out_json(self, design):
+        out = design.out()
+        assert out

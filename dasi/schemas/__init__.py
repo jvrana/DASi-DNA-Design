@@ -1,3 +1,11 @@
+r"""
+Schemas (:mod:`dasi.schemas`)
+=============================
+
+Validated JSON Schemas (https://json-schema.org/)
+
+Check out the :ref:`JSON Schema page <json_schema>` for more information.
+"""
 import json
 from os.path import abspath
 from os.path import dirname

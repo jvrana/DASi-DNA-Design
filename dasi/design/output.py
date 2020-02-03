@@ -1,4 +1,6 @@
+import functools
 import hashlib
+import operator
 from typing import Dict
 from typing import Tuple
 from typing import Union
@@ -115,6 +117,32 @@ def _used_in_designs(ndata: Dict) -> Dict:
     return [{"design_key": _x[0], "assembly": _x[1]} for _x in x]
 
 
+def _reaction_metadata(reaction):
+    return {
+        "material_cost": reaction.metadata["material"],
+        "efficiency": reaction.metadata.get("efficiency", 0.0),
+        "complexity": reaction.metadata.get("complexity", None),
+    }
+
+
+def _assembly_metadata(assembly):
+    rmetas = [_reaction_metadata(r) for r in assembly.nonassembly_reactions]
+    material = sum([m["material_cost"] for m in rmetas])
+    efficiency = functools.reduce(operator.mul, [m["efficiency"] for m in rmetas])
+    complexities = [m["complexity"] for m in rmetas if m["complexity"] is not None]
+
+    if complexities:
+        max_complexity = max(complexities)
+    else:
+        max_complexity = 0
+
+    return {
+        "material_cost": material,
+        "assembly_efficiency": efficiency,
+        "max_complexity": max_complexity,
+    }
+
+
 def _reactions_property(
     graph: nx.DiGraph,
     reaction_node_dict: Dict[str, int],
@@ -123,8 +151,15 @@ def _reactions_property(
     property_reaction = []
     for n, index in reaction_node_dict.items():
         ndata = graph.nodes[n]
-        output_keys = sorted([mhash(m) for m in ndata["reaction"].outputs])
-        input_keys = sorted([mhash(m) for m in ndata["reaction"].inputs])
+        reaction = ndata["reaction"]
+        output_keys = sorted([mhash(m) for m in reaction.outputs])
+        input_keys = sorted([mhash(m) for m in reaction.inputs])
+        if reaction.name != Reaction.Types.Assembly:
+            metadata = _reaction_metadata(reaction)
+        else:
+            assembly = ndata["assembly"]
+            metadata = _assembly_metadata(assembly)
+
         property_reaction.append(
             {
                 "name": ndata["reaction"].name,
@@ -132,6 +167,7 @@ def _reactions_property(
                 "used_in_assemblies": _used_in_designs(ndata),
                 "inputs": [molecule_node_dict[n] for n in input_keys],
                 "outputs": [molecule_node_dict[n] for n in output_keys],
+                "metadata": metadata,
             }
         )
     return property_reaction
@@ -164,15 +200,34 @@ def _molecules_property(
 def _design_property(design, reaction_node_dict):
     status = design.status
 
+    def _reaction_summ(r, a_i):
+
+        return {
+            "reaction_index": reaction_node_dict[rhash(r, a_i)],
+            "metadata": {
+                "cost": r.metadata["cost"],
+                "materials": r.metadata["cost"],
+                "efficiency": r.metadata.get("efficiency", 0.0),
+                "complexity": r.metadata.get("complexity", None),
+            },
+            "outputs": [
+                {
+                    "start": m.query_region.a,
+                    "end": m.query_region.b,
+                    "type": m.type.name,
+                }
+                for m in r.outputs
+            ],
+        }
+
     for qk, qstatus in status.items():
         qstatus["sequence"] = seqrecord_to_json(design.seqdb[qk])
         for a_i, adata in enumerate(qstatus["assemblies"]):
             assembly = design.results[qk].assemblies[a_i]
-            adata["nonassembly_reactions"] = [
-                reaction_node_dict[rhash(r, a_i)]
-                for r in assembly.nonassembly_reactions
+            adata["summary"] = [
+                _reaction_summ(r, a_i) for r in assembly.nonassembly_reactions
             ]
-            adata["assembly_reactions"] = [
+            adata["final_assembly_reaction"] = [
                 reaction_node_dict[rhash(r, a_i)] for r in assembly.assembly_reactions
             ]
 

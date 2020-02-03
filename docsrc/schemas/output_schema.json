@@ -75,10 +75,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "type name of molecule"
         },
         "index": {
-          "type": "integer"
+          "type": "integer",
+          "description": "index of the molecule"
         },
         "sequence": {
           "$ref": "#/definitions/sequence"
@@ -89,34 +91,45 @@
       },
       "required": [
         "name",
-        "index"
+        "index",
+        "sequence"
       ]
     },
     "reaction": {
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "type name of the reaction"
         },
         "index": {
-          "type": "integer"
+          "type": "integer",
+          "description": "index of the reaction"
         },
         "used_in_assemblies": {
           "$ref": "#/definitions/_used_in_assemblies"
         },
         "inputs": {
           "type": "array",
+          "description": "list of molecules this reaction uses as inputs (by molecule index)",
           "items": {
             "type": "integer"
           }
         },
         "outputs": {
           "type": "array",
+          "description": "list of molecules this reaction uses as outputs (by molecule index)",
           "items": {
             "type": "integer"
           }
         }
-      }
+      },
+      "required": [
+        "name",
+        "index",
+        "inputs",
+        "outputs"
+      ]
     },
     "_used_in_assemblies": {
       "type": "array",
@@ -137,60 +150,130 @@
         ]
       }
     },
-    "_design_status": {
+    "design_status": {
       "type": "object",
-      "properties": {
-        "^.+$": {
-          "$ref": "#/definitions/_design_result_status"
+      "description": "Summary of the design results",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/design_result_status"
         }
       }
     },
-    "_design_result_status": {
+    "design_result_status": {
       "type": "object",
       "properties": {
         "compiled": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "if true, then the compilation step has been run"
         },
         "run": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "if true, then the optimization step has been run"
         },
         "success": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "if true, then this design has at least one assembly"
         },
         "assemblies": {
           "type": "array",
+          "description": "summary of assemblies for this design",
           "items": {
-            "$ref": "#/definitions/_assembly_status"
-          }
-        }
-      }
-    },
-    "_assembly_status": {
-      "type": "object",
-      "properties": {
-        "cost": {
-          "type": "object"
-        },
-        "nonassembly_reactions": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "assembly_reactions": {
-          "type": "array",
-          "items": {
-            "type": "integer"
+            "$ref": "#/definitions/assembly_status"
           }
         }
       },
       "required": [
-        "cost"
+        "compiled",
+        "run",
+        "success",
+        "assemblies"
+      ]
+    },
+    "assembly_status": {
+      "type": "object",
+      "properties": {
+        "cost": {
+          "type": "object",
+          "description": "Cost summary for this assembly"
+        },
+        "final_assembly_reaction": {
+          "type": "array",
+          "description": "The index of the final assembly reaction",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "summary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reaction_index": {
+                "type": "integer"
+              },
+              "metadata": {
+                "type": "object"
+              },
+              "outputs": {
+                "type": "array",
+                "description": "Summarized list of reactions that produce molecules used in the assembly.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "description": "The start index (inclusive) of where the output molecule maps to the design"
+                    },
+                    "end": {
+                      "type": "integer",
+                      "description": "The end index (exclusive) of where the output molecule maps to the design"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type name of the reaction."
+                    }
+                  },
+                  "required": [
+                    "start",
+                    "end",
+                    "type"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "cost",
+        "summary",
+        "final_assembly_reaction"
       ]
     }
   },
   "type": "object",
   "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "program": {
+          "type": "string",
+          "description": "program name"
+        },
+        "version": {
+          "type": "string",
+          "description": "semantic version of the program"
+        },
+        "execution_trace": {
+          "type": "object",
+          "description": "execution trace that generated this output"
+        }
+      },
+      "required": [
+        "program",
+        "version"
+      ]
+    },
     "molecules": {
       "type": "array",
       "items": {
@@ -204,10 +287,11 @@
       }
     },
     "designs": {
-      "$ref": "#/definitions/_design_status"
+      "$ref": "#/definitions/design_status"
     }
   },
   "required": [
+    "metadata",
     "designs",
     "reactions",
     "molecules"

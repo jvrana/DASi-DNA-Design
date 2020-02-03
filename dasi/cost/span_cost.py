@@ -1,33 +1,3 @@
-r"""
-.. _cost_model:
-
-Cost Model (:mod:`dasi.cost`)
-=============================
-
-.. currentmodule:: dasi.cost
-
-This module provide cost calculations for molecular assemblies.
-
-Default cost parameters can be opened as follows:
-
-.. code-block::
-
-    cost_model = SpanCost.open()
-
-    # optionally use custom parameters
-    cost_model = SpanCost.open("my_parameters.json")
-
-Take a look at the :ref:`parameters schema <cost_schema>` for how to build the
-parameter json.
-
-Utilities
----------
-
-.. autosummary::
-    :toctree: generated/
-
-    utils
-"""
 import json
 from abc import ABC
 from abc import abstractmethod

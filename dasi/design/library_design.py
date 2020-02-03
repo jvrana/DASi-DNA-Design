@@ -141,6 +141,7 @@ class LibraryDesign(Design):
     ALGORITHM = Constants.ALGORITHM_LIBRARY
 
     def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
+        """Something."""
         super().__init__(span_cost=span_cost, seqdb=seqdb, n_jobs=n_jobs)
         self.shared_alignments = []
         self._edges = []

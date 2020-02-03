@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.models.assembly &#8212; dasi 0.0.12 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.12</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.Design.html">dasi.design.Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.DesignResult.html">dasi.design.DesignResult</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#installation">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.models.assembly</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;Assembly.&quot;&quot;&quot;
+from collections import namedtuple
+from copy import deepcopy
+from itertools import groupby
+from itertools import zip_longest
+from typing import Any
+from typing import Dict
+from typing import Generator
+from typing import Iterable
+from typing import List
+from typing import Tuple
+from typing import Union
+
+import networkx as nx
+import numpy as np
+import pandas as pd
+import primer3plus
+from Bio.Alphabet import generic_dna
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from more_itertools import pairwise
+from primer3plus.utils import reverse_complement as rc
+from pyblast.utils import is_circular
+
+from .alignment import Alignment
+from .alignment import AlignmentGroup
+from .alignment import PCRProductAlignmentGroup
+from .alignment_container import AlignmentContainer
+from .molecule import Molecule
+from .molecule import MoleculeType
+from .molecule import Reaction
+from dasi.constants import Constants
+from dasi.cost import SpanCost
+from dasi.exceptions import DasiDesignException
+from dasi.exceptions import DasiInvalidMolecularAssembly
+from dasi.exceptions import DasiNoPrimerPairsException
+from dasi.exceptions import DasiSequenceDesignException
+from dasi.log import logger
+from dasi.utils import NumpyDataFrame
+from dasi.utils import Region
+from dasi.utils import sort_cycle
+
+
+def _design_primers(
+    template: str,
+    region: Region,
+    lseq: Union[None, str],
+    rseq: Union[None, str],
+    left_overhang: Union[None, str] = None,
+    right_overhang: Union[None, str] = None,
+) -&gt; Tuple[Dict[int, dict], Dict[str, Any]]:
+    &quot;&quot;&quot;Design primers flanking the specified.
+
+    :class:`Region.&lt;dasi.utils.Region&gt;`. If the region is cyclic and spans the
+    origin, this method will handle the appropriate manipulations to design
+    primers around the origin and restore the locations of the resulting primer
+    pairs.
+
+    :param template: the template string to design primers
+    :param region: region specified to design primers around. Regions are exclusive at
+                    their end points (`.b` parameter)
+    :param lseq: optionally provided left sequence
+    :param rseq: optionally provided right sequence
+    :param left_overhang: optionally provided left overhang sequence of the primer
+    :param right_overhang: optionally provided right overhang sequence of the primer
+    :return: tuple of pairs and the &#39;explain&#39; dictionary.
+    &quot;&quot;&quot;
+    design = primer3plus.new()
+    design.settings.as_cloning_task()
+    if region.direction == -1:
+        region = region.flip()
+        template = rc(template)
+
+    if lseq and left_overhang:
+        raise DasiSequenceDesignException
+    if rseq and right_overhang:
+        raise DasiSequenceDesignException
+
+    if region.spans_origin():
+        adjusted_template = region.get_slice(template) + region.invert()[0].get_slice(
+            template
+        )
+        design.settings.template(adjusted_template)
+        design.settings.included((0, len(region)))
+        index = list(region) + list(region.invert()[0])
+    else:
+        design.settings.template(template)
+        design.settings.included((region.a, len(region)))
+        index = None
+    if lseq:
+        design.settings.left_sequence(lseq)
+    if rseq:
+        design.settings.right_sequence(rseq)
+
+    if left_overhang is None:
+        left_overhang = &quot;&quot;
+    if right_overhang is None:
+        right_overhang = &quot;&quot;
+
+    design.settings.product_size((len(region), len(region)))
+    design.settings.left_overhang(left_overhang)
+    design.settings.right_overhang(right_overhang)
+    design.PRIMER_PICK_ANYWAY = True
+    design.settings.use_overhangs()
+    design.settings.long_ok()
+
+    design.logger.set_level(&quot;INFO&quot;)
+    pairs, explain = design.run_and_optimize(15)
+    if index is not None:
+        for pair in pairs.values():
+            loc = pair[&quot;LEFT&quot;][&quot;location&quot;]
+            pair[&quot;LEFT&quot;][&quot;location&quot;] = (index[loc[0]], loc[1])
+
+            loc = pair[&quot;RIGHT&quot;][&quot;location&quot;]
+            pair[&quot;RIGHT&quot;][&quot;location&quot;] = (index[loc[0]], loc[1])
+    return pairs, explain
+
+
+def _edata_to_npdf(edata: dict, span_cost: SpanCost) -&gt; NumpyDataFrame:
+    return span_cost.cost(edata[&quot;span&quot;], edata[&quot;type_def&quot;])
+
+
+def _no_none_or_nan(*i):
+    for _i in i:
+        if _i is not None and not np.isnan(_i):
+            return _i
+
+
+def _get_primer_extensions(
+    graph: nx.DiGraph, n1: &quot;AssemblyNode&quot;, n2: &quot;AssemblyNode&quot;, cyclic: bool = True
+) -&gt; Tuple[int, int]:
+    &quot;&quot;&quot;Return the left and right primer extensions for the given *internal*
+    fragment. To get the extensions, we look for the left predecessor edge and
+    get its `right_ext` or `rprimer_right_ext` and on the other side the right
+    successor edge and its `left_ext` or `lprimer_left_ext`.
+
+    :param graph: assembly graph
+    :param n1: source node on the graph
+    :param n2: end node on the graph
+    :param cyclic: whether the
+    :return: tuple of left and right extensions
+    &quot;&quot;&quot;
+    # NOTE: the successors &#39;left&#39; primer is the fragments &#39;right&#39; primer extension
+    successors = list(graph.successors(n2))
+    if successors:
+        sedge = graph[n2][successors[0]]
+        right_ext = _no_none_or_nan(sedge[&quot;lprimer_left_ext&quot;], sedge[&quot;left_ext&quot;])
+    elif cyclic:
+        raise DasiSequenceDesignException(
+            &quot;Sequence is cyclic but there are no &quot; &quot;successors for {}&quot;.format(n2)
+        )
+    else:
+        right_ext = 0
+
+    # the predecessors &#39;right&#39; primer is the fragments &#39;left&#39; primer extension
+    predecessors = list(graph.predecessors(n1))
+    if predecessors:
+        pedge = graph[predecessors[0]][n1]
+        left_ext = _no_none_or_nan(pedge[&quot;rprimer_right_ext&quot;], pedge[&quot;right_ext&quot;])
+    elif cyclic:
+        raise DasiSequenceDesignException(
+            &quot;Sequence is cyclic but there are no &quot; &quot;precessors for {}&quot;.format(n1)
+        )
+    else:
+        left_ext = 0
+    return int(left_ext), int(right_ext)
+
+
+def _use_direct(
+    edge: Tuple[&quot;AssemblyNode&quot;, &quot;AssemblyNode&quot;, dict], seqdb: Dict[str, SeqRecord]
+) -&gt; Tuple[SeqRecord, AlignmentGroup]:
+    group = edge[2][&quot;groups&quot;][0]
+    alignment = group.alignments[0]
+    sk = alignment.subject_keys
+    srecord = seqdb[sk]
+    return srecord, alignment
+
+
+def _design_gap(
+    edge: Tuple[&quot;AssemblyNode&quot;, &quot;AssemblyNode&quot;, dict], qrecord: SeqRecord
+) -&gt; Union[Tuple[SeqRecord, Region], Tuple[None, None]]:
+    n1, _, edge_data = edge
+    gene_size = edge_data[&quot;gene_size&quot;]
+    if not np.isnan(gene_size):
+        lshift = edge_data[&quot;lshift&quot;]
+        assert not np.isnan(lshift)
+        a = n1.index + lshift
+        b = a + gene_size
+        gene_region = edge_data[&quot;query_region&quot;].new(a, b)
+        gene_seq = gene_region.get_slice(qrecord)
+        return gene_seq, gene_region
+    else:
+        return None, None
+
+
+def _design_pcr_product_primers(
+    edge: Tuple[&quot;AssemblyNode&quot;, &quot;AssemblyNode&quot;, dict],
+    graph: nx.DiGraph,
+    design: Tuple[bool, bool],
+    seqdb: Dict[str, SeqRecord],
+) -&gt; Tuple[Dict, Dict, AlignmentGroup, Region]:
+    if edge[-1][&quot;type_def&quot;].int_or_ext == &quot;external&quot;:
+        raise Exception()
+
+    # this is a new PCR product
+    n1, n2, edata = edge
+    lext, rext = _get_primer_extensions(graph, n1, n2)
+    alignment_groups = edata[&quot;groups&quot;]
+    group = alignment_groups[0]
+
+    qkey = group.query_key
+    qrecord = seqdb[qkey]
+    qregion = group.query_region
+
+    # set overhangs
+    loverhang = &quot;&quot;
+    roverhang = &quot;&quot;
+    if design[0]:
+        lregion = qregion.new(qregion.a - lext, qregion.a)
+        loverhang = lregion.get_slice(qrecord.seq, as_type=str)
+    if design[1]:
+        rregion = qregion.new(qregion.b, qregion.b + rext)
+        roverhang = primer3plus.utils.reverse_complement(
+            rregion.get_slice(qrecord.seq, as_type=str)
+        )
+
+    # TODO: complex alignment groups have re-adjusted subject regions
+    # TODO: ensure fwd and rev primers have same template
+    # TODO: the &#39;fwd&#39; primer of a template in reverse direction is its reverse primer,
+    #       so get_template needs to be adjusted.
+    # collect template, left primer, and right primer keys
+
+    lkey, rkey = None, None
+    fwd, template, rev = None, None, None
+    if design == (1, 1):
+        assert isinstance(group, AlignmentGroup)
+        tkey = group.subject_keys[0]
+        template = group.alignments[0]
+    else:
+        if not hasattr(group, &quot;groupings&quot;):
+            print(group)
+            print(group.type)
+        grouping = group.groupings[0]
+        template = group.get_template(0)
+        assert grouping[&quot;template&quot;].subject_key == template.subject_key
+
+        # get primer keys
+        fwd = grouping[&quot;fwd&quot;]
+        rev = grouping[&quot;rev&quot;]
+        tkey = template.subject_key
+        if fwd:
+            lkey = fwd.subject_key
+        if rev:
+            rkey = rev.subject_key
+
+    if not design[1]:
+        roverhang = &quot;&quot;
+
+    if not design[0]:
+        loverhang = &quot;&quot;
+
+    trecord = seqdb[tkey]
+    tseq = str(trecord.seq)
+    if rkey:
+        rrecord = seqdb[rkey]
+        rseq = str(rrecord.seq)
+    else:
+        rseq = None
+    if lkey:
+        lrecord = seqdb[lkey]
+        lseq = str(lrecord.seq)
+    else:
+        lseq = None
+
+    # design primers
+    pairs, explain = _design_primers(
+        tseq,
+        template.subject_region,
+        lseq,
+        rseq,
+        left_overhang=loverhang,
+        right_overhang=roverhang,
+    )
+    for pair in pairs.values():
+        pair[&quot;LEFT&quot;][&quot;SUBJECT_KEY&quot;] = lkey
+        pair[&quot;LEFT&quot;][&quot;GROUP&quot;] = fwd
+        pair[&quot;RIGHT&quot;][&quot;SUBJECT_KEY&quot;] = rkey
+        pair[&quot;RIGHT&quot;][&quot;GROUP&quot;] = rev
+        pair[&quot;PAIR&quot;][&quot;SUBJECT_KEY&quot;] = tkey
+        pair[&quot;PAIR&quot;][&quot;GROUP&quot;] = template
+
+    query_region = group.query_region.new(
+        group.query_region.a - len(loverhang) + group.query_region.context_length,
+        group.query_region.c + len(roverhang) + group.query_region.context_length,
+    )
+    #     print(group.query_region)
+    #     print(template.query_region)
+    #     print(group)
+    #     print(len(query_region), len(group.query_region) + lext + rext, lext, rext)
+    #     assert len(query_region) == len(group.query_region) + lext + rext
+    return pairs, explain, template, query_region
+
+
+def _design_edge(
+    assembly: &quot;Assembly&quot;,
+    n1: &quot;AssemblyNode&quot;,
+    n2: &quot;AssemblyNode&quot;,
+    seqdb: Dict[str, SeqRecord],
+) -&gt; Union[Reaction, None]:
+    query_key = assembly.query_key
+    graph = assembly.graph
+
+    edge = n1, n2, graph[n1][n2]
+
+    moltype = edge[2][&quot;type_def&quot;]
+    qrecord = seqdb[query_key]
+    # contains information about templates and queries
+
+    if edge[-1][&quot;type_def&quot;].int_or_ext == &quot;external&quot;:
+        if moltype.use_direct:
+            # this is a fragment used directly in an assembly
+            frag_seq, frag_alignment = _use_direct(edge, seqdb)
+            frag_mol = Molecule(moltype, frag_alignment, frag_seq)
+            return Reaction(Reaction.Types.Direct, inputs=[], outputs=[frag_mol], metadata=edge[2])
+        elif moltype.synthesize:
+            # this is either a gene synthesis fragment or already covered by the primers.
+            synthesis_seq, synthesis_region = _design_gap(edge, qrecord)
+            if synthesis_seq:
+                subject_region = Region(
+                    0, len(synthesis_region), len(synthesis_region), direction=1
+                )
+                synthesis_alignment = Alignment(
+                    synthesis_region, subject_region, moltype.name, query_key, &quot;&quot;
+                )
+                synthesis_mol = Molecule(
+                    moltype,
+                    synthesis_alignment,
+                    synthesis_seq,
+                    query_region=synthesis_region,
+                )
+                return Reaction(
+                    Reaction.Types.Synthesize, inputs=[], outputs=[synthesis_mol], metadata=edge[2]
+                )
+            else:
+                return None
+        else:
+            return None
+    elif edge[-1][&quot;type_def&quot;].name == Constants.FRAGMENT:
+        group = edge[2][&quot;groups&quot;][0]
+        alignment = group.alignments[0]
+        sk = alignment.subject_key
+        frag_seq = seqdb[sk]
+        query_region = edge[2][&quot;query_region&quot;]
+        frag_mol = Molecule(moltype, alignment, frag_seq, query_region=query_region)
+        return Reaction(Reaction.Types.Direct, inputs=[], outputs=[frag_mol], metadata=edge[2])
+    elif edge[-1][&quot;type_def&quot;].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
+        query_region = edge[2][&quot;query_region&quot;]
+        group = edge[2][&quot;group&quot;]
+        synthesis_mol = Molecule(
+            MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT],
+            alignment_group=group,
+            sequence=query_region.get_slice(seqdb[query_key]),
+            query_region=query_region,
+        )
+        return Reaction(Reaction.Types.Synthesize, inputs=[], outputs=[synthesis_mol], metadata=edge[2])
+    else:
+        pairs, explain, group, query_region = _design_pcr_product_primers(
+            edge, graph, moltype.design, seqdb
+        )
+        if not pairs:
+            raise DasiNoPrimerPairsException(&quot;No primer pairs were found.&quot;)
+        pair = pairs[0]
+        primers = []
+        for x in [&quot;LEFT&quot;, &quot;RIGHT&quot;]:
+            primer_seq = pair[x][&quot;OVERHANG&quot;] + pair[x][&quot;SEQUENCE&quot;]
+            primer_group = pair[x][&quot;GROUP&quot;]
+            primer_record = SeqRecord(Seq(primer_seq, generic_dna))
+            primer = Molecule(
+                MoleculeType.types[Constants.PRIMER],
+                primer_group,
+                primer_record,
+                metadata=pair[x],
+            )
+            primers.append(primer)
+        template = Molecule(
+            MoleculeType.types[Constants.TEMPLATE],
+            pair[&quot;PAIR&quot;][&quot;GROUP&quot;],
+            seqdb[pair[&quot;PAIR&quot;][&quot;SUBJECT_KEY&quot;]],
+        )
+
+        product = Molecule(
+            moltype,
+            group,
+            query_region.get_slice(seqdb[query_key]),
+            query_region=query_region,
+        )
+
+        return Reaction(
+            Reaction.Types.PCR, inputs=primers + [template], outputs=[product], metadata=edge[2]
+        )
+
+
+AssemblyNode = namedtuple(
+    &quot;AssemblyNode&quot;, &quot;index expandable type overhang&quot;
+)  #: tuple representing a location on a goal sequence
+
+
+<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../../generated/dasi.models.Assembly.html#dasi.models.Assembly">[docs]</a>class Assembly(Iterable):
+    &quot;&quot;&quot;Should take in a path, graph, container, seqdb to produce relevant
+    information.&quot;&quot;&quot;
+
+    REACTION_DF_COLS = (
+        &quot;DESIGN_ID&quot;,
+        &quot;DESIGN_KEY&quot;,
+        &quot;ASSEMBLY_ID&quot;,
+        &quot;REACTION_ID&quot;,
+        &quot;REACTION_NAME&quot;,
+        &quot;NAME&quot;,
+        &quot;TYPE&quot;,
+        &quot;KEY&quot;,
+        &quot;ROLE&quot;,
+        &quot;REGION&quot;,
+        &quot;SEQUENCE&quot;,
+        &quot;LENGTH&quot;,
+        &quot;META&quot;,
+    )
+    REACTION_DF_SORT_BY = (
+        &quot;TYPE&quot;,
+        &quot;DESIGN_ID&quot;,
+        &quot;ASSEMBLY_ID&quot;,
+        &quot;REACTION_ID&quot;,
+        &quot;REACTION_NAME&quot;,
+        &quot;NAME&quot;,
+        &quot;ROLE&quot;,
+    )
+    SUMMARY_DF_COLS = (
+        &quot;query_start&quot;,
+        &quot;query_end&quot;,
+        &quot;subject_names&quot;,
+        &quot;subject_keys&quot;,
+        &quot;subject_starts&quot;,
+        &quot;subject_ends&quot;,
+        &quot;cost&quot;,
+        &quot;material&quot;,
+        &quot;span&quot;,
+        &quot;type&quot;,
+        &quot;internal_or_external&quot;,
+        &quot;efficiency&quot;,
+        &quot;complexity&quot;,
+        &quot;notes&quot;,
+    )
+
+<div class="viewcode-block" id="Assembly.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Assembly.html#dasi.models.Assembly.__init__">[docs]</a>    def __init__(
+        self,
+        nodes: List[AssemblyNode],
+        container: AlignmentContainer,
+        full_assembly_graph: nx.DiGraph,
+        query_key: str,
+        query: SeqRecord,
+        seqdb,
+        do_raise: bool = True,
+    ):
+        self.logger = logger(self)
+        self._nodes = tuple(nodes)
+        self._reactions = tuple()
+        self.validate_input_nodes()
+        self.seqdb = seqdb
+        self.query_key = query_key
+        self.query = query
+        self._full_graph = full_assembly_graph
+
+        self.container = container
+        self.groups = container.groups()
+        if len(self.groups) == 0:
+            raise DasiDesignException(&quot;No groups were found in container.&quot;)
+        self.graph = self._subgraph(self._full_graph, nodes, do_raise=do_raise)
+        nx.freeze(self.graph)
+
+        if do_raise:
+            self.post_validate(do_raise)</div>
+
+    @property
+    def reactions(self):
+
+        top_level_reaction = Reaction(Reaction.Types.Assembly, inputs=[], outputs=[], metadata={&#39;query_key&#39;: self.query_key})
+        top_level_reaction.outputs = [
+            Molecule(
+                molecule_type=MoleculeType.types[Constants.PLASMID],
+                sequence=deepcopy(self.query),
+                alignment_group=None,
+            )
+        ]
+
+        if not self._reactions:
+            reactions = [top_level_reaction]
+            for n1, n2, edata in self.edges():
+                reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
+                if reaction:
+                    for _mol in reaction.outputs:
+                        top_level_reaction.inputs.append(_mol)
+                    reactions.append(reaction)
+            self._reactions = tuple(reactions)
+        return self._reactions
+
+    @property
+    def assembly_reactions(self):
+        return [r for r in self.reactions if r.name == Reaction.Types.Assembly]
+
+    @property
+    def nonassembly_reactions(self):
+        return [r for r in self.reactions if r.name != Reaction.Types.Assembly]
+
+    def post_validate(self):
+        total_span = 0
+        for n1, n2, edata in self.edges():
+            if n1.type == n2.type:
+                raise DasiInvalidMolecularAssembly(&quot;Invalid assembly graph&quot;)
+            total_span += edata[&quot;span&quot;]
+        if not total_span == len(self.query):
+            raise DasiInvalidMolecularAssembly(
+                &quot;Assembly length &#39;{}&#39; is different from expected&quot;
+                &quot; length &#39;{}&#39;&quot;.format(total_span, len(self.query))
+            )
+
+<div class="viewcode-block" id="Assembly._head"><a class="viewcode-back" href="../../../generated/dasi.models.Assembly.html#dasi.models.Assembly._head">[docs]</a>    def _head(self):
+        &quot;&quot;&quot;Get the &#39;first&#39; &#39;A&#39; node.&quot;&quot;&quot;
+        x = sorted(list(self.graph.nodes), key=lambda n: (n.type == &quot;B&quot;, n.index))
+        return x[0]</div>
+
+    def _sorted_edges(self):
+        head = self._head()
+        edges = list(nx.bfs_edges(self.graph, head))
+        edges += [
+            (t[1], t[0])
+            for t in nx.bfs_edges(self.graph, head, reverse=True, depth_limit=1)
+        ]
+
+        return edges
+
+    def validate_input_nodes(self):
+        # rule 1 A -&gt; B -&gt; A -&gt; B -&gt; ...
+        types = [n.type for n in self._nodes]
+        groups = [list(g) for _, g in groupby(types)]
+        if len(types) != len(groups):
+            raise ValueError(&quot;There invalid edges input nodes&quot;)
+
+    @staticmethod
+    def _missing_edata():
+        return {
+            &quot;cost&quot;: np.inf,
+            &quot;weight&quot;: np.inf,
+            &quot;material&quot;: np.inf,
+            &quot;efficiency&quot;: 0.0,
+            &quot;type_def&quot;: MoleculeType.types[Constants.MISSING],
+            &quot;span&quot;: np.inf,
+        }
+
+    def _subgraph(
+        self, graph: nx.DiGraph, nodes: List[AssemblyNode], do_raise: bool = True
+    ):
+        def _resolve(node: &quot;AssemblyNode&quot;, qregion) -&gt; Tuple[AssemblyNode, dict]:
+            new_node = AssemblyNode(qregion.t(node.index), *list(node)[1:])
+            return new_node
+
+        subgraph = nx.OrderedDiGraph()
+        nodes = [AssemblyNode(*n) for n in nodes]
+        example_query_region = self.container.alignments[0].query_region
+
+        resolved_nodes = [_resolve(node, example_query_region) for node in nodes]
+        if self.cyclic:
+            resolved_nodes = sort_cycle(
+                resolved_nodes, key=lambda n: (n.type, n.index, n)
+            )
+        subgraph.add_nodes_from(resolved_nodes)
+
+        pair_iter = list(pairwise(nodes))
+
+        if self.cyclic:
+            pair_iter.append((nodes[-1], nodes[0]))
+
+        visited = set()
+        for n1, n2 in pair_iter:
+            edata = graph.get_edge_data(n1, n2)
+            if edata is None:
+                # if n1.index &gt; len(self.query):
+                #     n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
+                #     edata = graph.get_edge_data(n3, n2)
+                if edata is None:
+                    edata = self._missing_edata()
+            else:
+                assert edata[&quot;type_def&quot;].int_or_ext
+
+            query_region = self.container.alignments[0].query_region.new(
+                n1.index, n2.index
+            )
+            groups = self.container.find_groups_by_pos(
+                query_region.a,
+                query_region.b,
+                group_type=edata[&quot;type_def&quot;].name,
+                groups=self.groups,
+            )
+            if edata[&quot;type_def&quot;].int_or_ext == &quot;internal&quot; and not groups:
+                raise DasiDesignException(
+                    &quot;Missing groups for edge between {} and {}&quot;.format(n1, n2)
+                )
+
+            edata[&quot;groups&quot;] = groups
+            edata[&quot;query_region&quot;] = query_region
+
+            rn1 = _resolve(n1, query_region)
+            rn2 = _resolve(n2, query_region)
+
+            if rn1 in visited:
+                break
+            visited.add(rn1)
+
+            # TODO: add this check
+            if do_raise:
+                if rn1 in subgraph:
+                    raise DasiInvalidMolecularAssembly(
+                        &quot;Node already exists in subgraph&quot;
+                    )
+                if rn2 in subgraph:
+                    raise DasiInvalidMolecularAssembly(
+                        &quot;Node already exists in subgraph&quot;
+                    )
+
+            subgraph.add_edge(rn1, rn2, **edata)
+        return subgraph
+
+    @property
+    def cyclic(self):
+        return is_circular(self.query)
+
+    # TODO: consolidate this with shortest path utils in networkx
+    def cost(self):
+        material = 0
+        efficiency = 1.0
+        for _, _, edata in self.edges():
+            material += edata[&quot;material&quot;]
+            efficiency *= edata[&quot;efficiency&quot;]
+        if efficiency == 0:
+            return np.inf
+        return material / efficiency
+
+    def edges(self, data=True) -&gt; Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
+        for n1, n2 in self._sorted_edges():
+            if data:
+                edata = self.graph[n1][n2]
+                yield n1, n2, edata
+            else:
+                yield n1, n2
+
+    def nodes(self, data=True) -&gt; Iterable[Tuple[AssemblyNode, Dict]]:
+        return self.graph.nodes(data=data)
+
+    def edit_distance(
+        self, other: &quot;Assembly&quot;, explain=False
+    ) -&gt; Union[int, Tuple[int, List[Tuple[int, str]]]]:
+        differences = []
+        for i, (n1, n2) in enumerate(
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
+        ):
+            if n1 is None or n2 is None:
+                differences.append((i, &quot;{} != {}&quot;.format(n1, n2)))
+                continue
+            if n1.index != n2.index:
+                differences.append((i, &quot;Index: {} != {}&quot;.format(n1.index, n2.index)))
+            if n1.expandable != n2.expandable:
+                differences.append(
+                    (i, &quot;Expandable: {} != {}&quot;.format(n1.expandable, n2.expandable))
+                )
+            if n1.type != n2.type:
+                differences.append((i, &quot;Type: {} != {}&quot;.format(n1.type, n2.type)))
+            if n1.overhang != n2.overhang:
+                differences.append(
+                    (i, &quot;Overhang: {} != {}&quot;.format(n1.overhang, n2.overhang))
+                )
+        dist = len(differences)
+        if explain:
+            return dist, differences
+        return dist
+
+    def print(self):
+        print(&quot;query_name: {}&quot;.format(self.query.name))
+        print(&quot;query_key: {}&quot;.format(self.query_key))
+        print(&quot;Cost: {}&quot;.format(self.cost()))
+        df = self.to_df()
+        print(df)
+
+    def print_diff(self, other: &quot;Assembly&quot;):
+        for i, (n1, n2) in enumerate(
+            zip_longest(self.nodes(data=False), other.nodes(data=False))
+        ):
+            if n1 != n2:
+                desc = False
+            else:
+                desc = True
+            print(&quot;{} {} {}&quot;.format(desc, n1, n2))
+
+    def to_df(self) -&gt; pd.DataFrame:
+        rows = []
+        for n1, n2, edata in self.edges():
+            groups = edata[&quot;groups&quot;]
+
+            if groups:
+                group = groups[0]
+                if isinstance(group, PCRProductAlignmentGroup):
+                    alignments = group.alignments
+                else:
+                    alignments = group.alignments[:1]
+            else:
+                alignments = []
+            subject_keys = [a.subject_key for a in alignments]
+            subject_names = [self.container.seqdb[key].name for key in subject_keys]
+            subject_starts = [a.subject_region.a for a in alignments]
+            subject_ends = [a.subject_region.b for a in alignments]
+
+            rows.append(
+                {
+                    &quot;query_start&quot;: edata[&quot;query_region&quot;].a,
+                    &quot;query_end&quot;: edata[&quot;query_region&quot;].b,
+                    &quot;subject_names&quot;: subject_names,
+                    &quot;subject_keys&quot;: subject_keys,
+                    &quot;subject_starts&quot;: subject_starts,
+                    &quot;subject_ends&quot;: subject_ends,
+                    &quot;cost&quot;: edata[&quot;cost&quot;],
+                    &quot;material&quot;: edata[&quot;material&quot;],
+                    &quot;span&quot;: edata[&quot;span&quot;],
+                    &quot;type&quot;: edata[&quot;type_def&quot;].name,
+                    &quot;internal_or_external&quot;: edata[&quot;type_def&quot;].int_or_ext,
+                    &quot;efficiency&quot;: edata.get(&quot;efficiency&quot;, np.nan),
+                    &quot;complexity&quot;: edata.get(&quot;complexity&quot;, np.nan),
+                    &quot;notes&quot;: edata.get(&quot;notes&quot;, &quot;&quot;),
+                }
+            )
+
+        df = pd.DataFrame(rows)
+        assert set(df.columns) == set(self.SUMMARY_DF_COLS)
+        return df
+
+    def _csv_row(
+        self,
+        m: Molecule,
+        role: str,
+        reaction_id: Union[str, int],
+        reaction_name: str,
+        meta: dict = None,
+    ) -&gt; dict:
+        mtype = m.type.name
+        group = m.alignment_group
+
+        key = None
+        name = None
+        if group:
+            if hasattr(group, &quot;subject_key&quot;):
+                if group.subject_key:
+                    key = group.subject_key
+                    name = self.seqdb[key].name
+            else:
+                # TODO: select best subject here
+                key = group.subject_keys[0]
+                name = self.seqdb[key].name
+
+        if m.query_region:
+            q = (m.query_region.a, m.query_region.b, m.query_region.context_length)
+        else:
+            q = None
+        length = len(m.sequence)
+        data = {
+            &quot;NAME&quot;: name,
+            &quot;LENGTH&quot;: length,
+            &quot;SEQUENCE&quot;: str(m.sequence.seq),
+            &quot;TYPE&quot;: mtype,
+            &quot;KEY&quot;: key,
+            &quot;REGION&quot;: q,
+            &quot;ROLE&quot;: role,
+            &quot;REACTION_ID&quot;: reaction_id,
+            &quot;REACTION_NAME&quot;: reaction_name,
+        }
+        if meta:
+            data.update({&quot;META&quot;: deepcopy(meta)})
+        return data
+
+    @property
+    def molecules(self) -&gt; Generator[Tuple[int, str, Molecule], None, None]:
+        for i, r in enumerate(self.reactions):
+            for m in r.inputs:
+                yield (i, &quot;input&quot;, m)
+            for m in r.outputs:
+                yield (i, &quot;output&quot;, m)
+
+    def to_reaction_df(self) -&gt; pd.DataFrame:
+        rows = []
+        reactions = self.reactions
+        for reaction_id, role, m in self.molecules:
+            reaction = reactions[reaction_id]
+            if m.type.name == &quot;PRIMER&quot;:
+                meta = deepcopy(m.metadata)
+                meta[&quot;ANNEAL&quot;] = meta[&quot;SEQUENCE&quot;]
+                del meta[&quot;SEQUENCE&quot;]
+                meta = {&quot;PRIMER_{}&quot;.format(k): v for k, v in meta.items()}
+            else:
+                meta = None
+            rows.append(self._csv_row(m, role, reaction_id, reaction.name, meta))
+        colnames = self.REACTION_DF_COLS
+        df = pd.DataFrame(rows, columns=colnames)
+        df.sort_values(by=list(self.REACTION_DF_SORT_BY), inplace=True)
+        return df
+
+    def __eq__(self, other: &quot;Assembly&quot;) -&gt; bool:
+        return self.edit_distance(other) == 0
+
+    def __iter__(self) -&gt; Generator[AssemblyNode, None, None]:
+        for n in self.nodes(data=False):
+            yield n</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

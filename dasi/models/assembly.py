@@ -321,7 +321,9 @@ def _design_edge(
             # this is a fragment used directly in an assembly
             frag_seq, frag_alignment = _use_direct(edge, seqdb)
             frag_mol = Molecule(moltype, frag_alignment, frag_seq)
-            return Reaction(Reaction.Types.Direct, inputs=[], outputs=[frag_mol])
+            return Reaction(
+                Reaction.Types.Direct, inputs=[], outputs=[frag_mol], metadata=edge[2]
+            )
         elif moltype.synthesize:
             # this is either a gene synthesis fragment or already covered by the primers.
             synthesis_seq, synthesis_region = _design_gap(edge, qrecord)
@@ -339,7 +341,10 @@ def _design_edge(
                     query_region=synthesis_region,
                 )
                 return Reaction(
-                    Reaction.Types.Synthesize, inputs=[], outputs=[synthesis_mol]
+                    Reaction.Types.Synthesize,
+                    inputs=[],
+                    outputs=[synthesis_mol],
+                    metadata=edge[2],
                 )
             else:
                 return None
@@ -352,7 +357,9 @@ def _design_edge(
         frag_seq = seqdb[sk]
         query_region = edge[2]["query_region"]
         frag_mol = Molecule(moltype, alignment, frag_seq, query_region=query_region)
-        return Reaction(Reaction.Types.Direct, inputs=[], outputs=[frag_mol])
+        return Reaction(
+            Reaction.Types.Direct, inputs=[], outputs=[frag_mol], metadata=edge[2]
+        )
     elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
         query_region = edge[2]["query_region"]
         group = edge[2]["group"]
@@ -362,7 +369,12 @@ def _design_edge(
             sequence=query_region.get_slice(seqdb[query_key]),
             query_region=query_region,
         )
-        return Reaction(Reaction.Types.Synthesize, inputs=[], outputs=[synthesis_mol])
+        return Reaction(
+            Reaction.Types.Synthesize,
+            inputs=[],
+            outputs=[synthesis_mol],
+            metadata=edge[2],
+        )
     else:
         pairs, explain, group, query_region = _design_pcr_product_primers(
             edge, graph, moltype.design, seqdb
@@ -396,7 +408,10 @@ def _design_edge(
         )
 
         return Reaction(
-            Reaction.Types.PCR, inputs=primers + [template], outputs=[product]
+            Reaction.Types.PCR,
+            inputs=primers + [template],
+            outputs=[product],
+            metadata=edge[2],
         )
 
 
@@ -482,7 +497,12 @@ class Assembly(Iterable):
     @property
     def reactions(self):
 
-        top_level_reaction = Reaction(Reaction.Types.Assembly, inputs=[], outputs=[])
+        top_level_reaction = Reaction(
+            Reaction.Types.Assembly,
+            inputs=[],
+            outputs=[],
+            metadata={"query_key": self.query_key},
+        )
         top_level_reaction.outputs = [
             Molecule(
                 molecule_type=MoleculeType.types[Constants.PLASMID],

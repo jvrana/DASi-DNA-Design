@@ -1,4 +1,16 @@
 {
+  "0.0.12": {
+    "description": "new featues; output JSON format",
+    "date": "2020-02-02T23:21:51.948271",
+    "changes": [
+      "New validated JSON formate for design outputs. Accessible by `design.out()`",
+      "JSON Schemas are grouped in `dasi.schemas`",
+      "updated documentation",
+      "improved testing",
+      "minor bug fixes",
+      "`optimize_library` and `compile_library` have been removed from LibraryDesign. Use `optimize` and `compile` instead."
+    ]
+  },
   "0.0.11": {
     "description": "feature",
     "date": "2020-01-29T07:42:52.819562",

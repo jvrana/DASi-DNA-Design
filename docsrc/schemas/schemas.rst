@@ -28,3 +28,8 @@ the cost model using:
     cost_model = SpanCost.open()
 
 .. jsonschema:: cost_schema.json
+
+Design Output Schema
+--------------------
+
+.. jsonschema:: output_schema.json

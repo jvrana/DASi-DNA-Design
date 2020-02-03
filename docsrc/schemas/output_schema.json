@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DASi design output",
+  "description": "This schema validates a json output for the DASi design",
+  "definitions": {
+    "sequence": {
+      "type": "object",
+      "$id": "#sequence",
+      "description": "This schema validates a JSON that represents a DNA/RNA sequence",
+      "properties": {
+        "bases": {
+          "description": "Bases of the sequence as a string with no white spaces.",
+          "type": "string"
+        },
+        "length": {
+          "description": "Optional length of the sequence",
+          "type": "integer"
+        },
+        "name": {
+          "description": "Optional name of the sequence",
+          "type": "string"
+        },
+        "id": {
+          "description": "Optional id of the sequence",
+          "type": "string"
+        },
+        "isCircular": {
+          "description": "Whether the topology of the sequence is circular (or linear if false)",
+          "type": "boolean"
+        },
+        "annotations": {
+          "description": "List of (optional) sequence annotations",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sequenceAnnotation"
+          }
+        }
+      },
+      "required": [
+        "bases",
+        "isCircular"
+      ]
+    },
+    "sequenceAnnotation": {
+      "description": "Sequence annotation",
+      "type": "object",
+      "$id": "#sequenceAnnotation",
+      "properties": {
+        "start": {
+          "description": "inclusive start of the annotation",
+          "type": "integer"
+        },
+        "end": {
+          "description": "exclusive end of the annotation",
+          "type": "integer"
+        },
+        "color": {
+          "description": "color of the annotation",
+          "type": "string",
+          "default_value": "#7745e1"
+        },
+        "type": {
+          "description": "type of annotation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "color",
+        "type"
+      ]
+    },
+    "molecule": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "sequence": {
+          "$ref": "#/definitions/sequence"
+        },
+        "used_in_assemblies": {
+          "$ref": "#/definitions/_used_in_assemblies"
+        }
+      },
+      "required": [
+        "name",
+        "index"
+      ]
+    },
+    "reaction": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "used_in_assemblies": {
+          "$ref": "#/definitions/_used_in_assemblies"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "_used_in_assemblies": {
+      "type": "array",
+      "$id": "_used_in_assemblies",
+      "items": {
+        "type": "object",
+        "properties": {
+          "design_key": {
+            "type": "string"
+          },
+          "assembly": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "design_key",
+          "assembly"
+        ]
+      }
+    },
+    "_design_status": {
+      "type": "object",
+      "properties": {
+        "^.+$": {
+          "$ref": "#/definitions/_design_result_status"
+        }
+      }
+    },
+    "_design_result_status": {
+      "type": "object",
+      "properties": {
+        "compiled": {
+          "type": "boolean"
+        },
+        "run": {
+          "type": "boolean"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "assemblies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/_assembly_status"
+          }
+        }
+      }
+    },
+    "_assembly_status": {
+      "type": "object",
+      "properties": {
+        "cost": {
+          "type": "object"
+        },
+        "nonassembly_reactions": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "assembly_reactions": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "cost"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "molecules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/molecule"
+      }
+    },
+    "reactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/reaction"
+      }
+    },
+    "designs": {
+      "$ref": "#/definitions/_design_status"
+    }
+  },
+  "required": [
+    "designs",
+    "reactions",
+    "molecules"
+  ]
+}

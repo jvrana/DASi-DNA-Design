@@ -27,10 +27,14 @@ from .design_algorithms import multiprocessing_assemble_graph
 from .design_algorithms import multiprocessing_optimize_graph
 from .graph_builder import AssemblyGraphPostProcessor
 from .optimize import optimize_graph
+from dasi.__version__ import __title__
+from dasi.__version__ import __version__
 from dasi.constants import Constants
 from dasi.cost import cached_span_cost
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
+from dasi.design.output import dasi_design_to_output_json
+from dasi.design.output import validate_output
 from dasi.design.report import Report
 from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DasiInvalidMolecularAssembly
@@ -39,6 +43,8 @@ from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
 from dasi.models import Assembly
+from dasi.utils import log_metadata
+from dasi.utils import log_times
 from dasi.utils import perfect_subject
 from dasi.utils.sequence_generator import fake_designs
 
@@ -201,6 +207,8 @@ class Design:
     QUERIES = "queries"
     FRAGMENTS = "fragments"
     DEFAULT_N_JOBS = 1
+    DEFAULT_N_ASSEMBLIES = 3
+    ALGORITHM = Constants.ALGORITHM_DEFAULT
 
     def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
         """
@@ -229,6 +237,8 @@ class Design:
         self.primer_results = []
         self.container_factory = AlignmentContainerFactory(self.seqdb)
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
+        self._times = {}
+        self._method_trace = {}
 
     def _get_design_status(self, qk):
         status = {"compiled": False, "run": False, "success": False, "assemblies": []}
@@ -269,6 +279,14 @@ class Design:
                     }
                 )
         return status
+
+    @property
+    def metadata(self):
+        return {
+            "program": __title__,
+            "version": __version__,
+            "execution_trace": self._method_trace,
+        }
 
     @property
     def status(self):
@@ -444,8 +462,7 @@ class Design:
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
-    def assemble_graphs(self, n_jobs=None):
-        n_jobs = n_jobs or self.n_jobs
+    def assemble_graphs(self, n_jobs):
         if n_jobs > 1:
             with self.logger.timeit(
                 "DEBUG",
@@ -487,15 +504,15 @@ class Design:
         self.container_factory.reset()
         self._results = {}
 
-    def compile(self, n_jobs=None):
+    @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
         """Compile materials to assembly graph."""
-        self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
         self.post_process_graphs()
 
-    def run(self, n_paths: int = 3, n_jobs: int = None):
+    def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS):
         self.compile(n_jobs)
         return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
 
@@ -536,12 +553,13 @@ class Design:
             arr.append((n1, n2, edata))
         return arr
 
-    def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
+    @log_metadata("optimize", additional_metadata={"algorithm": ALGORITHM})
+    def optimize(self, n_paths=DEFAULT_N_JOBS, n_jobs=None) -> Dict[str, DesignResult]:
+
         if not self.container_list:
             raise DasiDesignException(
                 "Design must be compiled before running optimization.'"
             )
-        n_jobs = n_jobs or self.n_jobs
         if n_jobs > 1:
             with self.logger.timeit(
                 "DEBUG",
@@ -678,3 +696,40 @@ class Design:
 
     def report(self):
         return Report(self)
+
+    @property
+    def last_run_start(self):
+        x = self._method_run_times.get("optimize", None)
+        if not x:
+            return None
+        else:
+            return x[0]
+
+    @property
+    def last_run_end(self):
+        x = self._method_run_times.get("optimize", None)
+        if not x:
+            return None
+        else:
+            return x[1]
+
+    @property
+    def last_compile_start(self):
+        x = self._method_run_times.get("compile", None)
+        if not x:
+            return None
+        else:
+            return x[0]
+
+    @property
+    def last_compile_end(self):
+        x = self._method_run_times.get("compile", None)
+        if not x:
+            return None
+        else:
+            return x[1]
+
+    def out_json(self):
+        output = dasi_design_to_output_json(self)
+        validate_output(output)
+        return output

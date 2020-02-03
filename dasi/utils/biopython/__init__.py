@@ -26,6 +26,7 @@ from Bio.SeqFeature import SeqFeature
 from Bio.SeqRecord import SeqRecord
 from primer3plus.design import primer3
 
+from .record_to_json import seqrecord_to_json
 from dasi.utils.biopython.sequence import anneal
 from dasi.utils.biopython.sequence import random_sequence
 from dasi.utils.biopython.sequence import rc

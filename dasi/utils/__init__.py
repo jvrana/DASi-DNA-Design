@@ -33,6 +33,10 @@ Specialized networkx algorithms for path and cycle finding.
 
 """
 import bisect
+import inspect
+from copy import deepcopy
+from datetime import datetime
+from functools import wraps
 from typing import Any
 from typing import Callable
 from typing import Iterable
@@ -126,3 +130,98 @@ def group_by(arr: List[Any], key: Callable):
         grouped.setdefault(k, list())
         grouped[k].append(x)
     return grouped
+
+
+def now():
+    return datetime.now()
+
+
+def log_times(key: str = None, class_attribute: str = "_method_trace"):
+    """wrapper for logging method run times for a class."""
+
+    def wrapped(f):
+        @wraps(f)
+        def _wrapped(self, *args, **kwargs):
+
+            if not hasattr(self, class_attribute):
+                raise ValueError(
+                    "Instance {} must have attribute '{}'".format(self, class_attribute)
+                )
+            elif not isinstance(getattr(self, class_attribute), dict):
+                raise ValueError(
+                    "Attribute {} of {} must be a {}".format(
+                        class_attribute, self, dict
+                    )
+                )
+            t1 = now()
+            result = f(self, *args, **kwargs)
+            t2 = now()
+
+            if key is None:
+                use_key = f.__name__
+            else:
+                use_key = key
+            getattr(self, class_attribute)[use_key] = (t1, t2)
+            return result
+
+        return _wrapped
+
+    return wrapped
+
+
+def fmt_datetime(t):
+    return str(t)
+
+
+def log_metadata(
+    key: str = None,
+    class_attribute: str = "_method_trace",
+    additional_metadata: dict = None,
+):
+    """wrapper for logging method run times for a class."""
+
+    def wrapped(f):
+        @wraps(f)
+        def _wrapped(self, *args, **kwargs):
+
+            if not hasattr(self, class_attribute):
+                raise ValueError(
+                    "Instance {} must have attribute '{}'".format(self, class_attribute)
+                )
+            elif not isinstance(getattr(self, class_attribute), dict):
+                raise ValueError(
+                    "Attribute {} of {} must be a {}".format(
+                        class_attribute, self, dict
+                    )
+                )
+            t1 = now()
+            result = f(self, *args, **kwargs)
+            t2 = now()
+
+            argspec = inspect.getfullargspec(f)
+
+            copied_args = deepcopy(args)
+            copied_kwargs = deepcopy(kwargs)
+            argdict = dict(zip(argspec.args[1:], copied_args))
+            argdict.update(copied_kwargs)
+
+            metadata = {
+                "__name__": f.__name__,
+                "__spec__": str(argspec),
+                "start": fmt_datetime(t1),
+                "end": fmt_datetime(t2),
+                "args": argdict,
+            }
+            if additional_metadata:
+                metadata.update(additional_metadata)
+
+            if key is None:
+                use_key = f.__name__
+            else:
+                use_key = key
+            getattr(self, class_attribute)[use_key] = metadata
+            return result
+
+        return _wrapped
+
+    return wrapped

@@ -13,6 +13,7 @@ from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
 from dasi.utils import group_by
+from dasi.utils import log_metadata
 from dasi.utils import sort_with_keys
 
 
@@ -136,6 +137,8 @@ class LibraryDesign(Design):
 
     DEFAULT_N_JOBS = 10
     FAVOR_SHARED_SEQUENCES = 2
+    DEFAULT_N_ASSEMBLIES = Design.DEFAULT_N_ASSEMBLIES
+    ALGORITHM = Constants.ALGORITHM_LIBRARY
 
     def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
         super().__init__(span_cost=span_cost, seqdb=seqdb, n_jobs=n_jobs)
@@ -289,12 +292,12 @@ class LibraryDesign(Design):
         self._expand_from_synthesized()
         self._check_shared_repeats()
 
-    def compile(self, n_jobs=None):
+    @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
         """Compile the materials list into assembly graphs."""
         self._uncompile()
         tracker = self.logger.track("INFO", desc="Compiling library", total=4).enter()
 
-        n_jobs = n_jobs or self.DEFAULT_N_JOBS
         self.graphs = {}
 
         tracker.update(0, "Running blast")
@@ -395,6 +398,11 @@ class LibraryDesign(Design):
     #         processor = AssemblyGraphPostProcessor(graph, query)
     #         processor()
 
-    def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
+    @log_metadata(
+        "optimize", additional_metadata={"algorithm": Constants.ALGORITHM_LIBRARY}
+    )
+    def optimize(
+        self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS
+    ) -> Dict[str, DesignResult]:
         """Optimize the assembly graph for library assembly."""
         return super().optimize(n_paths=n_paths, n_jobs=n_jobs)

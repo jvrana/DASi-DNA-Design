@@ -72,3 +72,9 @@ class Constants:
     ############
     PCR_GROUP_TAG = "PCR"
     SHARE_GROUP_TAG = "SHARE"
+
+    ############
+    # ALGORITHM
+    ############
+    ALGORITHM_DEFAULT = "standard optimization"
+    ALGORITHM_LIBRARY = "library optimization"

@@ -37,8 +37,14 @@ def dump(d, path):
         f.write(x)
 
 
+from dasi.schemas import Schemas
+
 with open("schemas/cost_schema.json", "w") as f:
-    json.dump(dasi.cost.schema, f, indent=2)
+    json.dump(Schemas.cost_parameters_schema, f, indent=2)
+
+with open("schemas/output_schema.json", "w") as f:
+    json.dump(Schemas.output_schema, f, indent=2)
+
 
 dump(dasi.cost.open_params(), "schemas/cost_default.json")
 

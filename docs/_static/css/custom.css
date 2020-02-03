@@ -533,7 +533,7 @@ table.field-list {
 table.field-list td,
 table.field-list th {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 4px;
   vertical-align: top;
   line-height: 1.4;
 }
@@ -797,11 +797,11 @@ td.linenos pre {
 }
 
 table.highlighttable {
-  margin-left: 0.5em;
+  margin-left: 0.1em;
 }
 
 table.highlighttable td {
-  padding: 0 0.5em 0 0.5em;
+  padding: 0 0.1em 0 0.1em;
 }
 
 tt.descname {

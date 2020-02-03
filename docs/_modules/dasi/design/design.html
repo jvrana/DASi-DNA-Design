@@ -505,7 +505,6 @@ class FakePool:
             random_chunk_prob_int=random_chunk_prob_int,
             random_chunk_size_int=random_chunk_size_int,
             design_sequence_similarity_length=shared_length,
-            **kwargs,
         )
         designs = library[&quot;design&quot;]
         plasmids = library[&quot;cyclic&quot;]
@@ -672,6 +671,7 @@ class FakePool:
 <div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design.compile">[docs]</a>    @log_metadata(&quot;compile&quot;, additional_metadata={&quot;algorithm&quot;: ALGORITHM})
     def compile(self, n_jobs: int = DEFAULT_N_JOBS):
         &quot;&quot;&quot;Compile materials to assembly graph.&quot;&quot;&quot;
+        self._uncompile()
         with self.logger.timeit(&quot;DEBUG&quot;, &quot;running blast&quot;):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
@@ -730,7 +730,9 @@ class FakePool:
         return arr
 
     @log_metadata(&quot;optimize&quot;, additional_metadata={&quot;algorithm&quot;: ALGORITHM})
-    def optimize(self, n_paths=DEFAULT_N_JOBS, n_jobs=None) -&gt; Dict[str, DesignResult]:
+    def optimize(
+        self, n_paths=DEFAULT_N_ASSEMBLIES, n_jobs=DEFAULT_N_JOBS
+    ) -&gt; Dict[str, DesignResult]:
 
         if not self.container_list:
             raise DasiDesignException(

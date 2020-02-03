@@ -25,7 +25,7 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
     design.add_materials(primers=primers, templates=templates, queries=queries)
 
     design._blast()
-    containers = design.container_list()
+    containers = design.container_list
     assert len(containers) == 1
     container = containers[0]
     container.expand()
@@ -204,15 +204,17 @@ class TestReactions:
 class TestDesignToDf:
     def test_multi_reactions(self, multi_processed_results):
         design, results = multi_processed_results
-        a, b = design.to_df()
+        a, b, c = design.to_df()
         print(a)
         print(b)
+        print(c)
 
     def test_single_reactions(self, single_processed_results):
         design, results = single_processed_results
-        a, b = design.to_df()
+        a, b, c = design.to_df()
         print(a)
         print(b)
+        print(c)
 
 
 @pytest.mark.slow

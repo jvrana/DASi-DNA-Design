@@ -340,7 +340,6 @@ class Design:
             random_chunk_prob_int=random_chunk_prob_int,
             random_chunk_size_int=random_chunk_size_int,
             design_sequence_similarity_length=shared_length,
-            **kwargs,
         )
         designs = library["design"]
         plasmids = library["cyclic"]
@@ -507,6 +506,7 @@ class Design:
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
     def compile(self, n_jobs: int = DEFAULT_N_JOBS):
         """Compile materials to assembly graph."""
+        self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
@@ -565,7 +565,9 @@ class Design:
         return arr
 
     @log_metadata("optimize", additional_metadata={"algorithm": ALGORITHM})
-    def optimize(self, n_paths=DEFAULT_N_JOBS, n_jobs=None) -> Dict[str, DesignResult]:
+    def optimize(
+        self, n_paths=DEFAULT_N_ASSEMBLIES, n_jobs=DEFAULT_N_JOBS
+    ) -> Dict[str, DesignResult]:
 
         if not self.container_list:
             raise DasiDesignException(

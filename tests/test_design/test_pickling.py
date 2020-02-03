@@ -30,7 +30,6 @@ def test_large_pkl(span_cost):
     design = Design.fake(
         n_designs=3, n_cyclic_seqs=100, n_linear_seqs=100, n_primers=100
     )
-    design.optimize()
     design.compile()
 
     with logger.timeit("DEBUG", "pickling graphs"):

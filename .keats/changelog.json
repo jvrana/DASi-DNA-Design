@@ -1,4 +1,11 @@
 {
+  "0.0.14": {
+    "description": "bug fixes",
+    "date": "2020-02-03T08:21:23.810686",
+    "changes": [
+      "many bug fixes to pass tests"
+    ]
+  },
   "0.0.13": {
     "description": "bug fixes",
     "date": "2020-02-03T07:31:02.036588",

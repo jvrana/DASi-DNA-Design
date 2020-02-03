@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.LibraryDesign &#8212; dasi 0.0.12 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/style.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dasi.design.DesignResult" href="dasi.design.DesignResult.html" />
+    <link rel="prev" title="dasi.design.Design" href="dasi.design.Design.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.12</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dasi.design.Design.html">dasi.design.Design</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dasi.design.LibraryDesign</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.design.DesignResult.html">dasi.design.DesignResult</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.region.html">dasi.utils.region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#installation">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="dasi.design.Design.html" title="Previous Chapter: dasi.design.Design"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dasi.design.Design</span>
+    </a>
+  </li>
+  <li>
+    <a href="dasi.design.DesignResult.html" title="Next Chapter: dasi.design.DesignResult"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.design.D... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/dasi.design.LibraryDesign.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="dasi-design-librarydesign">
+<h1>dasi.design.LibraryDesign<a class="headerlink" href="#dasi-design-librarydesign" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dasi.design.LibraryDesign">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.design.</code><code class="sig-name descname">LibraryDesign</code><span class="sig-paren">(</span><em class="sig-param">span_cost=None</em>, <em class="sig-param">seqdb=None</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.design.design.Design</span></code></p>
+<p>Design class for producing assemblies for libraries.</p>
+<p>Something</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign._assemble_graphs_without_threads" title="dasi.design.LibraryDesign._assemble_graphs_without_threads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_assemble_graphs_without_threads</span></code></a>()</p></td>
+<td><p>Assemble all assembly graphs for all queries in this design.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign._expand_from_synthesized" title="dasi.design.LibraryDesign._expand_from_synthesized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_expand_from_synthesized</span></code></a>()</p></td>
+<td><p>Expand PCR products that are next to SYNTHESIZED_FRAGMENTS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign._expand_synthesized_fragments" title="dasi.design.LibraryDesign._expand_synthesized_fragments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_expand_synthesized_fragments</span></code></a>()</p></td>
+<td><p><ol class="arabic simple">
+<li><p>copy groups from SHARED_FRAGMENTS to SYNTHESIZED_FRAGMENT</p></li>
+</ol>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign._get_iter_non_repeats" title="dasi.design.LibraryDesign._get_iter_non_repeats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_iter_non_repeats</span></code></a>(alignments)</p></td>
+<td><p>Return repeat regions of alignments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign._optimize_without_threads" title="dasi.design.LibraryDesign._optimize_without_threads"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_optimize_without_threads</span></code></a>(n_paths)</p></td>
+<td><p>Finds the optimal paths for each query in the design.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign._share_query_blast" title="dasi.design.LibraryDesign._share_query_blast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_share_query_blast</span></code></a>()</p></td>
+<td><p>Find and use shared fragments across queries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_fragments" title="dasi.design.LibraryDesign.add_fragments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_fragments</span></code></a>(fragments)</p></td>
+<td><p>Add fragment sequences to materials list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_primers" title="dasi.design.LibraryDesign.add_primers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_primers</span></code></a>(primers)</p></td>
+<td><p>Add primer sequences to materials list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_queries" title="dasi.design.LibraryDesign.add_queries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_queries</span></code></a>(queries)</p></td>
+<td><p>Add goal/query sequences to materials list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_templates" title="dasi.design.LibraryDesign.add_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_templates</span></code></a>(templates)</p></td>
+<td><p>Add template sequences to materials list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.compile" title="dasi.design.LibraryDesign.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>([n_jobs])</p></td>
+<td><p>Compile the materials list into assembly graphs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.filter_linear_records" title="dasi.design.LibraryDesign.filter_linear_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_linear_records</span></code></a>(records)</p></td>
+<td><p>Return only linear records.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.filter_perfect_subject" title="dasi.design.LibraryDesign.filter_perfect_subject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_perfect_subject</span></code></a>(results)</p></td>
+<td><p>return only results whose subject is 100% aligned to query.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.optimize" title="dasi.design.LibraryDesign.optimize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize</span></code></a>([n_paths, n_jobs])</p></td>
+<td><p>Optimize the assembly graph for library assembly.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.out" title="dasi.design.LibraryDesign.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt])</p></td>
+<td><p>Return the results of the design as a validates output JSON.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.run" title="dasi.design.LibraryDesign.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs])</p></td>
+<td><p>Run the design.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.container_list" title="dasi.design.LibraryDesign.container_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">container_list</span></code></a></p></td>
+<td><p>List of alignment containers in this design.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.containers" title="dasi.design.LibraryDesign.containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">containers</span></code></a></p></td>
+<td><p>Iterable of alignment containers in this design.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.is_compiled" title="dasi.design.LibraryDesign.is_compiled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_compiled</span></code></a></p></td>
+<td><p>Return whether the design has been compiled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.query_keys" title="dasi.design.LibraryDesign.query_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_keys</span></code></a></p></td>
+<td><p>List of query keys in this design.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">span_cost=None</em>, <em class="sig-param">seqdb=None</em>, <em class="sig-param">n_jobs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Something</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.__init__" title="dasi.design.LibraryDesign.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([span_cost, seqdb, n_jobs])</p></td>
+<td><p>Something</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_fragments" title="dasi.design.LibraryDesign.add_fragments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_fragments</span></code></a>(fragments)</p></td>
+<td><p>Add fragment sequences to materials list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_materials</span></code>(primers, templates, queries[, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_primers" title="dasi.design.LibraryDesign.add_primers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_primers</span></code></a>(primers)</p></td>
+<td><p>Add primer sequences to materials list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_queries" title="dasi.design.LibraryDesign.add_queries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_queries</span></code></a>(queries)</p></td>
+<td><p>Add goal/query sequences to materials list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_templates" title="dasi.design.LibraryDesign.add_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_templates</span></code></a>(templates)</p></td>
+<td><p>Add template sequences to materials list.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_graphs</span></code>(n_jobs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.compile" title="dasi.design.LibraryDesign.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>([n_jobs])</p></td>
+<td><p>Compile the materials list into assembly graphs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fake</span></code>(circular, n_cyclic_seqs, n_linear_seqs, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.filter_linear_records" title="dasi.design.LibraryDesign.filter_linear_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_linear_records</span></code></a>(records)</p></td>
+<td><p>Return only linear records.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.filter_perfect_subject" title="dasi.design.LibraryDesign.filter_perfect_subject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_perfect_subject</span></code></a>(results)</p></td>
+<td><p>return only results whose subject is 100% aligned to query.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.optimize" title="dasi.design.LibraryDesign.optimize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize</span></code></a>([n_paths, n_jobs])</p></td>
+<td><p>Optimize the assembly graph for library assembly.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.out" title="dasi.design.LibraryDesign.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt])</p></td>
+<td><p>Return the results of the design as a validates output JSON.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_to_edge_costs</span></code>(path, graph)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]]</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_process_graphs</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.run" title="dasi.design.LibraryDesign.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs])</p></td>
+<td><p>Run the design.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code>([assembly_index])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>]</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_library_metadata</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ALGORITHM</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_N_ASSEMBLIES</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_N_JOBS</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FAVOR_SHARED_SEQUENCES</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FRAGMENTS</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMERS</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">QUERIES</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMPLATES</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.container_list" title="dasi.design.LibraryDesign.container_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">container_list</span></code></a></p></td>
+<td><p>List of alignment containers in this design.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.containers" title="dasi.design.LibraryDesign.containers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">containers</span></code></a></p></td>
+<td><p>Iterable of alignment containers in this design.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.is_compiled" title="dasi.design.LibraryDesign.is_compiled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_compiled</span></code></a></p></td>
+<td><p>Return whether the design has been compiled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">last_compile_end</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">last_compile_start</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">last_run_end</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">last_run_start</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">metadata</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.query_keys" title="dasi.design.LibraryDesign.query_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_keys</span></code></a></p></td>
+<td><p>List of query keys in this design.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">results</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">seqdb</span></code></p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeqRecord</span></code>]</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.design.LibraryDesign._assemble_graphs_without_threads">
+<code class="sig-name descname">_assemble_graphs_without_threads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign._assemble_graphs_without_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assemble all assembly graphs for all queries in this design.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign._expand_from_synthesized">
+<code class="sig-name descname">_expand_from_synthesized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign._expand_from_synthesized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign._expand_from_synthesized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand PCR products that are next to SYNTHESIZED_FRAGMENTS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign._expand_synthesized_fragments">
+<code class="sig-name descname">_expand_synthesized_fragments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign._expand_synthesized_fragments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign._expand_synthesized_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><ol class="arabic simple">
+<li><p>copy groups from SHARED_FRAGMENTS to SYNTHESIZED_FRAGMENT</p></li>
+<li><p>expand overlaps for SYNTHESIZED_FRAGMENTS</p></li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign._get_iter_non_repeats">
+<em class="property">static </em><code class="sig-name descname">_get_iter_non_repeats</code><span class="sig-paren">(</span><em class="sig-param">alignments</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign._get_iter_non_repeats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign._get_iter_non_repeats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return repeat regions of alignments. These are alignments that align
+to themselves.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign._optimize_without_threads">
+<code class="sig-name descname">_optimize_without_threads</code><span class="sig-paren">(</span><em class="sig-param">n_paths</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign._optimize_without_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the optimal paths for each query in the design.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DesignResult</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign._share_query_blast">
+<code class="sig-name descname">_share_query_blast</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign._share_query_blast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign._share_query_blast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and use shared fragments across queries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.add_fragments">
+<code class="sig-name descname">add_fragments</code><span class="sig-paren">(</span><em class="sig-param">fragments</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.add_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add fragment sequences to materials list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.add_primers">
+<code class="sig-name descname">add_primers</code><span class="sig-paren">(</span><em class="sig-param">primers</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.add_primers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add primer sequences to materials list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.add_queries">
+<code class="sig-name descname">add_queries</code><span class="sig-paren">(</span><em class="sig-param">queries</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.add_queries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add goal/query sequences to materials list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.add_templates">
+<code class="sig-name descname">add_templates</code><span class="sig-paren">(</span><em class="sig-param">templates</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.add_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add template sequences to materials list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.compile">
+<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">n_jobs=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign.compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile the materials list into assembly graphs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.container_list">
+<em class="property">property </em><code class="sig-name descname">container_list</code><a class="headerlink" href="#dasi.design.LibraryDesign.container_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of alignment containers in this design.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment_container.html#dasi.models.alignment_container.AlignmentContainer" title="dasi.models.alignment_container.AlignmentContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentContainer</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.containers">
+<em class="property">property </em><code class="sig-name descname">containers</code><a class="headerlink" href="#dasi.design.LibraryDesign.containers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterable of alignment containers in this design.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="dasi.models.alignment_container.html#dasi.models.alignment_container.AlignmentContainer" title="dasi.models.alignment_container.AlignmentContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentContainer</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.filter_linear_records">
+<em class="property">classmethod </em><code class="sig-name descname">filter_linear_records</code><span class="sig-paren">(</span><em class="sig-param">records</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.filter_linear_records" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return only linear records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">SeqRecord</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.filter_perfect_subject">
+<em class="property">classmethod </em><code class="sig-name descname">filter_perfect_subject</code><span class="sig-paren">(</span><em class="sig-param">results</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.filter_perfect_subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>return only results whose subject is 100% aligned to query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.is_compiled">
+<em class="property">property </em><code class="sig-name descname">is_compiled</code><a class="headerlink" href="#dasi.design.LibraryDesign.is_compiled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the design has been compiled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if compiled. False if otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.optimize">
+<code class="sig-name descname">optimize</code><span class="sig-paren">(</span><em class="sig-param">n_paths=3</em>, <em class="sig-param">n_jobs=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign.optimize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign.optimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimize the assembly graph for library assembly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DesignResult</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.out">
+<code class="sig-name descname">out</code><span class="sig-paren">(</span><em class="sig-param">fmt='json'</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the results of the design as a validates output JSON.</p>
+<p>The output JSON is follows the following schema, see
+:type fmt: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param fmt:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.query_keys">
+<em class="property">property </em><code class="sig-name descname">query_keys</code><a class="headerlink" href="#dasi.design.LibraryDesign.query_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of query keys in this design.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.LibraryDesign.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">n_paths=3</em>, <em class="sig-param">n_jobs=1</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the design. Runs <cite>compile</cite> and <cite>optimize</cite>, returning results
+that can be accessed by <cite>design.results</cite> or by <cite>design.out()</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – max number of assemblies per design to design</p></li>
+<li><p><strong>n_jobs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of concurrent threads to run</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>results</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

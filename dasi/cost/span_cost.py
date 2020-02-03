@@ -1,33 +1,3 @@
-r"""
-.. _cost_model:
-
-Cost Model (:mod:`dasi.cost`)
-=============================
-
-.. currentmodule:: dasi.cost
-
-This module provide cost calculations for molecular assemblies.
-
-Default cost parameters can be opened as follows:
-
-.. code-block::
-
-    cost_model = SpanCost.open()
-
-    # optionally use custom parameters
-    cost_model = SpanCost.open("my_parameters.json")
-
-Take a look at the :ref:`parameters schema <cost_schema>` for how to build the
-parameter json.
-
-Utilities
----------
-
-.. autosummary::
-    :toctree: generated/
-
-    utils
-"""
 import json
 from abc import ABC
 from abc import abstractmethod
@@ -48,8 +18,9 @@ from .utils import df_to_np_ranged
 from .utils import lexargmin
 from .utils import slicer
 from dasi.exceptions import DasiCostParameterValidationError
+from dasi.schemas import Schemas
+from dasi.schemas import validate_with_schema
 from dasi.utils import NumpyDataFrame
-
 
 here = abspath(dirname(__file__))
 
@@ -148,15 +119,9 @@ def _replace_inf(params):
                 _replace_inf(v)
 
 
-with open(join(here, "parameter_json_schema.json")) as f:
-    schema = json.load(f)
-
-
 def validate_params(params):
-    try:
-        jsonschema.validate(params, schema)
-    except jsonschema.ValidationError as e:
-        raise DasiCostParameterValidationError(str(e))
+    schema = Schemas.cost_parameters_schema
+    validate_with_schema(params, schema, reraise_as=DasiCostParameterValidationError)
 
 
 default_parameters_path = join(here, "default_parameters.json")

@@ -179,7 +179,7 @@ def test_blast_has_same_results(span_cost):
 
         design.compile()
 
-        for container in design.container_list():
+        for container in design.container_list:
             size_of_groups.append(len(container.groups()))
     assert len(size_of_groups) == 20
     assert len(set(size_of_groups)) == 1
@@ -602,8 +602,8 @@ def test_library(span_cost):
         fragments=[],
     )
 
-    design.compile_library()
-    results = design.optimize_library()
+    design.compile()
+    results = design.optimize()
 
     for result in results.values():
         print(result.assemblies[0].cost())

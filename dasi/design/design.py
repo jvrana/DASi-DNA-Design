@@ -27,19 +27,26 @@ from .design_algorithms import multiprocessing_assemble_graph
 from .design_algorithms import multiprocessing_optimize_graph
 from .graph_builder import AssemblyGraphPostProcessor
 from .optimize import optimize_graph
+from dasi.__version__ import __title__
+from dasi.__version__ import __version__
 from dasi.constants import Constants
 from dasi.cost import cached_span_cost
 from dasi.cost import SpanCost
 from dasi.design.graph_builder import AssemblyNode
+from dasi.design.output import dasi_design_to_output_json
+from dasi.design.output import validate_output
+from dasi.design.report import Report
+from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DasiInvalidMolecularAssembly
 from dasi.log import logger
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
-from dasi.models import AlignmentGroup
 from dasi.models import Assembly
+from dasi.utils import log_metadata
+from dasi.utils import log_times
 from dasi.utils import perfect_subject
-from dasi.utils.testing_utils import fake_designs
+from dasi.utils.sequence_generator import fake_designs
 
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
@@ -103,6 +110,7 @@ class DesignResult(Iterable):
 
         assembly = self._add_assembly_from_path(path)
 
+        # Validate the assembly
         try:
             assembly.post_validate()
         except DasiInvalidMolecularAssembly as e:
@@ -199,6 +207,8 @@ class Design:
     QUERIES = "queries"
     FRAGMENTS = "fragments"
     DEFAULT_N_JOBS = 1
+    DEFAULT_N_ASSEMBLIES = 3
+    ALGORITHM = Constants.ALGORITHM_DEFAULT
 
     def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
         """
@@ -227,15 +237,11 @@ class Design:
         self.primer_results = []
         self.container_factory = AlignmentContainerFactory(self.seqdb)
         self.n_jobs = n_jobs or self.DEFAULT_N_JOBS  #: number of multiprocessing jobs
+        self._times = {}
+        self._method_trace = {}
 
     def _get_design_status(self, qk):
-        status = {
-            "compiled": False,
-            "run": False,
-            "failed": False,
-            "success": False,
-            "cost": {},
-        }
+        status = {"compiled": False, "run": False, "success": False, "assemblies": []}
 
         record = self.seqdb[qk]
         status["record"] = {
@@ -250,9 +256,9 @@ class Design:
 
         if self.results.get(qk, None) is not None:
             status["run"] = True
-            if self.results[qk].assemblies:
+            for a in self.results[qk].assemblies:
                 status["success"] = True
-                summ_df = self.results[qk].assemblies[0].to_df()
+                summ_df = a.to_df()
                 material = sum(list(summ_df["material"]))
                 eff = functools.reduce(operator.mul, summ_df["efficiency"])
 
@@ -263,14 +269,24 @@ class Design:
                     elif c > comp:
                         comp = c
 
-                status["cost"] = {
-                    "material": round(material, 2),
-                    "efficiency": round(eff, 2),
-                    "max_synth_complexity": round(comp, 2),
-                }
-            else:
-                status["failed"] = True
+                status["assemblies"].append(
+                    {
+                        "cost": {
+                            "material cost": round(material, 2),
+                            "assembly efficiency": round(eff, 2),
+                            "max synthesis complexity": round(comp, 2),
+                        }
+                    }
+                )
         return status
+
+    @property
+    def metadata(self):
+        return {
+            "program": __title__,
+            "version": __version__,
+            "execution_trace": self._method_trace,
+        }
 
     @property
     def status(self):
@@ -298,6 +314,7 @@ class Design:
         n_cyclic_seqs: int = 50,
         n_primers: int = 50,
         n_primers_from_templates: int = 50,
+        shared_length: int = 0,
         cyclic_size_int: Tuple[int, int] = (3000, 10000),
         linear_size_int: Tuple[int, int] = (100, 4000),
         primer_size_int: Tuple[int, int] = (15, 60),
@@ -305,6 +322,7 @@ class Design:
         chunk_size_interval: Tuple[int, int] = (100, 3000),
         random_chunk_prob_int: Tuple[float, float] = (0, 0.5),
         random_chunk_size_int: Tuple[int, int] = (100, 1000),
+        return_with_library: bool = False,
         **kwargs,
     ):
         library = fake_designs(
@@ -321,6 +339,7 @@ class Design:
             chunk_size_interval=chunk_size_interval,
             random_chunk_prob_int=random_chunk_prob_int,
             random_chunk_size_int=random_chunk_size_int,
+            design_sequence_similarity_length=shared_length,
             **kwargs,
         )
         designs = library["design"]
@@ -332,6 +351,8 @@ class Design:
         design.add_materials(
             primers=primers, fragments=fragments, templates=plasmids, queries=designs
         )
+        if return_with_library:
+            return design, library
         return design
 
     def add_materials(
@@ -431,21 +452,22 @@ class Design:
         """Iterable of alignment containers in this design."""
         return self.container_factory.containers()
 
+    @property
     def container_list(self) -> List[AlignmentContainer]:
         """List of alignment containers in this design."""
         return list(self.container_factory.containers().values())
 
+    @property
     def query_keys(self) -> List[str]:
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
-    def assemble_graphs(self, n_jobs=None):
-        n_jobs = n_jobs or self.n_jobs
+    def assemble_graphs(self, n_jobs):
         if n_jobs > 1:
             with self.logger.timeit(
                 "DEBUG",
                 "assembling graphs (n_graphs={}, threads={})".format(
-                    len(self.container_list()), n_jobs
+                    len(self.container_list), n_jobs
                 ),
             ):
                 self._assemble_graphs_with_threads(n_jobs)
@@ -478,13 +500,38 @@ class Design:
         for qk, g, c in zip(query_keys, graphs, containers):
             self.graphs[qk] = g
 
-    def compile(self, n_jobs=None):
-        """Compile materials to assembly graph."""
+    def _uncompile(self):
+        self.container_factory.reset()
         self._results = {}
+
+    @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
+        """Compile materials to assembly graph."""
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
         self.post_process_graphs()
+
+    def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS):
+        """Run the design. Runs `compile` and `optimize`, returning results
+        that can be accessed by `design.results` or by `design.out()`
+
+        :param n_paths: max number of assemblies per design to design
+        :param n_jobs: number of concurrent threads to run
+        :return: results
+        """
+        self.compile(n_jobs)
+        return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
+
+    @property
+    def is_compiled(self):
+        """Return whether the design has been compiled.
+
+        :return: True if compiled. False if otherwise.
+        """
+        if self.container_list:
+            return True
+        return False
 
     # def plot_matrix(self, matrix):
     # plot matrix
@@ -517,8 +564,13 @@ class Design:
             arr.append((n1, n2, edata))
         return arr
 
-    def optimize(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
-        n_jobs = n_jobs or self.n_jobs
+    @log_metadata("optimize", additional_metadata={"algorithm": ALGORITHM})
+    def optimize(self, n_paths=DEFAULT_N_JOBS, n_jobs=None) -> Dict[str, DesignResult]:
+
+        if not self.container_list:
+            raise DasiDesignException(
+                "Design must be compiled before running optimization.'"
+            )
         if n_jobs > 1:
             with self.logger.timeit(
                 "DEBUG",
@@ -652,3 +704,52 @@ class Design:
             summ_df = pd.DataFrame()
 
         return react_df, summ_df, design_json
+
+    def report(self):
+        return Report(self)
+
+    @property
+    def last_run_start(self):
+        x = self._method_run_times.get("optimize", None)
+        if not x:
+            return None
+        else:
+            return x[0]
+
+    @property
+    def last_run_end(self):
+        x = self._method_run_times.get("optimize", None)
+        if not x:
+            return None
+        else:
+            return x[1]
+
+    @property
+    def last_compile_start(self):
+        x = self._method_run_times.get("compile", None)
+        if not x:
+            return None
+        else:
+            return x[0]
+
+    @property
+    def last_compile_end(self):
+        x = self._method_run_times.get("compile", None)
+        if not x:
+            return None
+        else:
+            return x[1]
+
+    def out(self, fmt: str = "json"):
+        """Return the results of the design as a validates output JSON.
+
+        The output JSON is follows the following schema, see
+        :param fmt:
+        :return:
+        """
+        if fmt.lower() == "json":
+            output = dasi_design_to_output_json(self)
+            validate_output(output)
+            return output
+        else:
+            raise ValueError("Format '{}' not recognized".format(fmt))

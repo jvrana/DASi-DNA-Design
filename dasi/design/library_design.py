@@ -13,6 +13,7 @@ from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
 from dasi.utils import group_by
+from dasi.utils import log_metadata
 from dasi.utils import sort_with_keys
 
 
@@ -135,9 +136,13 @@ class LibraryDesign(Design):
     """Design class for producing assemblies for libraries."""
 
     DEFAULT_N_JOBS = 10
+    FAVOR_SHARED_SEQUENCES = 2
+    DEFAULT_N_ASSEMBLIES = Design.DEFAULT_N_ASSEMBLIES
+    ALGORITHM = Constants.ALGORITHM_LIBRARY
 
-    def __init__(self, span_cost=None, n_jobs=None):
-        super().__init__(span_cost=span_cost, n_jobs=n_jobs)
+    def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
+        """Something."""
+        super().__init__(span_cost=span_cost, seqdb=seqdb, n_jobs=n_jobs)
         self.shared_alignments = []
         self._edges = []
 
@@ -288,11 +293,12 @@ class LibraryDesign(Design):
         self._expand_from_synthesized()
         self._check_shared_repeats()
 
-    def compile_library(self, n_jobs=None):
+    @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
         """Compile the materials list into assembly graphs."""
+        self._uncompile()
         tracker = self.logger.track("INFO", desc="Compiling library", total=4).enter()
 
-        n_jobs = n_jobs or self.DEFAULT_N_JOBS
         self.graphs = {}
 
         tracker.update(0, "Running blast")
@@ -321,7 +327,9 @@ class LibraryDesign(Design):
                     edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
                     # TODO: adjust n_clusters
                     edata["material"] = (
-                        edata["material"] / (group.meta["n_clusters"]) / 2.0
+                        edata["material"]
+                        / (group.meta["n_clusters"])
+                        / self.FAVOR_SHARED_SEQUENCES
                     )
                     edata["cost"] = edata["material"] / edata["efficiency"]
                     adjusted += 1
@@ -332,7 +340,7 @@ class LibraryDesign(Design):
         add_clusters(self)
         graphs = cluster_graph(self)
 
-        for c in self.container_list():
+        for c in self.container_list:
             c.share_group_tag = {}
 
         # update the meta data
@@ -391,6 +399,11 @@ class LibraryDesign(Design):
     #         processor = AssemblyGraphPostProcessor(graph, query)
     #         processor()
 
-    def optimize_library(self, n_paths=3, n_jobs=None) -> Dict[str, DesignResult]:
+    @log_metadata(
+        "optimize", additional_metadata={"algorithm": Constants.ALGORITHM_LIBRARY}
+    )
+    def optimize(
+        self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS
+    ) -> Dict[str, DesignResult]:
         """Optimize the assembly graph for library assembly."""
-        return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
+        return super().optimize(n_paths=n_paths, n_jobs=n_jobs)

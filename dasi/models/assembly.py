@@ -146,7 +146,9 @@ def _get_primer_extensions(
         sedge = graph[n2][successors[0]]
         right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
-        raise DasiSequenceDesignException
+        raise DasiSequenceDesignException(
+            "Sequence is cyclic but there are no " "successors for {}".format(n2)
+        )
     else:
         right_ext = 0
 
@@ -156,7 +158,9 @@ def _get_primer_extensions(
         pedge = graph[predecessors[0]][n1]
         left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
-        raise DasiSequenceDesignException
+        raise DasiSequenceDesignException(
+            "Sequence is cyclic but there are no " "precessors for {}".format(n1)
+        )
     else:
         left_ext = 0
     return int(left_ext), int(right_ext)
@@ -317,7 +321,9 @@ def _design_edge(
             # this is a fragment used directly in an assembly
             frag_seq, frag_alignment = _use_direct(edge, seqdb)
             frag_mol = Molecule(moltype, frag_alignment, frag_seq)
-            return Reaction("Use Direct", inputs=[], outputs=[frag_mol])
+            return Reaction(
+                Reaction.Types.Direct, inputs=[], outputs=[frag_mol], metadata=edge[2]
+            )
         elif moltype.synthesize:
             # this is either a gene synthesis fragment or already covered by the primers.
             synthesis_seq, synthesis_region = _design_gap(edge, qrecord)
@@ -334,7 +340,12 @@ def _design_edge(
                     synthesis_seq,
                     query_region=synthesis_region,
                 )
-                return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
+                return Reaction(
+                    Reaction.Types.Synthesize,
+                    inputs=[],
+                    outputs=[synthesis_mol],
+                    metadata=edge[2],
+                )
             else:
                 return None
         else:
@@ -346,7 +357,9 @@ def _design_edge(
         frag_seq = seqdb[sk]
         query_region = edge[2]["query_region"]
         frag_mol = Molecule(moltype, alignment, frag_seq, query_region=query_region)
-        return Reaction("Retrieve Fragment", inputs=[], outputs=[frag_mol])
+        return Reaction(
+            Reaction.Types.Direct, inputs=[], outputs=[frag_mol], metadata=edge[2]
+        )
     elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
         query_region = edge[2]["query_region"]
         group = edge[2]["group"]
@@ -356,7 +369,12 @@ def _design_edge(
             sequence=query_region.get_slice(seqdb[query_key]),
             query_region=query_region,
         )
-        return Reaction("Synthesize", inputs=[], outputs=[synthesis_mol])
+        return Reaction(
+            Reaction.Types.Synthesize,
+            inputs=[],
+            outputs=[synthesis_mol],
+            metadata=edge[2],
+        )
     else:
         pairs, explain, group, query_region = _design_pcr_product_primers(
             edge, graph, moltype.design, seqdb
@@ -389,7 +407,12 @@ def _design_edge(
             query_region=query_region,
         )
 
-        return Reaction("PCR", inputs=primers + [template], outputs=[product])
+        return Reaction(
+            Reaction.Types.PCR,
+            inputs=primers + [template],
+            outputs=[product],
+            metadata=edge[2],
+        )
 
 
 AssemblyNode = namedtuple(
@@ -473,14 +496,39 @@ class Assembly(Iterable):
 
     @property
     def reactions(self):
+
+        top_level_reaction = Reaction(
+            Reaction.Types.Assembly,
+            inputs=[],
+            outputs=[],
+            metadata={"query_key": self.query_key},
+        )
+        top_level_reaction.outputs = [
+            Molecule(
+                molecule_type=MoleculeType.types[Constants.PLASMID],
+                sequence=deepcopy(self.query),
+                alignment_group=None,
+            )
+        ]
+
         if not self._reactions:
-            reactions = []
+            reactions = [top_level_reaction]
             for n1, n2, edata in self.edges():
                 reaction = _design_edge(self, n1, n2, seqdb=self.seqdb)
                 if reaction:
+                    for _mol in reaction.outputs:
+                        top_level_reaction.inputs.append(_mol)
                     reactions.append(reaction)
             self._reactions = tuple(reactions)
         return self._reactions
+
+    @property
+    def assembly_reactions(self):
+        return [r for r in self.reactions if r.name == Reaction.Types.Assembly]
+
+    @property
+    def nonassembly_reactions(self):
+        return [r for r in self.reactions if r.name != Reaction.Types.Assembly]
 
     def post_validate(self):
         total_span = 0

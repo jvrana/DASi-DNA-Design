@@ -41,6 +41,7 @@ class Constants:
     SHARED_SYNTHESIZED_FRAGMENT = (
         "SHARED_SYNTHESIZED_FRAGMENT"
     )  #: explicit definition of a synthesized DNA fragment
+    PLASMID = "PLASMID"  #: the designed plasmid
 
     ################
     # EXTERNAL TYPES
@@ -71,3 +72,9 @@ class Constants:
     ############
     PCR_GROUP_TAG = "PCR"
     SHARE_GROUP_TAG = "SHARE"
+
+    ############
+    # ALGORITHM
+    ############
+    ALGORITHM_DEFAULT = "standard optimization"
+    ALGORITHM_LIBRARY = "library optimization"

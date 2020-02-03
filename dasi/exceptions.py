@@ -43,3 +43,7 @@ class DasiInvalidMolecularAssembly(DASiException):
 
 class DasiCostParameterValidationError(DASiException):
     """Input json file for cost parameters was invalid."""
+
+
+class DasiOutputValidationError(DASiException):
+    """Output json file was invalid."""

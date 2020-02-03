@@ -1,3 +1,4 @@
+from typing import List
 from typing import Union
 
 import numpy as np
@@ -5,10 +6,10 @@ import pylab as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.lines import Line2D
 
-from dasi.design import Design
-from dasi.design import LibraryDesign
 from dasi.utils.sequence_complexity import DNAStats
 
+# from dasi.design import Design
+# from dasi.design import LibraryDesign
 
 # TODO: Implement assembly report
 #       1. Coverage report for all groups (total and per each)
@@ -21,11 +22,24 @@ from dasi.utils.sequence_complexity import DNAStats
 
 
 class Report:
-    def __init__(self, design: Union[Design, LibraryDesign]):
+    def __init__(self, design: Union["Design", "LibraryDesign"]):
         self.design = design
 
+    def plot_coverage(self, keys: List = None, show: bool = False):
+        if not keys:
+            keys = self.design.query_keys
+        plots = {}
+        for qk in keys:
+            container = self.design.containers[qk]
+            query = self.design.seqdb[qk]
+            fig, axes = self.plot_coverage_of_container(container, query)
+            plots[qk] = fig, axes
+            if show:
+                plt.show()
+        return plots
+
     @staticmethod
-    def plot_coverage(container, query):
+    def plot_coverage_of_container(container, query):
         arrs = []
         keys = []
         for gkey, groups in container.groups_by_type().items():

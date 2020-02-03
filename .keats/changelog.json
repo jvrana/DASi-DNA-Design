@@ -8,6 +8,7 @@
       "updated documentation",
       "improved testing",
       "minor bug fixes",
+      "`design.report()` pulls up a new report. Plot coverage using `design.report().plot_coverage(show=True)`",
       "`optimize_library` and `compile_library` have been removed from LibraryDesign. Use `optimize` and `compile` instead."
     ]
   },

@@ -1,10 +1,9 @@
 import random
 
+import pytest
 from flaky import flaky
 
-from dasi.utils.sequence_complexity import complexity
-from dasi.utils.sequence_complexity import complexity_score
-from dasi.utils.sequence_complexity import DNAStats
+from dasi.utils.sequence import DNAStats
 
 
 def random_seq(length, bases=None):
@@ -26,57 +25,15 @@ def revcomp(seq):
     return r[::-1]
 
 
-@flaky(max_runs=10, min_passes=9)
-def test_complexity_score():
-    seq = random_seq(1000)
-    print(complexity(seq))
-    assert complexity_score(seq) < 10
-
-
-@flaky(max_runs=10, min_passes=9)
-def test_gc_complexity():
-    seq1 = random_seq(1000)
-    seq2 = random_seq(1000, bases="GGCCAT")
-    assert complexity_score(seq2) > complexity_score(seq1)
-
-
-@flaky(max_runs=10, min_passes=9)
-def test_at_polymetrix_streak():
-    seq1 = random_seq(1000)
-    length = 15
-    seq2 = seq1[:500] + random_seq(length, bases="AT") + seq1[500 - length :]
-    assert complexity_score(seq2) > complexity_score(seq1)
-
-
-@flaky(max_runs=10, min_passes=10)
-def test_gc_polymetrix_streak():
-    seq1 = random_seq(1000)
-    length = 100
-    seq2 = seq1[:500] + random_seq(length, bases="GC") + seq1[500 - length :]
-    assert complexity_score(seq2) > complexity_score(seq1)
-
-
-@flaky(max_runs=10, min_passes=9)
-def test_repeats():
-    seq1 = random_seq(1000)
-    seq3 = seq1[500:515]
-    seq2 = (
-        seq1[:500] + seq3 + seq1[500 - len(seq3) : 600] + seq3 + seq1[600 + len(seq3) :]
-    )
-    print(seq2)
-    print(complexity(seq2))
-    assert complexity_score(seq2) > 10 + complexity_score(seq1)
-
-
 class TestDNAStats:
-    @flaky(max_runs=10, min_passes=10)
+    @flaky(max_runs=25, min_passes=25)
     def test_normal_sequence(self):
         seq = random_seq(1000)
         stats = DNAStats(seq, 14, 20, 20)
         print(seq)
         print(stats())
         print(stats.cost())
-        assert stats.cost() < 10
+        assert stats.cost() < 15
 
         print("OK")
         print(
@@ -88,19 +45,21 @@ class TestDNAStats:
             )()
         )
 
-    @flaky(max_runs=10, min_passes=10)
-    def test_repeats(self):
-        repeat = random_seq(25)
+    @flaky(max_runs=25, min_passes=25)
+    @pytest.mark.parametrize("kmer", [(25, 20), (25, 24), (25, 25)])
+    def test_repeats(self, kmer):
+        repeat = random_seq(kmer[0])
         seq = random_seq(1000) + repeat + random_seq(500) + repeat + random_seq(1000)
 
-        stats = DNAStats(seq, 14, 20, 20)
+        stats = DNAStats(seq, kmer[1], 20, 20)
         print(stats())
         assert stats()["n_repeats"] > 0
         assert stats()["n_hairpins"] == 0
 
-    @flaky(max_runs=10, min_passes=10)
-    def test_hairpins(self):
-        hairpin = random_seq(25)
+    @flaky(max_runs=25, min_passes=25)
+    @pytest.mark.parametrize("kmer", [(25, 20), (25, 24), (25, 25)])
+    def test_hairpins(self, kmer):
+        hairpin = random_seq(kmer[0])
         seq = (
             random_seq(1000)
             + hairpin
@@ -109,7 +68,7 @@ class TestDNAStats:
             + random_seq(1000)
         )
 
-        stats = DNAStats(seq, 14, 20, 20)
+        stats = DNAStats(seq, 14, 20, kmer[1])
         print(stats())
         assert stats()["n_repeats"] == 0
         assert stats()["n_hairpins"] > 0

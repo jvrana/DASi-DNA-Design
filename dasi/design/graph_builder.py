@@ -534,18 +534,25 @@ class AssemblyGraphPostProcessor:
                     bad_edges.append((n1, n2, edata))
         return bad_edges
 
-    def update_long_pcr_products(self, n1, n2, edata):
-        if edata["type_def"].name in [
+    @staticmethod
+    def _is_pcr_product(edata):
+        return edata["type_def"].name in [
             Constants.PCR_PRODUCT,
             Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
             Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
             Constants.PCR_PRODUCT_WITH_PRIMERS,
-        ]:
+        ]
+
+    def update_long_pcr_products(self, n1, n2, edata):
+        if self._is_pcr_product(edata):
             span = edata["span"]
             for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
                 if a <= span < b:
                     edata["efficiency"] *= c
                     break
+
+    def update_pcr_product(self, n1, n2, edata):
+        pass
 
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)

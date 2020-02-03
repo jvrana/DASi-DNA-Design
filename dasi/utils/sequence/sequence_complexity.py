@@ -68,7 +68,7 @@ class DNAStats:
         self.seq_onehot = self.one_hot(arr, self.bases)
         self.repeat_window = repeat_window
         self.stats_window = stats_window
-        self.repeat_signatures = self.get_repeat_signatures(repeat_window)
+        # self.repeat_signatures = self.get_repeat_signatures(repeat_window)
         self.gc_content_threshold = gc_content_threshold
         self.at_content_threshold = at_content_threshold
         self.base_percentage_threshold = base_percentage_threshold
@@ -83,9 +83,29 @@ class DNAStats:
         )
         self.rolling_stats = np.vstack((rolling_stats, gc_content, at_content))
 
-        self.fwd_signatures, self.rev_signatures = self.get_hairpin_signatures(
-            hairpin_window
+        ###
+        # get repeat signatures
+        ###
+        seq_signatures = np.sum(
+            np.multiply(self.seq_onehot, self.BASE_SIGNATURES.T), axis=0
         )
+        x = np.random.uniform(0.0, 100.0, size=repeat_window)
+        mv = np.convolve(seq_signatures, x, mode="valid")
+        self.repeat_signatures = np.concatenate(
+            ([np.NaN for _ in range(repeat_window - 1)], mv)
+        )
+
+        ###
+        # get hairpin signatures
+        ###
+        revcomp_signatures = np.sum(
+            np.multiply(self.seq_onehot[:, ::-1], self.BASE_SIGNATURES[:, ::-1].T),
+            axis=0,
+        )
+        x = np.random.uniform(0.0, 100.0, size=hairpin_window)
+        self.fwd_signatures = np.convolve(seq_signatures, x, mode="valid")
+        self.rev_signatures = np.convolve(revcomp_signatures, x, mode="valid")
+
         self.cached_partitions = []
 
     @staticmethod

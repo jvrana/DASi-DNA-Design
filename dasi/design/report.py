@@ -6,7 +6,7 @@ import pylab as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.lines import Line2D
 
-from dasi.utils.sequence_complexity import DNAStats
+from dasi.utils.sequence import DNAStats
 
 # from dasi.design import Design
 # from dasi.design import LibraryDesign

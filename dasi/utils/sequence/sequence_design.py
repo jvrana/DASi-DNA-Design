@@ -277,7 +277,7 @@ def _design_pcr_product_primers(
     return pairs, explain, template, query_region
 
 
-def design_edge(
+def design_sequence_for_edge(
     assembly: Assembly, n1: AssemblyNode, n2: AssemblyNode, seqdb: Dict[str, SeqRecord]
 ) -> Union[Reaction, None]:
     query_key = assembly.query_key

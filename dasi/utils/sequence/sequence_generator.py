@@ -31,7 +31,7 @@ def iter_fake_random_record(
         yield rec
 
 
-def fake_library(
+def generate_fake_library(
     n_cyclic_seqs: int,
     n_linear_seqs: int,
     n_primers: int,
@@ -67,7 +67,7 @@ def _add_shared_sequence(
 
 
 # TODO: replace with with MC method
-def fake_designs(
+def generate_fake_designs(
     n_designs: int,
     circular: bool,
     n_cyclic_seqs: int,
@@ -83,7 +83,7 @@ def fake_designs(
     random_chunk_prob_int: Tuple[float, float] = (0, 0.5),
     random_chunk_size_int: Tuple[int, int] = (100, 1000),
 ):
-    library_dict = fake_library(
+    library_dict = generate_fake_library(
         n_cyclic_seqs=n_cyclic_seqs,
         n_linear_seqs=n_linear_seqs,
         n_primers=n_primers,

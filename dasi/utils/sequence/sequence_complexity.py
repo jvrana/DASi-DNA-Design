@@ -11,115 +11,7 @@ Complexity rules borrowed from IDT.
 * GC scew?
 * windowed scew?
 """
-import re
-from typing import Dict
-from typing import Union
-
 import numpy as np
-
-
-# TODO: remove unnecessary code below
-class ComplexityConfig:
-    HOMOPOLYMERIC_AT = 10
-    HOMOPOLYMERIC_GC = 6
-    REPEAT_MAX_LENGTH = 14
-    PARTITION_OVERLAP = 25
-
-
-C = ComplexityConfig
-
-
-at_pattern = re.compile("[AT]{" + str(C.HOMOPOLYMERIC_AT) + ",}")
-gc_pattern = re.compile("[GC]{" + str(C.HOMOPOLYMERIC_GC) + ",}")
-
-
-def get_AT_complexity(seq):
-    cmax = 0
-    for match in at_pattern.findall(seq, re.IGNORECASE):
-        if len(match) >= C.HOMOPOLYMERIC_AT:
-            c = len(match) - C.HOMOPOLYMERIC_AT + 1
-            if c > cmax:
-                cmax = c
-    return cmax / 10.0
-
-
-def get_GC_complexity(seq):
-    cmax = 0
-    for match in gc_pattern.findall(seq, re.IGNORECASE):
-        if len(match) >= C.HOMOPOLYMERIC_GC:
-            c = len(match) - C.HOMOPOLYMERIC_GC + 1
-            if c > cmax:
-                cmax = c
-    return cmax / 10.0
-
-
-def get_GC_content(seq):
-    s = seq.upper()
-    return (s.count("G") + s.count("C")) / len(s)
-
-
-def get_GC_content_complexity(seq):
-    gc = get_GC_content(seq)
-    return abs(gc * 100.0 - 50) * 17 / 25.0
-
-
-def iter_kmers(seq, length):
-    for i in range(0, len(seq) - length):
-        yield (i, seq[i : i + length])
-
-
-def count_kmers(seq, length):
-    kmers = {}
-    for kmer in iter_kmers(seq, length):
-        kmers.setdefault(kmer[1], list())
-        kmers[kmer[1]].append(kmer[0])
-    return kmers
-
-
-def repeat_complexity_func(len_repeat, max_repeat_length):
-    return (len_repeat - max_repeat_length) / 2.0 + 10
-
-
-def get_repeat_complexity(seq, length):
-    repeats = {}
-    for kmer, positions in count_kmers(seq, length).items():
-        if len(positions) > 1:
-            kmer1 = kmer2 = kmer
-            kmer_len = len(kmer)
-            while kmer1 == kmer2:
-                kmer_len += 1
-                kmer1 = seq[positions[0] : positions[0] + kmer_len]
-                kmer2 = seq[positions[1] : positions[1] + kmer_len]
-            passes = True
-            if len(kmer1) >= length:
-                for k in repeats:
-                    if kmer1 in k:
-                        passes = False
-                        break
-                if passes:
-                    repeats[kmer1] = repeat_complexity_func(len(kmer1), length)
-    return repeats
-
-
-def complexity(seq: str) -> Dict[str, Union[float, int]]:
-    complexity_info = {}
-    complexity_info["Homopolymeric AT"] = get_AT_complexity(seq)
-    complexity_info["Homopolymeric GC"] = get_GC_complexity(seq)
-    complexity_info["High GC Content"] = get_GC_content_complexity(seq)
-    complexity_info["Repeats"] = get_repeat_complexity(seq, C.REPEAT_MAX_LENGTH)
-    return complexity_info
-
-
-def complexity_score(seq: str) -> float:
-    data = complexity(seq)
-    total = 0
-    for k, v in data.items():
-        if isinstance(v, int) or isinstance(v, float):
-            total += v
-        else:
-            for _v in v.values():
-                total += _v
-    return total
 
 
 # TODO: compute cost for extremes of GC content
@@ -142,7 +34,33 @@ class DNAStats:
     np.random.seed(1)
     BASE_SIGNATURES = np.random.uniform(0.0, 1.0, size=len(BASES)).reshape(-1, 4)
 
-    def __init__(self, seq, repeat_window, stats_window, hairpin_window):
+    def __init__(
+        self,
+        seq,
+        repeat_window,
+        stats_window,
+        hairpin_window,
+        base_percentage_threshold: float = 0.75,
+        gc_content_threshold: float = 0.85,
+        at_content_threshold: float = 0.90,
+    ):
+        """
+
+        :param seq:
+        :param repeat_window: the length of the k-mers to search for repeats.
+        :param stats_window: the width of the stats window
+        :param hairpin_window: length of hte k-mers to search for hairpins.
+        :param base_percentage_threshold: if the per base percentage threshold
+            to count in slinding window calculatiions. For example,
+            for a sliding window of 20, if the threshold is 0.75, if 15 bases
+            or of a single base pair, this will get counted in the `window_cost`
+            method.
+        :param gc_content_threshold: if the gc percentage threshold
+            to count in slinding window calculatiions. For example,
+            for a sliding window of 20, if the threshold is 0.75, if 15 bases
+            of any window of 20 were gc, this will get counted in the `window_cost`
+            method.
+        """
         self.seq = seq
         arr = np.array(list(seq))
         self.bases = self.BASES
@@ -151,7 +69,9 @@ class DNAStats:
         self.repeat_window = repeat_window
         self.stats_window = stats_window
         self.repeat_signatures = self.get_repeat_signatures(repeat_window)
-
+        self.gc_content_threshold = gc_content_threshold
+        self.at_content_threshold = at_content_threshold
+        self.base_percentage_threshold = base_percentage_threshold
         rolling_stats = self.get_base_stats(stats_window)
         gc_content = (
             rolling_stats[self.BASES.index("G"), :]
@@ -227,15 +147,33 @@ class DNAStats:
         num_hairpins = self.count_signatures(d) - 2 * self.count_signatures(f)
         return num_hairpins
 
-    def window_cost(self, i, j):
+    def window_cost(
+        self,
+        i,
+        j,
+        base_threshold_perc: float = None,
+        gc_content_threshold: float = None,
+        at_content_threshold: float = None,
+    ):
+
+        if base_threshold_perc is None:
+            base_threshold_perc = self.base_percentage_threshold
+        if gc_content_threshold is None:
+            gc_content_threshold = self.gc_content_threshold
+
+        if at_content_threshold is None:
+            at_content_threshold = self.at_content_threshold
         d = self.rolling_stats[:4, i:j]
 
         # keep each base below 0.8
-        a = np.sum(d > 0.75, axis=1)
+        a = np.sum(d > base_threshold_perc, axis=1)
 
         # keep gc content below extremes 0.7
-        b = np.sum(self.rolling_stats[4, i:j] > 0.85)
-        return a, b
+        b = np.sum(self.rolling_stats[4, i:j] > gc_content_threshold)
+
+        # keep gc content below extremes 0.7
+        c = np.sum(self.rolling_stats[5, i:j] > at_content_threshold)
+        return a, b, c
 
     # def get_GC_content_complexity(seq):
     #     gc = get_GC_content(seq)

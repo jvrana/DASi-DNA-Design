@@ -23,7 +23,7 @@ from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
-from dasi.utils.sequence_complexity import DNAStats
+from dasi.utils.sequence import DNAStats
 
 
 class AssemblyGraphBuilder:
@@ -409,6 +409,25 @@ class AssemblyGraphBuilder:
         return self.G
 
 
+class SequenceScoringConfig:
+    """Configuration for scoring sequences."""
+
+    stats_repeat_window = 14  #: length of kmer to find sequence repeats
+    stats_window = 20  #: length of window for sliding window calculations
+    stats_hairpin_window = 20  #: length of kmer to find sequence hairpins
+    complexity_threshold = (
+        10
+    )  #: threshold for sequence complexity that is not synthesizable by a vendor
+    not_synthesizable_efficiency = (
+        0.1
+    )  #: efficiency value for sequence that is not synthesizable
+    pcr_length_range_efficiency_multiplier = [
+        (4000, 5000, 0.8),
+        (5000, 6000, 0.5),
+        (6000, 1000, 0.2),
+    ]  #: multiplier to apply to the efficiency if PCR is within the given length range
+
+
 # TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
 class AssemblyGraphPostProcessor:
     """Post-processing for assembly graphs. Evaluates:
@@ -418,19 +437,27 @@ class AssemblyGraphPostProcessor:
     3. (optional) optimal partitions for synthesis fragments
     """
 
-    def __init__(self, graph: nx.DiGraph, query: SeqRecord, span_cost: SpanCost):
+    def __init__(
+        self,
+        graph: nx.DiGraph,
+        query: SeqRecord,
+        span_cost: SpanCost,
+        stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
+        stats_window: int = SequenceScoringConfig.stats_window,
+        stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
+    ):
         self.graph = graph
         self.query = query
         self.stats = DNAStats(
             self.query + self.query,
-            repeat_window=14,
-            stats_window=20,
-            hairpin_window=20,
+            repeat_window=stats_repeat_window,
+            stats_window=stats_window,
+            hairpin_window=stats_hairpin_window,
         )
         self.logged_msgs = []
         # TODO: make a more sophisticated complexity function?
         # TODO: expose this to input parameters
-        self.COMPLEXITY_THRESHOLD = 10.0
+        self.COMPLEXITY_THRESHOLD = SequenceScoringConfig.complexity_threshold
         self.logger = logger(self)
         self.span_cost = span_cost
 
@@ -490,7 +517,7 @@ class AssemblyGraphPostProcessor:
 
     def _complexity_to_efficiency(self, edata):
         if edata["complexity"] > self.COMPLEXITY_THRESHOLD:
-            edata["efficiency"] = 0.1
+            edata["efficiency"] = SequenceScoringConfig.not_synthesizable_efficiency
             return True
         return False
 
@@ -515,10 +542,10 @@ class AssemblyGraphPostProcessor:
             Constants.PCR_PRODUCT_WITH_PRIMERS,
         ]:
             span = edata["span"]
-            if span > 4000:
-                edata["efficiency"] *= 0.8
-            elif span > 5000:
-                edata["efficiency"] *= 0.5
+            for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
+                if a <= span < b:
+                    edata["efficiency"] *= c
+                    break
 
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)

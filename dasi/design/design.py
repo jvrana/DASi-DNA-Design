@@ -44,9 +44,8 @@ from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
 from dasi.models import Assembly
 from dasi.utils import log_metadata
-from dasi.utils import log_times
 from dasi.utils import perfect_subject
-from dasi.utils.sequence_generator import fake_designs
+from dasi.utils.sequence import generate_fake_designs
 
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
@@ -304,7 +303,7 @@ class Design:
         return dict(self._results)
 
     @classmethod
-    @functools.wraps(fake_designs)
+    @functools.wraps(generate_fake_designs)
     def fake(
         cls,
         n_designs: int,
@@ -325,7 +324,7 @@ class Design:
         return_with_library: bool = False,
         **kwargs,
     ):
-        library = fake_designs(
+        library = generate_fake_designs(
             n_designs=n_designs,
             circular=circular,
             n_linear_seqs=n_linear_seqs,

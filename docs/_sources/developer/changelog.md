@@ -1,11 +1,29 @@
 # dasi change log
-## 0.0.12
-**2020-02-02T11:34:39.337111**
-keats changelog new
+## 0.0.14
+**2020-02-03T08:21:23.810686**
+bug fixes
 
- - added JSON output and JSON output schema
- - LibraryDesign no longer has `optimize_library` and `compile_library` methods. Use `optimize` and `compile` indead.
- - Reports are not accessible via Design and LibraryDesign instances via `design.report()`. Plot coverage can be plotted (and optionally shown) via `design.report().plot_coverage(show=True)`.
+ - many bug fixes to pass tests
+
+
+## 0.0.13
+**2020-02-03T07:31:02.036588**
+bug fixes
+
+
+
+
+## 0.0.12
+**2020-02-02T23:21:51.948271**
+new featues; output JSON format
+
+ - New validated JSON formate for design outputs. Accessible by `design.out()`
+ - JSON Schemas are grouped in `dasi.schemas`
+ - updated documentation
+ - improved testing
+ - minor bug fixes
+ - `design.report()` pulls up a new report. Plot coverage using `design.report().plot_coverage(show=True)`
+ - `optimize_library` and `compile_library` have been removed from LibraryDesign. Use `optimize` and `compile` instead.
 
 
 ## 0.0.11

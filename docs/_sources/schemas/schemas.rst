@@ -34,4 +34,8 @@ the cost model using:
 Design Output Schema
 --------------------
 
+.. literalinclude:: example_out.json
+   :linenos:
+   :language: json
+
 .. jsonschema:: output_schema.json

@@ -37,6 +37,11 @@ def dump(d, path):
         f.write(x)
 
 
+##########################################
+# Generate files for Documents
+##########################################
+
+# Copy schemas
 from dasi.schemas import Schemas
 
 with open("schemas/cost_schema.json", "w") as f:
@@ -45,8 +50,14 @@ with open("schemas/cost_schema.json", "w") as f:
 with open("schemas/output_schema.json", "w") as f:
     json.dump(Schemas.output_schema, f, indent=2)
 
-
+# Copy cost_default json
 dump(dasi.cost.open_params(), "schemas/cost_default.json")
+
+# Make and save example output
+design = dasi.Design.fake(n_designs=1)
+design.run(n_paths=1)
+with open("schemas/example_out.json", "w") as f:
+    json.dump(design.out(), f, indent=2)
 
 # -- General configuration ------------------------------------------------
 

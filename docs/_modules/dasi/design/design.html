@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.design &#8212; dasi 0.0.12 documentation</title>
+    <title>dasi.design.design &#8212; dasi 0.0.14 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.12</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.14</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -364,7 +364,7 @@ class FakePool:
         return [func(arg) for arg in args]
 
 
-<div class="viewcode-block" id="Design"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design">[docs]</a>class Design(object):
+<div class="viewcode-block" id="Design"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design">[docs]</a>class Design:
     &quot;&quot;&quot;Design class that returns optimal assemblies from a set of materials.&quot;&quot;&quot;
 
     PRIMERS = &quot;primers&quot;
@@ -678,8 +678,7 @@ class FakePool:
         self.post_process_graphs()</div>
 
 <div class="viewcode-block" id="Design.run"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design.run">[docs]</a>    def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS):
-        &quot;&quot;&quot;
-        Run the design. Runs `compile` and `optimize`, returning results
+        &quot;&quot;&quot;Run the design. Runs `compile` and `optimize`, returning results
         that can be accessed by `design.results` or by `design.out()`
 
         :param n_paths: max number of assemblies per design to design
@@ -691,8 +690,7 @@ class FakePool:
 
     @property
     def is_compiled(self):
-        &quot;&quot;&quot;
-        Return whether the design has been compiled.
+        &quot;&quot;&quot;Return whether the design has been compiled.
 
         :return: True if compiled. False if otherwise.
         &quot;&quot;&quot;
@@ -908,8 +906,7 @@ class FakePool:
             return x[1]
 
 <div class="viewcode-block" id="Design.out"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design.out">[docs]</a>    def out(self, fmt: str = &quot;json&quot;):
-        &quot;&quot;&quot;
-        Return the results of the design as a validates output JSON.
+        &quot;&quot;&quot;Return the results of the design as a validates output JSON.
 
         The output JSON is follows the following schema, see
         :param fmt:

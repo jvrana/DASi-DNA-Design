@@ -71,64 +71,85 @@
         "type"
       ]
     },
-    "molecule": {
+    "base": {
       "type": "object",
       "properties": {
-        "name": {
+        "__name__": {
           "type": "string",
-          "description": "type name of molecule"
+          "description": "name of the object"
         },
-        "index": {
+        "__index__": {
           "type": "integer",
-          "description": "index of the molecule"
+          "description": "indesx of the object"
         },
-        "sequence": {
-          "$ref": "#/definitions/sequence"
+        "__type__": {
+          "type": "string",
+          "description": "type of object",
+          "enum": ["reaction", "molecule"],
+          "examples": [
+            "molecule",
+            "reaction"
+          ]
         },
         "used_in_assemblies": {
-          "$ref": "#/definitions/_used_in_assemblies"
+              "$ref": "#/definitions/_used_in_assemblies"
         }
       },
       "required": [
-        "name",
-        "index",
-        "sequence"
+        "__name__",
+        "__index__",
+        "__type__"
+      ]
+    },
+    "molecule": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sequence": {
+              "$ref": "#/definitions/sequence"
+            }
+          },
+          "required": [
+            "sequence"
+          ]
+        }
       ]
     },
     "reaction": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "type name of the reaction"
+      "allOf": [
+        {
+          "$ref": "#/definitions/base"
         },
-        "index": {
-          "type": "integer",
-          "description": "index of the reaction"
-        },
-        "used_in_assemblies": {
-          "$ref": "#/definitions/_used_in_assemblies"
-        },
-        "inputs": {
-          "type": "array",
-          "description": "list of molecules this reaction uses as inputs (by molecule index)",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "outputs": {
-          "type": "array",
-          "description": "list of molecules this reaction uses as outputs (by molecule index)",
-          "items": {
-            "type": "integer"
-          }
+        {
+          "type": "object",
+          "properties": {
+            "used_in_assemblies": {
+              "$ref": "#/definitions/_used_in_assemblies"
+            },
+            "inputs": {
+              "type": "array",
+              "description": "list of molecules this reaction uses as inputs (by molecule index)",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "outputs": {
+              "type": "array",
+              "description": "list of molecules this reaction uses as outputs (by molecule index)",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": [
+            "inputs",
+            "outputs"
+          ]
         }
-      },
-      "required": [
-        "name",
-        "index",
-        "inputs",
-        "outputs"
       ]
     },
     "_used_in_assemblies": {

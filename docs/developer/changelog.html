@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi change log &#8212; dasi 0.0.12 documentation</title>
+    <title>dasi change log &#8212; dasi 0.0.14 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.12</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.14</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -169,35 +169,52 @@
   <div class="section" id="dasi-change-log">
 <h1>dasi change log<a class="headerlink" href="#dasi-change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>0.0.12<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p><strong>2020-02-02T11:34:39.337111</strong>
-keats changelog new</p>
+<h2>0.0.14<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><strong>2020-02-03T08:21:23.810686</strong>
+bug fixes</p>
 <ul class="simple">
-<li><p>added JSON output and JSON output schema</p></li>
-<li><p>LibraryDesign no longer has <code class="docutils literal notranslate"><span class="pre">optimize_library</span></code> and <code class="docutils literal notranslate"><span class="pre">compile_library</span></code> methods. Use <code class="docutils literal notranslate"><span class="pre">optimize</span></code> and <code class="docutils literal notranslate"><span class="pre">compile</span></code> indead.</p></li>
-<li><p>Reports are not accessible via Design and LibraryDesign instances via <code class="docutils literal notranslate"><span class="pre">design.report()</span></code>. Plot coverage can be plotted (and optionally shown) via <code class="docutils literal notranslate"><span class="pre">design.report().plot_coverage(show=True)</span></code>.</p></li>
+<li><p>many bug fixes to pass tests</p></li>
 </ul>
 </div>
 <div class="section" id="id2">
-<h2>0.0.11<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>0.0.13<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>2020-02-03T07:31:02.036588</strong>
+bug fixes</p>
+</div>
+<div class="section" id="id3">
+<h2>0.0.12<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><strong>2020-02-02T23:21:51.948271</strong>
+new featues; output JSON format</p>
+<ul class="simple">
+<li><p>New validated JSON formate for design outputs. Accessible by <code class="docutils literal notranslate"><span class="pre">design.out()</span></code></p></li>
+<li><p>JSON Schemas are grouped in <code class="docutils literal notranslate"><span class="pre">dasi.schemas</span></code></p></li>
+<li><p>updated documentation</p></li>
+<li><p>improved testing</p></li>
+<li><p>minor bug fixes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">design.report()</span></code> pulls up a new report. Plot coverage using <code class="docutils literal notranslate"><span class="pre">design.report().plot_coverage(show=True)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">optimize_library</span></code> and <code class="docutils literal notranslate"><span class="pre">compile_library</span></code> have been removed from LibraryDesign. Use <code class="docutils literal notranslate"><span class="pre">optimize</span></code> and <code class="docutils literal notranslate"><span class="pre">compile</span></code> instead.</p></li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>0.0.11<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p><strong>2020-01-29T07:42:52.819562</strong>
 feature</p>
 <ul class="simple">
 <li><p>cached span cost in dasi.cost module</p></li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>0.0.10<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>0.0.10<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p><strong>2020-01-28T14:02:29.086775</strong>
 bug fixes for failed builds</p>
 </div>
-<div class="section" id="id4">
-<h2>0.0.9<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>0.0.9<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p><strong>2020-01-09T15:58:22.196391</strong>
 bug fixes for gaps on edge of region</p>
 </div>
-<div class="section" id="id5">
-<h2>0.0.8<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>0.0.8<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <p><strong>2020-01-09T14:32:35.169279</strong>
 library design support</p>
 </div>
@@ -206,30 +223,30 @@ library design support</p>
 <p><strong>2019-11-27T09:44:03.094130</strong>
 features for LibraryDesign</p>
 </div>
-<div class="section" id="id6">
-<h2>0.0.6<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>0.0.6<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p><strong>2019-10-18T12:49:46.896456</strong>
 update API breaking dependencies</p>
 <ul class="simple">
 <li><p>update networkx to 2.4, update pyblast to 0.5</p></li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>0.0.5<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>0.0.5<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p><strong>2019-10-17T12:14:53.728652</strong>
 setup updates</p>
 </div>
-<div class="section" id="id8">
-<h2>0.0.4<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h2>0.0.4<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <p><strong>2019-10-17T11:47:06.003351</strong>
 command-line interface</p>
 </div>
-<div class="section" id="id9">
-<h2>0.0.2<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h2>0.0.2<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <p><strong>2019-10-01T15:25:54.613524</strong></p>
 </div>
-<div class="section" id="id10">
-<h2>0.1.0<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h2>0.1.0<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p><strong>2019-07-13T10:01:24.258900</strong>
 project initialized</p>
 </div>

@@ -163,8 +163,9 @@ def _reactions_property(
 
         property_reaction.append(
             {
-                "name": ndata["reaction"].name,
-                "index": index,
+                "__name__": ndata["reaction"].name,
+                "__index__": index,
+                "__type__": "reaction",
                 "used_in_assemblies": _used_in_designs(ndata),
                 "inputs": [molecule_node_dict[n] for n in input_keys],
                 "outputs": [molecule_node_dict[n] for n in output_keys],
@@ -187,8 +188,9 @@ def _molecules_property(
         used_as_outputs = [reaction_node_dict[n] for n in graph.predecessors(n)]
         property_molecule.append(
             {
-                "name": mol.type.name,
-                "index": index,
+                "__name__": mol.type.name,
+                "__index__": index,
+                "__type__": "molecule",
                 "sequence": seqrecord_to_json(mol.sequence),
                 "used_in_assemblies": _used_in_designs(ndata),
                 "used_as_input_to_reactions": used_as_inputs,

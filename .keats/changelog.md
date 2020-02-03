@@ -1,4 +1,18 @@
 # dasi change log
+## 0.0.14
+**2020-02-03T08:21:23.810686**
+bug fixes
+
+ - many bug fixes to pass tests
+
+
+## 0.0.13
+**2020-02-03T07:31:02.036588**
+bug fixes
+
+
+
+
 ## 0.0.12
 **2020-02-02T23:21:51.948271**
 new featues; output JSON format

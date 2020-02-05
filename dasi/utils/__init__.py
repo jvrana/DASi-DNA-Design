@@ -37,11 +37,14 @@ import inspect
 from copy import deepcopy
 from datetime import datetime
 from functools import wraps
+from itertools import tee
 from typing import Any
 from typing import Callable
 from typing import Iterable
 from typing import List
 from typing import Tuple
+from typing import TypeVar
+from typing import Union
 
 from .networkx.shortest_path import multipoint_shortest_path
 from .networkx.utils import sort_cycle
@@ -225,3 +228,16 @@ def log_metadata(
         return _wrapped
 
     return wrapped
+
+
+T = TypeVar("T")
+
+
+def argsorted(
+    arr: Iterable[T], key: Callable, return_items: bool = False
+) -> Union[List[Tuple[int, T]], List[T]]:
+    s = sorted(enumerate(tee(arr)[0]), key=lambda x: key(x[1]))
+    if return_items:
+        return s
+    else:
+        return [_s[0] for _s in s]

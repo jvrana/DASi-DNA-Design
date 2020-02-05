@@ -193,6 +193,7 @@ def _design_gap(
         return None, None
 
 
+# TODO: refactor `_design_pcr_product_primers`, too complex
 def _design_pcr_product_primers(
     edge: Tuple["AssemblyNode", "AssemblyNode", dict],
     graph: nx.DiGraph,

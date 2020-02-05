@@ -306,7 +306,6 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         query_region = query_region.new(a, b)
 
         self.raw_template = template
-        self._template = None
         self.fwd = fwd
         self.rev = rev
 

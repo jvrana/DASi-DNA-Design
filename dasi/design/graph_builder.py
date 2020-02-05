@@ -21,6 +21,7 @@ from dasi.models import AlignmentGroup
 from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import PCRProductAlignmentGroup
+from dasi.utils import argsorted
 from dasi.utils import bisect_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
@@ -439,6 +440,7 @@ class SequenceScoringConfig:
 
 
 # TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
+# TODO: refactor this class, expose config options
 class AssemblyGraphPostProcessor:
     """Post-processing for assembly graphs. Evaluates:
 
@@ -570,22 +572,32 @@ class AssemblyGraphPostProcessor:
     # TODO: select the best template...
     def update_pcr_product(self, n1, n2, edata):
         if self._is_pcr_product(edata):
-
             x = []
-            for alignment in edata["group"].alignments:
-                subject_key = alignment.subject_key
-                subject = self.seqdb[subject_key]
-                i = alignment.subject_region.a
-                j = alignment.subject_region.b
-                subject_seq = str(subject.seq)
-                misprimings = count_misprimings_in_amplicon(
-                    subject_seq, i, j, min_primer_anneal=12, max_primer_anneal=30
-                )
-                x.append((misprimings, alignment))
-            x = sorted(x, key=lambda x: x[0])
-            if x[0][0]:
-                edata["efficiency"] = edata["efficiency"] * 0.5 ** x[0][0]
-                add_edge_note(edata, "num_misprimings", x[0][0])
+            group = edata["group"]
+            for alignment in group.alignments:
+                if alignment.type not in [Constants.PRIMER]:
+                    subject_key = alignment.subject_key
+                    subject = self.seqdb[subject_key]
+                    i = alignment.subject_region.a
+                    j = alignment.subject_region.b
+                    subject_seq = str(subject.seq)
+                    misprimings = count_misprimings_in_amplicon(
+                        subject_seq,
+                        i,
+                        j,
+                        min_primer_anneal=12,
+                        max_primer_anneal=30,
+                        cyclic=alignment.subject_region.cyclic,
+                    )
+                    x.append((misprimings, alignment))
+
+            # now sort the groupings so that the best template is used
+            if hasattr(group, "groupings"):
+                indices = argsorted(x, key=lambda x: x[0])
+                if x[0][0]:
+                    group.groupings = [group.groupings[i] for i in indices]
+                    edata["efficiency"] = edata["efficiency"] * 0.5 ** x[0][0]
+                    add_edge_note(edata, "num_misprimings", x[0][0])
 
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)

@@ -172,7 +172,7 @@ def test_fake_design(
         n_designs=n_designs,
         n_cyclic_seqs=50,
         n_linear_seqs=50,
-        n_primers_from_templates=25,
+        n_primers_from_templates=500,
         random_chunk_prob_int=(synth_prob, synth_prob),
         random_chunk_size_int=(synth_size, synth_size),
         design_sequence_similarity_length=shared_length,

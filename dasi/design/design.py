@@ -475,7 +475,9 @@ class Design:
     def post_process_graphs(self):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(graph, query, self.span_cost)
+            processor = AssemblyGraphPostProcessor(
+                graph, query, self.span_cost, self.seqdb
+            )
             processor()
 
     def _assemble_graphs_without_threads(self):

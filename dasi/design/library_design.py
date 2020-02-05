@@ -319,12 +319,19 @@ class LibraryDesign(Design):
         adjusted = 0
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(graph, query, self.span_cost)
+            processor = AssemblyGraphPostProcessor(
+                graph, query, self.span_cost, self.seqdb
+            )
             processor()
             for n1, n2, edata in graph.edges(data=True):
                 if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
                     group = edata["group"]
-                    edata["notes"] += "n_clusters: {}".format(group.meta["n_clusters"])
+
+                    # TODO: better way to make notes on graph edge
+                    if "notes" not in edata or edata["notes"] is None:
+                        edata["notes"] = {}
+
+                    edata["notes"]["n_clusters"] = group.meta["n_clusters"]
                     # TODO: adjust n_clusters
                     edata["material"] = (
                         edata["material"]

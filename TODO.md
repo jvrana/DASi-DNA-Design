@@ -3,6 +3,10 @@
 *Sequence Database*
 * save filename and path for SeqRecord on load
 
+*better way to add notes to graph edge*
+
+*graph post-processing config*
+
 ## Coalition optimization
 * shared templates? select from same templates, if possible
 * shared sequences and fragments?

@@ -65,7 +65,6 @@ def run(design: Union[LibraryDesign, Design]):
 def test_span_cost_init(span_cost, design_cls):
     """Test if we can use span_cost=None to initialize a new design."""
     design = design_cls.fake(span_cost=span_cost, n_designs=3)
-    design.query_keys
     design.run()
 
 

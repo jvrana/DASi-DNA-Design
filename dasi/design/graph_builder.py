@@ -1,5 +1,6 @@
 import bisect
 import itertools
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Tuple
@@ -23,7 +24,15 @@ from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
+from dasi.utils.sequence import count_misprimings_in_amplicon
 from dasi.utils.sequence import DNAStats
+
+
+# TODO: whenever the efficiency is adjusted, record this in the notes
+def add_edge_note(edata, key, value):
+    if not edata["notes"]:
+        edata["notes"] = {}
+    edata["notes"][key] = value
 
 
 class AssemblyGraphBuilder:
@@ -60,7 +69,7 @@ class AssemblyGraphBuilder:
         span: int,
         atype: MoleculeType,
         group: Union[AlignmentGroup, PCRProductAlignmentGroup],
-        notes: str = "",
+        notes: Dict = None,
     ):
         """Add an edge between two assembly nodes.
 
@@ -102,6 +111,7 @@ class AssemblyGraphBuilder:
         internal_or_external: str,
         condition: Tuple[bool, bool],
         group: Union[AlignmentGroup, PCRProductAlignmentGroup],
+        notes: Dict = None,
     ):
         """Add an edge between two assembly nodes.
 
@@ -131,7 +141,7 @@ class AssemblyGraphBuilder:
             span=span,
             atype=atype,
             group=group,
-            notes="",
+            notes=notes,
         )
 
     def iter_internal_edge_data(
@@ -437,17 +447,21 @@ class AssemblyGraphPostProcessor:
     3. (optional) optimal partitions for synthesis fragments
     """
 
+    # TODO: add post processing config
+
     def __init__(
         self,
         graph: nx.DiGraph,
         query: SeqRecord,
         span_cost: SpanCost,
+        seqdb: Dict[str, SeqRecord],
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
     ):
         self.graph = graph
         self.query = query
+        self.seqdb = seqdb
         self.stats = DNAStats(
             self.query + self.query,
             repeat_window=stats_repeat_window,
@@ -531,6 +545,7 @@ class AssemblyGraphPostProcessor:
                 complexity = self.stats.cost(r.a, r.c)
                 edata["complexity"] = complexity
                 if self._complexity_to_efficiency(edata):
+                    add_edge_note(edata, "highly_complex", True)
                     bad_edges.append((n1, n2, edata))
         return bad_edges
 
@@ -549,10 +564,28 @@ class AssemblyGraphPostProcessor:
             for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
                 if a <= span < b:
                     edata["efficiency"] *= c
+                    add_edge_note(edata, "long_pcr_product", True)
                     break
 
+    # TODO: select the best template...
     def update_pcr_product(self, n1, n2, edata):
-        pass
+        if self._is_pcr_product(edata):
+
+            x = []
+            for alignment in edata["group"].alignments:
+                subject_key = alignment.subject_key
+                subject = self.seqdb[subject_key]
+                i = alignment.subject_region.a
+                j = alignment.subject_region.b
+                subject_seq = str(subject.seq)
+                misprimings = count_misprimings_in_amplicon(
+                    subject_seq, i, j, min_primer_anneal=12, max_primer_anneal=30
+                )
+                x.append((misprimings, alignment))
+            x = sorted(x, key=lambda x: x[0])
+            if x[0][0]:
+                edata["efficiency"] = edata["efficiency"] * 0.5 ** x[0][0]
+                add_edge_note(edata, "num_misprimings", x[0][0])
 
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)
@@ -623,9 +656,10 @@ class AssemblyGraphPostProcessor:
 
         edata1["complexity"] = best_partition["cost_1"]
         edata3["complexity"] = best_partition["cost_2"]
-        edata3["notes"] += " Partitioned"
-        edata2["notes"] += " Partitioned"
-        edata1["notes"] += " Partitioned"
+
+        add_edge_note(edata3, "partitions", True)
+        add_edge_note(edata2, "partitions", True)
+        add_edge_note(edata1, "partitions", True)
 
         edge1 = (n1, n3, edata1)
         edge2 = (n3, n4, edata2)
@@ -656,6 +690,7 @@ class AssemblyGraphPostProcessor:
         bad_edges = []
         for n1, n2, edata in self.graph.edges(data=True):
             self.update_long_pcr_products(n1, n2, edata)
+            self.update_pcr_product(n1, n2, edata)
             bad_edges += self.update_complexity(n1, n2, edata)
 
         self.logger.info(

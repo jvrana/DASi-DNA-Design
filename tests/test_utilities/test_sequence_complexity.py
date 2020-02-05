@@ -369,7 +369,7 @@ class TestPositiveRCExamples:
 
 
 @pytest.mark.parametrize("ij", [(100, 300), (500, 800), (0, 500), (800, 1000)])
-def test_count_misprimings_in_amplicon(self, ij):
+def test_count_misprimings_in_amplicon(ij):
     seq = random_seq(1000)
     count_misprimings_in_amplicon(
         seq, ij[0], ij[1], min_primer_anneal=12, max_primer_anneal=30

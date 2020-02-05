@@ -509,8 +509,8 @@ def count_misprimings_in_amplicon(
             i = 0
             j = length
         else:
-            i = 0
             j = j - i
+            i = 0
 
     stats = DNAStats(seq, 1, 1, min_primer_anneal, mode=DNAStats.ONLY_HAIRPIN)
     n1 = stats.count_repeats_from_slice(i, i + max_primer_anneal)

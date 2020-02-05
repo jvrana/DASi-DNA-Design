@@ -11,6 +11,10 @@ from flaky import flaky
 from dasi.utils.sequence.sequence_complexity import count_misprimings_in_amplicon
 from dasi.utils.sequence.sequence_complexity import DNAStats
 
+##########################################
+## Utility methods
+##########################################
+
 
 def random_seq(length, bases=None):
     """Produce a randomized sequence."""
@@ -31,6 +35,133 @@ def revcomp(seq):
     for s in seq:
         r += d[s]
     return r[::-1]
+
+
+def cross_product(*args: List[Union[List[str], str]], operation=operator.add):
+    """Develop sequences by taking a cross product of a list of lists."""
+    list_of_lists = []
+    for arg in args:
+        if isinstance(arg, list):
+            list_of_lists.append(arg)
+        else:
+            list_of_lists.append([arg])
+
+    sequences = []
+    for x in itertools.product(*list_of_lists):
+        if operation:
+            sequences.append(functools.reduce(operation, x))
+    return sequences
+
+
+def test_cross_product():
+    seqs = cross_product(["1"], ["1", "2"], ["1", "2", "3"], "1")
+    assert len(seqs) == 6
+    for s in seqs:
+        print(s)
+
+
+def replace(to_replace, replace_with, a, b, c, rc):
+    """Replace a section of the sequence `to_replace` with a secion of the
+    sequence `replace_with`
+
+    :param to_replace: position to replace sequence
+    :param replace_with: indices of the sequence to replace with replace_with[a:b]
+    :param a: starting index of the replacement sequence
+    :param b: ending index of the replacement sequence
+    :param c: index to replace sequence.
+    :param rc: if True, replaces with reverse_complement
+    :return:
+    """
+    x1 = replace_with[a:b]
+    if rc:
+        x1 = revcomp(x1)
+    return to_replace[:c] + x1 + to_replace[c + len(x1) :]
+
+
+def replace_rc_pairs(to_replace, replace_with, a, b, c):
+    """Return `replace(..., rc=False)` and `replace(..., rc=True)`"""
+    x1 = replace_with[a:b]
+    x2 = revcomp(x1)
+    s1 = to_replace[:c] + x1 + to_replace[c + len(x1) :]
+    s2 = to_replace[:c] + x2 + to_replace[c + len(x2) :]
+    assert len(s1) == len(s2)
+    return s1, s2
+
+
+def gen_seq(
+    i, j, l, window, insert_loc, repeat_i, repeat_l, rc, to_replace, replace_with
+):
+    repeat_j = repeat_l + repeat_i
+
+    left_flank = random_seq(i)
+    right_flank = random_seq(l - j)
+    amplicon_left_window = random_seq(window)
+    amplicon_internal = random_seq(j - i - window * 2)
+    amplicon_right_window = random_seq(window)
+
+    seqs = {
+        "left_window": amplicon_left_window,
+        "internal": amplicon_internal,
+        "right_window": amplicon_right_window,
+        "left_flank": left_flank,
+        "right_flank": right_flank,
+    }
+
+    # add the repeat
+    seqs[to_replace] = replace(
+        seqs[to_replace], seqs[replace_with], repeat_i, repeat_j, insert_loc, rc
+    )
+
+    amplicon = seqs["left_window"] + seqs["internal"] + seqs["right_window"]
+
+    seq = seqs["left_flank"] + amplicon + seqs["right_flank"]
+    assert len(seq) == l, "testing sequence was constructed incorrectly"
+    return seq
+
+
+def gen_seq_with_rc_pairs(
+    i, j, l, window, insert_loc, repeat_i, repeat_l, to_replace, replace_with
+):
+    repeat_j = repeat_l + repeat_i
+
+    left_flank = "N" * i  # random_seq(i)
+    right_flank = "N" * (l - j)  # random_seq(l - j)
+    amplicon_left_window = random_seq(window)
+    amplicon_internal = "N" * (j - i - window * 2)  # random_seq(j - i - window * 2)
+    amplicon_right_window = random_seq(window)
+
+    seqs = {
+        "left_window": amplicon_left_window,
+        "internal": amplicon_internal,
+        "right_window": amplicon_right_window,
+        "left_flank": left_flank,
+        "right_flank": right_flank,
+    }
+
+    seqs[to_replace] = list(
+        replace_rc_pairs(
+            seqs[to_replace], seqs[replace_with], repeat_i, repeat_j, insert_loc
+        )
+    )
+
+    sequences = cross_product(
+        seqs["left_flank"],
+        seqs["left_window"],
+        seqs["internal"],
+        seqs["right_window"],
+        seqs["right_flank"],
+    )
+
+    for s in sequences:
+        if not len(s) == l:
+            raise ValueError("{} != {}".format(len(s), l))
+
+    return sequences
+
+
+##########################################
+## DNAStats tests
+##########################################
 
 
 class TestDNAStats:
@@ -197,116 +328,6 @@ class TestDNAStats:
         stats = DNAStats(seq, 1, 1, hairpin_window=30)
         n = stats.count_repeats_from_slice(i, j)
         assert n == 2
-
-
-def replace(to_replace, replace_with, a, b, c, rc):
-    x1 = replace_with[a:b]
-    if rc:
-        x1 = revcomp(x1)
-    return to_replace[:c] + x1 + to_replace[c + len(x1) :]
-
-
-def replace_rc_pairs(to_replace, replace_with, a, b, c):
-    x1 = replace_with[a:b]
-    x2 = revcomp(x1)
-    s1 = to_replace[:c] + x1 + to_replace[c + len(x1) :]
-    s2 = to_replace[:c] + x2 + to_replace[c + len(x2) :]
-    assert len(s1) == len(s2)
-    return s1, s2
-
-
-def cross_product(*args: List[Union[List[str], str]], operation=operator.add):
-    """Develop sequences by taking a cross product of a list of lists."""
-    list_of_lists = []
-    for arg in args:
-        if isinstance(arg, list):
-            list_of_lists.append(arg)
-        else:
-            list_of_lists.append([arg])
-
-    sequences = []
-    for x in itertools.product(*list_of_lists):
-        if operation:
-            sequences.append(functools.reduce(operation, x))
-    return sequences
-
-
-def test_cross_product():
-    seqs = cross_product(["1"], ["1", "2"], ["1", "2", "3"], "1")
-    assert len(seqs) == 6
-    for s in seqs:
-        print(s)
-
-
-def gen_seq(
-    i, j, l, window, insert_loc, repeat_i, repeat_l, rc, to_replace, replace_with
-):
-    repeat_j = repeat_l + repeat_i
-
-    left_flank = random_seq(i)
-    right_flank = random_seq(l - j)
-    amplicon_left_window = random_seq(window)
-    amplicon_internal = random_seq(j - i - window * 2)
-    amplicon_right_window = random_seq(window)
-
-    seqs = {
-        "left_window": amplicon_left_window,
-        "internal": amplicon_internal,
-        "right_window": amplicon_right_window,
-        "left_flank": left_flank,
-        "right_flank": right_flank,
-    }
-
-    # add the repeat
-    seqs[to_replace] = replace(
-        seqs[to_replace], seqs[replace_with], repeat_i, repeat_j, insert_loc, rc
-    )
-
-    amplicon = seqs["left_window"] + seqs["internal"] + seqs["right_window"]
-
-    seq = seqs["left_flank"] + amplicon + seqs["right_flank"]
-    assert len(seq) == l, "testing sequence was constructed incorrectly"
-    return seq
-
-
-def gen_seq_with_rc_pairs(
-    i, j, l, window, insert_loc, repeat_i, repeat_l, to_replace, replace_with
-):
-    repeat_j = repeat_l + repeat_i
-
-    left_flank = "N" * i  # random_seq(i)
-    right_flank = "N" * (l - j)  # random_seq(l - j)
-    amplicon_left_window = random_seq(window)
-    amplicon_internal = "N" * (j - i - window * 2)  # random_seq(j - i - window * 2)
-    amplicon_right_window = random_seq(window)
-
-    seqs = {
-        "left_window": amplicon_left_window,
-        "internal": amplicon_internal,
-        "right_window": amplicon_right_window,
-        "left_flank": left_flank,
-        "right_flank": right_flank,
-    }
-
-    seqs[to_replace] = list(
-        replace_rc_pairs(
-            seqs[to_replace], seqs[replace_with], repeat_i, repeat_j, insert_loc
-        )
-    )
-
-    sequences = cross_product(
-        seqs["left_flank"],
-        seqs["left_window"],
-        seqs["internal"],
-        seqs["right_window"],
-        seqs["right_flank"],
-    )
-
-    for s in sequences:
-        if not len(s) == l:
-            raise ValueError("{} != {}".format(len(s), l))
-
-    return sequences
 
 
 class TestPositiveRCExamples:

@@ -82,9 +82,11 @@ class DNAStats:
             repeat signatures. DNAStats.ONLY_WINDOW to perform only
             sliding window calculations.
         """
+        assert isinstance(seq, str)
+        seq = seq.upper()
         self.seq = seq
-        arr = np.array(list(seq))
-        self.bases = self.BASES
+        arr = np.array(list(self.seq))
+        self.bases = self.BASES.upper()
 
         self.seq_onehot = self.one_hot(arr, self.bases)
         self.repeat_window = repeat_window

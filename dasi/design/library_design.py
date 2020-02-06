@@ -301,7 +301,7 @@ class LibraryDesign(Design):
         if post_processing_kwargs is None:
             post_processing_kwargs = {}
         self._uncompile()
-        tracker = self.logger.track("INFO", desc="Compiling library", total=4).enter()
+        tracker = self.logger.track("INFO", desc="Compiling library", total=5).enter()
 
         self.graphs = {}
 
@@ -311,10 +311,14 @@ class LibraryDesign(Design):
         tracker.update(1, "Running shared fragment blast")
         self._share_query_blast()
 
-        tracker.update(2, "Finding shared clusters")
+        # tracker.update(2, "Expanding shared fragments")
+        # self._expand_synthesized_fragments()
+        # self._expand_from_synthesized()
+
+        tracker.update(3, "Finding shared clusters")
         self.update_library_metadata()
 
-        tracker.update(3, "Assembling graphs")
+        tracker.update(4, "Assembling graphs")
         self.assemble_graphs(n_jobs=n_jobs)
 
         # TODO: adjust n_clusters in the graph instead
@@ -335,6 +339,8 @@ class LibraryDesign(Design):
                     if "notes" not in edata or edata["notes"] is None:
                         edata["notes"] = {}
 
+                    if "n_clusters" not in group.meta:
+                        pass
                     edata["notes"]["n_clusters"] = group.meta["n_clusters"]
                     # TODO: adjust n_clusters
                     edata["material"] = (

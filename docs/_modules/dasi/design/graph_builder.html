@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.graph_builder &#8212; dasi 0.0.15 documentation</title>
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.18 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.15</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -647,8 +647,11 @@ def add_edge_note(edata, key, value):
         self.graph = graph
         self.query = query
         self.seqdb = seqdb
+        query_seq = str(query.seq)
+        if is_circular(query):
+            query_seq = query_seq + query_seq
         self.stats = DNAStats(
-            self.query + self.query,
+            query_seq,
             repeat_window=stats_repeat_window,
             stats_window=stats_window,
             hairpin_window=stats_hairpin_window,
@@ -722,7 +725,7 @@ def add_edge_note(edata, key, value):
             return True
         return False
 
-    def update_complexity(self, n1, n2, edata):
+    def score_synthetic_dna(self, n1, n2, edata):
         bad_edges = []
         if edata[&quot;type_def&quot;].synthesize:
             span = edata[&quot;span&quot;]
@@ -745,7 +748,7 @@ def add_edge_note(edata, key, value):
             Constants.PCR_PRODUCT_WITH_PRIMERS,
         ]
 
-    def update_long_pcr_products(self, n1, n2, edata):
+    def score_long_pcr_products(self, n1, n2, edata):
         if self._is_pcr_product(edata):
             span = edata[&quot;span&quot;]
             for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
@@ -755,7 +758,7 @@ def add_edge_note(edata, key, value):
                     break
 
     # TODO: select the best template...
-    def update_pcr_product(self, n1, n2, edata):
+    def score_primer_misprimings(self, n1, n2, edata):
         if self._is_pcr_product(edata):
             x = []
             group = edata[&quot;group&quot;]
@@ -895,16 +898,20 @@ def add_edge_note(edata, key, value):
         edges = list(self.graph.edges(data=True))
 
         if self.SCORE_LONG in self.stages:
-            for n1, n2, edata in self.logger.tqdm(edges, &quot;INFO&quot;, desc=&#39;Scoring long PCR products&#39;):
-                self.update_long_pcr_products(n1, n2, edata)
+            for n1, n2, edata in self.logger.tqdm(
+                edges, &quot;INFO&quot;, desc=&quot;Scoring long PCR products&quot;
+            ):
+                self.score_long_pcr_products(n1, n2, edata)
         if self.SCORE_MISPRIMINGS in self.stages:
-            for n1, n2, edata in self.logger.tqdm(edges, &quot;INFO&quot;,
-                                                  desc=&#39;Scoring primer misprimings&#39;):
-                self.update_pcr_product(n1, n2, edata)
+            for n1, n2, edata in self.logger.tqdm(
+                edges, &quot;INFO&quot;, desc=&quot;Scoring primer misprimings&quot;
+            ):
+                self.score_primer_misprimings(n1, n2, edata)
         if self.SCORE_COMPLEXITY in self.stages:
-            for n1, n2, edata in self.logger.tqdm(edges, &quot;INFO&quot;,
-                                                  desc=&#39;Scoring synthetic DNA&#39;):
-                bad_edges += self.update_complexity(n1, n2, edata)
+            for n1, n2, edata in self.logger.tqdm(
+                edges, &quot;INFO&quot;, desc=&quot;Scoring synthetic DNA&quot;
+            ):
+                bad_edges += self.score_synthetic_dna(n1, n2, edata)
         self.logger.info(
             &quot;Found {} highly complex synthesis segments&quot;.format(len(bad_edges))
         )

@@ -1,4 +1,26 @@
 # dasi change log
+## 0.0.18
+**2020-02-06T13:52:04.675546**
+bug fix
+
+ - fixes serious bug where sequence scoring via `DNAStats` was case sensitive to the sequence
+
+
+## 0.0.17
+**2020-02-06T13:08:56.007142**
+bug fixes
+
+ - fixes bugs in scoring misprimings
+
+
+## 0.0.16
+**2020-02-06T12:48:09.054983**
+speed improvements
+
+ - scoring misprimings is much faster
+ - exposed post processing parameters to `design.compile`
+
+
 ## 0.0.15
 **2020-02-05T17:22:51.226522**
 features

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.library_design &#8212; dasi 0.0.15 documentation</title>
+    <title>dasi.design.library_design &#8212; dasi 0.0.18 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.15</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -467,12 +467,14 @@ def cluster_graph(design):
         self._check_shared_repeats()
 
 <div class="viewcode-block" id="LibraryDesign.compile"><a class="viewcode-back" href="../../../generated/dasi.design.LibraryDesign.html#dasi.design.LibraryDesign.compile">[docs]</a>    @log_metadata(&quot;compile&quot;, additional_metadata={&quot;algorithm&quot;: ALGORITHM})
-    def compile(self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None):
+    def compile(
+        self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None
+    ):
         &quot;&quot;&quot;Compile the materials list into assembly graphs.&quot;&quot;&quot;
         if post_processing_kwargs is None:
             post_processing_kwargs = {}
         self._uncompile()
-        tracker = self.logger.track(&quot;INFO&quot;, desc=&quot;Compiling library&quot;, total=4).enter()
+        tracker = self.logger.track(&quot;INFO&quot;, desc=&quot;Compiling library&quot;, total=5).enter()
 
         self.graphs = {}
 
@@ -482,10 +484,14 @@ def cluster_graph(design):
         tracker.update(1, &quot;Running shared fragment blast&quot;)
         self._share_query_blast()
 
-        tracker.update(2, &quot;Finding shared clusters&quot;)
+        # tracker.update(2, &quot;Expanding shared fragments&quot;)
+        # self._expand_synthesized_fragments()
+        # self._expand_from_synthesized()
+
+        tracker.update(3, &quot;Finding shared clusters&quot;)
         self.update_library_metadata()
 
-        tracker.update(3, &quot;Assembling graphs&quot;)
+        tracker.update(4, &quot;Assembling graphs&quot;)
         self.assemble_graphs(n_jobs=n_jobs)
 
         # TODO: adjust n_clusters in the graph instead
@@ -506,6 +512,8 @@ def cluster_graph(design):
                     if &quot;notes&quot; not in edata or edata[&quot;notes&quot;] is None:
                         edata[&quot;notes&quot;] = {}
 
+                    if &quot;n_clusters&quot; not in group.meta:
+                        pass
                     edata[&quot;notes&quot;][&quot;n_clusters&quot;] = group.meta[&quot;n_clusters&quot;]
                     # TODO: adjust n_clusters
                     edata[&quot;material&quot;] = (

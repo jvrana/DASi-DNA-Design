@@ -52,6 +52,7 @@ def seqrecord_to_json(record: SeqRecord) -> dict:
         "name": record.name,
         "id": record.id,
         "annotations": feature_annotations,
+        "customFields": deepcopy(record.annotations),
     }
     annotations = deepcopy(record.annotations)
 

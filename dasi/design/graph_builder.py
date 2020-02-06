@@ -426,6 +426,9 @@ class SequenceScoringConfig:
     stats_repeat_window = 14  #: length of kmer to find sequence repeats
     stats_window = 20  #: length of window for sliding window calculations
     stats_hairpin_window = 20  #: length of kmer to find sequence hairpins
+    mispriming_min_anneal = 12  #: minimum bp to look for misprimings
+    mispriming_max_anneal = 30  #: maximum expected bp for a primer
+    mispriming_penalty = 0.5  #: multiplier to apply to each mispriming
     complexity_threshold = (
         10
     )  #: threshold for sequence complexity that is not synthesizable by a vendor
@@ -441,6 +444,8 @@ class SequenceScoringConfig:
 
 # TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
 # TODO: refactor this class, expose config options
+
+
 class AssemblyGraphPostProcessor:
     """Post-processing for assembly graphs. Evaluates:
 
@@ -448,6 +453,10 @@ class AssemblyGraphPostProcessor:
     2. pcr product efficiency
     3. (optional) optimal partitions for synthesis fragments
     """
+
+    SCORE_COMPLEXITY = "SCORE_COMPLEXITY"
+    SCORE_MISPRIMINGS = "SCORE_MISPRIMINGS"
+    SCORE_LONG = "SCORE_LONG_PCR_PRODUCTS"
 
     # TODO: add post processing config
 
@@ -460,6 +469,7 @@ class AssemblyGraphPostProcessor:
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
+        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG, SCORE_MISPRIMINGS),
     ):
         self.graph = graph
         self.query = query
@@ -476,6 +486,8 @@ class AssemblyGraphPostProcessor:
         self.COMPLEXITY_THRESHOLD = SequenceScoringConfig.complexity_threshold
         self.logger = logger(self)
         self.span_cost = span_cost
+
+        self.stages = stages
 
     @staticmethod
     def optimize_partition(
@@ -585,8 +597,8 @@ class AssemblyGraphPostProcessor:
                         subject_seq,
                         i,
                         j,
-                        min_primer_anneal=12,
-                        max_primer_anneal=30,
+                        min_primer_anneal=SequenceScoringConfig.mispriming_min_anneal,
+                        max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
                         cyclic=alignment.subject_region.cyclic,
                     )
                     x.append((misprimings, alignment))
@@ -596,7 +608,10 @@ class AssemblyGraphPostProcessor:
                 indices = argsorted(x, key=lambda x: x[0])
                 if x[0][0]:
                     group.groupings = [group.groupings[i] for i in indices]
-                    edata["efficiency"] = edata["efficiency"] * 0.5 ** x[0][0]
+                    edata["efficiency"] = (
+                        edata["efficiency"]
+                        * SequenceScoringConfig.mispriming_penalty ** x[0][0]
+                    )
                     add_edge_note(edata, "num_misprimings", x[0][0])
 
     def synthesis_partitioner(self, n1, n2, edata, border):
@@ -701,9 +716,12 @@ class AssemblyGraphPostProcessor:
     def update(self):
         bad_edges = []
         for n1, n2, edata in self.graph.edges(data=True):
-            self.update_long_pcr_products(n1, n2, edata)
-            self.update_pcr_product(n1, n2, edata)
-            bad_edges += self.update_complexity(n1, n2, edata)
+            if self.SCORE_LONG in self.stages:
+                self.update_long_pcr_products(n1, n2, edata)
+            if self.SCORE_MISPRIMINGS in self.stages:
+                self.update_pcr_product(n1, n2, edata)
+            if self.SCORE_COMPLEXITY in self.stages:
+                bad_edges += self.update_complexity(n1, n2, edata)
 
         self.logger.info(
             "Found {} highly complex synthesis segments".format(len(bad_edges))

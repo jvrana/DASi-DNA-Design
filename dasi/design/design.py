@@ -43,6 +43,7 @@ from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentContainerFactory
 from dasi.models import Assembly
+from dasi.schemas import Schemas
 from dasi.utils import log_metadata
 from dasi.utils import perfect_subject
 from dasi.utils.sequence import generate_fake_designs
@@ -756,3 +757,7 @@ class Design:
             return output
         else:
             raise ValueError("Format '{}' not recognized".format(fmt))
+
+    def out_jsonschema(self):
+        """Return the output JSONschema."""
+        return Schemas.output_schema

@@ -239,6 +239,7 @@ def _design_property(design, reaction_node_dict):
 
 
 def dasi_design_to_output_json(design: Union["Design", "LibraryDesign"]):
+    """Convert a DASi Design instance into an output JSON."""
     graph = dasi_design_to_dag(design)
     reaction_node_dict = {}
     molecule_node_dict = {}

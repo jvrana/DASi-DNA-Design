@@ -472,6 +472,11 @@ class DNAStats:
         }
 
 
+@lru_cache(500)
+def cached_stats(seq: str, hairpin_window: int):
+    return DNAStats(seq, 1, 1, hairpin_window, mode=DNAStats.ONLY_HAIRPIN)
+
+
 @lru_cache(32)
 def count_misprimings_in_amplicon(
     seq,
@@ -512,7 +517,7 @@ def count_misprimings_in_amplicon(
             j = j - i
             i = 0
 
-    stats = DNAStats(seq, 1, 1, min_primer_anneal, mode=DNAStats.ONLY_HAIRPIN)
+    stats = cached_stats(seq, min_primer_anneal)
     n1 = stats.count_repeats_from_slice(i, i + max_primer_anneal)
     k = j - max_primer_anneal
     if k < 0:

@@ -167,6 +167,13 @@ def gen_seq_with_rc_pairs(
 class TestDNAStats:
     """Test the DNAStats instance."""
 
+    def test_case_insensitive(self):
+        seq = random_seq(1000)
+        stats1 = DNAStats(seq.lower(), 20, 20, 20)
+        stats2 = DNAStats(seq.upper(), 20, 20, 20)
+        print(stats1.cost())
+        assert stats1.cost() == stats2.cost()
+
     def test_fwd_signatures(self):
         seq = "N" * 100 + random_seq(100) + "N" * 120
         stats = DNAStats(seq, 1, 1, hairpin_window=30)

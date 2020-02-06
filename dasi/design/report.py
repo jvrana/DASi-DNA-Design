@@ -73,7 +73,7 @@ class Report:
         ax2.plot(data.T)
         ax2.legend(keys, loc="center left", ncol=1, bbox_to_anchor=(1.0, 0.5))
 
-        stats = DNAStats(query + query + query, 14, 20, 20)
+        stats = DNAStats(str(query.seq) + str(query.seq) + str(query.seq), 14, 20, 20)
         costs_arr = []
         bp_arr = []
         windows = [100, 500, 1000, 2000]

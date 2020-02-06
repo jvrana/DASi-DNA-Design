@@ -474,8 +474,11 @@ class AssemblyGraphPostProcessor:
         self.graph = graph
         self.query = query
         self.seqdb = seqdb
+        query_seq = str(query.seq)
+        if is_circular(query):
+            query_seq = query_seq + query_seq
         self.stats = DNAStats(
-            self.query + self.query,
+            query_seq,
             repeat_window=stats_repeat_window,
             stats_window=stats_window,
             hairpin_window=stats_hairpin_window,

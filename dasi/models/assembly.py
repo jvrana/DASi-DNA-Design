@@ -287,8 +287,8 @@ def _design_pcr_product_primers(
         raise DasiDesignException(
             "Could not design primers for {name}[{i}:{j}].\nError: {e}".format(
                 name=trecord.name,
-                i=template.subject_rection.i,
-                j=template.subject_region.j,
+                i=template.subject_region.a,
+                j=template.subject_region.b,
                 e=str(e),
             )
         ) from e

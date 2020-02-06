@@ -473,11 +473,11 @@ class Design:
         else:
             self._assemble_graphs_without_threads()
 
-    def post_process_graphs(self):
+    def post_process_graphs(self, **kwargs):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
             processor = AssemblyGraphPostProcessor(
-                graph, query, self.span_cost, self.seqdb
+                graph, query, self.span_cost, self.seqdb, **kwargs
             )
             processor()
 
@@ -506,15 +506,24 @@ class Design:
         self._results = {}
 
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
-    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
+    def compile(
+        self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None
+    ):
         """Compile materials to assembly graph."""
         self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
-        self.post_process_graphs()
+        if post_processing_kwargs is None:
+            post_processing_kwargs = {}
+        self.post_process_graphs(**post_processing_kwargs)
 
-    def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS):
+    def run(
+        self,
+        n_paths: int = DEFAULT_N_ASSEMBLIES,
+        n_jobs: int = DEFAULT_N_JOBS,
+        post_processing_kwargs: Dict = None,
+    ):
         """Run the design. Runs `compile` and `optimize`, returning results
         that can be accessed by `design.results` or by `design.out()`
 
@@ -522,7 +531,7 @@ class Design:
         :param n_jobs: number of concurrent threads to run
         :return: results
         """
-        self.compile(n_jobs)
+        self.compile(n_jobs, post_processing_kwargs)
         return self.optimize(n_paths=n_paths, n_jobs=n_jobs)
 
     @property

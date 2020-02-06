@@ -469,7 +469,7 @@ class AssemblyGraphPostProcessor:
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
-        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG),
+        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG, SCORE_MISPRIMINGS),
     ):
         self.graph = graph
         self.query = query
@@ -549,7 +549,7 @@ class AssemblyGraphPostProcessor:
             return True
         return False
 
-    def update_complexity(self, n1, n2, edata):
+    def score_synthetic_dna(self, n1, n2, edata):
         bad_edges = []
         if edata["type_def"].synthesize:
             span = edata["span"]
@@ -572,7 +572,7 @@ class AssemblyGraphPostProcessor:
             Constants.PCR_PRODUCT_WITH_PRIMERS,
         ]
 
-    def update_long_pcr_products(self, n1, n2, edata):
+    def score_long_pcr_products(self, n1, n2, edata):
         if self._is_pcr_product(edata):
             span = edata["span"]
             for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
@@ -582,7 +582,7 @@ class AssemblyGraphPostProcessor:
                     break
 
     # TODO: select the best template...
-    def update_pcr_product(self, n1, n2, edata):
+    def score_primer_misprimings(self, n1, n2, edata):
         if self._is_pcr_product(edata):
             x = []
             group = edata["group"]
@@ -601,9 +601,9 @@ class AssemblyGraphPostProcessor:
                         max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
                         cyclic=alignment.subject_region.cyclic,
                     )
+                    x.append((misprimings, alignment))
                     if misprimings == 0:
                         break
-                    x.append((misprimings, alignment))
 
             # now sort the groupings so that the best template is used
             if hasattr(group, "groupings"):
@@ -717,14 +717,25 @@ class AssemblyGraphPostProcessor:
 
     def update(self):
         bad_edges = []
-        for n1, n2, edata in self.graph.edges(data=True):
-            if self.SCORE_LONG in self.stages:
-                self.update_long_pcr_products(n1, n2, edata)
-            if self.SCORE_MISPRIMINGS in self.stages:
-                self.update_pcr_product(n1, n2, edata)
-            if self.SCORE_COMPLEXITY in self.stages:
-                bad_edges += self.update_complexity(n1, n2, edata)
 
+        self.logger.info("Scoring long PCR products")
+        edges = list(self.graph.edges(data=True))
+
+        if self.SCORE_LONG in self.stages:
+            for n1, n2, edata in self.logger.tqdm(
+                edges, "INFO", desc="Scoring long PCR products"
+            ):
+                self.score_long_pcr_products(n1, n2, edata)
+        if self.SCORE_MISPRIMINGS in self.stages:
+            for n1, n2, edata in self.logger.tqdm(
+                edges, "INFO", desc="Scoring primer misprimings"
+            ):
+                self.score_primer_misprimings(n1, n2, edata)
+        if self.SCORE_COMPLEXITY in self.stages:
+            for n1, n2, edata in self.logger.tqdm(
+                edges, "INFO", desc="Scoring synthetic DNA"
+            ):
+                bad_edges += self.score_synthetic_dna(n1, n2, edata)
         self.logger.info(
             "Found {} highly complex synthesis segments".format(len(bad_edges))
         )

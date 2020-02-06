@@ -485,6 +485,7 @@ def count_misprimings_in_amplicon(
     min_primer_anneal: int = 12,
     max_primer_anneal: int = 30,
     cyclic: bool = False,
+    max_length: int = 3000,
 ):
     """Counts the estimated number of misprimings in an amplicon.
 
@@ -497,6 +498,9 @@ def count_misprimings_in_amplicon(
         Internally, this takes a window slice from the ends of the amplicon to look
         for repeats in the template.
     :param cyclic: If True, assumes the sequence is cyclic.
+    :param max_length: The maximum length to consider a mispriming. Generally,
+        this should be about the bp distinguishable in your fragment purification
+        (e.g. gel)
     :return:
     """
     if j == i:
@@ -516,6 +520,13 @@ def count_misprimings_in_amplicon(
         else:
             j = j - i
             i = 0
+
+        # trim extra long sequences
+        if len(seq) - j > 2 * max_length:
+            seq = seq[:j] + seq[j:][max_length] + seq[-max_length:]
+    else:
+        # trim extra long sequences
+        seq = seq[:i][:max_length] + seq[i:j] + seq[j:][:max_length]
 
     stats = cached_stats(seq, min_primer_anneal)
     n1 = stats.count_repeats_from_slice(i, i + max_primer_anneal)

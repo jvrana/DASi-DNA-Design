@@ -294,8 +294,12 @@ class LibraryDesign(Design):
         self._check_shared_repeats()
 
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
-    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
+    def compile(
+        self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None
+    ):
         """Compile the materials list into assembly graphs."""
+        if post_processing_kwargs is None:
+            post_processing_kwargs = {}
         self._uncompile()
         tracker = self.logger.track("INFO", desc="Compiling library", total=4).enter()
 
@@ -320,7 +324,7 @@ class LibraryDesign(Design):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
             processor = AssemblyGraphPostProcessor(
-                graph, query, self.span_cost, self.seqdb
+                graph, query, self.span_cost, self.seqdb, **post_processing_kwargs
             )
             processor()
             for n1, n2, edata in graph.edges(data=True):

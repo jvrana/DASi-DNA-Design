@@ -472,12 +472,12 @@ class DNAStats:
         }
 
 
-@lru_cache(500)
+@lru_cache(512)
 def cached_stats(seq: str, hairpin_window: int):
     return DNAStats(seq, 1, 1, hairpin_window, mode=DNAStats.ONLY_HAIRPIN)
 
 
-@lru_cache(32)
+@lru_cache(512)
 def count_misprimings_in_amplicon(
     seq,
     i,
@@ -521,13 +521,21 @@ def count_misprimings_in_amplicon(
             j = j - i
             i = 0
 
+        # TODO: trim extra long sequences
         # trim extra long sequences
-        if len(seq) - j > 2 * max_length:
-            seq = seq[:j] + seq[j:][max_length] + seq[-max_length:]
-    else:
-        # trim extra long sequences
-        seq = seq[:i][:max_length] + seq[i:j] + seq[j:][:max_length]
-
+        # if len(seq) - j > 2 * max_length:
+        #     seq = seq[:j] + seq[j:][max_length] + seq[-max_length:]
+    # else:
+    #     # trim extra long sequences
+    #     if i > max_length:
+    #         delta = max_length - i
+    #     else:
+    #         delta = 0
+    #     seq = seq[delta:i] + seq[i:j] + seq[j:][:max_length]
+    #     if i > max_length:
+    #         delta = max_length - i
+    #         i -= delta
+    #         j -= delta
     stats = cached_stats(seq, min_primer_anneal)
     n1 = stats.count_repeats_from_slice(i, i + max_primer_anneal)
     k = j - max_primer_anneal

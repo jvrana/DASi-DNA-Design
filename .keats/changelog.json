@@ -1,4 +1,11 @@
 {
+  "0.0.17": {
+    "description": "bug fixes",
+    "date": "2020-02-06T13:08:56.007142",
+    "changes": [
+      "fixes bugs in scoring misprimings"
+    ]
+  },
   "0.0.16": {
     "description": "speed improvements",
     "date": "2020-02-06T12:48:09.054983",

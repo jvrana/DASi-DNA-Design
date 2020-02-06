@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.Design &#8212; dasi 0.0.14 documentation</title>
+    <title>dasi.design.Design &#8212; dasi 0.0.15 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.14</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.15</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -57,7 +57,34 @@
      href="../index.html">DASi <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul class="current">
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">dasi.design.Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
@@ -95,7 +122,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dasi.utils.npdf.html">dasi.utils.npdf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.utils.region.html">dasi.utils.region</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
@@ -108,24 +134,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../usage.html#installation">Installation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../schemas/schemas.html">JSON Schemas</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
@@ -229,7 +237,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.out" title="dasi.design.Design.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt])</p></td>
 <td><p>Return the results of the design as a validates output JSON.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.run" title="dasi.design.Design.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.out_jsonschema" title="dasi.design.Design.out_jsonschema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_jsonschema</span></code></a>()</p></td>
+<td><p>Return the output JSONschema.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.run" title="dasi.design.Design.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs])</p></td>
 <td><p>Run the design.</p></td>
 </tr>
 </tbody>
@@ -571,6 +582,12 @@
 :type fmt: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param fmt:
 :return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.design.Design.out_jsonschema">
+<code class="sig-name descname">out_jsonschema</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/design.html#Design.out_jsonschema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.Design.out_jsonschema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the output JSONschema.</p>
 </dd></dl>
 
 <dl class="method">

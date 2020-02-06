@@ -469,7 +469,7 @@ class AssemblyGraphPostProcessor:
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
-        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG, SCORE_MISPRIMINGS),
+        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG),
     ):
         self.graph = graph
         self.query = query

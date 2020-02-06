@@ -34,6 +34,16 @@
           "items": {
             "$ref": "#/definitions/sequenceAnnotation"
           }
+        },
+        "customFields": {
+          "description": "Optional list of custom fields on the sequence.",
+          "type": "object",
+          "examples": [
+            {
+              "location": "benchtop",
+              "LIMS_ID": "UWBF_31251"
+            }
+          ]
         }
       },
       "required": [

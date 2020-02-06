@@ -1,0 +1,17 @@
+.. code-block:: python
+
+    from dasi import Design
+
+    design = Design()
+    design.add_materials(primers=primers, fragments=fragments, templates=templates, queries=queries)
+    design.run()
+    design.out()
+
+.. code-block:: python
+
+    from dasi import LibraryDesign
+
+    design = LibraryDesign()
+    design.add_materials(primers=primers, fragments=fragments, templates=templates, queries=queries)
+    design.run()
+    design.out()

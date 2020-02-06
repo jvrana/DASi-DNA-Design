@@ -4,6 +4,18 @@ Usage
 Getting started
 ---------------
 
+Installation
+^^^^^^^^^^^^
+
+Install or upgrade using pip3
+
+.. code-block:: bash
+
+    pip install dasi -U
+
+Running examples
+^^^^^^^^^^^^^^^^
+
 You can produce and run a randomized design by using the following:
 
 .. code-block:: python
@@ -15,19 +27,11 @@ You can produce and run a randomized design by using the following:
     design.run(n_paths=1)
     print(json.dumps(design.out(), indent=2))
 
-
-Installation
-------------
-
-Install or upgrade using pip3
-
-.. code-block:: bash
-
-    pip install dasi -U
-
+Advanced
+--------
 
 Using inventory information with DASi
--------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Additional sequence information can be added to sequences before DASi design,
 such that this information appears in the final result. For example, one
@@ -75,3 +79,9 @@ The annotations should appear in the results
     design.add_material(fragments=fragments, plasmids=plasmids, primers=primers, queries=queries)
     design.run()
     print(design.out())
+
+
+Adjusting design parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Documentation coming soon.

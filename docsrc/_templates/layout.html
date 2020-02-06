@@ -21,15 +21,18 @@
         <div class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#tab1" data-toggle="tab">Homology Cloning</a></li>
-                <li><a href="#tab2" data-toggle="tab">Golden-Gate</a></li>
                 <li><a href="#tab2" data-toggle="tab">Library Design</a></li>
-                <li><a href="#tab2" data-toggle="tab">Combinatorial Design</a></li>
+                <li><a href="#tab3" data-toggle="tab">Golden Gate</a></li>
+                <li><a href="#tab3" data-toggle="tab">Combinatorial Design</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab1">
                     {% include 'homology_cloning.html' %}
                 </div>
                 <div class="tab-pane" id="tab2">
+                    {% include 'library_cloning.html' %}
+                </div>
+                <div class="tab-pane" id="tab3">
                     <p>Coming soon!</p>
                 </div>
             </div>

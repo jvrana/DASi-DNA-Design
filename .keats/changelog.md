@@ -1,4 +1,11 @@
 # dasi change log
+## 0.0.15
+**2020-02-05T17:22:51.226522**
+features
+
+ - scores PCR products
+
+
 ## 0.0.14
 **2020-02-03T08:21:23.810686**
 bug fixes

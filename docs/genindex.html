@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Index &#8212; dasi 0.0.14 documentation</title>
+    <title>Index &#8212; dasi 0.0.15 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -41,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.14</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.15</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -57,6 +57,33 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.Design.html">dasi.design.Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
@@ -94,7 +121,6 @@
 <li class="toctree-l2"><a class="reference internal" href="utils.html#utility-modules">Utility modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.region.html">dasi.utils.region</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#networkx-utilities">Networkx utilities</a><ul>
@@ -107,24 +133,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#installation">Installation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="schemas/schemas.html">JSON Schemas</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#dasi-design-output">DASi design output</a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
@@ -453,6 +461,8 @@
         <li><a href="generated/dasi.design.LibraryDesign.html#dasi.design.LibraryDesign.compile">(dasi.design.LibraryDesign method)</a>
 </li>
       </ul></li>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.complexity_threshold">complexity_threshold (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.concat">concat() (dasi.utils.npdf.NumpyDataFrame class method)</a>
 </li>
       <li><a href="generated/dasi.utils.region.html#dasi.utils.region.EmptySpan.connecting_span">connecting_span() (dasi.utils.region.EmptySpan method)</a>
@@ -479,6 +489,8 @@
         <li><a href="generated/dasi.design.LibraryDesign.html#dasi.design.LibraryDesign.container_list">(dasi.design.LibraryDesign property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/dasi.design.Design.html#dasi.design.Design.containers">containers() (dasi.design.Design property)</a>
 
       <ul>
@@ -489,8 +501,6 @@
         <li><a href="generated/dasi.models.AlignmentContainerFactory.html#dasi.models.AlignmentContainerFactory.containers">(dasi.models.AlignmentContainerFactory method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/dasi.utils.region.html#dasi.utils.region.EmptySpan.contains_pos">contains_pos() (dasi.utils.region.EmptySpan method)</a>
 
       <ul>
@@ -581,8 +591,6 @@
 </li>
       <li><a href="generated/dasi.utils.region.html#module-dasi.utils.region">dasi.utils.region (module)</a>
 </li>
-      <li><a href="generated/dasi.utils.sequence_design.html#module-dasi.utils.sequence_design">dasi.utils.sequence_design (module)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="command_line.html#dasi.command_line.DasiCLI">DasiCLI (class in dasi.command_line)</a>
@@ -606,8 +614,6 @@
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.data">data() (dasi.utils.npdf.NumpyDataFrame property)</a>
 </li>
       <li><a href="generated/dasi.design.Design.html#dasi.design.Design">Design (class in dasi.design)</a>
-</li>
-      <li><a href="generated/dasi.utils.sequence_design.html#dasi.utils.sequence_design.design_primers">design_primers() (in module dasi.utils.sequence_design)</a>
 </li>
       <li><a href="generated/dasi.design.DesignResult.html#dasi.design.DesignResult">DesignResult (class in dasi.design)</a>
 </li>
@@ -727,8 +733,6 @@
         <li><a href="generated/dasi.models.AlignmentContainer.html#dasi.models.AlignmentContainer.get_groups_by_types">(dasi.models.AlignmentContainer method)</a>
 </li>
       </ul></li>
-      <li><a href="generated/dasi.utils.sequence_design.html#dasi.utils.sequence_design.get_primer_extensions">get_primer_extensions() (in module dasi.utils.sequence_design)</a>
-</li>
       <li><a href="generated/dasi.utils.region.html#dasi.utils.region.EmptySpan.get_slice">get_slice() (dasi.utils.region.EmptySpan method)</a>
 
       <ul>
@@ -875,12 +879,18 @@
 </li>
       <li><a href="constants.html#dasi.constants.Constants.MIN_OVERLAP">MIN_OVERLAP (dasi.constants.Constants attribute)</a>
 </li>
-      <li><a href="constants.html#dasi.constants.Constants.MISSING">MISSING (dasi.constants.Constants attribute)</a>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.mispriming_max_anneal">mispriming_max_anneal (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
 </li>
-      <li><a href="generated/dasi.models.Molecule.html#dasi.models.Molecule">Molecule (class in dasi.models)</a>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.mispriming_min_anneal">mispriming_min_anneal (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.mispriming_penalty">mispriming_penalty (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
+      <li><a href="constants.html#dasi.constants.Constants.MISSING">MISSING (dasi.constants.Constants attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/dasi.models.Molecule.html#dasi.models.Molecule">Molecule (class in dasi.models)</a>
+</li>
       <li><a href="generated/dasi.models.MoleculeType.html#dasi.models.MoleculeType">MoleculeType (class in dasi.models)</a>
 </li>
       <li><a href="generated/dasi.models.MultiPCRProductAlignmentGroup.html#dasi.models.MultiPCRProductAlignmentGroup">MultiPCRProductAlignmentGroup (class in dasi.models)</a>
@@ -915,6 +925,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.not_synthesizable_efficiency">not_synthesizable_efficiency (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.Null">Null (class in dasi.utils.npdf)</a>
 </li>
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame">NumpyDataFrame (class in dasi.utils.npdf)</a>
@@ -939,10 +951,16 @@
         <li><a href="generated/dasi.design.LibraryDesign.html#dasi.design.LibraryDesign.out">(dasi.design.LibraryDesign method)</a>
 </li>
       </ul></li>
-      <li><a href="generated/dasi.models.Reaction.html#dasi.models.Reaction.outputs">outputs (dasi.models.Reaction attribute)</a>
+      <li><a href="generated/dasi.design.Design.html#dasi.design.Design.out_jsonschema">out_jsonschema() (dasi.design.Design method)</a>
+
+      <ul>
+        <li><a href="generated/dasi.design.LibraryDesign.html#dasi.design.LibraryDesign.out_jsonschema">(dasi.design.LibraryDesign method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/dasi.models.Reaction.html#dasi.models.Reaction.outputs">outputs (dasi.models.Reaction attribute)</a>
+</li>
       <li><a href="generated/dasi.models.AssemblyNode.html#dasi.models.AssemblyNode.overhang">overhang() (dasi.models.AssemblyNode property)</a>
 </li>
       <li><a href="constants.html#dasi.constants.Constants.OVERLAP">OVERLAP (dasi.constants.Constants attribute)</a>
@@ -961,6 +979,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.pcr_length_range_efficiency_multiplier">pcr_length_range_efficiency_multiplier (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
       <li><a href="constants.html#dasi.constants.Constants.PCR_PRODUCT">PCR_PRODUCT (dasi.constants.Constants attribute)</a>
 </li>
       <li><a href="constants.html#dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER">PCR_PRODUCT_WITH_LEFT_PRIMER (dasi.constants.Constants attribute)</a>
@@ -975,10 +995,10 @@
         <li><a href="generated/dasi.models.alignment.html#dasi.models.alignment.PCRProductAlignmentGroup">(class in dasi.models.alignment)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/dasi.utils.html#dasi.utils.perfect_subject">perfect_subject() (in module dasi.utils)</a>, <a href="utils.html#dasi.utils.perfect_subject">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/dasi.utils.html#dasi.utils.perfect_subject">perfect_subject() (in module dasi.utils)</a>, <a href="utils.html#dasi.utils.perfect_subject">[1]</a>
+</li>
       <li><a href="constants.html#dasi.constants.Constants.PLASMID">PLASMID (dasi.constants.Constants attribute)</a>
 </li>
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.prefix">prefix() (dasi.utils.npdf.NumpyDataFrame method)</a>
@@ -1087,6 +1107,8 @@
       </ul></li>
       <li><a href="generated/dasi.utils.networkx.utils.html#dasi.utils.networkx.utils.select_from_arrs">select_from_arrs() (in module dasi.utils.networkx.utils)</a>
 </li>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig">SequenceScoringConfig (class in dasi.design.graph_builder)</a>
+</li>
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.shape">shape() (dasi.utils.npdf.NumpyDataFrame property)</a>
 </li>
       <li><a href="constants.html#dasi.constants.Constants.SHARED_FRAGMENT">SHARED_FRAGMENT (dasi.constants.Constants attribute)</a>
@@ -1114,6 +1136,12 @@
       <li><a href="generated/dasi.cost.utils.html#dasi.cost.utils.square_broadcast">square_broadcast() (in module dasi.cost.utils)</a>
 </li>
       <li><a href="generated/dasi.utils.npdf.html#dasi.utils.npdf.NumpyDataFrame.stack">stack() (dasi.utils.npdf.NumpyDataFrame class method)</a>
+</li>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.stats_hairpin_window">stats_hairpin_window (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.stats_repeat_window">stats_repeat_window (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
+</li>
+      <li><a href="generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig.stats_window">stats_window (dasi.design.graph_builder.SequenceScoringConfig attribute)</a>
 </li>
       <li><a href="generated/dasi.utils.region.html#dasi.utils.region.EmptySpan.sub">sub() (dasi.utils.region.EmptySpan method)</a>
 

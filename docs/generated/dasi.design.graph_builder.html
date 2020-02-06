@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.graph_builder &#8212; dasi 0.0.14 documentation</title>
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.15 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.14</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.15</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -56,6 +56,33 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dasi.design.Design.html">dasi.design.Design</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
@@ -93,7 +120,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dasi.utils.npdf.html">dasi.utils.npdf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.utils.region.html">dasi.utils.region</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.utils.sequence_design.html">dasi.utils.sequence_design</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
@@ -106,24 +132,6 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../usage.html#installation">Installation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../schemas/schemas.html">JSON Schemas</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
@@ -193,6 +201,9 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor" title="dasi.design.graph_builder.AssemblyGraphPostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyGraphPostProcessor</span></code></a>(graph, query, …)</p></td>
 <td><p>Post-processing for assembly graphs.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig" title="dasi.design.graph_builder.SequenceScoringConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceScoringConfig</span></code></a></p></td>
+<td><p>Configuration for scoring sequences.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="class">
@@ -223,7 +234,7 @@
 </table>
 <dl class="method">
 <dt id="dasi.design.graph_builder.AssemblyGraphBuilder.add_edge">
-<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">internal_or_external</em>, <em class="sig-param">condition</em>, <em class="sig-param">group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_edge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">internal_or_external</em>, <em class="sig-param">condition</em>, <em class="sig-param">group</em>, <em class="sig-param">notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an edge between two assembly nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -248,7 +259,7 @@
 
 <dl class="method">
 <dt id="dasi.design.graph_builder.AssemblyGraphBuilder.add_edge_to_graph">
-<em class="property">static </em><code class="sig-name descname">add_edge_to_graph</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">group</em>, <em class="sig-param">notes=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge_to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_edge_to_graph" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">add_edge_to_graph</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">n1</em>, <em class="sig-param">n2</em>, <em class="sig-param">cost</em>, <em class="sig-param">material</em>, <em class="sig-param">time</em>, <em class="sig-param">efficiency</em>, <em class="sig-param">span</em>, <em class="sig-param">atype</em>, <em class="sig-param">group</em>, <em class="sig-param">notes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphBuilder.add_edge_to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphBuilder.add_edge_to_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an edge between two assembly nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -303,7 +314,7 @@
 
 <dl class="class">
 <dt id="dasi.design.graph_builder.AssemblyGraphPostProcessor">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.design.graph_builder.</code><code class="sig-name descname">AssemblyGraphPostProcessor</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">query</em>, <em class="sig-param">span_cost</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphPostProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">dasi.design.graph_builder.</code><code class="sig-name descname">AssemblyGraphPostProcessor</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">query</em>, <em class="sig-param">span_cost</em>, <em class="sig-param">seqdb</em>, <em class="sig-param">stats_repeat_window=14</em>, <em class="sig-param">stats_window=20</em>, <em class="sig-param">stats_hairpin_window=20</em>, <em class="sig-param">stages=('SCORE_COMPLEXITY'</em>, <em class="sig-param">'SCORE_LONG_PCR_PRODUCTS')</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphPostProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Post-processing for assembly graphs. Evaluates:</p>
 <ol class="arabic simple">
@@ -341,6 +352,103 @@ given array.</p>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.design.graph_builder.</code><code class="sig-name descname">SequenceScoringConfig</code><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#SequenceScoringConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Configuration for scoring sequences.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.complexity_threshold" title="dasi.design.graph_builder.SequenceScoringConfig.complexity_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complexity_threshold</span></code></a></p></td>
+<td><p>threshold for sequence complexity that is not synthesizable by a vendor</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.mispriming_max_anneal" title="dasi.design.graph_builder.SequenceScoringConfig.mispriming_max_anneal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mispriming_max_anneal</span></code></a></p></td>
+<td><p>maximum expected bp for a primer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.mispriming_min_anneal" title="dasi.design.graph_builder.SequenceScoringConfig.mispriming_min_anneal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mispriming_min_anneal</span></code></a></p></td>
+<td><p>minimum bp to look for misprimings</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.mispriming_penalty" title="dasi.design.graph_builder.SequenceScoringConfig.mispriming_penalty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mispriming_penalty</span></code></a></p></td>
+<td><p>multiplier to apply to each mispriming</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.not_synthesizable_efficiency" title="dasi.design.graph_builder.SequenceScoringConfig.not_synthesizable_efficiency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_synthesizable_efficiency</span></code></a></p></td>
+<td><p>efficiency value for sequence that is not synthesizable</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.pcr_length_range_efficiency_multiplier" title="dasi.design.graph_builder.SequenceScoringConfig.pcr_length_range_efficiency_multiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pcr_length_range_efficiency_multiplier</span></code></a></p></td>
+<td><p>multiplier to apply to the efficiency if PCR is within the given length range</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.stats_hairpin_window" title="dasi.design.graph_builder.SequenceScoringConfig.stats_hairpin_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stats_hairpin_window</span></code></a></p></td>
+<td><p>length of kmer to find sequence hairpins</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.stats_repeat_window" title="dasi.design.graph_builder.SequenceScoringConfig.stats_repeat_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stats_repeat_window</span></code></a></p></td>
+<td><p>length of kmer to find sequence repeats</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.SequenceScoringConfig.stats_window" title="dasi.design.graph_builder.SequenceScoringConfig.stats_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stats_window</span></code></a></p></td>
+<td><p>length of window for sliding window calculations</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.complexity_threshold">
+<code class="sig-name descname">complexity_threshold</code><em class="property"> = 10</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.complexity_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>threshold for sequence complexity that is not synthesizable by a vendor</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.mispriming_max_anneal">
+<code class="sig-name descname">mispriming_max_anneal</code><em class="property"> = 30</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.mispriming_max_anneal" title="Permalink to this definition">¶</a></dt>
+<dd><p>maximum expected bp for a primer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.mispriming_min_anneal">
+<code class="sig-name descname">mispriming_min_anneal</code><em class="property"> = 12</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.mispriming_min_anneal" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimum bp to look for misprimings</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.mispriming_penalty">
+<code class="sig-name descname">mispriming_penalty</code><em class="property"> = 0.5</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.mispriming_penalty" title="Permalink to this definition">¶</a></dt>
+<dd><p>multiplier to apply to each mispriming</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.not_synthesizable_efficiency">
+<code class="sig-name descname">not_synthesizable_efficiency</code><em class="property"> = 0.1</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.not_synthesizable_efficiency" title="Permalink to this definition">¶</a></dt>
+<dd><p>efficiency value for sequence that is not synthesizable</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.pcr_length_range_efficiency_multiplier">
+<code class="sig-name descname">pcr_length_range_efficiency_multiplier</code><em class="property"> = [(4000, 5000, 0.8), (5000, 6000, 0.5), (6000, 1000, 0.2)]</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.pcr_length_range_efficiency_multiplier" title="Permalink to this definition">¶</a></dt>
+<dd><p>multiplier to apply to the efficiency if PCR is within the given length range</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.stats_hairpin_window">
+<code class="sig-name descname">stats_hairpin_window</code><em class="property"> = 20</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.stats_hairpin_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>length of kmer to find sequence hairpins</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.stats_repeat_window">
+<code class="sig-name descname">stats_repeat_window</code><em class="property"> = 14</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.stats_repeat_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>length of kmer to find sequence repeats</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.design.graph_builder.SequenceScoringConfig.stats_window">
+<code class="sig-name descname">stats_window</code><em class="property"> = 20</em><a class="headerlink" href="#dasi.design.graph_builder.SequenceScoringConfig.stats_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>length of window for sliding window calculations</p>
 </dd></dl>
 
 </dd></dl>

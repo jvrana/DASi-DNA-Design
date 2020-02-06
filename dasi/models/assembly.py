@@ -274,14 +274,24 @@ def _design_pcr_product_primers(
         lseq = None
 
     # design primers
-    pairs, explain = _design_primers(
-        tseq,
-        template.subject_region,
-        lseq,
-        rseq,
-        left_overhang=loverhang,
-        right_overhang=roverhang,
-    )
+    try:
+        pairs, explain = _design_primers(
+            tseq,
+            template.subject_region,
+            lseq,
+            rseq,
+            left_overhang=loverhang,
+            right_overhang=roverhang,
+        )
+    except Exception as e:
+        raise DasiDesignException(
+            "Could not design primers for {name}[{i}:{j}].\nError: {e}".format(
+                name=trecord.name,
+                i=template.subject_rection.i,
+                j=template.subject_region.j,
+                e=str(e),
+            )
+        ) from e
     for pair in pairs.values():
         pair["LEFT"]["SUBJECT_KEY"] = lkey
         pair["LEFT"]["GROUP"] = fwd

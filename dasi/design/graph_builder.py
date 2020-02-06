@@ -601,6 +601,8 @@ class AssemblyGraphPostProcessor:
                         max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
                         cyclic=alignment.subject_region.cyclic,
                     )
+                    if misprimings == 0:
+                        break
                     x.append((misprimings, alignment))
 
             # now sort the groupings so that the best template is used

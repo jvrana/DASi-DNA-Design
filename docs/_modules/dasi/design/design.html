@@ -646,11 +646,11 @@ class FakePool:
         else:
             self._assemble_graphs_without_threads()
 
-    def post_process_graphs(self):
+    def post_process_graphs(self, **kwargs):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
             processor = AssemblyGraphPostProcessor(
-                graph, query, self.span_cost, self.seqdb
+                graph, query, self.span_cost, self.seqdb, **kwargs
             )
             processor()
 
@@ -679,15 +679,18 @@ class FakePool:
         self._results = {}
 
 <div class="viewcode-block" id="Design.compile"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design.compile">[docs]</a>    @log_metadata(&quot;compile&quot;, additional_metadata={&quot;algorithm&quot;: ALGORITHM})
-    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None):
         &quot;&quot;&quot;Compile materials to assembly graph.&quot;&quot;&quot;
         self._uncompile()
         with self.logger.timeit(&quot;DEBUG&quot;, &quot;running blast&quot;):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
-        self.post_process_graphs()</div>
+        if post_processing_kwargs is None:
+            post_processing_kwargs = {}
+        self.post_process_graphs(**post_processing_kwargs)</div>
 
-<div class="viewcode-block" id="Design.run"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design.run">[docs]</a>    def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS):
+<div class="viewcode-block" id="Design.run"><a class="viewcode-back" href="../../../generated/dasi.design.Design.html#dasi.design.Design.run">[docs]</a>    def run(self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS,
+            post_processing_kwargs: Dict = None):
         &quot;&quot;&quot;Run the design. Runs `compile` and `optimize`, returning results
         that can be accessed by `design.results` or by `design.out()`
 
@@ -695,7 +698,7 @@ class FakePool:
         :param n_jobs: number of concurrent threads to run
         :return: results
         &quot;&quot;&quot;
-        self.compile(n_jobs)
+        self.compile(n_jobs, post_processing_kwargs)
         return self.optimize(n_paths=n_paths, n_jobs=n_jobs)</div>
 
     @property

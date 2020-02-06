@@ -232,7 +232,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.add_templates" title="dasi.design.LibraryDesign.add_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_templates</span></code></a>(templates)</p></td>
 <td><p>Add template sequences to materials list.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.compile" title="dasi.design.LibraryDesign.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>([n_jobs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.compile" title="dasi.design.LibraryDesign.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>([n_jobs, post_processing_kwargs])</p></td>
 <td><p>Compile the materials list into assembly graphs.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.filter_linear_records" title="dasi.design.LibraryDesign.filter_linear_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_linear_records</span></code></a>(records)</p></td>
@@ -250,7 +250,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.out_jsonschema" title="dasi.design.LibraryDesign.out_jsonschema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_jsonschema</span></code></a>()</p></td>
 <td><p>Return the output JSONschema.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.run" title="dasi.design.LibraryDesign.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.run" title="dasi.design.LibraryDesign.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs, post_processing_kwargs])</p></td>
 <td><p>Run the design.</p></td>
 </tr>
 </tbody>
@@ -310,7 +310,7 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">assemble_graphs</span></code>(n_jobs)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.compile" title="dasi.design.LibraryDesign.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>([n_jobs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.compile" title="dasi.design.LibraryDesign.compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code></a>([n_jobs, post_processing_kwargs])</p></td>
 <td><p>Compile the materials list into assembly graphs.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fake</span></code>(circular, n_cyclic_seqs, n_linear_seqs, …)</p></td>
@@ -336,13 +336,13 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_process_graphs</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">post_process_graphs</span></code>(**kwargs)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.run" title="dasi.design.LibraryDesign.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.LibraryDesign.run" title="dasi.design.LibraryDesign.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([n_paths, n_jobs, post_processing_kwargs])</p></td>
 <td><p>Run the design.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_df</span></code>([assembly_index])</p></td>
@@ -524,7 +524,7 @@ to themselves.</p>
 
 <dl class="method">
 <dt id="dasi.design.LibraryDesign.compile">
-<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">n_jobs=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign.compile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compile</code><span class="sig-paren">(</span><em class="sig-param">n_jobs=10</em>, <em class="sig-param">post_processing_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/library_design.html#LibraryDesign.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.LibraryDesign.compile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile the materials list into assembly graphs.</p>
 </dd></dl>
 
@@ -623,7 +623,7 @@ to themselves.</p>
 
 <dl class="method">
 <dt id="dasi.design.LibraryDesign.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">n_paths=3</em>, <em class="sig-param">n_jobs=1</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">n_paths=3</em>, <em class="sig-param">n_jobs=1</em>, <em class="sig-param">post_processing_kwargs=None</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.LibraryDesign.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the design. Runs <cite>compile</cite> and <cite>optimize</cite>, returning results
 that can be accessed by <cite>design.results</cite> or by <cite>design.out()</cite></p>
 <dl class="field-list simple">

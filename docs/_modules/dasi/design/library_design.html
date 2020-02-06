@@ -467,8 +467,10 @@ def cluster_graph(design):
         self._check_shared_repeats()
 
 <div class="viewcode-block" id="LibraryDesign.compile"><a class="viewcode-back" href="../../../generated/dasi.design.LibraryDesign.html#dasi.design.LibraryDesign.compile">[docs]</a>    @log_metadata(&quot;compile&quot;, additional_metadata={&quot;algorithm&quot;: ALGORITHM})
-    def compile(self, n_jobs: int = DEFAULT_N_JOBS):
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None):
         &quot;&quot;&quot;Compile the materials list into assembly graphs.&quot;&quot;&quot;
+        if post_processing_kwargs is None:
+            post_processing_kwargs = {}
         self._uncompile()
         tracker = self.logger.track(&quot;INFO&quot;, desc=&quot;Compiling library&quot;, total=4).enter()
 
@@ -493,7 +495,7 @@ def cluster_graph(design):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
             processor = AssemblyGraphPostProcessor(
-                graph, query, self.span_cost, self.seqdb
+                graph, query, self.span_cost, self.seqdb, **post_processing_kwargs
             )
             processor()
             for n1, n2, edata in graph.edges(data=True):

@@ -54,6 +54,7 @@ Features and Improvements Road Map
     - Cleaner JSON output
     - Scoring PCR reactions for primer misprimings
     - Scoring assembly efficiencies
+    - Logging to file
 
 * ^0.1
     - faster execution times
@@ -72,8 +73,8 @@ Features and Improvements Road Map
         + SBOL (XML) output
         + graph output
 
-* ^0.4
-    - apps
+* ^1.0
+    - deployment
         + web interface
         + dockerized container
 

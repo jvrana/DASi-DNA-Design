@@ -642,7 +642,7 @@ def add_edge_note(edata, key, value):
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
-        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG),
+        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG, SCORE_MISPRIMINGS),
     ):
         self.graph = graph
         self.query = query
@@ -774,9 +774,9 @@ def add_edge_note(edata, key, value):
                         max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
                         cyclic=alignment.subject_region.cyclic,
                     )
+                    x.append((misprimings, alignment))
                     if misprimings == 0:
                         break
-                    x.append((misprimings, alignment))
 
             # now sort the groupings so that the best template is used
             if hasattr(group, &quot;groupings&quot;):
@@ -890,14 +890,21 @@ def add_edge_note(edata, key, value):
 
     def update(self):
         bad_edges = []
-        for n1, n2, edata in self.graph.edges(data=True):
-            if self.SCORE_LONG in self.stages:
-                self.update_long_pcr_products(n1, n2, edata)
-            if self.SCORE_MISPRIMINGS in self.stages:
-                self.update_pcr_product(n1, n2, edata)
-            if self.SCORE_COMPLEXITY in self.stages:
-                bad_edges += self.update_complexity(n1, n2, edata)
 
+        self.logger.info(&quot;Scoring long PCR products&quot;)
+        edges = list(self.graph.edges(data=True))
+
+        if self.SCORE_LONG in self.stages:
+            for n1, n2, edata in self.logger.tqdm(edges, &quot;INFO&quot;, desc=&#39;Scoring long PCR products&#39;):
+                self.update_long_pcr_products(n1, n2, edata)
+        if self.SCORE_MISPRIMINGS in self.stages:
+            for n1, n2, edata in self.logger.tqdm(edges, &quot;INFO&quot;,
+                                                  desc=&#39;Scoring primer misprimings&#39;):
+                self.update_pcr_product(n1, n2, edata)
+        if self.SCORE_COMPLEXITY in self.stages:
+            for n1, n2, edata in self.logger.tqdm(edges, &quot;INFO&quot;,
+                                                  desc=&#39;Scoring synthetic DNA&#39;):
+                bad_edges += self.update_complexity(n1, n2, edata)
         self.logger.info(
             &quot;Found {} highly complex synthesis segments&quot;.format(len(bad_edges))
         )

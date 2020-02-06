@@ -1,4 +1,12 @@
 {
+  "0.0.16": {
+    "description": "speed improvements",
+    "date": "2020-02-06T12:48:09.054983",
+    "changes": [
+      "scoring misprimings is much faster",
+      "exposed post processing parameters to `design.compile`"
+    ]
+  },
   "0.0.15": {
     "description": "features",
     "date": "2020-02-05T17:22:51.226522",

@@ -55,6 +55,7 @@ Features and Improvements Road Map
     - Scoring PCR reactions for primer misprimings
     - Scoring assembly efficiencies
     - Logging to file
+    - PDF design reports
 
 * ^0.1
     - faster execution times

@@ -613,11 +613,12 @@ class AssemblyGraphPostProcessor:
                 indices = argsorted(x, key=lambda x: x[0])
                 if x[0][0]:
                     group.groupings = [group.groupings[i] for i in indices]
-                    edata["efficiency"] = (
-                        edata["efficiency"]
-                        * SequenceScoringConfig.mispriming_penalty ** x[0][0]
-                    )
-                    add_edge_note(edata, "num_misprimings", x[0][0])
+            if x and x[0]:
+                edata["efficiency"] = (
+                    edata["efficiency"]
+                    * SequenceScoringConfig.mispriming_penalty ** x[0][0]
+                )
+                add_edge_note(edata, "num_misprimings", x[0][0])
 
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)

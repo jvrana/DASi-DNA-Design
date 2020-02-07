@@ -147,7 +147,7 @@ def _get_primer_extensions(
         right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
         raise DasiSequenceDesignException(
-            "Sequence is cyclic but there are no " "successors for {}".format(n2)
+            "Sequence is cyclic but there are no successors for {}".format(n2)
         )
     else:
         right_ext = 0
@@ -159,7 +159,7 @@ def _get_primer_extensions(
         left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
         raise DasiSequenceDesignException(
-            "Sequence is cyclic but there are no " "precessors for {}".format(n1)
+            "Sequence is cyclic but there are no precessors for {}".format(n1)
         )
     else:
         left_ext = 0
@@ -284,12 +284,14 @@ def _design_pcr_product_primers(
             right_overhang=roverhang,
         )
     except Exception as e:
-        raise DasiDesignException(
-            "Could not design primers for {name}[{i}:{j}].\nError: {e}".format(
+        raise DasiSequenceDesignException(
+            "Could not design primers for {name}[{i}:{j}].\nError: {e}\n{edge}\n{x}".format(
                 name=trecord.name,
                 i=template.subject_region.a,
                 j=template.subject_region.b,
                 e=str(e),
+                edge=edge,
+                x=edge[2]["groups"][0].alignments[0].subject_region,
             )
         ) from e
     for pair in pairs.values():

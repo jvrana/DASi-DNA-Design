@@ -29,6 +29,7 @@ from .alignment_container import AlignmentContainer
 from .molecule import Molecule
 from .molecule import MoleculeType
 from .molecule import Reaction
+from dasi.config import Config
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.exceptions import DasiDesignException
@@ -101,12 +102,12 @@ def _design_primers(
     design.settings.left_overhang(left_overhang)
     design.settings.right_overhang(right_overhang)
     design.PRIMER_PICK_ANYWAY = False
-    design.PRIMER_MIN_ANNEAL_CHECK = 12
+    design.PRIMER_MIN_ANNEAL_CHECK = Config.PRIMER3_MIN_ANNEAL_CHECK
     design.settings.use_overhangs()
     design.settings.long_ok()
 
     design.logger.set_level("INFO")
-    pairs, explain = design.run_and_optimize(15, pick_anyway=True)
+    pairs, explain = design.run_and_optimize(Config.PRIMER3_N_RUNS, pick_anyway=True)
     if index is not None:
         for pair in pairs.values():
             loc = pair["LEFT"]["location"]

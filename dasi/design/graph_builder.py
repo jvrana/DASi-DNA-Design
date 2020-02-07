@@ -20,9 +20,11 @@ from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
 from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
+from dasi.models import MultiPCRProductAlignmentGroup
 from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import argsorted
 from dasi.utils import bisect_between
+from dasi.utils import lexsorted
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.sequence import count_misprimings_in_amplicon
@@ -587,8 +589,10 @@ class AssemblyGraphPostProcessor:
     # TODO: select the best template...
     def score_primer_misprimings(self, n1, n2, edata):
         if self._is_pcr_product(edata):
-            x = []
+
             group = edata["group"]
+
+            misprime_list = []
             for alignment in group.alignments:
                 if alignment.type not in [Constants.PRIMER]:
                     subject_key = alignment.subject_key
@@ -604,21 +608,28 @@ class AssemblyGraphPostProcessor:
                         max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
                         cyclic=alignment.subject_region.cyclic,
                     )
-                    x.append((misprimings, alignment))
+                    misprime_list.append((misprimings, alignment))
                     if misprimings == 0:
                         break
 
+            # sort by misprimings
+            misprime_list = sorted(misprime_list, key=lambda x: x[0])
+
             # now sort the groupings so that the best template is used
-            if hasattr(group, "groupings"):
-                indices = argsorted(x, key=lambda x: x[0])
-                if x[0][0]:
-                    group.groupings = [group.groupings[i] for i in indices]
-            if x and x[0]:
+            if isinstance(group, MultiPCRProductAlignmentGroup):
+                group.groupings = lexsorted(
+                    misprime_list, group.groupings, key=lambda x: x[0]
+                )
+
+            # adjust the efficiency
+            min_misprimings = misprime_list[0][0]
+            if min_misprimings:
                 edata["efficiency"] = (
                     edata["efficiency"]
-                    * SequenceScoringConfig.mispriming_penalty ** x[0][0]
+                    * SequenceScoringConfig.mispriming_penalty ** min_misprimings
                 )
-                add_edge_note(edata, "num_misprimings", x[0][0])
+
+                add_edge_note(edata, "num_misprimings", min_misprimings)
 
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)

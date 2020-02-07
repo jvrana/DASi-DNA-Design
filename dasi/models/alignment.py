@@ -1,4 +1,8 @@
-"""Alignments."""
+"""Alignments.
+
+These classes represent abstract alignments between existing and
+potential molecules that could be produced.
+"""
 from collections.abc import Sized
 from typing import Dict
 from typing import List
@@ -19,6 +23,11 @@ class RepresentsMolecule:
             raise ValueError("atype '{}' not in MoleculeTypes".format(atype))
 
     def size_ok(self):
+        """Determine if the size of this molecule is 'acceptable' from the
+        bounded molecule type.
+
+        :return: whether this passes the size requirement of the molecule type.
+        """
         size = len(self.query_region)
         mol_type = MoleculeType.types[self.type]
         if mol_type.min_size is not None and size < mol_type.min_size:
@@ -247,6 +256,13 @@ class AlignmentGroup(AlignmentGroupBase):
         )
 
 
+# class RepresentsPCR(AlignmentGroupBase):
+#
+#     @abstractmethod
+#     def get_templates(self):
+#         pass
+
+
 class PCRProductAlignmentGroup(AlignmentGroupBase):
     """Represents a PCR product alignment from a template alignment and
     forward and reverse alignments. Represents several situations:
@@ -305,7 +321,7 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
 
         query_region = query_region.new(a, b)
 
-        self.raw_template = template
+        self.template = template
         self.fwd = fwd
         self.rev = rev
 
@@ -334,13 +350,15 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         query_region: Region,
         group_type: str,
     ):
-        """Initializes a new MultiPCRProductAlignmentGroup.
+        """Initializes a new MultiPCRProductAlignmentGroup. This object
+        represents a region of DNA that can be produced from a number of
+        different forward, reverse, and template DNAs, all producing the same
+        sequence.
 
-        :param fwds:
-        :param templates:
-        :param revs:
-        :param query_region:
-        :param group_type:
+        :param groupings: dictionary of groupings with the "fwd", "rev" and "template"
+            keys.
+        :param query_region: query region
+        :param group_type: group type
         """
         self.groupings = groupings
         self._templates = [None] * len(self.groupings)
@@ -352,7 +370,8 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
             alignments=alignments, query_region=query_region, group_type=group_type
         )
 
-    def get_template(self, index):
+    # TODO: explain this method? Why intersection?
+    def get_template(self, index: int = 0):
         if self._templates[index] is None:
             template = self.groupings[index]["template"]
             intersection = template.query_region.intersection(self.query_region)

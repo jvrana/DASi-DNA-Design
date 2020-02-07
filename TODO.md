@@ -8,6 +8,14 @@
 *graph post-processing config*
 
 ## Coalition optimization
+* Make a new class called DesignConfig
+    + Should contain min_primer_anneal. This value should be used
+        for calculating primer3 design parameters (as in primer3plus.utils.anneal).
+        This same value minus one, should be used to find misprimings in the Graph
+        post processor. User should be able to relax or tighten the post processor.
+    + Could contain n_jobs, n_paths
+    + Other post processor parameters
+    + cost parameters?
 * shared templates? select from same templates, if possible
 * shared sequences and fragments?
 * shared primers?

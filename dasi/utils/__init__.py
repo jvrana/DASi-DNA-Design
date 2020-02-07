@@ -241,3 +241,8 @@ def argsorted(
         return s
     else:
         return [_s[0] for _s in s]
+
+
+def lexsorted(keys: Iterable, target: Iterable[T], key: Callable) -> List[T]:
+    sorted_indices = argsorted(enumerate(tee(keys)[0]), key=key)
+    return [target[i] for i in sorted_indices]

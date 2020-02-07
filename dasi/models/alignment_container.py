@@ -153,7 +153,7 @@ class AlignmentContainer(Sized):
     def pcr_constructor(data):
         groups = []
         for (a, b, group_type), adict_list in data.items():
-            g = [
+            groupings = [
                 {"fwd": d["fwd"], "rev": d["rev"], "template": d["template"]}
                 for d in adict_list
             ]
@@ -163,7 +163,9 @@ class AlignmentContainer(Sized):
 
             groups.append(
                 MultiPCRProductAlignmentGroup(
-                    g, query_region=adict_list[0]["query_region"], group_type=group_type
+                    groupings,
+                    query_region=adict_list[0]["query_region"],
+                    group_type=group_type,
                 )
             )
         return groups
@@ -616,7 +618,7 @@ class AlignmentContainer(Sized):
         group_key = (group.query_region.a, group.query_region.b, group.type)
         data = {
             "fwd": group.fwd,
-            "template": group.raw_template,
+            "template": group.template,
             "rev": group.rev,
             "query_region": group.query_region,
         }

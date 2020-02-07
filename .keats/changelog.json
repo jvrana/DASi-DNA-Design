@@ -1,4 +1,11 @@
 {
+  "0.0.20": {
+    "description": "fixes serious bug",
+    "date": "2020-02-07T10:42:08.775847",
+    "changes": [
+      "fixes bug in calculating misprimings, which was causing invalid pcr product to be produced"
+    ]
+  },
   "0.0.19a": {
     "description": "",
     "date": "2020-02-07T07:09:29.642357",

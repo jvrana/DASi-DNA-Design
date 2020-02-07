@@ -100,12 +100,13 @@ def _design_primers(
     design.settings.product_size((len(region), len(region)))
     design.settings.left_overhang(left_overhang)
     design.settings.right_overhang(right_overhang)
-    design.PRIMER_PICK_ANYWAY = True
+    design.PRIMER_PICK_ANYWAY = False
+    design.PRIMER_MIN_ANNEAL_CHECK = 12
     design.settings.use_overhangs()
     design.settings.long_ok()
 
     design.logger.set_level("INFO")
-    pairs, explain = design.run_and_optimize(15)
+    pairs, explain = design.run_and_optimize(15, pick_anyway=True)
     if index is not None:
         for pair in pairs.values():
             loc = pair["LEFT"]["location"]

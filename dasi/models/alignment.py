@@ -481,6 +481,7 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         :param index:
         :return:
         """
+
         if self._templates[index] is None:
             template = self.groupings[index]["template"]
             intersection = template.query_region.intersection(self.query_region)

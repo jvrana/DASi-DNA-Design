@@ -13,6 +13,7 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import partition
 from pyblast.utils import is_circular
 
+from dasi.config import Config
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.log import logger
@@ -22,13 +23,15 @@ from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import MultiPCRProductAlignmentGroup
 from dasi.models import PCRProductAlignmentGroup
-from dasi.utils import argsorted
 from dasi.utils import bisect_between
 from dasi.utils import lexsorted
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.sequence import count_misprimings_in_amplicon
 from dasi.utils.sequence import DNAStats
+
+
+SequenceScoringConfig = Config.SequenceScoringConfig
 
 
 # TODO: whenever the efficiency is adjusted, record this in the notes
@@ -41,7 +44,7 @@ def add_edge_note(edata, key, value):
 class AssemblyGraphBuilder:
     """Class that builds an AssemblyGraph from an alignment container."""
 
-    COST_THRESHOLD = 10000
+    COST_THRESHOLD = Config.ASSEMBLY_COST_THRESHOLD
 
     def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
         self.container = alignment_container
@@ -422,28 +425,6 @@ class AssemblyGraphBuilder:
         return self.G
 
 
-class SequenceScoringConfig:
-    """Configuration for scoring sequences."""
-
-    stats_repeat_window = 14  #: length of kmer to find sequence repeats
-    stats_window = 20  #: length of window for sliding window calculations
-    stats_hairpin_window = 20  #: length of kmer to find sequence hairpins
-    mispriming_min_anneal = 12  #: minimum bp to look for misprimings
-    mispriming_max_anneal = 30  #: maximum expected bp for a primer
-    mispriming_penalty = 0.5  #: multiplier to apply to each mispriming
-    complexity_threshold = (
-        10
-    )  #: threshold for sequence complexity that is not synthesizable by a vendor
-    not_synthesizable_efficiency = (
-        0.1
-    )  #: efficiency value for sequence that is not synthesizable
-    pcr_length_range_efficiency_multiplier = [
-        (4000, 5000, 0.8),
-        (5000, 6000, 0.5),
-        (6000, 1000, 0.2),
-    ]  #: multiplier to apply to the efficiency if PCR is within the given length range
-
-
 # TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
 # TODO: refactor this class, expose config options
 
@@ -631,6 +612,7 @@ class AssemblyGraphPostProcessor:
 
                 add_edge_note(edata, "num_misprimings", min_misprimings)
 
+    # TODO: implement partitioner?
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)
         partitions = self.stats.partition(

@@ -7,6 +7,7 @@ import pytest
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
+from dasi.config import Config
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.models import Alignment
@@ -298,10 +299,10 @@ class TestExpandPrimers:
     @pytest.mark.parametrize(
         "x",
         [
-            (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND, 3),
-            (Constants.PRIMER_MIN_BIND - 1, Constants.PRIMER_MIN_BIND, 1),
-            (Constants.PRIMER_MIN_BIND, Constants.PRIMER_MIN_BIND - 1, 1),
-            (Constants.PRIMER_MIN_BIND - 1, Constants.PRIMER_MIN_BIND - 1, 0),
+            (Config.PRIMER_MIN_BIND, Config.PRIMER_MIN_BIND, 3),
+            (Config.PRIMER_MIN_BIND - 1, Config.PRIMER_MIN_BIND, 1),
+            (Config.PRIMER_MIN_BIND, Config.PRIMER_MIN_BIND - 1, 1),
+            (Config.PRIMER_MIN_BIND - 1, Config.PRIMER_MIN_BIND - 1, 0),
         ],
         ids=[
             "both primers valid",
@@ -331,8 +332,8 @@ class TestExpandPrimers:
 
     def test_position_of_pairs(self, container):
         left_primer_len, right_primer_len = (
-            Constants.PRIMER_MIN_BIND,
-            Constants.PRIMER_MIN_BIND,
+            Config.PRIMER_MIN_BIND,
+            Config.PRIMER_MIN_BIND,
         )
         assert len(container) == 1
 
@@ -433,7 +434,7 @@ class TestExpandPrimers:
 
     def test_overhang_on_primer(self, container):
         new_alignment_in_container(
-            container, 1000 - Constants.PRIMER_MIN_BIND, 1100, Constants.PRIMER, -1
+            container, 1000 - Config.PRIMER_MIN_BIND, 1100, Constants.PRIMER, -1
         )
         assert len(container) == 2
 

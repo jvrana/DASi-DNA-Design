@@ -59,12 +59,6 @@ class Constants:
     MISSING = "__MISSING"  #: missing region
     PRIMER = "PRIMER"  #: a primer binding alignment
 
-    ############
-    # PARAMETERS
-    ############
-    PRIMER_MIN_BIND = 14  #: minimum primer binding for searching for primer alignments
-    MIN_OVERLAP = 15  #: minimum overlap for searching for overlapping alignments
-    MAX_HOMOLOGY = 100  #: maximum overlap for searching for overlapping alignments
     INF = 10.0 ** 6  #: almost infinity
 
     ############

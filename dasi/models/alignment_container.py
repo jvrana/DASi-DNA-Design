@@ -19,6 +19,7 @@ from .alignment import Alignment
 from .alignment import AlignmentGroup
 from .alignment import MultiPCRProductAlignmentGroup
 from .alignment import PCRProductAlignmentGroup
+from dasi.config import Config
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
@@ -370,7 +371,7 @@ class AlignmentContainer(Sized):
         rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
         pairs = []
         for f in fwd:
-            rev_bind_region = f.query_region[: -Constants.PRIMER_MIN_BIND]
+            rev_bind_region = f.query_region[: -Config.PRIMER_MIN_BIND]
             rev_bind = self.filter_alignments_by_span(
                 rev, rev_bind_region, key=lambda p: p.query_region.a
             )
@@ -430,8 +431,8 @@ class AlignmentContainer(Sized):
             alignment_groups, "INFO", desc="Expanding primer pair"
         ):
             query_ranges = g.query_region.ranges()
-            fwd_bind_region = g.query_region[Constants.PRIMER_MIN_BIND :]
-            rev_bind_region = g.query_region[: -Constants.PRIMER_MIN_BIND]
+            fwd_bind_region = g.query_region[Config.PRIMER_MIN_BIND :]
+            rev_bind_region = g.query_region[: -Config.PRIMER_MIN_BIND]
             fwd_bind = self.filter_alignments_by_span(
                 fwd, fwd_bind_region, key=lambda p: p.query_region.b
             )
@@ -526,7 +527,7 @@ class AlignmentContainer(Sized):
         :return: list of new alignments
         """
 
-        min_overlap = Constants.MIN_OVERLAP
+        min_overlap = Config.MIN_OVERLAP
         group_sort, group_keys = sort_with_keys(
             alignment_groups, key=lambda x: x.query_region.a
         )

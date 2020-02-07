@@ -23,8 +23,8 @@ from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import MultiPCRProductAlignmentGroup
 from dasi.models import PCRProductAlignmentGroup
+from dasi.utils import argsorted
 from dasi.utils import bisect_between
-from dasi.utils import lexsorted
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.sequence import count_misprimings_in_amplicon
@@ -429,8 +429,8 @@ class AssemblyGraphBuilder:
 # TODO: refactor this class, expose config options
 
 
-class AssemblyGraphPostProcessor:
-    """Post-processing for assembly graphs. Evaluates:
+class AssemblyGraphPreProcessor:
+    """Pre-processing for assembly graphs. Evaluates:
 
     1. synthesis complexity and weights corresponding edge
     2. pcr product efficiency
@@ -529,9 +529,14 @@ class AssemblyGraphPostProcessor:
             b = n2.index
         return Region(a, b, len(self.query), cyclic=is_circular(self.query))
 
+    @staticmethod
+    def _adj_eff(edata, e):
+        edata["efficiency"] = e
+        edata["cost"] = edata["material"] / edata["efficiency"]
+
     def _complexity_to_efficiency(self, edata):
         if edata["complexity"] > self.COMPLEXITY_THRESHOLD:
-            edata["efficiency"] = SequenceScoringConfig.not_synthesizable_efficiency
+            self._adj_eff(edata, SequenceScoringConfig.not_synthesizable_efficiency)
             return True
         return False
 
@@ -563,54 +568,72 @@ class AssemblyGraphPostProcessor:
             span = edata["span"]
             for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
                 if a <= span < b:
-                    edata["efficiency"] *= c
+                    self._adj_eff(edata, edata["efficiency"] * c)
                     add_edge_note(edata, "long_pcr_product", True)
                     break
 
+    def _score_misprimings_from_alignment(self, alignment):
+        subject_key = alignment.subject_key
+        subject = self.seqdb[subject_key]
+        i = alignment.subject_region.a
+        j = alignment.subject_region.b
+        subject_seq = str(subject.seq)
+
+        return count_misprimings_in_amplicon(
+            subject_seq,
+            i,
+            j,
+            min_primer_anneal=SequenceScoringConfig.mispriming_min_anneal,
+            max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
+            cyclic=alignment.subject_region.cyclic,
+        )
+
     # TODO: select the best template...
+    # TODO: speed up this process
     def score_primer_misprimings(self, n1, n2, edata):
         if self._is_pcr_product(edata):
 
             group = edata["group"]
 
             misprime_list = []
-            for alignment in group.alignments:
-                if alignment.type not in [Constants.PRIMER]:
-                    subject_key = alignment.subject_key
-                    subject = self.seqdb[subject_key]
-                    i = alignment.subject_region.a
-                    j = alignment.subject_region.b
-                    subject_seq = str(subject.seq)
-                    misprimings = count_misprimings_in_amplicon(
-                        subject_seq,
-                        i,
-                        j,
-                        min_primer_anneal=SequenceScoringConfig.mispriming_min_anneal,
-                        max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
-                        cyclic=alignment.subject_region.cyclic,
-                    )
-                    misprime_list.append((misprimings, alignment))
-                    if misprimings == 0:
-                        break
 
-            # sort by misprimings
-            misprime_list = sorted(misprime_list, key=lambda x: x[0])
-
-            # now sort the groupings so that the best template is used
             if isinstance(group, MultiPCRProductAlignmentGroup):
-                group.groupings = lexsorted(
-                    misprime_list, group.groupings, key=lambda x: x[0]
+                prioritize_function = group.prioritize_groupings
+
+                # generator for templates
+                # TODO: refactor this code
+                def template_generator():
+                    for i in range(len(group.groupings)):
+                        yield group.get_template(i)
+
+                alignments = template_generator()
+
+            elif isinstance(group, AlignmentGroup):
+                prioritize_function = group.prioritize_alignments
+                alignments = group.alignments
+            else:
+                raise TypeError(
+                    "Group '{}' not supported by this function.".format(group.__class__)
                 )
 
-            # adjust the efficiency
-            min_misprimings = misprime_list[0][0]
-            if min_misprimings:
-                edata["efficiency"] = (
-                    edata["efficiency"]
-                    * SequenceScoringConfig.mispriming_penalty ** min_misprimings
-                )
+            arr = []
+            for index, alignment in enumerate(alignments):
+                assert "PCR" in alignment.type
+                mispriming = self._score_misprimings_from_alignment(alignment)
+                arr.append((mispriming, index, alignment))
+                if mispriming == 0:
+                    break
+            arr.sort(key=lambda x: x[0])
+            indices = [a[1] for a in arr]
+            prioritize_function(indices)
+            score = arr[0][0]
 
-                add_edge_note(edata, "num_misprimings", min_misprimings)
+            self._adj_eff(
+                edata,
+                edata["efficiency"] * SequenceScoringConfig.mispriming_penalty ** score,
+            )
+            add_edge_note(edata, "num_misprimings", score)
+            add_edge_note(edata, "n_templates_eval", len(misprime_list))
 
     # TODO: implement partitioner?
     def synthesis_partitioner(self, n1, n2, edata, border):

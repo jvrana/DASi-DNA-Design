@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.graph_builder &#8212; dasi 0.0.18 documentation</title>
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.19a documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -186,6 +186,7 @@ from Bio.SeqRecord import SeqRecord
 from more_itertools import partition
 from pyblast.utils import is_circular
 
+from dasi.config import Config
 from dasi.constants import Constants
 from dasi.cost import SpanCost
 from dasi.log import logger
@@ -193,13 +194,17 @@ from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
 from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
+from dasi.models import MultiPCRProductAlignmentGroup
 from dasi.models import PCRProductAlignmentGroup
-from dasi.utils import argsorted
 from dasi.utils import bisect_between
+from dasi.utils import lexsorted
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.sequence import count_misprimings_in_amplicon
 from dasi.utils.sequence import DNAStats
+
+
+SequenceScoringConfig = Config.SequenceScoringConfig
 
 
 # TODO: whenever the efficiency is adjusted, record this in the notes
@@ -212,7 +217,7 @@ def add_edge_note(edata, key, value):
 <div class="viewcode-block" id="AssemblyGraphBuilder"><a class="viewcode-back" href="../../../generated/dasi.design.graph_builder.html#dasi.design.graph_builder.AssemblyGraphBuilder">[docs]</a>class AssemblyGraphBuilder:
     &quot;&quot;&quot;Class that builds an AssemblyGraph from an alignment container.&quot;&quot;&quot;
 
-    COST_THRESHOLD = 10000
+    COST_THRESHOLD = Config.ASSEMBLY_COST_THRESHOLD
 
     def __init__(self, alignment_container: AlignmentContainer, span_cost=None):
         self.container = alignment_container
@@ -593,28 +598,6 @@ def add_edge_note(edata, key, value):
         return self.G</div>
 
 
-<div class="viewcode-block" id="SequenceScoringConfig"><a class="viewcode-back" href="../../../generated/dasi.design.graph_builder.html#dasi.design.graph_builder.SequenceScoringConfig">[docs]</a>class SequenceScoringConfig:
-    &quot;&quot;&quot;Configuration for scoring sequences.&quot;&quot;&quot;
-
-    stats_repeat_window = 14  #: length of kmer to find sequence repeats
-    stats_window = 20  #: length of window for sliding window calculations
-    stats_hairpin_window = 20  #: length of kmer to find sequence hairpins
-    mispriming_min_anneal = 12  #: minimum bp to look for misprimings
-    mispriming_max_anneal = 30  #: maximum expected bp for a primer
-    mispriming_penalty = 0.5  #: multiplier to apply to each mispriming
-    complexity_threshold = (
-        10
-    )  #: threshold for sequence complexity that is not synthesizable by a vendor
-    not_synthesizable_efficiency = (
-        0.1
-    )  #: efficiency value for sequence that is not synthesizable
-    pcr_length_range_efficiency_multiplier = [
-        (4000, 5000, 0.8),
-        (5000, 6000, 0.5),
-        (6000, 1000, 0.2),
-    ]  #: multiplier to apply to the efficiency if PCR is within the given length range</div>
-
-
 # TODO: evaluate primer designs, scoring PCR products d(how long does this take?)
 # TODO: refactor this class, expose config options
 
@@ -760,8 +743,10 @@ def add_edge_note(edata, key, value):
     # TODO: select the best template...
     def score_primer_misprimings(self, n1, n2, edata):
         if self._is_pcr_product(edata):
-            x = []
+
             group = edata[&quot;group&quot;]
+
+            misprime_list = []
             for alignment in group.alignments:
                 if alignment.type not in [Constants.PRIMER]:
                     subject_key = alignment.subject_key
@@ -777,21 +762,30 @@ def add_edge_note(edata, key, value):
                         max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
                         cyclic=alignment.subject_region.cyclic,
                     )
-                    x.append((misprimings, alignment))
+                    misprime_list.append((misprimings, alignment))
                     if misprimings == 0:
                         break
 
-            # now sort the groupings so that the best template is used
-            if hasattr(group, &quot;groupings&quot;):
-                indices = argsorted(x, key=lambda x: x[0])
-                if x[0][0]:
-                    group.groupings = [group.groupings[i] for i in indices]
-                    edata[&quot;efficiency&quot;] = (
-                        edata[&quot;efficiency&quot;]
-                        * SequenceScoringConfig.mispriming_penalty ** x[0][0]
-                    )
-                    add_edge_note(edata, &quot;num_misprimings&quot;, x[0][0])
+            # sort by misprimings
+            misprime_list = sorted(misprime_list, key=lambda x: x[0])
 
+            # now sort the groupings so that the best template is used
+            if isinstance(group, MultiPCRProductAlignmentGroup):
+                group.groupings = lexsorted(
+                    misprime_list, group.groupings, key=lambda x: x[0]
+                )
+
+            # adjust the efficiency
+            min_misprimings = misprime_list[0][0]
+            if min_misprimings:
+                edata[&quot;efficiency&quot;] = (
+                    edata[&quot;efficiency&quot;]
+                    * SequenceScoringConfig.mispriming_penalty ** min_misprimings
+                )
+
+                add_edge_note(edata, &quot;num_misprimings&quot;, min_misprimings)
+
+    # TODO: implement partitioner?
     def synthesis_partitioner(self, n1, n2, edata, border):
         r = self._edge_to_region(n1, n2)
         partitions = self.stats.partition(

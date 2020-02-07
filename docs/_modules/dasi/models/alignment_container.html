@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.alignment_container &#8212; dasi 0.0.18 documentation</title>
+    <title>dasi.models.alignment_container &#8212; dasi 0.0.19a documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -192,6 +192,7 @@ from .alignment import Alignment
 from .alignment import AlignmentGroup
 from .alignment import MultiPCRProductAlignmentGroup
 from .alignment import PCRProductAlignmentGroup
+from dasi.config import Config
 from dasi.constants import Constants
 from dasi.exceptions import AlignmentContainerException
 from dasi.log import logger
@@ -326,7 +327,7 @@ class GroupTags(Mapping):
     def pcr_constructor(data):
         groups = []
         for (a, b, group_type), adict_list in data.items():
-            g = [
+            groupings = [
                 {&quot;fwd&quot;: d[&quot;fwd&quot;], &quot;rev&quot;: d[&quot;rev&quot;], &quot;template&quot;: d[&quot;template&quot;]}
                 for d in adict_list
             ]
@@ -336,7 +337,9 @@ class GroupTags(Mapping):
 
             groups.append(
                 MultiPCRProductAlignmentGroup(
-                    g, query_region=adict_list[0][&quot;query_region&quot;], group_type=group_type
+                    groupings,
+                    query_region=adict_list[0][&quot;query_region&quot;],
+                    group_type=group_type,
                 )
             )
         return groups
@@ -541,7 +544,7 @@ class GroupTags(Mapping):
         rev, rev_keys = sort_with_keys(rev, key=lambda p: p.query_region.a)
         pairs = []
         for f in fwd:
-            rev_bind_region = f.query_region[: -Constants.PRIMER_MIN_BIND]
+            rev_bind_region = f.query_region[: -Config.PRIMER_MIN_BIND]
             rev_bind = self.filter_alignments_by_span(
                 rev, rev_bind_region, key=lambda p: p.query_region.a
             )
@@ -601,8 +604,8 @@ class GroupTags(Mapping):
             alignment_groups, &quot;INFO&quot;, desc=&quot;Expanding primer pair&quot;
         ):
             query_ranges = g.query_region.ranges()
-            fwd_bind_region = g.query_region[Constants.PRIMER_MIN_BIND :]
-            rev_bind_region = g.query_region[: -Constants.PRIMER_MIN_BIND]
+            fwd_bind_region = g.query_region[Config.PRIMER_MIN_BIND :]
+            rev_bind_region = g.query_region[: -Config.PRIMER_MIN_BIND]
             fwd_bind = self.filter_alignments_by_span(
                 fwd, fwd_bind_region, key=lambda p: p.query_region.b
             )
@@ -697,7 +700,7 @@ class GroupTags(Mapping):
         :return: list of new alignments
         &quot;&quot;&quot;
 
-        min_overlap = Constants.MIN_OVERLAP
+        min_overlap = Config.MIN_OVERLAP
         group_sort, group_keys = sort_with_keys(
             alignment_groups, key=lambda x: x.query_region.a
         )
@@ -789,7 +792,7 @@ class GroupTags(Mapping):
         group_key = (group.query_region.a, group.query_region.b, group.type)
         data = {
             &quot;fwd&quot;: group.fwd,
-            &quot;template&quot;: group.raw_template,
+            &quot;template&quot;: group.template,
             &quot;rev&quot;: group.rev,
             &quot;query_region&quot;: group.query_region,
         }

@@ -55,14 +55,16 @@ Features and Improvements Road Map
     - Scoring PCR reactions for primer misprimings
     - Scoring assembly efficiencies
     - Logging to file
-
-* ^0.1
-    - faster execution times
+    - PDF design reports
     - improved design inputs
         + selection of synthesis vendors
         + primer + PCR cost
         + improved API for adding materials
         + control over design algorithms and parameters
+
+* ^0.1
+    - faster execution times
+    - PDF design reports
 
 * ^0.2
     - linear fragment design

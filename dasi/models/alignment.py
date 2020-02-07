@@ -3,6 +3,8 @@
 These classes represent abstract alignments between existing and
 potential molecules that could be produced.
 """
+import functools
+import operator
 from collections.abc import Sized
 from typing import Dict
 from typing import List
@@ -10,6 +12,7 @@ from typing import Union
 
 from .molecule import MoleculeType
 from dasi.exceptions import AlignmentException
+from dasi.utils import argsorted
 from dasi.utils import Region
 
 
@@ -178,7 +181,7 @@ class Alignment(RepresentsMolecule, Sized):
 class AlignmentGroupBase(RepresentsMolecule):
     """A representative Alignment representing a group of alignments."""
 
-    __slots__ = ["query_region", "alignments", "name", "type", "meta"]
+    __slots__ = ["query_region", "_alignments", "name", "type", "meta"]
 
     def __init__(
         self,
@@ -197,7 +200,7 @@ class AlignmentGroupBase(RepresentsMolecule):
         :param meta:
         """
         super().__init__(query_region, group_type)
-        self.alignments = alignments
+        self._alignments = tuple(alignments)
         self.name = name
         if meta is None:
             meta = {}
@@ -218,6 +221,10 @@ class AlignmentGroupBase(RepresentsMolecule):
         """Return the list of subject keys in this alignment group."""
         return [a.subject_key for a in self.alignments]
 
+    @property
+    def alignments(self):
+        return self._alignments
+
     def sub_region(self, qstart: int, qend: int, atype: str) -> "AlignmentGroupBase":
         """Produce a new alignment group with sub-regions of the query region
         and subject regions at the specified new indicies."""
@@ -231,14 +238,14 @@ class AlignmentGroupBase(RepresentsMolecule):
         )
 
     def __repr__(self) -> str:
-        return "<AlignmentGroup {}>".format(self.query_region)
+        return "<{} {}>".format(self.__class__.__name__, self.query_region)
 
 
 class AlignmentGroup(AlignmentGroupBase):
     """A representative Alignment representing a group of alignments sharing
     the same starting and ending position for a query sequence."""
 
-    __slots__ = ["query_region", "alignments", "name", "type"]
+    __slots__ = list(AlignmentGroupBase.__slots__)
 
     def __init__(
         self,
@@ -254,6 +261,33 @@ class AlignmentGroup(AlignmentGroupBase):
             query_region=alignments[0].query_region,
             meta=meta,
         )
+
+    def reindex_alignments(self, indices: List[int]):
+        """Reindex the alignments list by index.
+
+        :param indices: list of indices
+        :return: None
+        """
+        if len(indices) != len(self.alignments):
+            raise ValueError(
+                "Cannot reindex. Length of indices ({}) does not match length of"
+                " alignments ({})".format(len(indices), len(self.groupings))
+            )
+        self._alignments = tuple(self._alignments[i] for i in indices)
+
+    def prioritize_alignments(self, indices: List[int]):
+        """Prioritize alignments by pushing groupings at the given indices into
+        the front of the alignments list.
+
+        :param indices: list of indices to prioritize
+        :return: None
+        """
+        other_indices = []
+        for i in range(len(self.alignments)):
+            if i not in indices:
+                other_indices.append(i)
+        new_indices = indices + other_indices
+        self.reindex_alignments(new_indices)
 
 
 # class RepresentsPCR(AlignmentGroupBase):
@@ -290,6 +324,8 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
 
     """
 
+    __slots__ = list(set(AlignmentGroupBase.__slots__ + ["template", "fwd", "rev"]))
+
     def __init__(
         self,
         fwd: Union[None, Alignment],
@@ -306,9 +342,11 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         provided template alignment and the query_region, which represents the
         exact region for which PCR primers ought to align in a PCR reaction.
 
-        :param fwd: the forward primer alignment. Can be 'inside' the template or have an overhang.
+        :param fwd: the forward primer alignment. Can be 'inside' the template or have
+            an overhang.
         :param template: template alignment
-        :param rev: the reverse primer alignment. Can be 'within' the template or have an overhang.
+        :param rev: the reverse primer alignment. Can be 'within' the template or have
+            an overhang.
         :param group_type: group type name
         :param meta: extra meta data
         """
@@ -339,10 +377,26 @@ class PCRProductAlignmentGroup(AlignmentGroupBase):
         )
 
 
-# TODO: rename this class
+# TODO: MultiPCRProductAlignmentGroup is a seriously convoluted class
+#       Being such an important class, this should be very easy to understand.
+#       `alignments` property should never be accessed directly, as
+#          the concept of 'template' is different here (see `get_template`)
+#
 class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
     """A PCR Product Alignment with redundant forward primer, reverse primer,
-    and template alignments."""
+    and template alignments.
+
+    Essentially, this represents region of a designed sequence *that could*
+    be generated from a number of PCR reactions. Each PCR reaction is
+    tracked in the `groupings`, which is a list of dictionaries with
+    keys 'fwd', 'rev', 'template' and valued by Alignments.
+
+    Now, there are alot of ways to produce PCR products.
+    """
+
+    __slots__ = list(set(AlignmentGroupBase.__slots__ + ["_groupings", "_templates"]))
+
+    EXPECTED_KEYS = "fwd", "rev", "template"
 
     def __init__(
         self,
@@ -360,18 +414,73 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         :param query_region: query region
         :param group_type: group type
         """
-        self.groupings = groupings
+
+        for g in groupings:
+            for key in self.EXPECTED_KEYS:
+                if key not in g:
+                    raise ValueError("Grouping is missing key '{}'".format(key))
+
+        self._groupings = groupings
         self._templates = [None] * len(self.groupings)
-        fwds = [d["fwd"] for d in self.groupings]
-        revs = [d["rev"] for d in self.groupings]
-        templates = [d["template"] for d in self.groupings]
-        alignments = [a for a in fwds + revs + templates if a is not None]
+        alignments = self._get_alignments()
         super().__init__(
             alignments=alignments, query_region=query_region, group_type=group_type
         )
 
-    # TODO: explain this method? Why intersection?
+    @property
+    def groupings(self):
+        return self._groupings
+
+    def _get_alignments(self):
+        accumulated = {}
+        for key in self.EXPECTED_KEYS:
+            accumulated.setdefault(key, list())
+            for g in self.groupings:
+                if g[key]:
+                    accumulated[key].append(g[key])
+
+        alignments = []
+        for key in self.EXPECTED_KEYS:
+            alignments += accumulated[key]
+        return alignments
+
+    def reindex_groupings(self, indices: List[int]):
+        """Reindex the groupings list by index.
+
+        :param indices: list of indices
+        :return: None
+        """
+        if len(indices) != len(self.groupings):
+            raise ValueError(
+                "Cannot reindex. Length of indices ({}) does not match length of "
+                "groups ({})".format(len(indices), len(self.groupings))
+            )
+        self._groupings = tuple(self._groupings[i] for i in indices)
+        self._alignments = tuple(self._get_alignments())
+        self._templates = [None] * len(self.groupings)
+
+    def prioritize_groupings(self, indices: List[int]):
+        """Prioritize groupings by pushing groupings at the given indices into
+        the front of the grouping list.
+
+        :param indices: list of indices to prioritize
+        :return: None
+        """
+        other_indices = []
+        for i in range(len(self.groupings)):
+            if i not in indices:
+                other_indices.append(i)
+        new_indices = indices + other_indices
+        self.reindex_groupings(new_indices)
+
+    # TODO: WHAT IS THIS METHOD???
     def get_template(self, index: int = 0):
+        """Here we take the intersection of the template.query_region and query
+        region. WHY???
+
+        :param index:
+        :return:
+        """
         if self._templates[index] is None:
             template = self.groupings[index]["template"]
             intersection = template.query_region.intersection(self.query_region)

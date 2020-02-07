@@ -67,6 +67,7 @@ def _design_primers(
     :return: tuple of pairs and the 'explain' dictionary.
     """
     design = primer3plus.new()
+    design.logger = logger(design)
     design.settings.as_cloning_task()
     if region.direction == -1:
         region = region.flip()
@@ -107,7 +108,17 @@ def _design_primers(
     design.settings.long_ok()
 
     design.logger.set_level("INFO")
-    pairs, explain = design.run_and_optimize(Config.PRIMER3_N_RUNS, pick_anyway=True)
+
+    # TODO: remove debugging code
+    try:
+        pairs, explain = design.run_and_optimize(
+            Config.PRIMER3_N_RUNS, pick_anyway=True
+        )
+    except Exception as e:
+        import json
+
+        print(json.dumps(dict(design.params.items()), indent=2))
+        raise e
     if index is not None:
         for pair in pairs.values():
             loc = pair["LEFT"]["location"]
@@ -240,9 +251,6 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         template = group.alignments[0]
     else:
-        if not hasattr(group, "groupings"):
-            print(group)
-            print(group.type)
         grouping = group.groupings[0]
         template = group.get_template(0)
         assert grouping["template"].subject_key == template.subject_key
@@ -377,7 +385,7 @@ def _design_edge(
         )
     elif edge[-1]["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
         query_region = edge[2]["query_region"]
-        group = edge[2]["group"]
+        group = edge[2]["groups"][0]
         synthesis_mol = Molecule(
             MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT],
             alignment_group=group,
@@ -617,11 +625,7 @@ class Assembly(Iterable):
         for n1, n2 in pair_iter:
             edata = graph.get_edge_data(n1, n2)
             if edata is None:
-                # if n1.index > len(self.query):
-                #     n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
-                #     edata = graph.get_edge_data(n3, n2)
-                if edata is None:
-                    edata = self._missing_edata()
+                edata = self._missing_edata()
             else:
                 assert edata["type_def"].int_or_ext
 

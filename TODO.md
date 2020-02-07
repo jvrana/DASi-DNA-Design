@@ -7,6 +7,8 @@
 
 *graph post-processing config*
 
+Remov 'cost' key from edge data (it is not used)
+
 ## Coalition optimization
 * Make a new class called DesignConfig
     + Should contain min_primer_anneal. This value should be used

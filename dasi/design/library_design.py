@@ -8,7 +8,7 @@ import networkx as nx
 from dasi.constants import Constants
 from dasi.design import Design
 from dasi.design import DesignResult
-from dasi.design.graph_builder import AssemblyGraphPostProcessor
+from dasi.design.graph_builder import AssemblyGraphPreProcessor
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
@@ -327,7 +327,7 @@ class LibraryDesign(Design):
         adjusted = 0
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(
+            processor = AssemblyGraphPreProcessor(
                 graph, query, self.span_cost, self.seqdb, **post_processing_kwargs
             )
             processor()
@@ -339,8 +339,8 @@ class LibraryDesign(Design):
                     if "notes" not in edata or edata["notes"] is None:
                         edata["notes"] = {}
 
-                    if "n_clusters" not in group.meta:
-                        pass
+                    # if "n_clusters" not in group.meta:
+                    #     pass
                     edata["notes"]["n_clusters"] = group.meta["n_clusters"]
                     # TODO: adjust n_clusters
                     edata["material"] = (

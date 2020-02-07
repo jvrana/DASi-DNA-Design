@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Constants (dasi.constants) &#8212; dasi 0.0.18 documentation</title>
+    <title>Constants (dasi.constants) &#8212; dasi 0.0.19a documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -220,12 +220,6 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.INF" title="dasi.constants.Constants.INF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INF</span></code></a></p></td>
 <td><p>almost infinity</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.MAX_HOMOLOGY" title="dasi.constants.Constants.MAX_HOMOLOGY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAX_HOMOLOGY</span></code></a></p></td>
-<td><p>maximum overlap for searching for overlapping alignments</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.MIN_OVERLAP" title="dasi.constants.Constants.MIN_OVERLAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_OVERLAP</span></code></a></p></td>
-<td><p>minimum overlap for searching for overlapping alignments</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.MISSING" title="dasi.constants.Constants.MISSING"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MISSING</span></code></a></p></td>
 <td><p>missing region</p></td>
 </tr>
@@ -259,16 +253,13 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER</span></code></a></p></td>
 <td><p>a pcr product that uses no template, but extends an existing rev primer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_MIN_BIND" title="dasi.constants.Constants.PRIMER_MIN_BIND"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_MIN_BIND</span></code></a></p></td>
-<td><p>minimum primer binding for searching for primer alignments</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_FRAGMENT" title="dasi.constants.Constants.SHARED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_FRAGMENT</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_FRAGMENT" title="dasi.constants.Constants.SHARED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_FRAGMENT</span></code></a></p></td>
 <td><p>A fragment alignment that is shared with other queries for potential reuse</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT" title="dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_SYNTHESIZED_FRAGMENT</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT" title="dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_SYNTHESIZED_FRAGMENT</span></code></a></p></td>
 <td><p>explicit definition of a synthesized DNA fragment</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.TEMPLATE" title="dasi.constants.Constants.TEMPLATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMPLATE</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.TEMPLATE" title="dasi.constants.Constants.TEMPLATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMPLATE</span></code></a></p></td>
 <td><p>A template alignment group.</p></td>
 </tr>
 </tbody>
@@ -289,18 +280,6 @@
 <dt id="dasi.constants.Constants.INF">
 <code class="sig-name descname">INF</code><em class="property"> = 1000000.0</em><a class="headerlink" href="#dasi.constants.Constants.INF" title="Permalink to this definition">¶</a></dt>
 <dd><p>almost infinity</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="dasi.constants.Constants.MAX_HOMOLOGY">
-<code class="sig-name descname">MAX_HOMOLOGY</code><em class="property"> = 100</em><a class="headerlink" href="#dasi.constants.Constants.MAX_HOMOLOGY" title="Permalink to this definition">¶</a></dt>
-<dd><p>maximum overlap for searching for overlapping alignments</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="dasi.constants.Constants.MIN_OVERLAP">
-<code class="sig-name descname">MIN_OVERLAP</code><em class="property"> = 15</em><a class="headerlink" href="#dasi.constants.Constants.MIN_OVERLAP" title="Permalink to this definition">¶</a></dt>
-<dd><p>minimum overlap for searching for overlapping alignments</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -367,12 +346,6 @@
 <dt id="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER">
 <code class="sig-name descname">PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER</code><em class="property"> = 'PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER" title="Permalink to this definition">¶</a></dt>
 <dd><p>a pcr product that uses no template, but extends an existing rev primer.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="dasi.constants.Constants.PRIMER_MIN_BIND">
-<code class="sig-name descname">PRIMER_MIN_BIND</code><em class="property"> = 14</em><a class="headerlink" href="#dasi.constants.Constants.PRIMER_MIN_BIND" title="Permalink to this definition">¶</a></dt>
-<dd><p>minimum primer binding for searching for primer alignments</p>
 </dd></dl>
 
 <dl class="attribute">

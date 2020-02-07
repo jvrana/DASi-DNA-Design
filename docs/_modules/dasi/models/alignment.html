@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.alignment &#8212; dasi 0.0.18 documentation</title>
+    <title>dasi.models.alignment &#8212; dasi 0.0.19a documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -171,7 +171,11 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.models.alignment</h1><div class="highlight"><pre>
-<span></span>&quot;&quot;&quot;Alignments.&quot;&quot;&quot;
+<span></span>&quot;&quot;&quot;Alignments.
+
+These classes represent abstract alignments between existing and
+potential molecules that could be produced.
+&quot;&quot;&quot;
 from collections.abc import Sized
 from typing import Dict
 from typing import List
@@ -191,14 +195,19 @@ from dasi.utils import Region
         if atype not in MoleculeType.types:
             raise ValueError(&quot;atype &#39;{}&#39; not in MoleculeTypes&quot;.format(atype))
 
-    def size_ok(self):
+<div class="viewcode-block" id="RepresentsMolecule.size_ok"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.RepresentsMolecule.size_ok">[docs]</a>    def size_ok(self):
+        &quot;&quot;&quot;Determine if the size of this molecule is &#39;acceptable&#39; from the
+        bounded molecule type.
+
+        :return: whether this passes the size requirement of the molecule type.
+        &quot;&quot;&quot;
         size = len(self.query_region)
         mol_type = MoleculeType.types[self.type]
         if mol_type.min_size is not None and size &lt; mol_type.min_size:
             return False
         if mol_type.max_size is not None and size &gt; mol_type.max_size:
             return False
-        return True</div>
+        return True</div></div>
 
 
 <div class="viewcode-block" id="Alignment"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.Alignment">[docs]</a>class Alignment(RepresentsMolecule, Sized):
@@ -420,6 +429,13 @@ from dasi.utils import Region
         )</div></div>
 
 
+# class RepresentsPCR(AlignmentGroupBase):
+#
+#     @abstractmethod
+#     def get_templates(self):
+#         pass
+
+
 <div class="viewcode-block" id="PCRProductAlignmentGroup"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.PCRProductAlignmentGroup">[docs]</a>class PCRProductAlignmentGroup(AlignmentGroupBase):
     &quot;&quot;&quot;Represents a PCR product alignment from a template alignment and
     forward and reverse alignments. Represents several situations:
@@ -478,7 +494,7 @@ from dasi.utils import Region
 
         query_region = query_region.new(a, b)
 
-        self.raw_template = template
+        self.template = template
         self.fwd = fwd
         self.rev = rev
 
@@ -507,13 +523,15 @@ from dasi.utils import Region
         query_region: Region,
         group_type: str,
     ):
-        &quot;&quot;&quot;Initializes a new MultiPCRProductAlignmentGroup.
+        &quot;&quot;&quot;Initializes a new MultiPCRProductAlignmentGroup. This object
+        represents a region of DNA that can be produced from a number of
+        different forward, reverse, and template DNAs, all producing the same
+        sequence.
 
-        :param fwds:
-        :param templates:
-        :param revs:
-        :param query_region:
-        :param group_type:
+        :param groupings: dictionary of groupings with the &quot;fwd&quot;, &quot;rev&quot; and &quot;template&quot;
+            keys.
+        :param query_region: query region
+        :param group_type: group type
         &quot;&quot;&quot;
         self.groupings = groupings
         self._templates = [None] * len(self.groupings)
@@ -525,7 +543,8 @@ from dasi.utils import Region
             alignments=alignments, query_region=query_region, group_type=group_type
         )</div>
 
-    def get_template(self, index):
+    # TODO: explain this method? Why intersection?
+    def get_template(self, index: int = 0):
         if self._templates[index] is None:
             template = self.groupings[index][&quot;template&quot;]
             intersection = template.query_region.intersection(self.query_region)

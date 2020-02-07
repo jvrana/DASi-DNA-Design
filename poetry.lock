@@ -1144,7 +1144,7 @@ documentation = []
 styling = []
 
 [metadata]
-content-hash = "8a6274bce94a29e26de7751ae6f936ebc7344792c32df2305509c080361c35a0"
+content-hash = "49a546e1d510bb9ea5587c4b11e15a649f23b3784279a2c299f75ad81b76fc78"
 python-versions = "^3.6"
 
 [metadata.hashes]

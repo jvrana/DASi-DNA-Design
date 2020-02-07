@@ -25,7 +25,7 @@ from pyblast.utils import is_circular
 from .design_algorithms import assemble_graph
 from .design_algorithms import multiprocessing_assemble_graph
 from .design_algorithms import multiprocessing_optimize_graph
-from .graph_builder import AssemblyGraphPostProcessor
+from .graph_builder import AssemblyGraphPreProcessor
 from .optimize import optimize_graph
 from dasi.__version__ import __title__
 from dasi.__version__ import __version__
@@ -476,7 +476,7 @@ class Design:
     def post_process_graphs(self, **kwargs):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(
+            processor = AssemblyGraphPreProcessor(
                 graph, query, self.span_cost, self.seqdb, **kwargs
             )
             processor()

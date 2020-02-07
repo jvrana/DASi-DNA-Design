@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.PCRProductAlignmentGroup &#8212; dasi 0.0.18 documentation</title>
+    <title>dasi.models.PCRProductAlignmentGroup &#8212; dasi 0.0.19a documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -237,7 +237,10 @@ And so on...
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.PCRProductAlignmentGroup.sub_region" title="dasi.models.PCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.PCRProductAlignmentGroup.size_ok" title="dasi.models.PCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.PCRProductAlignmentGroup.sub_region" title="dasi.models.PCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
@@ -291,8 +294,8 @@ exact region for which PCR primers ought to align in a PCR reaction.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.PCRProductAlignmentGroup.__init__" title="dasi.models.PCRProductAlignmentGroup.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(fwd, template, rev, query_region, …)</p></td>
 <td><p>Initialize a new PCRProductAlignmentGroup.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.PCRProductAlignmentGroup.size_ok" title="dasi.models.PCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.PCRProductAlignmentGroup.sub_region" title="dasi.models.PCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
@@ -339,6 +342,18 @@ exact region for which PCR primers ought to align in a PCR reaction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.PCRProductAlignmentGroup.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.models.PCRProductAlignmentGroup.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
 </dd>
 </dl>
 </dd></dl>

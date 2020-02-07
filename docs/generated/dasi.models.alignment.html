@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.alignment &#8212; dasi 0.0.18 documentation</title>
+    <title>dasi.models.alignment &#8212; dasi 0.0.19a documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.18</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -187,6 +187,8 @@
   <div class="section" id="module-dasi.models.alignment">
 <span id="dasi-models-alignment"></span><h1>dasi.models.alignment<a class="headerlink" href="#module-dasi.models.alignment" title="Permalink to this headline">¶</a></h1>
 <p>Alignments.</p>
+<p>These classes represent abstract alignments between existing and
+potential molecules that could be produced.</p>
 <p class="rubric">Classes</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -271,7 +273,10 @@ regions are the same length.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.Alignment.copy" title="dasi.models.alignment.Alignment.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>([atype])</p></td>
 <td><p>Do shallow copy of this alignment.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.alignment.Alignment.sub_region" title="dasi.models.alignment.Alignment.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend[, atype])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.alignment.Alignment.size_ok" title="dasi.models.alignment.Alignment.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.Alignment.sub_region" title="dasi.models.alignment.Alignment.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend[, atype])</p></td>
 <td><p>Returns a copy of the alignment between the inclusive start and end relative to the query region.</p></td>
 </tr>
 </tbody>
@@ -290,6 +295,18 @@ this and the copied alignment will be identical.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.alignment.Alignment.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.models.alignment.Alignment.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -360,7 +377,10 @@ the same starting and ending position for a query sequence.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.AlignmentGroup.sub_region" title="dasi.models.alignment.AlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.AlignmentGroup.size_ok" title="dasi.models.alignment.AlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.alignment.AlignmentGroup.sub_region" title="dasi.models.alignment.AlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
@@ -372,6 +392,18 @@ the same starting and ending position for a query sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.alignment.AlignmentGroup.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.models.alignment.AlignmentGroup.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -453,7 +485,10 @@ and subject regions at the specified new indicies.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.AlignmentGroupBase.sub_region" title="dasi.models.alignment.AlignmentGroupBase.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.AlignmentGroupBase.size_ok" title="dasi.models.alignment.AlignmentGroupBase.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.alignment.AlignmentGroupBase.sub_region" title="dasi.models.alignment.AlignmentGroupBase.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
@@ -465,6 +500,18 @@ and subject regions at the specified new indicies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.alignment.AlignmentGroupBase.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.models.alignment.AlignmentGroupBase.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,15 +558,17 @@ and subject regions at the specified new indicies.</p>
 <dd><p>Bases: <a class="reference internal" href="#dasi.models.alignment.AlignmentGroupBase" title="dasi.models.alignment.AlignmentGroupBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.alignment.AlignmentGroupBase</span></code></a></p>
 <p>A PCR Product Alignment with redundant forward primer, reverse primer,
 and template alignments.</p>
-<p>Initializes a new MultiPCRProductAlignmentGroup.</p>
+<p>Initializes a new MultiPCRProductAlignmentGroup. This object
+represents a region of DNA that can be produced from a number of
+different forward, reverse, and template DNAs, all producing the same
+sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fwds</strong> – </p></li>
-<li><p><strong>templates</strong> – </p></li>
-<li><p><strong>revs</strong> – </p></li>
-<li><p><strong>query_region</strong> (<a class="reference internal" href="dasi.utils.region.html#dasi.utils.region.Region" title="dasi.utils.region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>) – </p></li>
-<li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
+<li><p><strong>groupings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]]) – dictionary of groupings with the “fwd”, “rev” and “template”
+keys.</p></li>
+<li><p><strong>query_region</strong> (<a class="reference internal" href="dasi.utils.region.html#dasi.utils.region.Region" title="dasi.utils.region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>) – query region</p></li>
+<li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – group type</p></li>
 </ul>
 </dd>
 </dl>
@@ -548,7 +597,10 @@ and template alignments.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.MultiPCRProductAlignmentGroup.sub_region" title="dasi.models.alignment.MultiPCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.MultiPCRProductAlignmentGroup.size_ok" title="dasi.models.alignment.MultiPCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.alignment.MultiPCRProductAlignmentGroup.sub_region" title="dasi.models.alignment.MultiPCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
@@ -560,6 +612,18 @@ and template alignments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.alignment.MultiPCRProductAlignmentGroup.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.models.alignment.MultiPCRProductAlignmentGroup.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -651,7 +715,10 @@ And so on...
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.PCRProductAlignmentGroup.sub_region" title="dasi.models.alignment.PCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.PCRProductAlignmentGroup.size_ok" title="dasi.models.alignment.PCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.alignment.PCRProductAlignmentGroup.sub_region" title="dasi.models.alignment.PCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
 <td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
@@ -680,6 +747,18 @@ exact region for which PCR primers ought to align in a PCR reaction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.alignment.PCRProductAlignmentGroup.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dasi.models.alignment.PCRProductAlignmentGroup.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -720,6 +799,30 @@ and subject regions at the specified new indicies.</p>
 <em class="property">class </em><code class="sig-prename descclassname">dasi.models.alignment.</code><code class="sig-name descname">RepresentsMolecule</code><span class="sig-paren">(</span><em class="sig-param">query_region</em>, <em class="sig-param">atype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#RepresentsMolecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.alignment.RepresentsMolecule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Mixin for molecular sized alignments or alignment groups.</p>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.alignment.RepresentsMolecule.size_ok" title="dasi.models.alignment.RepresentsMolecule.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.models.alignment.RepresentsMolecule.size_ok">
+<code class="sig-name descname">size_ok</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#RepresentsMolecule.size_ok"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.alignment.RepresentsMolecule.size_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if the size of this molecule is ‘acceptable’ from the
+bounded molecule type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>whether this passes the size requirement of the molecule type.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>

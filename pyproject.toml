@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dasi"
-version = "0.0.18"
+version = "0.0.19"
 description = "Automated DNA assembly planner for Python"
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
 classifiers = [

@@ -599,14 +599,7 @@ class AssemblyGraphPreProcessor:
 
             if isinstance(group, MultiPCRProductAlignmentGroup):
                 prioritize_function = group.prioritize_groupings
-
-                # generator for templates
-                # TODO: refactor this code
-                def template_generator():
-                    for i in range(len(group.groupings)):
-                        yield group.get_template(i)
-
-                alignments = template_generator()
+                alignments = group.iter_templates()
 
             elif isinstance(group, AlignmentGroup):
                 prioritize_function = group.prioritize_alignments

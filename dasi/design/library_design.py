@@ -313,7 +313,7 @@ class LibraryDesign(Design):
 
         # tracker.update(2, "Expanding shared fragments")
         # self._expand_synthesized_fragments()
-        # self._expand_from_synthesized()
+        self._expand_from_synthesized()
 
         tracker.update(3, "Finding shared clusters")
         self.update_library_metadata()

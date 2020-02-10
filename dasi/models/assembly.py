@@ -251,13 +251,11 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         template = group.alignments[0]
     else:
-        grouping = group.groupings[0]
-        template = group.get_template(0)
-        assert grouping["template"].subject_key == template.subject_key
+        template = group.get_template()
 
         # get primer keys
-        fwd = grouping["fwd"]
-        rev = grouping["rev"]
+        fwd = group.get_fwd()
+        rev = group.get_rev()
         tkey = template.subject_key
         if fwd:
             lkey = fwd.subject_key

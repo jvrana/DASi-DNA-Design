@@ -1,6 +1,8 @@
 import functools
 import hashlib
+import json
 import operator
+from copy import deepcopy
 from typing import Dict
 from typing import Tuple
 from typing import Union
@@ -175,6 +177,20 @@ def _reactions_property(
     return property_reaction
 
 
+def _clean_metadata(metadata):
+    cleaned = {}
+    for k, v in metadata.items():
+        if isinstance(v, dict):
+            cleaned[k] = _clean_metadata(v)
+        else:
+            try:
+                json.dumps(v)
+                cleaned[k] = v
+            except Exception:
+                pass
+    return cleaned
+
+
 def _molecules_property(
     graph: nx.DiGraph,
     reaction_node_dict: Dict[str, int],
@@ -191,6 +207,7 @@ def _molecules_property(
                 "__name__": mol.type.name,
                 "__index__": index,
                 "__type__": "molecule",
+                "__meta__": deepcopy(_clean_metadata(mol.metadata)),
                 "sequence": seqrecord_to_json(mol.sequence),
                 "used_in_assemblies": _used_in_designs(ndata),
                 "used_as_input_to_reactions": used_as_inputs,

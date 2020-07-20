@@ -49,7 +49,11 @@ def rhash(rxn: Reaction, assembly_id: int) -> Tuple:
     return tuple(x + [tuple(inputs)] + [tuple(outputs)])
 
 
-def dasi_design_to_dag(design: Union["Design", "LibraryDesign"]) -> nx.DiGraph:
+def dasi_design_to_dag(
+    design: Union["Design", "LibraryDesign"],
+    validate: bool = True,
+    elim_extra_reactions: bool = False,
+) -> nx.DiGraph:
     # TODO: standard way to display SeqRecord
     graph = nx.DiGraph()
     for q_i, (qk, result) in enumerate(design.results.items()):
@@ -69,27 +73,50 @@ def dasi_design_to_dag(design: Union["Design", "LibraryDesign"]) -> nx.DiGraph:
                     graph.add_node(n2, molecule=out_mol)
                     graph.nodes[n2].setdefault("design_keys", set()).add(dk)
                     graph.add_edge(r1, n2)
-    _validate_dag_graph(graph)
+    if validate:
+        _validate_dag_graph(graph, elim_extra_reactions=elim_extra_reactions)
     return graph
 
 
-def _validate_dag_graph(graph: nx.DiGraph):
-    """Validates the DASi DAG graph."""
+def _validate_num_reactions(graph: nx.DiGraph, elim_extra_reactions: bool = False):
+    """Validate that each DNA fragment for each plasmid has exactly one
+    reaction. Optionally, remove these reactions from the final DAG.
+
+    :param graph:
+    :param elim_extra_reactions:
+    :return:
+    """
+    nodes_to_remove = []
     for n2, ndata2 in graph.nodes(data=True):
         ########################
         # validate each non-plasmid is expected to
         # have at most one reaction
         ########################
         molecule = ndata2.get("molecule", None)
+
         if molecule and molecule.type is not MoleculeType.types[C.PLASMID]:
             predecessors = list(graph.predecessors(n2))
             if len(predecessors) > 1:
-                msg = str(n2)
-                for n1 in graph.predecessors(n2):
-                    msg += "\n\t" + str(n1)
-                raise ValueError(
-                    "Molecule {} has more than one reaction.\n{}".format(n2, msg)
-                )
+                if elim_extra_reactions:
+                    for n1 in list(graph.predecessors(n2))[1:]:
+                        nodes_to_remove.append(n1)
+                else:
+                    msg = str(n2)
+                    for n1 in graph.predecessors(n2):
+                        msg += "\n\t" + str(n1)
+                    raise ValueError(
+                        "Molecule {} has more than one reaction.\n{}".format(n2, msg)
+                    )
+
+    if nodes_to_remove:
+        for n1 in nodes_to_remove:
+            graph.remove_node(n1)
+
+
+def _validate_reactions(graph):
+    """Validate each reaction has expected number of predecessors and
+    successors."""
+    for n2, ndata2 in graph.nodes(data=True):
 
         ########################
         # validate each reaction
@@ -113,6 +140,12 @@ def _validate_dag_graph(graph: nx.DiGraph):
                     " match the number of outputs for the reaction"
                     " ({})".format(len(successors), len(reaction.outputs))
                 )
+
+
+def _validate_dag_graph(graph: nx.DiGraph, elim_extra_reactions: bool = False):
+    """Validates the DASi DAG graph."""
+    _validate_num_reactions(graph, elim_extra_reactions)
+    _validate_reactions(graph)
 
 
 def _used_in_designs(ndata: Dict) -> Dict:
@@ -255,9 +288,11 @@ def _design_property(design, reaction_node_dict):
     return status
 
 
-def dasi_design_to_output_json(design: Union["Design", "LibraryDesign"]):
+def dasi_design_to_output_json(
+    design: Union["Design", "LibraryDesign"], elim_extra_reaction: bool = False
+):
     """Convert a DASi Design instance into an output JSON."""
-    graph = dasi_design_to_dag(design)
+    graph = dasi_design_to_dag(design, elim_extra_reaction=elim_extra_reaction)
     reaction_node_dict = {}
     molecule_node_dict = {}
     sorted_nodes = list(nx.topological_sort(graph))[::-1]

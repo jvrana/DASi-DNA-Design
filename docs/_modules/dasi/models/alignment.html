@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.alignment &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.models.alignment &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -176,13 +176,17 @@
 These classes represent abstract alignments between existing and
 potential molecules that could be produced.
 &quot;&quot;&quot;
+import functools
+import operator
 from collections.abc import Sized
 from typing import Dict
+from typing import Generator
 from typing import List
 from typing import Union
 
 from .molecule import MoleculeType
 from dasi.exceptions import AlignmentException
+from dasi.utils import argsorted
 from dasi.utils import Region
 
 
@@ -351,7 +355,7 @@ from dasi.utils import Region
 <div class="viewcode-block" id="AlignmentGroupBase"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.AlignmentGroupBase">[docs]</a>class AlignmentGroupBase(RepresentsMolecule):
     &quot;&quot;&quot;A representative Alignment representing a group of alignments.&quot;&quot;&quot;
 
-    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;, &quot;meta&quot;]
+    __slots__ = [&quot;query_region&quot;, &quot;_alignments&quot;, &quot;name&quot;, &quot;type&quot;, &quot;meta&quot;]
 
 <div class="viewcode-block" id="AlignmentGroupBase.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.AlignmentGroupBase.html#dasi.models.AlignmentGroupBase.__init__">[docs]</a>    def __init__(
         self,
@@ -370,7 +374,7 @@ from dasi.utils import Region
         :param meta:
         &quot;&quot;&quot;
         super().__init__(query_region, group_type)
-        self.alignments = alignments
+        self._alignments = tuple(alignments)
         self.name = name
         if meta is None:
             meta = {}
@@ -391,6 +395,10 @@ from dasi.utils import Region
         &quot;&quot;&quot;Return the list of subject keys in this alignment group.&quot;&quot;&quot;
         return [a.subject_key for a in self.alignments]
 
+    @property
+    def alignments(self):
+        return self._alignments
+
 <div class="viewcode-block" id="AlignmentGroupBase.sub_region"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.AlignmentGroupBase.sub_region">[docs]</a>    def sub_region(self, qstart: int, qend: int, atype: str) -&gt; &quot;AlignmentGroupBase&quot;:
         &quot;&quot;&quot;Produce a new alignment group with sub-regions of the query region
         and subject regions at the specified new indicies.&quot;&quot;&quot;
@@ -404,14 +412,14 @@ from dasi.utils import Region
         )</div>
 
     def __repr__(self) -&gt; str:
-        return &quot;&lt;AlignmentGroup {}&gt;&quot;.format(self.query_region)</div>
+        return &quot;&lt;{} {}&gt;&quot;.format(self.__class__.__name__, self.query_region)</div>
 
 
 <div class="viewcode-block" id="AlignmentGroup"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.AlignmentGroup">[docs]</a>class AlignmentGroup(AlignmentGroupBase):
     &quot;&quot;&quot;A representative Alignment representing a group of alignments sharing
     the same starting and ending position for a query sequence.&quot;&quot;&quot;
 
-    __slots__ = [&quot;query_region&quot;, &quot;alignments&quot;, &quot;name&quot;, &quot;type&quot;]
+    __slots__ = list(AlignmentGroupBase.__slots__)
 
 <div class="viewcode-block" id="AlignmentGroup.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.AlignmentGroup.html#dasi.models.AlignmentGroup.__init__">[docs]</a>    def __init__(
         self,
@@ -426,7 +434,34 @@ from dasi.utils import Region
             name=name,
             query_region=alignments[0].query_region,
             meta=meta,
-        )</div></div>
+        )</div>
+
+<div class="viewcode-block" id="AlignmentGroup.reindex_alignments"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.AlignmentGroup.reindex_alignments">[docs]</a>    def reindex_alignments(self, indices: List[int]):
+        &quot;&quot;&quot;Reindex the alignments list by index.
+
+        :param indices: list of indices
+        :return: None
+        &quot;&quot;&quot;
+        if len(indices) != len(self.alignments):
+            raise ValueError(
+                &quot;Cannot reindex. Length of indices ({}) does not match length of&quot;
+                &quot; alignments ({})&quot;.format(len(indices), len(self._groupings))
+            )
+        self._alignments = tuple(self._alignments[i] for i in indices)</div>
+
+<div class="viewcode-block" id="AlignmentGroup.prioritize_alignments"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.AlignmentGroup.prioritize_alignments">[docs]</a>    def prioritize_alignments(self, indices: List[int]):
+        &quot;&quot;&quot;Prioritize alignments by pushing groupings at the given indices into
+        the front of the alignments list.
+
+        :param indices: list of indices to prioritize
+        :return: None
+        &quot;&quot;&quot;
+        other_indices = []
+        for i in range(len(self.alignments)):
+            if i not in indices:
+                other_indices.append(i)
+        new_indices = indices + other_indices
+        self.reindex_alignments(new_indices)</div></div>
 
 
 # class RepresentsPCR(AlignmentGroupBase):
@@ -463,6 +498,8 @@ from dasi.utils import Region
 
     &quot;&quot;&quot;
 
+    __slots__ = list(set(AlignmentGroupBase.__slots__ + [&quot;template&quot;, &quot;fwd&quot;, &quot;rev&quot;]))
+
 <div class="viewcode-block" id="PCRProductAlignmentGroup.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.PCRProductAlignmentGroup.html#dasi.models.PCRProductAlignmentGroup.__init__">[docs]</a>    def __init__(
         self,
         fwd: Union[None, Alignment],
@@ -479,9 +516,11 @@ from dasi.utils import Region
         provided template alignment and the query_region, which represents the
         exact region for which PCR primers ought to align in a PCR reaction.
 
-        :param fwd: the forward primer alignment. Can be &#39;inside&#39; the template or have an overhang.
+        :param fwd: the forward primer alignment. Can be &#39;inside&#39; the template or have
+            an overhang.
         :param template: template alignment
-        :param rev: the reverse primer alignment. Can be &#39;within&#39; the template or have an overhang.
+        :param rev: the reverse primer alignment. Can be &#39;within&#39; the template or have
+            an overhang.
         :param group_type: group type name
         :param meta: extra meta data
         &quot;&quot;&quot;
@@ -512,10 +551,27 @@ from dasi.utils import Region
         )</div>
 
 
-# TODO: rename this class
+# TODO: MultiPCRProductAlignmentGroup is a seriously convoluted class
+#       Being such an important class, this should be very easy to understand.
+#       `alignments` property should never be accessed directly, as
+#          the concept of &#39;template&#39; is different here (see `get_template`)
+#
 <div class="viewcode-block" id="MultiPCRProductAlignmentGroup"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup">[docs]</a>class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
     &quot;&quot;&quot;A PCR Product Alignment with redundant forward primer, reverse primer,
-    and template alignments.&quot;&quot;&quot;
+    and template alignments.
+
+    Essentially, this represents region of a designed sequence *that could*
+    be generated from a number of PCR reactions. Each PCR reaction is
+    tracked in the `groupings`, which is a list of dictionaries with
+    keys &#39;fwd&#39;, &#39;rev&#39;, &#39;template&#39; and valued by Alignments.
+
+    Now, there are alot of ways to produce PCR products.
+    &quot;&quot;&quot;
+
+    __slots__ = list(set(AlignmentGroupBase.__slots__ + [&quot;_groupings&quot;]))
+
+    EXPECTED_KEYS = &quot;fwd&quot;, &quot;rev&quot;, &quot;template&quot;
+    TEMPLATE_ACCESSOR = &quot;adjusted_template&quot;
 
 <div class="viewcode-block" id="MultiPCRProductAlignmentGroup.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.MultiPCRProductAlignmentGroup.html#dasi.models.MultiPCRProductAlignmentGroup.__init__">[docs]</a>    def __init__(
         self,
@@ -533,23 +589,109 @@ from dasi.utils import Region
         :param query_region: query region
         :param group_type: group type
         &quot;&quot;&quot;
-        self.groupings = groupings
-        self._templates = [None] * len(self.groupings)
-        fwds = [d[&quot;fwd&quot;] for d in self.groupings]
-        revs = [d[&quot;rev&quot;] for d in self.groupings]
-        templates = [d[&quot;template&quot;] for d in self.groupings]
-        alignments = [a for a in fwds + revs + templates if a is not None]
+
+        for g in groupings:
+            for key in self.EXPECTED_KEYS:
+                if key not in g:
+                    raise ValueError(&quot;Grouping is missing key &#39;{}&#39;&quot;.format(key))
+        self._groupings = groupings
+        self._templates = [None] * len(self._groupings)
+        alignments = self._get_alignments()
         super().__init__(
             alignments=alignments, query_region=query_region, group_type=group_type
         )</div>
 
-    # TODO: explain this method? Why intersection?
-    def get_template(self, index: int = 0):
-        if self._templates[index] is None:
-            template = self.groupings[index][&quot;template&quot;]
+    # @property
+    # def groupings(self):
+    #     return self._groupings
+
+    def _get_alignments(self):
+        accumulated = {}
+        for key in self.EXPECTED_KEYS:
+            accumulated.setdefault(key, list())
+            for g in self._groupings:
+                if g[key]:
+                    accumulated[key].append(g[key])
+
+        alignments = []
+        for key in self.EXPECTED_KEYS:
+            alignments += accumulated[key]
+
+        return alignments
+
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup.reindex_groupings"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup.reindex_groupings">[docs]</a>    def reindex_groupings(self, indices: List[int]):
+        &quot;&quot;&quot;Reindex the groupings list by index.
+
+        :param indices: list of indices
+        :return: None
+        &quot;&quot;&quot;
+        if len(indices) != len(self._groupings):
+            raise ValueError(
+                &quot;Cannot reindex. Length of indices ({}) does not match length of &quot;
+                &quot;groups ({})&quot;.format(len(indices), len(self._groupings))
+            )
+        self._groupings = tuple(self._groupings[i] for i in indices)
+        self._alignments = tuple(self._get_alignments())</div>
+
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup.prioritize_groupings"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup.prioritize_groupings">[docs]</a>    def prioritize_groupings(self, indices: List[int]):
+        &quot;&quot;&quot;Prioritize groupings by pushing groupings at the given indices into
+        the front of the grouping list.
+
+        :param indices: list of indices to prioritize
+        :return: None
+        &quot;&quot;&quot;
+        other_indices = []
+        for i in range(len(self._groupings)):
+            if i not in indices:
+                other_indices.append(i)
+        new_indices = indices + other_indices
+        self.reindex_groupings(new_indices)</div>
+
+    # TODO: WHAT IS THIS METHOD???
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup.get_template"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup.get_template">[docs]</a>    def get_template(self, index: int = 0):
+        &quot;&quot;&quot;Here we take the intersection of the template.query_region and query
+        region. WHY???
+
+        Notes this is **not** the &#39;template&#39; key of the groupings.
+
+        .. note::
+            The result of this alignment is used in the primer design.
+
+        :param index:
+        :return:
+        &quot;&quot;&quot;
+        group = self._groupings[index]
+
+        if self.TEMPLATE_ACCESSOR not in group:
+            template = self._groupings[index][&quot;template&quot;]
             intersection = template.query_region.intersection(self.query_region)
-            self._templates[index] = template.sub_region(intersection.a, intersection.b)
-        return self._templates[index]</div>
+            group[self.TEMPLATE_ACCESSOR] = template.sub_region(
+                intersection.a, intersection.b
+            )
+        return group[self.TEMPLATE_ACCESSOR]</div>
+
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup.iter_templates"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup.iter_templates">[docs]</a>    def iter_templates(self) -&gt; Generator[Alignment, None, None]:
+        &quot;&quot;&quot;Generator of templates from `get_template`&quot;&quot;&quot;
+        for i in range(len(self._groupings)):
+            yield self.get_template(i)</div>
+
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup.get_fwd"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup.get_fwd">[docs]</a>    def get_fwd(self, index: int = 0) -&gt; Alignment:
+        &quot;&quot;&quot;Get the forward alignment at the specified index.
+
+        :param index: index of the grouping to access
+        :return: alignment
+        &quot;&quot;&quot;
+        group = self._groupings[index]
+        return group[&quot;fwd&quot;]</div>
+
+<div class="viewcode-block" id="MultiPCRProductAlignmentGroup.get_rev"><a class="viewcode-back" href="../../../generated/dasi.models.alignment.html#dasi.models.MultiPCRProductAlignmentGroup.get_rev">[docs]</a>    def get_rev(self, index: int = 0):
+        &quot;&quot;&quot;Get the reverse alignment at the specified index.
+
+        :param index: index of the grouping to access
+        :return: alignment
+        &quot;&quot;&quot;
+        group = self._groupings[index]
+        return group[&quot;rev&quot;]</div></div>
 </pre></div>
 
     </div>

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.assembly &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.models.assembly &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -240,6 +240,7 @@ def _design_primers(
     :return: tuple of pairs and the &#39;explain&#39; dictionary.
     &quot;&quot;&quot;
     design = primer3plus.new()
+    design.logger = logger(design)
     design.settings.as_cloning_task()
     if region.direction == -1:
         region = region.flip()
@@ -280,7 +281,17 @@ def _design_primers(
     design.settings.long_ok()
 
     design.logger.set_level(&quot;INFO&quot;)
-    pairs, explain = design.run_and_optimize(Config.PRIMER3_N_RUNS, pick_anyway=True)
+
+    # TODO: remove debugging code
+    try:
+        pairs, explain = design.run_and_optimize(
+            Config.PRIMER3_N_RUNS, pick_anyway=True
+        )
+    except Exception as e:
+        import json
+
+        print(json.dumps(dict(design.params.items()), indent=2))
+        raise e
     if index is not None:
         for pair in pairs.values():
             loc = pair[&quot;LEFT&quot;][&quot;location&quot;]
@@ -413,16 +424,11 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         template = group.alignments[0]
     else:
-        if not hasattr(group, &quot;groupings&quot;):
-            print(group)
-            print(group.type)
-        grouping = group.groupings[0]
-        template = group.get_template(0)
-        assert grouping[&quot;template&quot;].subject_key == template.subject_key
+        template = group.get_template()
 
         # get primer keys
-        fwd = grouping[&quot;fwd&quot;]
-        rev = grouping[&quot;rev&quot;]
+        fwd = group.get_fwd()
+        rev = group.get_rev()
         tkey = template.subject_key
         if fwd:
             lkey = fwd.subject_key
@@ -550,7 +556,7 @@ def _design_edge(
         )
     elif edge[-1][&quot;type_def&quot;].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
         query_region = edge[2][&quot;query_region&quot;]
-        group = edge[2][&quot;group&quot;]
+        group = edge[2][&quot;groups&quot;][0]
         synthesis_mol = Molecule(
             MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT],
             alignment_group=group,
@@ -790,11 +796,7 @@ AssemblyNode = namedtuple(
         for n1, n2 in pair_iter:
             edata = graph.get_edge_data(n1, n2)
             if edata is None:
-                # if n1.index &gt; len(self.query):
-                #     n3 = AssemblyNode(n1.index - len(self.query), *list(n1)[1:])
-                #     edata = graph.get_edge_data(n3, n2)
-                if edata is None:
-                    edata = self._missing_edata()
+                edata = self._missing_edata()
             else:
                 assert edata[&quot;type_def&quot;].int_or_ext
 

@@ -416,7 +416,10 @@ class DNAStats:
         :param j: end of the slice (exclusive)
         :return: tuple of repeat counts found in left and right slices respectively.
         """
-
+        if i < 0:
+            raise IndexError("i={} cannot be < 0")
+        if j > len(self.seq):
+            raise IndexError("j={} cannot be >= length {}".format(j, len(self.seq)))
         kmer_length = self.hairpin_window
 
         # we ust signatures (src) of kmers inside i:j...
@@ -507,6 +510,10 @@ def count_misprimings_in_amplicon(
     """
     if j == i:
         return 0
+    if i < 0:
+        raise IndexError("i cannot be < 0")
+    if j < 0:
+        raise IndexError("j cannot be < 0")
     elif j < i and not cyclic:
         raise IndexError(
             "Invalid indices provided. "
@@ -539,10 +546,10 @@ def count_misprimings_in_amplicon(
     #         i -= delta
     #         j -= delta
     stats = cached_stats(seq, min_primer_anneal)
-    n1 = stats.count_repeats_from_slice(i, i + max_primer_anneal)
+    n1 = stats.count_repeats_from_slice(i, min(i + max_primer_anneal, len(seq) - 1))
     k = j - max_primer_anneal
     if k < 0:
         n2 = 0
     else:
-        n2 = stats.count_repeats_from_slice(j - max_primer_anneal, j)
+        n2 = stats.count_repeats_from_slice(max(j - max_primer_anneal, 0), j)
     return n1 + n2

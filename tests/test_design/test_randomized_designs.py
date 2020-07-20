@@ -14,6 +14,7 @@ from dasi import Design
 from dasi import LibraryDesign
 from dasi.cost import cached_span_cost as cached_span_cost_default
 from dasi.exceptions import DasiDesignException
+from dasi.utils.biopython import make_cyclic
 
 
 def parametrize_designs(f: Callable):
@@ -178,3 +179,42 @@ def test_fake_design(
         design_sequence_similarity_length=shared_length,
     )
     run(design)
+
+
+@pytest.mark.parametrize("reindex", [1000, 3000, 5000])
+def test_reindex_invariant(reindex):
+    design1, library = Design.fake(
+        n_designs=1,
+        n_linear_seqs=50,
+        n_cyclic_seqs=50,
+        n_primers_from_templates=500,
+        shared_length=500,
+        return_with_library=True,
+    )
+
+    designs = library["design"]
+    plasmids = library["cyclic"]
+    fragments = library["linear"]
+    primers = library["short"]
+
+    new_designs = [design[reindex:] + design[:reindex] for design in designs]
+    make_cyclic(new_designs)
+
+    design2 = Design()
+    design2.add_materials(
+        templates=plasmids, fragments=fragments, primers=primers, queries=new_designs
+    )
+
+    design1.run()
+    design2.run()
+
+    results1 = design1.out()
+    results2 = design2.out()
+
+    assemblies1 = list(results1["designs"].values())[0]["assemblies"][0]
+    assemblies2 = list(results2["designs"].values())[0]["assemblies"][0]
+
+    print(assemblies1["cost"])
+    print(assemblies2["cost"])
+
+    assert assemblies1["cost"] == assemblies2["cost"]

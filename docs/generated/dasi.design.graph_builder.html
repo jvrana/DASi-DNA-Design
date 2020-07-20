@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.graph_builder &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -198,8 +198,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphBuilder" title="dasi.design.graph_builder.AssemblyGraphBuilder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyGraphBuilder</span></code></a>(alignment_container[, …])</p></td>
 <td><p>Class that builds an AssemblyGraph from an alignment container.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor" title="dasi.design.graph_builder.AssemblyGraphPostProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyGraphPostProcessor</span></code></a>(graph, query, …)</p></td>
-<td><p>Post-processing for assembly graphs.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphPreProcessor" title="dasi.design.graph_builder.AssemblyGraphPreProcessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyGraphPreProcessor</span></code></a>(graph, query, …)</p></td>
+<td><p>Pre-processing for assembly graphs.</p></td>
 </tr>
 </tbody>
 </table>
@@ -310,10 +310,10 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="dasi.design.graph_builder.AssemblyGraphPostProcessor">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.design.graph_builder.</code><code class="sig-name descname">AssemblyGraphPostProcessor</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">query</em>, <em class="sig-param">span_cost</em>, <em class="sig-param">seqdb</em>, <em class="sig-param">stats_repeat_window=14</em>, <em class="sig-param">stats_window=20</em>, <em class="sig-param">stats_hairpin_window=20</em>, <em class="sig-param">stages=('SCORE_COMPLEXITY'</em>, <em class="sig-param">'SCORE_LONG_PCR_PRODUCTS'</em>, <em class="sig-param">'SCORE_MISPRIMINGS')</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphPostProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.design.graph_builder.AssemblyGraphPreProcessor">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.design.graph_builder.</code><code class="sig-name descname">AssemblyGraphPreProcessor</code><span class="sig-paren">(</span><em class="sig-param">graph</em>, <em class="sig-param">query</em>, <em class="sig-param">span_cost</em>, <em class="sig-param">seqdb</em>, <em class="sig-param">stats_repeat_window=14</em>, <em class="sig-param">stats_window=20</em>, <em class="sig-param">stats_hairpin_window=20</em>, <em class="sig-param">stages=('SCORE_COMPLEXITY'</em>, <em class="sig-param">'SCORE_LONG_PCR_PRODUCTS'</em>, <em class="sig-param">'SCORE_MISPRIMINGS')</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphPreProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphPreProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Post-processing for assembly graphs. Evaluates:</p>
+<p>Pre-processing for assembly graphs. Evaluates:</p>
 <ol class="arabic simple">
 <li><p>synthesis complexity and weights corresponding edge</p></li>
 <li><p>pcr product efficiency</p></li>
@@ -326,14 +326,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor.optimize_partition" title="dasi.design.graph_builder.AssemblyGraphPostProcessor.optimize_partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_partition</span></code></a>(signatures, step[, i, j])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.graph_builder.AssemblyGraphPreProcessor.optimize_partition" title="dasi.design.graph_builder.AssemblyGraphPreProcessor.optimize_partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize_partition</span></code></a>(signatures, step[, i, j])</p></td>
 <td><p>Optimize partition by minimizing the number of signatures in the given array.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="dasi.design.graph_builder.AssemblyGraphPostProcessor.optimize_partition">
-<em class="property">static </em><code class="sig-name descname">optimize_partition</code><span class="sig-paren">(</span><em class="sig-param">signatures</em>, <em class="sig-param">step</em>, <em class="sig-param">i=None</em>, <em class="sig-param">j=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphPostProcessor.optimize_partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphPostProcessor.optimize_partition" title="Permalink to this definition">¶</a></dt>
+<dt id="dasi.design.graph_builder.AssemblyGraphPreProcessor.optimize_partition">
+<em class="property">static </em><code class="sig-name descname">optimize_partition</code><span class="sig-paren">(</span><em class="sig-param">signatures</em>, <em class="sig-param">step</em>, <em class="sig-param">i=None</em>, <em class="sig-param">j=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/design/graph_builder.html#AssemblyGraphPreProcessor.optimize_partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.design.graph_builder.AssemblyGraphPreProcessor.optimize_partition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimize partition by minimizing the number of signatures in the
 given array.</p>
 <dl class="field-list simple">

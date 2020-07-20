@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.graph_builder &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.design.graph_builder &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -197,7 +197,6 @@ from dasi.models import MoleculeType
 from dasi.models import MultiPCRProductAlignmentGroup
 from dasi.models import PCRProductAlignmentGroup
 from dasi.utils import bisect_between
-from dasi.utils import lexsorted
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.sequence import count_misprimings_in_amplicon
@@ -602,8 +601,8 @@ def add_edge_note(edata, key, value):
 # TODO: refactor this class, expose config options
 
 
-<div class="viewcode-block" id="AssemblyGraphPostProcessor"><a class="viewcode-back" href="../../../generated/dasi.design.graph_builder.html#dasi.design.graph_builder.AssemblyGraphPostProcessor">[docs]</a>class AssemblyGraphPostProcessor:
-    &quot;&quot;&quot;Post-processing for assembly graphs. Evaluates:
+<div class="viewcode-block" id="AssemblyGraphPreProcessor"><a class="viewcode-back" href="../../../generated/dasi.design.graph_builder.html#dasi.design.graph_builder.AssemblyGraphPreProcessor">[docs]</a>class AssemblyGraphPreProcessor:
+    &quot;&quot;&quot;Pre-processing for assembly graphs. Evaluates:
 
     1. synthesis complexity and weights corresponding edge
     2. pcr product efficiency
@@ -648,7 +647,7 @@ def add_edge_note(edata, key, value):
 
         self.stages = stages
 
-<div class="viewcode-block" id="AssemblyGraphPostProcessor.optimize_partition"><a class="viewcode-back" href="../../../generated/dasi.design.graph_builder.html#dasi.design.graph_builder.AssemblyGraphPostProcessor.optimize_partition">[docs]</a>    @staticmethod
+<div class="viewcode-block" id="AssemblyGraphPreProcessor.optimize_partition"><a class="viewcode-back" href="../../../generated/dasi.design.graph_builder.html#dasi.design.graph_builder.AssemblyGraphPreProcessor.optimize_partition">[docs]</a>    @staticmethod
     def optimize_partition(
         signatures: np.ndarray, step: int, i: int = None, j: int = None
     ):
@@ -702,9 +701,14 @@ def add_edge_note(edata, key, value):
             b = n2.index
         return Region(a, b, len(self.query), cyclic=is_circular(self.query))
 
+    @staticmethod
+    def _adj_eff(edata, e):
+        edata[&quot;efficiency&quot;] = e
+        edata[&quot;cost&quot;] = edata[&quot;material&quot;] / edata[&quot;efficiency&quot;]
+
     def _complexity_to_efficiency(self, edata):
         if edata[&quot;complexity&quot;] &gt; self.COMPLEXITY_THRESHOLD:
-            edata[&quot;efficiency&quot;] = SequenceScoringConfig.not_synthesizable_efficiency
+            self._adj_eff(edata, SequenceScoringConfig.not_synthesizable_efficiency)
             return True
         return False
 
@@ -736,54 +740,66 @@ def add_edge_note(edata, key, value):
             span = edata[&quot;span&quot;]
             for a, b, c in SequenceScoringConfig.pcr_length_range_efficiency_multiplier:
                 if a &lt;= span &lt; b:
-                    edata[&quot;efficiency&quot;] *= c
+                    self._adj_eff(edata, edata[&quot;efficiency&quot;] * c)
                     add_edge_note(edata, &quot;long_pcr_product&quot;, True)
                     break
 
+    def _score_misprimings_from_alignment(self, alignment):
+        subject_key = alignment.subject_key
+        subject = self.seqdb[subject_key]
+        i = alignment.subject_region.a
+        j = alignment.subject_region.b
+        subject_seq = str(subject.seq)
+
+        return count_misprimings_in_amplicon(
+            subject_seq,
+            i,
+            j,
+            min_primer_anneal=SequenceScoringConfig.mispriming_min_anneal,
+            max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
+            cyclic=alignment.subject_region.cyclic,
+        )
+
     # TODO: select the best template...
+    # TODO: speed up this process
     def score_primer_misprimings(self, n1, n2, edata):
         if self._is_pcr_product(edata):
 
             group = edata[&quot;group&quot;]
 
             misprime_list = []
-            for alignment in group.alignments:
-                if alignment.type not in [Constants.PRIMER]:
-                    subject_key = alignment.subject_key
-                    subject = self.seqdb[subject_key]
-                    i = alignment.subject_region.a
-                    j = alignment.subject_region.b
-                    subject_seq = str(subject.seq)
-                    misprimings = count_misprimings_in_amplicon(
-                        subject_seq,
-                        i,
-                        j,
-                        min_primer_anneal=SequenceScoringConfig.mispriming_min_anneal,
-                        max_primer_anneal=SequenceScoringConfig.mispriming_max_anneal,
-                        cyclic=alignment.subject_region.cyclic,
-                    )
-                    misprime_list.append((misprimings, alignment))
-                    if misprimings == 0:
-                        break
 
-            # sort by misprimings
-            misprime_list = sorted(misprime_list, key=lambda x: x[0])
-
-            # now sort the groupings so that the best template is used
             if isinstance(group, MultiPCRProductAlignmentGroup):
-                group.groupings = lexsorted(
-                    misprime_list, group.groupings, key=lambda x: x[0]
+                prioritize_function = group.prioritize_groupings
+                alignments = group.iter_templates()
+
+            elif isinstance(group, AlignmentGroup):
+                prioritize_function = group.prioritize_alignments
+                alignments = group.alignments
+            else:
+                raise TypeError(
+                    &quot;Group &#39;{}&#39; not supported by this function.&quot;.format(group.__class__)
                 )
 
-            # adjust the efficiency
-            min_misprimings = misprime_list[0][0]
-            if min_misprimings:
-                edata[&quot;efficiency&quot;] = (
-                    edata[&quot;efficiency&quot;]
-                    * SequenceScoringConfig.mispriming_penalty ** min_misprimings
-                )
+            arr = []
+            for index, alignment in enumerate(alignments):
+                if not (&#39;PCR&#39; in alignment.type or alignment.type == Constants.FRAGMENT):
+                    raise ValueError(&quot;{} is not a valid type for a template&quot;.format(alignment.type))
+                mispriming = self._score_misprimings_from_alignment(alignment)
+                arr.append((mispriming, index, alignment))
+                if mispriming == 0:
+                    break
+            arr.sort(key=lambda x: x[0])
+            indices = [a[1] for a in arr]
+            prioritize_function(indices)
+            score = arr[0][0]
 
-                add_edge_note(edata, &quot;num_misprimings&quot;, min_misprimings)
+            self._adj_eff(
+                edata,
+                edata[&quot;efficiency&quot;] * SequenceScoringConfig.mispriming_penalty ** score,
+            )
+            add_edge_note(edata, &quot;num_misprimings&quot;, score)
+            add_edge_note(edata, &quot;n_templates_eval&quot;, len(misprime_list))
 
     # TODO: implement partitioner?
     def synthesis_partitioner(self, n1, n2, edata, border):

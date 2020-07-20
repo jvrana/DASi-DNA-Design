@@ -753,7 +753,7 @@ class Design:
         else:
             return x[1]
 
-    def out(self, fmt: str = "json"):
+    def out(self, fmt: str = "json", elim_extra_reactions: bool = False):
         """Return the results of the design as a validates output JSON.
 
         The output JSON is follows the following schema, see
@@ -761,7 +761,9 @@ class Design:
         :return:
         """
         if fmt.lower() == "json":
-            output = dasi_design_to_output_json(self)
+            output = dasi_design_to_output_json(
+                self, elim_extra_reactions=elim_extra_reactions
+            )
             validate_output(output)
             return output
         else:

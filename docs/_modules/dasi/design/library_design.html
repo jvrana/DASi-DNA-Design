@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.library_design &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.design.library_design &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -181,7 +181,7 @@ import networkx as nx
 from dasi.constants import Constants
 from dasi.design import Design
 from dasi.design import DesignResult
-from dasi.design.graph_builder import AssemblyGraphPostProcessor
+from dasi.design.graph_builder import AssemblyGraphPreProcessor
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
@@ -486,7 +486,7 @@ def cluster_graph(design):
 
         # tracker.update(2, &quot;Expanding shared fragments&quot;)
         # self._expand_synthesized_fragments()
-        # self._expand_from_synthesized()
+        self._expand_from_synthesized()
 
         tracker.update(3, &quot;Finding shared clusters&quot;)
         self.update_library_metadata()
@@ -500,7 +500,7 @@ def cluster_graph(design):
         adjusted = 0
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
-            processor = AssemblyGraphPostProcessor(
+            processor = AssemblyGraphPreProcessor(
                 graph, query, self.span_cost, self.seqdb, **post_processing_kwargs
             )
             processor()

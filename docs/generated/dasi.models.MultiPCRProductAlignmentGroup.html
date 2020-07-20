@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.MultiPCRProductAlignmentGroup &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.models.MultiPCRProductAlignmentGroup &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -192,6 +192,11 @@
 <dd><p>Bases: <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroupBase" title="dasi.models.alignment.AlignmentGroupBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.alignment.AlignmentGroupBase</span></code></a></p>
 <p>A PCR Product Alignment with redundant forward primer, reverse primer,
 and template alignments.</p>
+<p>Essentially, this represents region of a designed sequence <em>that could</em>
+be generated from a number of PCR reactions. Each PCR reaction is
+tracked in the <cite>groupings</cite>, which is a list of dictionaries with
+keys ‘fwd’, ‘rev’, ‘template’ and valued by Alignments.</p>
+<p>Now, there are alot of ways to produce PCR products.</p>
 <p>Initializes a new MultiPCRProductAlignmentGroup. This object
 represents a region of DNA that can be produced from a number of
 different forward, reverse, and template DNAs, all producing the same
@@ -206,6 +211,39 @@ keys.</p></li>
 </ul>
 </dd>
 </dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.get_fwd" title="dasi.models.MultiPCRProductAlignmentGroup.get_fwd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fwd</span></code></a>([index])</p></td>
+<td><p>Get the forward alignment at the specified index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.get_rev" title="dasi.models.MultiPCRProductAlignmentGroup.get_rev"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rev</span></code></a>([index])</p></td>
+<td><p>Get the reverse alignment at the specified index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.get_template" title="dasi.models.MultiPCRProductAlignmentGroup.get_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_template</span></code></a>([index])</p></td>
+<td><p>Here we take the intersection of the template.query_region and query region.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.iter_templates" title="dasi.models.MultiPCRProductAlignmentGroup.iter_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_templates</span></code></a>()</p></td>
+<td><p>Generator of templates from <cite>get_template</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.prioritize_groupings" title="dasi.models.MultiPCRProductAlignmentGroup.prioritize_groupings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prioritize_groupings</span></code></a>(indices)</p></td>
+<td><p>Prioritize groupings by pushing groupings at the given indices into the front of the grouping list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.reindex_groupings" title="dasi.models.MultiPCRProductAlignmentGroup.reindex_groupings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reindex_groupings</span></code></a>(indices)</p></td>
+<td><p>Reindex the groupings list by index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.size_ok" title="dasi.models.MultiPCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.sub_region" title="dasi.models.MultiPCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
+</tr>
+</tbody>
+</table>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -221,21 +259,6 @@ keys.</p></li>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.subject_regions" title="dasi.models.MultiPCRProductAlignmentGroup.subject_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_regions</span></code></a></p></td>
 <td><p>Return the list of subject regions in this alignment group.</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.size_ok" title="dasi.models.MultiPCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
-<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.sub_region" title="dasi.models.MultiPCRProductAlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
-<td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
 </table>
@@ -268,8 +291,8 @@ keys.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.__init__" title="dasi.models.MultiPCRProductAlignmentGroup.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(groupings, query_region, group_type)</p></td>
 <td><p>Initializes a new MultiPCRProductAlignmentGroup.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_template</span></code>([index])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.get_template" title="dasi.models.MultiPCRProductAlignmentGroup.get_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_template</span></code></a>([index])</p></td>
+<td><p>Here we take the intersection of the template.query_region and query region.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.MultiPCRProductAlignmentGroup.size_ok" title="dasi.models.MultiPCRProductAlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
 <td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
@@ -313,12 +336,103 @@ keys.</p></li>
 </tbody>
 </table>
 <dl class="method">
+<dt id="dasi.models.MultiPCRProductAlignmentGroup.get_fwd">
+<code class="sig-name descname">get_fwd</code><span class="sig-paren">(</span><em class="sig-param">index=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup.get_fwd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.get_fwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the forward alignment at the specified index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – index of the grouping to access</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>alignment</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.MultiPCRProductAlignmentGroup.get_rev">
+<code class="sig-name descname">get_rev</code><span class="sig-paren">(</span><em class="sig-param">index=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup.get_rev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.get_rev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the reverse alignment at the specified index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – index of the grouping to access</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>alignment</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.MultiPCRProductAlignmentGroup.get_template">
+<code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param">index=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup.get_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.get_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Here we take the intersection of the template.query_region and query
+region. WHY???</p>
+<p>Notes this is <strong>not</strong> the ‘template’ key of the groupings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The result of this alignment is used in the primer design.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.MultiPCRProductAlignmentGroup.iter_templates">
+<code class="sig-name descname">iter_templates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup.iter_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.iter_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator of templates from <cite>get_template</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.MultiPCRProductAlignmentGroup.prioritize_groupings">
+<code class="sig-name descname">prioritize_groupings</code><span class="sig-paren">(</span><em class="sig-param">indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup.prioritize_groupings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.prioritize_groupings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prioritize groupings by pushing groupings at the given indices into
+the front of the grouping list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – list of indices to prioritize</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="dasi.models.MultiPCRProductAlignmentGroup.query_key">
 <em class="property">property </em><code class="sig-name descname">query_key</code><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.query_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the query key associated with the query region.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.MultiPCRProductAlignmentGroup.reindex_groupings">
+<code class="sig-name descname">reindex_groupings</code><span class="sig-paren">(</span><em class="sig-param">indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup.reindex_groupings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup.reindex_groupings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reindex the groupings list by index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – list of indices</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

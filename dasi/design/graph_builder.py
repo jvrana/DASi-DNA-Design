@@ -23,7 +23,6 @@ from dasi.models import AssemblyNode
 from dasi.models import MoleculeType
 from dasi.models import MultiPCRProductAlignmentGroup
 from dasi.models import PCRProductAlignmentGroup
-from dasi.utils import argsorted
 from dasi.utils import bisect_between
 from dasi.utils import Region
 from dasi.utils import sort_with_keys
@@ -611,7 +610,12 @@ class AssemblyGraphPreProcessor:
 
             arr = []
             for index, alignment in enumerate(alignments):
-                assert "PCR" in alignment.type
+                if not (
+                    "PCR" in alignment.type or alignment.type == Constants.FRAGMENT
+                ):
+                    raise ValueError(
+                        "{} is not a valid type for a template".format(alignment.type)
+                    )
                 mispriming = self._score_misprimings_from_alignment(alignment)
                 arr.append((mispriming, index, alignment))
                 if mispriming == 0:

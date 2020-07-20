@@ -1,4 +1,18 @@
 # dasi change log
+## 0.0.21
+**2020-02-19T15:47:30.155731**
+bug fixes with scoring pcrs
+
+
+
+
+## 0.0.20
+**2020-02-07T10:42:08.775847**
+fixes serious bug
+
+ - fixes bug in calculating misprimings, which was causing invalid pcr product to be produced
+
+
 ## 0.0.19a
 **2020-02-07T07:09:29.642357**
 

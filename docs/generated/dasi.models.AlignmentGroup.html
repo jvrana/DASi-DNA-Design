@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.AlignmentGroup &#8212; dasi 0.0.19a documentation</title>
+    <title>dasi.models.AlignmentGroup &#8212; dasi 0.0.21 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.0.19a</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.21</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -203,6 +203,27 @@ the same starting and ending position for a query sequence.</p>
 </ul>
 </dd>
 </dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.prioritize_alignments" title="dasi.models.AlignmentGroup.prioritize_alignments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prioritize_alignments</span></code></a>(indices)</p></td>
+<td><p>Prioritize alignments by pushing groupings at the given indices into the front of the alignments list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.reindex_alignments" title="dasi.models.AlignmentGroup.reindex_alignments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reindex_alignments</span></code></a>(indices)</p></td>
+<td><p>Reindex the alignments list by index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.size_ok" title="dasi.models.AlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
+<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.sub_region" title="dasi.models.AlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
+<td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
+</tr>
+</tbody>
+</table>
 <p><strong>Attributes</strong></p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -218,21 +239,6 @@ the same starting and ending position for a query sequence.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.subject_regions" title="dasi.models.AlignmentGroup.subject_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subject_regions</span></code></a></p></td>
 <td><p>Return the list of subject regions in this alignment group.</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods</strong></p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.size_ok" title="dasi.models.AlignmentGroup.size_ok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_ok</span></code></a>()</p></td>
-<td><p>Determine if the size of this molecule is ‘acceptable’ from the bounded molecule type.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.sub_region" title="dasi.models.AlignmentGroup.sub_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_region</span></code></a>(qstart, qend, atype)</p></td>
-<td><p>Produce a new alignment group with sub-regions of the query region and subject regions at the specified new indicies.</p></td>
 </tr>
 </tbody>
 </table>
@@ -309,12 +315,41 @@ the same starting and ending position for a query sequence.</p>
 </tbody>
 </table>
 <dl class="method">
+<dt id="dasi.models.AlignmentGroup.prioritize_alignments">
+<code class="sig-name descname">prioritize_alignments</code><span class="sig-paren">(</span><em class="sig-param">indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#AlignmentGroup.prioritize_alignments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentGroup.prioritize_alignments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prioritize alignments by pushing groupings at the given indices into
+the front of the alignments list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – list of indices to prioritize</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="dasi.models.AlignmentGroup.query_key">
 <em class="property">property </em><code class="sig-name descname">query_key</code><a class="headerlink" href="#dasi.models.AlignmentGroup.query_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the query key associated with the query region.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentGroup.reindex_alignments">
+<code class="sig-name descname">reindex_alignments</code><span class="sig-paren">(</span><em class="sig-param">indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#AlignmentGroup.reindex_alignments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentGroup.reindex_alignments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reindex the alignments list by index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – list of indices</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>

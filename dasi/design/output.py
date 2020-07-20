@@ -289,10 +289,10 @@ def _design_property(design, reaction_node_dict):
 
 
 def dasi_design_to_output_json(
-    design: Union["Design", "LibraryDesign"], elim_extra_reaction: bool = False
+    design: Union["Design", "LibraryDesign"], elim_extra_reactions: bool = False
 ):
     """Convert a DASi Design instance into an output JSON."""
-    graph = dasi_design_to_dag(design, elim_extra_reaction=elim_extra_reaction)
+    graph = dasi_design_to_dag(design, elim_extra_reactions=elim_extra_reactions)
     reaction_node_dict = {}
     molecule_node_dict = {}
     sorted_nodes = list(nx.topological_sort(graph))[::-1]

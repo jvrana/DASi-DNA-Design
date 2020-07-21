@@ -332,3 +332,5 @@ class OutputValidator:
                 for rid in a["final_assembly_reaction"]:
                     reaction = out["reactions"][rid]
                     assert reaction["__name__"] == "Assembly"
+
+    # TODO: In Silico from output json, compare to original sequences

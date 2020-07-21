@@ -325,12 +325,10 @@ class LibraryDesign(Design):
 
         tracker.update(4, "Post processing")
         adjusted = 0
+
+        self.post_process_graphs()
+
         for qk, graph in self.graphs.items():
-            query = self.seqdb[qk]
-            processor = AssemblyGraphPreProcessor(
-                graph, query, self.span_cost, self.seqdb, **post_processing_kwargs
-            )
-            processor()
             for n1, n2, edata in graph.edges(data=True):
                 if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
                     group = edata["group"]

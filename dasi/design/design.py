@@ -479,6 +479,7 @@ class Design:
             processor = AssemblyGraphPreProcessor(
                 graph, query, self.span_cost, self.seqdb, **kwargs
             )
+            processor.logger = self.logger(processor)
             processor()
 
     def _assemble_graphs_without_threads(self):

@@ -117,12 +117,6 @@ def _validate_reactions(graph):
     """Validate each reaction has expected number of predecessors and
     successors."""
     for n2, ndata2 in graph.nodes(data=True):
-
-        ########################
-        # validate each reaction
-        # has expected number of
-        # predecessors and successors
-        ########################
         reaction = ndata2.get("reaction", None)
         if reaction:
             predecessors = list(graph.predecessors(n2))
@@ -256,7 +250,9 @@ def _design_property(design, reaction_node_dict):
     def _reaction_summ(r, a_i):
 
         return {
-            "reaction_index": reaction_node_dict[rhash(r, a_i)],
+            "reaction_index": reaction_node_dict.get(
+                rhash(r, a_i), "None (eliminated from graph)"
+            ),
             "metadata": {
                 "cost": r.metadata["cost"],
                 "materials": r.metadata["cost"],

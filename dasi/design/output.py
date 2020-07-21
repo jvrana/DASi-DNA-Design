@@ -313,9 +313,22 @@ def dasi_design_to_output_json(
         else:
             raise ValueError
 
-    return {
+    output = {
         "metadata": design.metadata,
         "designs": _design_property(design, reaction_node_dict, graph),
         "molecules": _molecules_property(graph, reaction_node_dict, molecule_node_dict),
         "reactions": _reactions_property(graph, reaction_node_dict, molecule_node_dict),
     }
+
+    OutputValidator.validate_design_assemblies(output)
+    return output
+
+
+class OutputValidator:
+    @classmethod
+    def validate_design_assemblies(cls, out):
+        for d in out["designs"].values():
+            for a in d["assemblies"]:
+                for rid in a["final_assembly_reaction"]:
+                    reaction = out["reactions"][rid]
+                    assert reaction["__name__"] == "Assembly"

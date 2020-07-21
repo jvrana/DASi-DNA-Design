@@ -1,4 +1,9 @@
 {
+  "0.0.21a1": {
+    "description": "bug fixes",
+    "date": "2020-07-21T09:18:20.201799",
+    "changes": []
+  },
   "0.0.21": {
     "description": "bug fixes with scoring pcrs",
     "date": "2020-02-19T15:47:30.155731",

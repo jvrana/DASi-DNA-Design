@@ -30,7 +30,7 @@ class TestOutput:
         validate_output(out)
 
     def test_to_out_json(self, design):
-        out = design.out()
+        out = design.out(elim_extra_reactions=True)
         assert out
 
     def test_to_out_json_dumps(self, design):

@@ -244,15 +244,12 @@ def _molecules_property(
     return property_molecule
 
 
-def _design_property(design, reaction_node_dict):
+def _design_property(design, reaction_node_dict, graph):
     status = design.status
 
     def _reaction_summ(r, a_i):
-
         return {
-            "reaction_index": reaction_node_dict.get(
-                rhash(r, a_i), "None (eliminated from graph)"
-            ),
+            "reaction_index": reaction_node_dict.get(rhash(r, a_i)),
             "metadata": {
                 "cost": r.metadata["cost"],
                 "materials": r.metadata["cost"],
@@ -273,11 +270,17 @@ def _design_property(design, reaction_node_dict):
         qstatus["sequence"] = seqrecord_to_json(design.seqdb[qk])
         for a_i, adata in enumerate(qstatus["assemblies"]):
             assembly = design.results[qk].assemblies[a_i]
-            adata["summary"] = [
-                _reaction_summ(r, a_i) for r in assembly.nonassembly_reactions
+
+            nonassembly_reactions = [
+                r for r in assembly.nonassembly_reactions if rhash(r, a_i) in graph
             ]
+            assembly_reactions = [
+                r for r in assembly.nonassembly_reactions if rhash(r, a_i) in graph
+            ]
+
+            adata["summary"] = [_reaction_summ(r, a_i) for r in nonassembly_reactions]
             adata["final_assembly_reaction"] = [
-                reaction_node_dict[rhash(r, a_i)] for r in assembly.assembly_reactions
+                reaction_node_dict[rhash(r, a_i)] for r in assembly_reactions
             ]
 
             # TODO: run start
@@ -312,7 +315,7 @@ def dasi_design_to_output_json(
 
     return {
         "metadata": design.metadata,
-        "designs": _design_property(design, reaction_node_dict),
+        "designs": _design_property(design, reaction_node_dict, graph),
         "molecules": _molecules_property(graph, reaction_node_dict, molecule_node_dict),
         "reactions": _reactions_property(graph, reaction_node_dict, molecule_node_dict),
     }

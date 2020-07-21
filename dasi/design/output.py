@@ -275,7 +275,7 @@ def _design_property(design, reaction_node_dict, graph):
                 r for r in assembly.nonassembly_reactions if rhash(r, a_i) in graph
             ]
             assembly_reactions = [
-                r for r in assembly.nonassembly_reactions if rhash(r, a_i) in graph
+                r for r in assembly.assembly_reactions if rhash(r, a_i) in graph
             ]
 
             adata["summary"] = [_reaction_summ(r, a_i) for r in nonassembly_reactions]

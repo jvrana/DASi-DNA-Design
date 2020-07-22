@@ -538,7 +538,7 @@ def test_case2(span_cost):
     result = list(results.values())[0]
     for a in result.assemblies:
         print(a)
-        print(a.cost())
+        print(a.compute_cost())
         for n1, n2, edata in a.edges():
             print(n1, n2)
 
@@ -606,10 +606,47 @@ def test_library(span_cost):
     results = design.optimize()
 
     for result in results.values():
-        print(result.assemblies[0].cost())
+        print(result.assemblies[0].compute_cost())
         df = result.assemblies[0].to_df()
         print(df)
         notes = list(df["notes"])
         assert "n_clusters: 3" in notes
         # assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
         # assert df
+
+@pytest.mark.parametrize('design_class', [
+    Design, LibraryDesign
+])
+def test_highly_complex_design(span_cost, design_class):
+    import functools
+    import operator
+    def _do_repeat(record, num):
+        return functools.reduce(operator.add, [record]*num)
+
+    backbone = random_record(3000)
+    repeat = random_record(30)
+    complex_sequence = _do_repeat(repeat, 8) + random_record(1000)
+    goal = backbone[1000:] + complex_sequence + backbone[:1000]
+    f1 = backbone[:2000]
+    f2 = backbone[1900:]
+
+    make_linear([f1, f2])
+    make_circular([goal])
+
+    design = design_class(span_cost)
+    design.n_jobs = 1
+    design.add_materials(
+        primers=[],
+        templates=[f1, f2],
+        queries=[goal],
+        fragments=[],
+    )
+
+    design.compile()
+    design.optimize()
+
+    print(design.to_df()[1])
+
+    results = list(design.results.values())
+    result = results[0]
+    print(result)

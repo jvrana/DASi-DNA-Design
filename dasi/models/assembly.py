@@ -670,7 +670,11 @@ class Assembly(Iterable):
         return is_circular(self.query)
 
     # TODO: consolidate this with shortest path utils in networkx
-    def cost(self):
+    def compute_cost(self):
+        c = self._compute_cost()
+        return c['material'] / c['efficiency']
+
+    def _compute_cost(self):
         material = 0
         efficiency = 1.0
         for _, _, edata in self.edges():
@@ -678,7 +682,22 @@ class Assembly(Iterable):
             efficiency *= edata["efficiency"]
         if efficiency == 0:
             return np.inf
-        return material / efficiency
+        return {
+            'material': material,
+            'efficiency': efficiency
+        }
+
+    @property
+    def cost(self):
+        return self.compute_cost()
+
+    @property
+    def material_cost(self):
+        return self._compute_cost()['material']
+
+    @property
+    def efficiency(self):
+        return self._compute_cost()['efficiency']
 
     def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
         for n1, n2 in self._sorted_edges():
@@ -721,7 +740,7 @@ class Assembly(Iterable):
     def print(self):
         print("query_name: {}".format(self.query.name))
         print("query_key: {}".format(self.query_key))
-        print("Cost: {}".format(self.cost()))
+        print("Cost: {}".format(self.compute_cost()))
         df = self.to_df()
         print(df)
 

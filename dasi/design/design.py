@@ -119,7 +119,7 @@ class DesignResult(Iterable):
             elif not allow_invalid:
                 raise e
 
-        cost = assembly.cost()
+        cost = assembly.compute_cost()
         n_nodes = len(assembly._nodes)
         k = (cost, n_nodes)
         i = bisect.bisect_left(self._keys, k)

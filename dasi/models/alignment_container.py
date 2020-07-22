@@ -600,6 +600,9 @@ class AlignmentContainer(Sized):
         if lim_size:
             templates = [t for t in templates if t.size_ok()]
 
+        # TODO: Expand at highly complex sequences
+        #       Use windowed complexity and find inflection points above the threshold
+
         if expand_primers:
             # NOTE: does not need to append alignments
             self.expand_primer_pairs(templates, lim_size=lim_size)

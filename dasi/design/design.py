@@ -473,7 +473,7 @@ class Design:
         else:
             self._assemble_graphs_without_threads()
 
-    def post_process_graphs(self, **kwargs):
+    def pre_process_graphs(self, **kwargs):
         for qk, graph in self.graphs.items():
             query = self.seqdb[qk]
             processor = AssemblyGraphPreProcessor(
@@ -508,16 +508,16 @@ class Design:
 
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
     def compile(
-        self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None
+        self, n_jobs: int = DEFAULT_N_JOBS, pre_process_kwargs: Dict = None
     ):
         """Compile materials to assembly graph."""
         self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
         self.assemble_graphs(n_jobs=n_jobs)
-        if post_processing_kwargs is None:
-            post_processing_kwargs = {}
-        self.post_process_graphs(**post_processing_kwargs)
+        if pre_process_kwargs is None:
+            pre_process_kwargs = {}
+        self.pre_process_graphs(**pre_process_kwargs)
 
     def run(
         self,

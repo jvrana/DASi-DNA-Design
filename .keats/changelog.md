@@ -1,4 +1,25 @@
 # dasi change log
+## 0.0.21a3
+**2020-07-22T07:53:54.749830**
+
+
+ - Scaling synthetic complexity to ratio of threshold
+
+
+## 0.0.21a2
+**2020-07-21T16:50:34.302394**
+
+
+ - graph preprocessor inherits the Design logger
+
+
+## 0.0.21a1
+**2020-07-21T09:18:20.201799**
+bug fixes
+
+ - Added `elim_extra_reactions` option to `Design.out` to ignore errors where there is more than one reaction that produces a molecule.
+
+
 ## 0.0.21
 **2020-02-19T15:47:30.155731**
 bug fixes with scoring pcrs

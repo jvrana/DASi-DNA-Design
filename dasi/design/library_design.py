@@ -295,11 +295,11 @@ class LibraryDesign(Design):
 
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
     def compile(
-        self, n_jobs: int = DEFAULT_N_JOBS, post_processing_kwargs: Dict = None
+        self, n_jobs: int = DEFAULT_N_JOBS, pre_process_kwargs: Dict = None
     ):
         """Compile the materials list into assembly graphs."""
-        if post_processing_kwargs is None:
-            post_processing_kwargs = {}
+        if pre_process_kwargs is None:
+            pre_process_kwargs = {}
         self._uncompile()
         tracker = self.logger.track("INFO", desc="Compiling library", total=5).enter()
 
@@ -326,7 +326,7 @@ class LibraryDesign(Design):
         tracker.update(4, "Post processing")
         adjusted = 0
 
-        self.post_process_graphs()
+        self.pre_process_graphs()
 
         for qk, graph in self.graphs.items():
             for n1, n2, edata in graph.edges(data=True):

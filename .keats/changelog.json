@@ -1,10 +1,11 @@
 {
   "0.0.21a4": {
     "description": "",
-    "date": "2020-07-22T08:33:21.406950",
+    "date": "2020-07-22T09:51:14.612055",
     "changes": [
       "report shows coverage and complexity at log scale",
-      "sequence complexity in report shows threshold"
+      "sequence complexity in report shows threshold",
+      "added 'cost', 'material_cost' and 'efficiency' properties to Assembly"
     ]
   },
   "0.0.21a3": {

@@ -1,4 +1,13 @@
 # dasi change log
+## 0.0.21a4
+**2020-07-22T09:51:14.612055**
+
+
+ - report shows coverage and complexity at log scale
+ - sequence complexity in report shows threshold
+ - added 'cost', 'material_cost' and 'efficiency' properties to Assembly
+
+
 ## 0.0.21a3
 **2020-07-22T07:53:54.749830**
 

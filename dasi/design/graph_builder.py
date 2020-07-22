@@ -534,8 +534,10 @@ class AssemblyGraphPreProcessor:
         edata["cost"] = edata["material"] / edata["efficiency"]
 
     def _complexity_to_efficiency(self, edata):
-        if edata["complexity"] > self.COMPLEXITY_THRESHOLD:
-            self._adj_eff(edata, SequenceScoringConfig.not_synthesizable_efficiency)
+        ratio = edata['complexity'] / self.COMPLEXITY_THRESHOLD
+        if ratio >= 1.:
+            e = SequenceScoringConfig.not_synthesizable_efficiency / ratio
+            self._adj_eff(edata, e)
             return True
         return False
 

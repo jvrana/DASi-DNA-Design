@@ -98,11 +98,11 @@ class DNAStats:
         if not mode:
             mode = self.DEFAULT_MODE
         self.mode = mode
-        if conv_seed_repeat:
+        if conv_seed_repeat is not None:
             self.conv_seed_repeat = conv_seed_repeat
         else:
             self.conv_seed_repeat = np.random.uniform(0.0, 100.0, size=repeat_window)
-        if conv_seed_hairpin:
+        if conv_seed_hairpin is not None:
             self.conv_seed_hairpin = conv_seed_hairpin
         else:
             self.conv_seed_hairpin = np.random.uniform(0.0, 100.0, size=hairpin_window)
@@ -154,6 +154,20 @@ class DNAStats:
             self.rev_signatures = None
 
         self.cached_partitions = []
+
+    def copy_with_new_seq(self, seq: str):
+        return self.__class__(
+            seq,
+            repeat_window=self.repeat_window,
+            stats_window=self.stats_window,
+            hairpin_window=self.hairpin_window,
+            base_percentage_threshold=self.base_percentage_threshold,
+            gc_content_threshold=self.gc_content_threshold,
+            at_content_threshold=self.at_content_threshold,
+            conv_seed_repeat=self.conv_seed_repeat,
+            conv_seed_hairpin=self.conv_seed_hairpin,
+            mode=self.mode,
+        )
 
     @staticmethod
     def one_hot(sequence, categories):

@@ -28,7 +28,7 @@ from dasi.utils import Region
 from dasi.utils import sort_with_keys
 from dasi.utils.sequence import count_misprimings_in_amplicon
 from dasi.utils.sequence import DNAStats
-
+from dasi.utils.sequence.sequence_partitioner import find_by_partitions_for_sequence
 
 SequenceScoringConfig = Config.SequenceScoringConfig
 
@@ -90,18 +90,22 @@ class AssemblyGraphBuilder:
         :param kwargs: additional kwargs for the edge data
         :return:
         """
-        return graph.add_edge(
+        edge = (
             n1,
             n2,
-            cost=cost,
-            material=material,
-            time=time,
-            efficiency=efficiency,
-            span=span,
-            type_def=atype,
-            group=group,
-            notes=notes,
+            dict(
+                cost=cost,
+                material=material,
+                time=time,
+                efficiency=efficiency,
+                span=span,
+                type_def=atype,
+                group=group,
+                notes=notes,
+            ),
         )
+        graph.add_edge(edge[0], edge[1], **edge[2])
+        return edge
 
     def add_edge(
         self,
@@ -199,6 +203,11 @@ class AssemblyGraphBuilder:
     def add_internal_edges(
         self, groups: List[Union[AlignmentGroup, PCRProductAlignmentGroup]]
     ):
+        """Add 'internal' edges from a list of AlignmentGroups. This means.
+
+        :param groups:
+        :return:
+        """
         for g in groups:
             for a, b, ab_data in self.iter_internal_edge_data(g):
                 for a_overhang, b_overhang in itertools.product(
@@ -244,7 +253,7 @@ class AssemblyGraphBuilder:
                 for _b in b[i:]:
                     yield _b, _a
 
-        def make_gap_itererator(a, b):
+        def make_gap_iterator(a, b):
             """Find all nodes that satisfy the below condition: b.
 
             |--------|              |-------|              a
@@ -268,7 +277,7 @@ class AssemblyGraphBuilder:
                     yield _b, _a
 
         overlap_iter = make_overlap_iterator(a_nodes_overhang, b_nodes_overhang)
-        gap_iter = make_gap_itererator(a_nodes_gap, b_nodes_gap)
+        gap_iter = make_gap_iterator(a_nodes_gap, b_nodes_gap)
         gap_origin_iter = make_origin_iterator(a_nodes_gap, b_nodes_gap)
         overlap_origin_iter = make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
 
@@ -305,7 +314,7 @@ class AssemblyGraphBuilder:
                 span = -len(q)
             if span <= 0:
                 condition = (bnode.expandable, anode.expandable)
-                self.add_edge(
+                return self.add_edge(
                     bnode,
                     anode,
                     cost=None,
@@ -320,6 +329,14 @@ class AssemblyGraphBuilder:
                 )
 
     def add_gap_edge(self, bnode, anode, query_region, origin=False):
+        """Add a 'gap' edge to the graph.
+
+        :param bnode: ending AssemblyNode from the previous edge
+        :param anode: starting AssemblyNode from the next edge
+        :param query_region: a query region to copy (indices a,b does not matter)
+        :param origin: whether this gap spans the origin or not
+        :return:
+        """
         try:
             if not origin:
                 span = anode.index - bnode.index
@@ -340,7 +357,7 @@ class AssemblyGraphBuilder:
         if span >= 0:
             condition = (bnode.expandable, anode.expandable)
             # cost_dict = self._get_cost(span, condition)
-            self.add_edge(
+            return self.add_edge(
                 bnode,
                 anode,
                 cost=None,
@@ -448,12 +465,15 @@ class AssemblyGraphPreProcessor:
         query: SeqRecord,
         span_cost: SpanCost,
         seqdb: Dict[str, SeqRecord],
+        container: AlignmentContainer,
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
         stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG, SCORE_MISPRIMINGS),
     ):
         self.graph = graph
+        self.graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
+        self.graph_builder.G = graph
         self.query = query
         self.seqdb = seqdb
         query_seq = str(query.seq)
@@ -534,8 +554,8 @@ class AssemblyGraphPreProcessor:
         edata["cost"] = edata["material"] / edata["efficiency"]
 
     def _complexity_to_efficiency(self, edata):
-        ratio = edata['complexity'] / self.COMPLEXITY_THRESHOLD
-        if ratio >= 1.:
+        ratio = edata["complexity"] / self.COMPLEXITY_THRESHOLD
+        if ratio >= 1.0:
             e = SequenceScoringConfig.not_synthesizable_efficiency / ratio
             self._adj_eff(edata, e)
             return True
@@ -545,14 +565,15 @@ class AssemblyGraphPreProcessor:
         bad_edges = []
         if edata["type_def"].synthesize:
             span = edata["span"]
-            if span > 0:
-                # TODO: cyclic may not always be tru
-                r = self._edge_to_region(n1, n2)
-                complexity = self.stats.cost(r.a, r.c)
-                edata["complexity"] = complexity
-                if self._complexity_to_efficiency(edata):
-                    add_edge_note(edata, "highly_complex", True)
-                    bad_edges.append((n1, n2, edata))
+            if "complexity" not in edata:
+                if span > 0:
+                    # TODO: cyclic may not always be tru
+                    r = self._edge_to_region(n1, n2)
+                    complexity = self.stats.cost(r.a, r.c)
+                    edata["complexity"] = complexity
+                    if self._complexity_to_efficiency(edata):
+                        add_edge_note(edata, "highly_complex", True)
+                        bad_edges.append((n1, n2, edata))
         return bad_edges
 
     @staticmethod
@@ -715,24 +736,83 @@ class AssemblyGraphPreProcessor:
         return [edge1, edge2, edge3]
 
     def partition(self, edges):
-        new_edges = []
-        for n1, n2, edata in self.logger.tqdm(
-            edges, "INFO", desc="Paritioning sequences..."
-        ):
+        self.logger.info("Partition {} sequences".format(len(edges)))
+        self.logger.info("Partition not implemented.")
+
+        edges_to_partition = []
+        for n1, n2, edata in edges:
             min_size = (
                 edata["type_def"].min_size
                 or MoleculeType.types[Constants.SHARED_SYNTHESIZED_FRAGMENT].min_size
             )
-            if edata["span"] > min_size * 2:
-                new_edges += self.synthesis_partitioner(n1, n2, edata, border=min_size)
+            if (
+                edata["span"] > min_size * 2
+                and edata["complexity"]
+                >= Config.SequenceScoringConfig.complexity_threshold
+            ):
+                edges_to_partition.append((n1, n2, edata))
 
-        syn_edges = [e for e in new_edges if e[2]["type_def"].design]
-        AssemblyGraphBuilder.batch_add_edge_costs(
-            self.graph, syn_edges, self.span_cost, None
+        cyclic = is_circular(self.query)
+        partitions = find_by_partitions_for_sequence(
+            self.stats,
+            cyclic=cyclic,
+            threshold=Config.SequenceScoringConfig.complexity_threshold,
+            step_size=100,
         )
 
-        for n1, n2, edata in syn_edges:
-            self._complexity_to_efficiency(edata)
+        new_edges = []
+        for n1, n2, edata in edges:
+            # r = edata['group'].query_region
+            r = Region(n1.index, n2.index, len(self.query.seq), cyclic=cyclic)
+            if n1.type == "B" and n2.type == "A":
+
+                for p in partitions:
+                    # TODO: overlap? find optimal partition for overlap?
+                    i4 = r.t(p - 15)
+                    i3 = r.t(p + 15)
+
+                    if i4 < i3 and r.a < i3 and i4 < r.b:
+                        n3 = AssemblyNode(i3, False, str(uuid4()), overhang=True)
+                        n4 = AssemblyNode(i4, False, str(uuid4()), overhang=True)
+
+                        # determine best 'origin'
+                        e1 = self.graph_builder.add_gap_edge(n1, n3, r, origin=False)
+
+                        # add overlap edge
+                        span = r.new(i4, i3)
+                        e2 = self.graph_builder.add_edge(
+                            n3,
+                            n4,
+                            cost=None,
+                            material=None,
+                            time=None,
+                            efficiency=None,
+                            internal_or_external="external",
+                            atype=MoleculeType.types[Constants.OVERLAP]((False, False)),
+                            condition=(False, False),
+                            span=-len(span),
+                            group=None,
+                        )
+
+                        # determine best 'origin'
+                        e3 = self.graph_builder.add_gap_edge(n4, n2, r, origin=False)
+                        new_edges += [_e for _e in [e1, e2, e3] if _e is not None]
+
+        edges = []
+        for n1, n2, edata in new_edges:
+            edata = self.graph[n1][n2]
+            edges.append((n1, n2, edata))
+        self.graph_builder.batch_add_edge_costs(self.graph, edges, self.span_cost)
+        self.score_complexity_edges(edges)
+        print(edges)
+
+    def score_complexity_edges(self, edges):
+        bad_edges = []
+        for n1, n2, edata in self.logger.tqdm(
+            edges, "INFO", desc="Scoring synthetic DNA"
+        ):
+            bad_edges += self.score_synthetic_dna(n1, n2, edata)
+        return bad_edges
 
     def update(self):
         bad_edges = []
@@ -751,15 +831,12 @@ class AssemblyGraphPreProcessor:
             ):
                 self.score_primer_misprimings(n1, n2, edata)
         if self.SCORE_COMPLEXITY in self.stages:
-            for n1, n2, edata in self.logger.tqdm(
-                edges, "INFO", desc="Scoring synthetic DNA"
-            ):
-                bad_edges += self.score_synthetic_dna(n1, n2, edata)
+            bad_edges += self.score_complexity_edges(edges)
         self.logger.info(
             "Found {} highly complex synthesis segments".format(len(bad_edges))
         )
 
-        # self.partition(bad_edges)
+        self.partition(bad_edges)
 
     # TODO: add logging to graph post processor
     # TODO: partition gaps

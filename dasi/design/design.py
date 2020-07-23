@@ -475,9 +475,10 @@ class Design:
 
     def pre_process_graphs(self, **kwargs):
         for qk, graph in self.graphs.items():
+            container = self.container_factory.containers()[qk]
             query = self.seqdb[qk]
             processor = AssemblyGraphPreProcessor(
-                graph, query, self.span_cost, self.seqdb, **kwargs
+                graph, query, self.span_cost, self.seqdb, container, **kwargs
             )
             processor.logger = self.logger(processor)
             processor()
@@ -507,9 +508,7 @@ class Design:
         self._results = {}
 
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
-    def compile(
-        self, n_jobs: int = DEFAULT_N_JOBS, pre_process_kwargs: Dict = None
-    ):
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS, pre_process_kwargs: Dict = None):
         """Compile materials to assembly graph."""
         self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):

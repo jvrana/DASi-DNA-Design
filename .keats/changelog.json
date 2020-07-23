@@ -1,4 +1,11 @@
 {
+  "0.0.21a5": {
+    "description": "",
+    "date": "2020-07-23T08:10:37.204277",
+    "changes": [
+      "added sequence partitioner"
+    ]
+  },
   "0.0.21a4": {
     "description": "",
     "date": "2020-07-22T09:51:14.612055",

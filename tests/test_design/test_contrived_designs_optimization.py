@@ -135,8 +135,8 @@ def check_design_result(
     df2 = expected_solution.to_df()
     print(df2)
 
-    print("Best: {}".format(best_solution.cost()))
-    print("Expected: {}".format(expected_solution.cost()))
+    print("Best: {}".format(best_solution.cost))
+    print("Expected: {}".format(expected_solution.cost))
 
     if check_path:
         # check DataFrame
@@ -150,8 +150,8 @@ def check_design_result(
             assert e1 == e2, "{} != {}".format(e1, e2)
 
     if check_cost:
-        assert best_solution.cost() <= expected_solution.cost()
-        assert expected_solution.cost() != np.inf
+        assert best_solution.cost <= expected_solution.cost
+        assert expected_solution.cost != np.inf
 
     design.to_df()
 
@@ -614,18 +614,18 @@ def test_library(span_cost):
         # assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
         # assert df
 
-@pytest.mark.parametrize('design_class', [
-    Design, LibraryDesign
-])
+
+@pytest.mark.parametrize("design_class", [Design, LibraryDesign])
 def test_highly_complex_design(span_cost, design_class):
     import functools
     import operator
+
     def _do_repeat(record, num):
-        return functools.reduce(operator.add, [record]*num)
+        return functools.reduce(operator.add, [record] * num)
 
     backbone = random_record(3000)
     repeat = random_record(30)
-    complex_sequence = _do_repeat(repeat, 8) + random_record(1000)
+    complex_sequence = _do_repeat(repeat, 2) + random_record(1000)
     goal = backbone[1000:] + complex_sequence + backbone[:1000]
     f1 = backbone[:2000]
     f2 = backbone[1900:]
@@ -635,12 +635,7 @@ def test_highly_complex_design(span_cost, design_class):
 
     design = design_class(span_cost)
     design.n_jobs = 1
-    design.add_materials(
-        primers=[],
-        templates=[f1, f2],
-        queries=[goal],
-        fragments=[],
-    )
+    design.add_materials(primers=[], templates=[f1, f2], queries=[goal], fragments=[])
 
     design.compile()
     design.optimize()
@@ -649,4 +644,6 @@ def test_highly_complex_design(span_cost, design_class):
 
     results = list(design.results.values())
     result = results[0]
+    print(result.assemblies)
+    print(result.assemblies[0]._nodes)
     print(result)

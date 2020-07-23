@@ -672,7 +672,9 @@ class Assembly(Iterable):
     # TODO: consolidate this with shortest path utils in networkx
     def compute_cost(self):
         c = self._compute_cost()
-        return c['material'] / c['efficiency']
+        if np.isinf(c["material"]):
+            return np.inf
+        return c["material"] / c["efficiency"]
 
     def _compute_cost(self):
         material = 0
@@ -681,11 +683,8 @@ class Assembly(Iterable):
             material += edata["material"]
             efficiency *= edata["efficiency"]
         if efficiency == 0:
-            return np.inf
-        return {
-            'material': material,
-            'efficiency': efficiency
-        }
+            return {"material": np.inf, "efficiency": 0.0}
+        return {"material": material, "efficiency": efficiency}
 
     @property
     def cost(self):
@@ -693,11 +692,11 @@ class Assembly(Iterable):
 
     @property
     def material_cost(self):
-        return self._compute_cost()['material']
+        return self._compute_cost()["material"]
 
     @property
     def efficiency(self):
-        return self._compute_cost()['efficiency']
+        return self._compute_cost()["efficiency"]
 
     def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
         for n1, n2 in self._sorted_edges():

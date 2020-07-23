@@ -35,3 +35,5 @@ class Config:
             (5000, 6000, 0.5),
             (6000, 1000, 0.2),
         ]  #: multiplier to apply to the efficiency if PCR is within the given length range
+        partition_overlap = 30  #: overlap when partitioning a highly complex sequence
+        partition_step_size = 10  #: step size to approximate optimal partition

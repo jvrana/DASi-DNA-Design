@@ -1,8 +1,10 @@
 import bisect
 import itertools
 from typing import Dict
+from typing import Generator
 from typing import Iterable
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Union
 from uuid import uuid4
@@ -38,6 +40,9 @@ def add_edge_note(edata, key, value):
     if not edata["notes"]:
         edata["notes"] = {}
     edata["notes"][key] = value
+
+
+Edge = Tuple[AssemblyNode, AssemblyNode, Dict]
 
 
 class AssemblyGraphBuilder:
@@ -217,6 +222,57 @@ class AssemblyGraphBuilder:
                     b_node = AssemblyNode(b[0], b[1], b[2], b_overhang)
                     self.add_edge(a_node, b_node, **ab_data)
 
+    @staticmethod
+    def make_overlap_iterator(
+        a: Iterable[AssemblyNode], b: Iterable[AssemblyNode]
+    ) -> Generator[Tuple[AssemblyNode, AssemblyNode], None, None]:
+        """Find all nodes that satisfy the below condition: b.
+
+        |--------|
+               |-------|
+               a
+
+        With the exception that when a.index == b.index, this is not
+        considered an overlap, but covered in the `make_gap_iterator`,
+        due to using bisect.bisect_right. Overlap is more computationally
+        intensive.
+        """
+        a, akeys = sort_with_keys(a, lambda x: x.index)
+        b, bkeys = sort_with_keys(b, lambda x: x.index)
+        for _a in a:
+            i = bisect.bisect_right(bkeys, _a.index)
+            for _b in b[i:]:
+                yield _b, _a
+
+    @staticmethod
+    def make_gap_iterator(
+        a: Iterable[AssemblyNode], b: Iterable[AssemblyNode]
+    ) -> Generator[Tuple[AssemblyNode, AssemblyNode], None, None]:
+        """Find all nodes that satisfy the below condition: b.
+
+        |--------|              |-------|              a
+        """
+        a, akeys = sort_with_keys(a, lambda x: x.index)
+        b, bkeys = sort_with_keys(b, lambda x: x.index)
+
+        for _a in a:
+            i = bisect.bisect_right(bkeys, _a.index)
+            for _b in b[:i]:
+                yield _b, _a
+
+    @staticmethod
+    def make_origin_iterator(
+        a: Iterable[AssemblyNode], b: Iterable[AssemblyNode], length: int
+    ) -> Generator[Tuple[AssemblyNode, AssemblyNode], None, None]:
+        a, akeys = sort_with_keys(a, lambda x: x.index)
+        b, bkeys = sort_with_keys(b, lambda x: x.index)
+
+        i = bisect.bisect_right(akeys, length)
+        j = bisect.bisect_left(bkeys, length)
+        for _a in a[:i]:
+            for _b in b[j:]:
+                yield _b, _a
+
     def add_external_edges(self, groups, group_keys, nodes: Iterable[AssemblyNode]):
         if not groups:
             return
@@ -234,52 +290,12 @@ class AssemblyGraphBuilder:
             list(x) for x in partition(lambda x: x.overhang, b_nodes)
         ]
 
-        def make_overlap_iterator(a, b):
-            """Find all nodes that satisfy the below condition: b.
-
-            |--------|
-                   |-------|
-                   a
-
-            With the exception that when a.index == b.index, this is not
-            considered an overlap, but covered in the `make_gap_iterator`,
-            due to using bisect.bisect_right. Overlap is more computationally
-            intensive.
-            """
-            a, akeys = sort_with_keys(a, lambda x: x.index)
-            b, bkeys = sort_with_keys(b, lambda x: x.index)
-            for _a in a:
-                i = bisect.bisect_right(bkeys, _a.index)
-                for _b in b[i:]:
-                    yield _b, _a
-
-        def make_gap_iterator(a, b):
-            """Find all nodes that satisfy the below condition: b.
-
-            |--------|              |-------|              a
-            """
-            a, akeys = sort_with_keys(a, lambda x: x.index)
-            b, bkeys = sort_with_keys(b, lambda x: x.index)
-
-            for _a in a:
-                i = bisect.bisect_right(bkeys, _a.index)
-                for _b in b[:i]:
-                    yield _b, _a
-
-        def make_origin_iterator(a, b):
-            a, akeys = sort_with_keys(a, lambda x: x.index)
-            b, bkeys = sort_with_keys(b, lambda x: x.index)
-
-            i = bisect.bisect_right(akeys, length)
-            j = bisect.bisect_left(bkeys, length)
-            for _a in a[:i]:
-                for _b in b[j:]:
-                    yield _b, _a
-
-        overlap_iter = make_overlap_iterator(a_nodes_overhang, b_nodes_overhang)
-        gap_iter = make_gap_iterator(a_nodes_gap, b_nodes_gap)
-        gap_origin_iter = make_origin_iterator(a_nodes_gap, b_nodes_gap)
-        overlap_origin_iter = make_origin_iterator(a_nodes_overhang, b_nodes_overhang)
+        overlap_iter = self.make_overlap_iterator(a_nodes_overhang, b_nodes_overhang)
+        gap_iter = self.make_gap_iterator(a_nodes_gap, b_nodes_gap)
+        gap_origin_iter = self.make_origin_iterator(a_nodes_gap, b_nodes_gap, length)
+        overlap_origin_iter = self.make_origin_iterator(
+            a_nodes_overhang, b_nodes_overhang, length
+        )
 
         for bnode, anode in overlap_iter:
             self.add_overlap_edge(bnode, anode, query_region, group_keys, groups)
@@ -295,19 +311,28 @@ class AssemblyGraphBuilder:
             self.add_gap_edge(bnode, anode, query_region, origin=True)
 
     def add_overlap_edge(
-        self, bnode, anode, query_region, group_keys, groups, origin=False
+        self,
+        bnode,
+        anode,
+        query_region,
+        group_keys,
+        groups,
+        origin=False,
+        validate_groups_present: bool = True,
     ):
         q = query_region.new(anode.index, bnode.index)
         if len(q) == 0:
             return
-        if not origin:
-            i, j = bisect_between(group_keys, q.a, q.b)
-            filtered_groups = groups[i:j]
-        else:
-            i = bisect.bisect_left(group_keys, q.a)
-            j = bisect.bisect_right(group_keys, q.b)
-            filtered_groups = groups[i:] + groups[:j]
-        if filtered_groups:
+        filtered_groups = []
+        if validate_groups_present:
+            if not origin:
+                i, j = bisect_between(group_keys, q.a, q.b)
+                filtered_groups = groups[i:j]
+            else:
+                i = bisect.bisect_left(group_keys, q.a)
+                j = bisect.bisect_right(group_keys, q.b)
+                filtered_groups = groups[i:] + groups[:j]
+        if not validate_groups_present or filtered_groups:
             if not origin:
                 span = anode.index - bnode.index
             else:
@@ -396,6 +421,8 @@ class AssemblyGraphBuilder:
                     edges_to_remove.append(edge)
                 else:
                     _d = {c: data[col_i, i] for col_i, c in enumerate(npdf.columns)}
+                    if _d["material"] is None:
+                        raise Exception
                     e.update(_d)
         if cost_threshold is not None:
             graph.remove_edges_from(edges_to_remove)
@@ -403,6 +430,16 @@ class AssemblyGraphBuilder:
     def _get_cost(self, bp, ext):
         data = self.span_cost(bp, ext).data
         return {k: v[0] for k, v in data.items()}
+
+    def update_costs(self, edges: Optional[List[Edge]] = None):
+        if edges is None:
+            edges = []
+            for n1, n2, edata in self.G.edges(data=True):
+                if edata["cost"] is None:
+                    edges.append((n1, n2, edata))
+                elif edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
+                    edges.append((n1, n2, edata))
+        self.batch_add_edge_costs(self.G, edges, self.span_cost, self.COST_THRESHOLD)
 
     def build_assembly_graph(self) -> nx.DiGraph:
 
@@ -427,14 +464,7 @@ class AssemblyGraphBuilder:
 
         self.add_internal_edges(groups)
         self.add_external_edges(groups, group_keys, self.G.nodes())
-
-        edges = []
-        for n1, n2, edata in self.G.edges(data=True):
-            if edata["cost"] is None:
-                edges.append((n1, n2, edata))
-            elif edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
-                edges.append((n1, n2, edata))
-        self.batch_add_edge_costs(self.G, edges, self.span_cost, self.COST_THRESHOLD)
+        self.update_costs()
 
         # TODO: freeze?
         # nx.freeze(self.G)
@@ -456,7 +486,7 @@ class AssemblyGraphPreProcessor:
     SCORE_COMPLEXITY = "SCORE_COMPLEXITY"
     SCORE_MISPRIMINGS = "SCORE_MISPRIMINGS"
     SCORE_LONG = "SCORE_LONG_PCR_PRODUCTS"
-
+    PARTITION = "PARTITION_SYNTHETIC_SEQUENCES"
     # TODO: add post processing config
 
     def __init__(
@@ -469,7 +499,12 @@ class AssemblyGraphPreProcessor:
         stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
         stats_window: int = SequenceScoringConfig.stats_window,
         stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
-        stages: Tuple[str] = (SCORE_COMPLEXITY, SCORE_LONG, SCORE_MISPRIMINGS),
+        stages: Tuple[str] = (
+            SCORE_COMPLEXITY,
+            SCORE_LONG,
+            SCORE_MISPRIMINGS,
+            PARTITION,
+        ),
     ):
         self.graph = graph
         self.graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
@@ -481,6 +516,12 @@ class AssemblyGraphPreProcessor:
             query_seq = query_seq + query_seq
         self.stats = DNAStats(
             query_seq,
+            repeat_window=stats_repeat_window,
+            stats_window=stats_window,
+            hairpin_window=stats_hairpin_window,
+        )
+        self.stats_single = DNAStats(
+            str(query.seq),
             repeat_window=stats_repeat_window,
             stats_window=stats_window,
             hairpin_window=stats_hairpin_window,
@@ -551,7 +592,12 @@ class AssemblyGraphPreProcessor:
     @staticmethod
     def _adj_eff(edata, e):
         edata["efficiency"] = e
-        edata["cost"] = edata["material"] / edata["efficiency"]
+        if e == 0:
+            edata["cost"] = np.inf
+        if edata["material"] is None:
+            edata["cost"] = np.inf
+        else:
+            edata["cost"] = edata["material"] / edata["efficiency"]
 
     def _complexity_to_efficiency(self, edata):
         ratio = edata["complexity"] / self.COMPLEXITY_THRESHOLD
@@ -735,10 +781,7 @@ class AssemblyGraphPreProcessor:
         edge3 = (n4, n2, edata3)
         return [edge1, edge2, edge3]
 
-    def partition(self, edges):
-        self.logger.info("Partition {} sequences".format(len(edges)))
-        self.logger.info("Partition not implemented.")
-
+    def _filter_partition_edges(self, edges: List[Edge]) -> List[Edge]:
         edges_to_partition = []
         for n1, n2, edata in edges:
             min_size = (
@@ -751,60 +794,66 @@ class AssemblyGraphPreProcessor:
                 >= Config.SequenceScoringConfig.complexity_threshold
             ):
                 edges_to_partition.append((n1, n2, edata))
+        return edges_to_partition
+
+    def partition(self, edges: List[Edge]):
+        self.logger.info("Partition {} sequences".format(len(edges)))
+        self.logger.info("Partition not yet implemented.")
+
+        edges_to_partition = self._filter_partition_edges(edges)
 
         cyclic = is_circular(self.query)
         partitions = find_by_partitions_for_sequence(
-            self.stats,
+            self.stats_single,
             cyclic=cyclic,
             threshold=Config.SequenceScoringConfig.complexity_threshold,
-            step_size=100,
+            step_size=Config.SequenceScoringConfig.partition_step_size,
+            delta=Config.SequenceScoringConfig.partition_overlap,
         )
-
         new_edges = []
-        for n1, n2, edata in edges:
-            # r = edata['group'].query_region
+        for n1, n2, edata in edges_to_partition:
             r = Region(n1.index, n2.index, len(self.query.seq), cyclic=cyclic)
+
             if n1.type == "B" and n2.type == "A":
 
                 for p in partitions:
-                    # TODO: overlap? find optimal partition for overlap?
-                    i4 = r.t(p - 15)
-                    i3 = r.t(p + 15)
+                    if p in r:
+                        # TODO: overlap? find optimal partition for overlap?
+                        i4 = p
+                        i3 = p + Config.SequenceScoringConfig.partition_overlap
 
-                    if i4 < i3 and r.a < i3 and i4 < r.b:
                         n3 = AssemblyNode(i3, False, str(uuid4()), overhang=True)
                         n4 = AssemblyNode(i4, False, str(uuid4()), overhang=True)
-
-                        # determine best 'origin'
                         e1 = self.graph_builder.add_gap_edge(n1, n3, r, origin=False)
-
-                        # add overlap edge
-                        span = r.new(i4, i3)
-                        e2 = self.graph_builder.add_edge(
+                        e2 = self.graph_builder.add_gap_edge(n1, n3, r, origin=True)
+                        e3 = self.graph_builder.add_overlap_edge(
                             n3,
                             n4,
-                            cost=None,
-                            material=None,
-                            time=None,
-                            efficiency=None,
-                            internal_or_external="external",
-                            atype=MoleculeType.types[Constants.OVERLAP]((False, False)),
-                            condition=(False, False),
-                            span=-len(span),
-                            group=None,
+                            r,
+                            None,
+                            None,
+                            origin=False,
+                            validate_groups_present=False,
                         )
-
-                        # determine best 'origin'
-                        e3 = self.graph_builder.add_gap_edge(n4, n2, r, origin=False)
-                        new_edges += [_e for _e in [e1, e2, e3] if _e is not None]
+                        e4 = self.graph_builder.add_overlap_edge(
+                            n3,
+                            n4,
+                            r,
+                            None,
+                            None,
+                            origin=True,
+                            validate_groups_present=False,
+                        )
+                        e5 = self.graph_builder.add_gap_edge(n4, n2, r, origin=False)
+                        e6 = self.graph_builder.add_gap_edge(n4, n2, r, origin=True)
+                        new_edges += [e1, e2, e3, e4, e5, e6]
 
         edges = []
-        for n1, n2, edata in new_edges:
-            edata = self.graph[n1][n2]
-            edges.append((n1, n2, edata))
-        self.graph_builder.batch_add_edge_costs(self.graph, edges, self.span_cost)
+        for n1, n2, edata in self.graph_builder.G.edges(data=True):
+            if edata["cost"] is None:
+                edges.append((n1, n2, edata))
+        self.graph_builder.update_costs(edges)
         self.score_complexity_edges(edges)
-        print(edges)
 
     def score_complexity_edges(self, edges):
         bad_edges = []
@@ -836,7 +885,8 @@ class AssemblyGraphPreProcessor:
             "Found {} highly complex synthesis segments".format(len(bad_edges))
         )
 
-        self.partition(bad_edges)
+        if self.PARTITION in self.stages:
+            self.partition(bad_edges)
 
     # TODO: add logging to graph post processor
     # TODO: partition gaps

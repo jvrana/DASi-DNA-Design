@@ -851,10 +851,10 @@ class Span(Container, Iterable, Sized):
         return self._b < self._a and self._cyclic
 
     def __contains__(self, other: Union["Span", int]):
-        if isinstance(other, int):
-            return self.contains_pos(other)
-        elif issubclass(type(other), Span):
+        if issubclass(type(other), Span):
             return self.contains_span(other)
+        else:
+            return self.contains_pos(other)
 
     def __len__(self) -> int:
         return sum([r[1] - r[0] for r in self.ranges()])

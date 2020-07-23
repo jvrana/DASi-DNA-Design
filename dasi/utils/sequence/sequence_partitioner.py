@@ -132,7 +132,11 @@ def _shift_indices(indices: List[int], origin: int, length: int):
 
 
 def find_by_partitions_for_sequence(
-    stats: DNAStats, cyclic: bool, threshold: int, step_size: int = 100
+    stats: DNAStats,
+    cyclic: bool,
+    threshold: int,
+    step_size: int = 100,
+    delta: Optional[int] = None,
 ):
     """Approximates the best partitions for a sequence. If cyclic=True, then
     will approximate partitions by also rotating the origin.
@@ -143,14 +147,15 @@ def find_by_partitions_for_sequence(
     :param step_size: step size to find partition.
     :return:
     """
-    partitions = find_best_partitions(stats, threshold=threshold, step_size=step_size)
+    f = functools.partial(
+        find_best_partitions, threshold=threshold, step_size=step_size, delta=delta
+    )
+    partitions = f(stats)
     if cyclic:
         origin = int(len(stats.seq) / 2.0)
         seq = stats.seq
         stats2 = stats.copy_with_new_seq(seq[origin:] + seq[:origin])
-        partitions2 = find_best_partitions(
-            stats2, threshold=threshold, step_size=step_size
-        )
+        partitions2 = f(stats2)
         partitions += _shift_indices(partitions2, origin, len(seq))
     partitions = sorted(set(partitions))
     return partitions

@@ -617,15 +617,9 @@ def test_library(span_cost):
 
 @pytest.mark.parametrize("design_class", [Design, LibraryDesign])
 def test_highly_complex_design(span_cost, design_class):
-    import functools
-    import operator
-
-    def _do_repeat(record, num):
-        return functools.reduce(operator.add, [record] * num)
-
     backbone = random_record(3000)
     repeat = random_record(30)
-    complex_sequence = _do_repeat(repeat, 2) + random_record(1000)
+    complex_sequence = repeat + random_record(200) + repeat + random_record(1000)
     goal = backbone[1000:] + complex_sequence + backbone[:1000]
     f1 = backbone[:2000]
     f2 = backbone[1900:]

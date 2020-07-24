@@ -1,4 +1,20 @@
 # dasi change log
+## 0.0.21a6
+**2020-07-24T13:13:49.134544**
+
+
+ - `Design` and `LibraryDesign` both inherit `DesignABC`
+ - n_jobs paramter removed from `Design.run` and `LibraryDesign.run`
+ - `pooled_run` method added to Design and LibraryDesign for multiprocessed designs.
+
+
+## 0.0.21a5
+**2020-07-23T08:10:37.204277**
+
+
+ - added sequence partitioner
+
+
 ## 0.0.21a4
 **2020-07-22T09:51:14.612055**
 

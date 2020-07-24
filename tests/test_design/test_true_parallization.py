@@ -1,37 +1,69 @@
-from dasi.design import Design, LibraryDesign
+import random
 from multiprocessing import Pool
+
+import numpy as np
 import pytest
 
-@pytest.mark.parametrize('i', [1, 2, None])
+from dasi.design import Design
+from dasi.design import LibraryDesign
+
+
+@pytest.mark.parametrize("i", [1, 2, None])
 def test_compile_with_filtered_keys(i):
     design = Design.fake(3)
     design._blast()
     query_keys = design.query_keys
     design.assemble_graphs(n_jobs=1, query_keys=query_keys[:i])
-    design.pre_process_graphs(**{})
+    design.post_process_graphs(**{})
     design.optimize()
     assert len(design.results) == i
 
-def run(args):
-    design, qk = args
-    design.assemble_graphs(n_jobs=1, query_keys=qk)
-    design.pre_process_graphs(**{})
-    design.optimize(n_jobs=1)
-    return design.results
 
-def test_true_parallelization():
-    design = LibraryDesign.fake(10)
-    design.DEFAULT_N_JOBS = 1
-    design._blast()
-    design._share_query_blast()
-    design._expand_from_synthesized()
-    design.update_library_metadata()
-    query_keys = design.query_keys
-    chunks = []
-    for i in range(10):
-        chunks.append(query_keys[i:i+1])
-    # chunks = [query_keys]
-    args = list(zip([design] * len(chunks), chunks))
-    with Pool(processes=min(len(chunks), 16)) as pool:
-        results = pool.map(run, args)
-    print(results)
+@pytest.mark.parametrize("n", [1, 16])
+@pytest.mark.parametrize("nseqs", [3, 1])
+@pytest.mark.parametrize("s", [1, 2])
+def test_pooled_run(n, nseqs, s):
+    design = LibraryDesign.fake(nseqs)
+    design.pooled_run(n=n, size=s)
+    assert len(design.graphs) == nseqs
+    assert len(design.results) == nseqs
+
+
+def test_compare_pooled_run():
+    """Results of pooled and non-pooled ought to be the same."""
+
+    def pooled_run():
+        random.seed(0)
+        np.random.seed(0)
+
+        design = LibraryDesign.fake(10)
+        design.pooled_run(16, 1)
+        return design
+
+    def run():
+        random.seed(0)
+        np.random.seed(0)
+
+        design = LibraryDesign.fake(10)
+        design.run()
+        return design
+
+    design1 = run()
+    design2 = pooled_run()
+    df1 = design1.to_df()[1]
+    df2 = design2.to_df()[1]
+
+    keys = [
+        "query_start",
+        "query_end",
+        "cost",
+        "material",
+        "span",
+        "type",
+        "internal_or_external",
+        "efficiency",
+        "complexity",
+        "notes",
+        "DESIGN_ID",
+    ]
+    assert df1[keys].equals(df2[keys])

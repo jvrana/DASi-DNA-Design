@@ -46,12 +46,6 @@ def test_num_groups_vs_endpoints(here, paths, query, span_cost):
 class TestBenchmark:
     """Benchmarks the compilation and optimization of assembly graphs."""
 
-    def test_single_compiled_benchmark(self, single_compiled_results):
-        pass
-
-    def test_multi_compiled_benchmark(self, multi_compiled_results):
-        pass
-
     def test_single_processed_benchmark(self, single_processed_results):
         pass
 
@@ -141,9 +135,9 @@ class TestMultiProcessing:
             paired_keys.append((key1, key2))
         return paired_keys
 
-    def test_same_groups(self, single_compiled_results, multi_compiled_results):
-        design1 = single_compiled_results
-        design2 = multi_compiled_results
+    def test_same_groups(self, single_processed_results, multi_processed_results):
+        design1 = single_processed_results[0]
+        design2 = multi_processed_results[0]
 
         paired_keys = self._pair_keys(design1, design2)
 

@@ -1,5 +1,6 @@
 import bisect
 import itertools
+from functools import partial
 from typing import Dict
 from typing import Generator
 from typing import Iterable
@@ -8,7 +9,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 from uuid import uuid4
-from functools import partial
+
 import networkx as nx
 import numpy as np
 from Bio.SeqRecord import SeqRecord
@@ -81,7 +82,7 @@ class AssemblyGraphBuilder:
         condition: Tuple[bool, bool],
         group: Union[AlignmentGroup, PCRProductAlignmentGroup],
         notes: Dict = None,
-        add_to_graph: bool = False
+        add_to_graph: bool = False,
     ):
         """Add an edge between two assembly nodes.
 
@@ -101,7 +102,8 @@ class AssemblyGraphBuilder:
         assert condition == type_def.design
         assert internal_or_external == type_def.int_or_ext
         edge = (
-            n1, n2,
+            n1,
+            n2,
             dict(
                 cost=cost,
                 material=material,
@@ -111,7 +113,7 @@ class AssemblyGraphBuilder:
                 type_def=type_def,
                 group=group,
                 notes=notes,
-            )
+            ),
         )
         if add_to_graph:
             self.G.add_edge(edge[0], edge[1], **edge[2])
@@ -278,7 +280,7 @@ class AssemblyGraphBuilder:
         groups,
         origin=False,
         validate_groups_present: bool = True,
-        add_to_graph: bool=True
+        add_to_graph: bool = True,
     ):
         q = query_region.new(anode.index, bnode.index)
         if len(q) == 0:
@@ -311,10 +313,12 @@ class AssemblyGraphBuilder:
                     condition=condition,
                     span=span,
                     group=None,
-                    add_to_graph=add_to_graph
+                    add_to_graph=add_to_graph,
                 )
 
-    def add_gap_edge(self, bnode, anode, query_region, origin=False, add_to_graph: bool=True):
+    def add_gap_edge(
+        self, bnode, anode, query_region, origin=False, add_to_graph: bool = True
+    ):
         """Add a 'gap' edge to the graph.
 
         :param bnode: ending AssemblyNode from the previous edge
@@ -355,10 +359,11 @@ class AssemblyGraphBuilder:
                 span=span,
                 condition=condition,
                 group=None,
-                add_to_graph=add_to_graph
+                add_to_graph=add_to_graph,
             )
 
-    # TODO: refactor this. One method to update costs of edges. One method to add edges. One method to remove high cost edges.
+    # TODO: refactor this. One method to update costs of edges. One method to
+    #       add edges. One method to remove high cost edges.
     @staticmethod
     def batch_add_edge_costs(graph, edges, span_cost, cost_threshold: float = None):
         """Add costs to all edges at once.
@@ -438,7 +443,7 @@ class AssemblyGraphBuilder:
 # TODO: refactor this class, expose config options
 
 
-class AssemblyGraphPreProcessor:
+class AssemblyGraphPostProcessor:
     """Pre-processing for assembly graphs. Evaluates:
 
     1. synthesis complexity and weights corresponding edge
@@ -680,7 +685,9 @@ class AssemblyGraphPreProcessor:
         return edges_to_partition
 
     def partition(self, edges: List[Edge]):
-        tracker = self.logger.track("INFO", desc="Partitioning sequences", total=3).enter()
+        tracker = self.logger.track(
+            "INFO", desc="Partitioning sequences", total=3
+        ).enter()
         tracker.update(0, "{} highly complex sequences".format(len(edges)))
 
         edges_to_partition = self._filter_partition_edges(edges)
@@ -695,11 +702,13 @@ class AssemblyGraphPreProcessor:
         )
         tracker.update(1, "Partition: locations: {}".format(partitions))
         add_gap_edge = partial(self.graph_builder.add_gap_edge, add_to_graph=False)
-        add_overlap_edge = partial(self.graph_builder.add_overlap_edge,
-                                   add_to_graph=True,
-                                   validate_groups_present=False,
-                                   groups=None,
-                                   group_keys=None)
+        add_overlap_edge = partial(
+            self.graph_builder.add_overlap_edge,
+            add_to_graph=True,
+            validate_groups_present=False,
+            groups=None,
+            group_keys=None,
+        )
 
         new_edges = []
         for n1, n2, edata in edges_to_partition:
@@ -719,18 +728,8 @@ class AssemblyGraphPreProcessor:
                         e2 = add_gap_edge(n1, n3, r, origin=True)
                         if e1 is None and e2 is None:
                             continue
-                        e3 = add_overlap_edge(
-                            n3,
-                            n4,
-                            r,
-                            origin=False
-                        )
-                        e4 = add_overlap_edge(
-                            n3,
-                            n4,
-                            r,
-                            origin=True,
-                        )
+                        e3 = add_overlap_edge(n3, n4, r, origin=False)
+                        e4 = add_overlap_edge(n3, n4, r, origin=True)
                         if e3 is None and e4 is None:
                             continue
                         e5 = add_gap_edge(n4, n2, r, origin=False)
@@ -738,7 +737,6 @@ class AssemblyGraphPreProcessor:
                         if e5 is None and e6 is None:
                             continue
                         new_edges += [e1, e2, e3, e4, e5, e6]
-
 
         for e in new_edges:
             if e is not None:
@@ -782,8 +780,8 @@ class AssemblyGraphPreProcessor:
             "Found {} highly complex synthesis segments".format(len(bad_edges))
         )
 
-        if self.PARTITION in self.stages:
-            self.partition(bad_edges)
+        # if self.PARTITION in self.stages:
+        #     self.partition(bad_edges)
 
     # TODO: add logging to graph post processor
     # TODO: partition gaps

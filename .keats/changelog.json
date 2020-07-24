@@ -1,4 +1,11 @@
 {
+  "0.0.21a6": {
+    "description": "",
+    "date": "2020-07-24T13:13:49.134544",
+    "changes": [
+      "`Design` and `LibraryDesign` both inherit `DesignABC`"
+    ]
+  },
   "0.0.21a5": {
     "description": "",
     "date": "2020-07-23T08:10:37.204277",

@@ -6,9 +6,9 @@ from typing import Tuple
 import networkx as nx
 
 from dasi.constants import Constants
-from dasi.design import Design
 from dasi.design import DesignResult
-from dasi.design.graph_builder import AssemblyGraphPreProcessor
+from dasi.design.design import DesignABC
+from dasi.design.graph_builder import AssemblyGraphPostProcessor
 from dasi.models import Alignment
 from dasi.models import AlignmentContainer
 from dasi.models import AlignmentGroup
@@ -132,44 +132,19 @@ def cluster_graph(design):
     return graphs
 
 
-class LibraryDesign(Design):
+class LibraryDesign(DesignABC):
     """Design class for producing assemblies for libraries."""
 
-    DEFAULT_N_JOBS = 10
+    # TODO: move to config
     FAVOR_SHARED_SEQUENCES = 2
-    DEFAULT_N_ASSEMBLIES = Design.DEFAULT_N_ASSEMBLIES
+    DEFAULT_N_ASSEMBLIES = DesignABC.DEFAULT_N_ASSEMBLIES
     ALGORITHM = Constants.ALGORITHM_LIBRARY
 
-    def __init__(self, span_cost=None, seqdb=None, n_jobs=None):
+    def __init__(self, span_cost=None, seqdb=None):
         """Something."""
-        super().__init__(span_cost=span_cost, seqdb=seqdb, n_jobs=n_jobs)
+        super().__init__(span_cost=span_cost, seqdb=seqdb)
         self.shared_alignments = []
         self._edges = []
-
-    # @staticmethod
-    # def _get_repeats_from_results(results):
-    #     repeats = []
-    #     for r in results:
-    #         qk = r['query']['origin_key']
-    #         sk = r['subject']['origin_key']
-    #         if qk == sk:
-    #             repeats.append((qk, r['query']['start'], r['query']['end']))
-    #     return repeats
-
-    # TODO: why?
-    @staticmethod
-    def _get_iter_non_repeats(alignments: List[Alignment]) -> Tuple[str, int, int]:
-        """Return repeat regions of alignments. These are alignments that align
-        to themselves.
-
-        :param alignments:
-        :return:
-        """
-        for align in alignments:
-            qk = align.query_key
-            sk = align.subject_key
-            if qk == sk:
-                yield (qk, align.query_region.a, align.query_region.b)
 
     def _expand_from_synthesized(self):
         """Expand PCR products that are next to SYNTHESIZED_FRAGMENTS.
@@ -293,15 +268,11 @@ class LibraryDesign(Design):
         self._expand_from_synthesized()
         self._check_shared_repeats()
 
-    @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
-    def compile(
-        self, n_jobs: int = DEFAULT_N_JOBS, pre_process_kwargs: Dict = None
-    ):
-        """Compile the materials list into assembly graphs."""
-        if pre_process_kwargs is None:
-            pre_process_kwargs = {}
-        self._uncompile()
-        tracker = self.logger.track("INFO", desc="Compiling library", total=5).enter()
+    def precompile(self):
+        self.uncompile()
+        tracker = self.logger.track(
+            "INFO", desc="Precompiling library", total=5
+        ).enter()
 
         self.graphs = {}
 
@@ -317,17 +288,9 @@ class LibraryDesign(Design):
 
         tracker.update(3, "Finding shared clusters")
         self.update_library_metadata()
+        tracker.exit()
 
-        tracker.update(4, "Assembling graphs")
-        self.assemble_graphs(n_jobs=n_jobs)
-
-        # TODO: adjust n_clusters in the graph instead
-
-        tracker.update(4, "Post processing")
-        adjusted = 0
-
-        self.pre_process_graphs()
-
+    def _adjust_shared_synthetic_fragment(self):
         for qk, graph in self.graphs.items():
             for n1, n2, edata in graph.edges(data=True):
                 if edata["type_def"].name == Constants.SHARED_SYNTHESIZED_FRAGMENT:
@@ -347,10 +310,11 @@ class LibraryDesign(Design):
                         / self.FAVOR_SHARED_SEQUENCES
                     )
                     edata["cost"] = edata["material"] / edata["efficiency"]
-                    adjusted += 1
-        tracker.update(4, "Post processing complete")
-        tracker.update(4, "Compilation complete")
-        tracker.exit()
+
+    def postcompile(self, post_compile_kwargs: dict = None):
+        self.logger.info("Post-processing graphs")
+        self.post_process_graphs(post_compile_kwargs)
+        self._adjust_shared_synthetic_fragment()
 
     def update_library_metadata(self):
         add_clusters(self)
@@ -415,11 +379,11 @@ class LibraryDesign(Design):
     #         processor = AssemblyGraphPostProcessor(graph, query)
     #         processor()
 
-    @log_metadata(
-        "optimize", additional_metadata={"algorithm": Constants.ALGORITHM_LIBRARY}
-    )
-    def optimize(
-        self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS
-    ) -> Dict[str, DesignResult]:
-        """Optimize the assembly graph for library assembly."""
-        return super().optimize(n_paths=n_paths, n_jobs=n_jobs)
+    # @log_metadata(
+    #     "optimize", additional_metadata={"algorithm": Constants.ALGORITHM_LIBRARY}
+    # )
+    # def optimize(
+    #     self, n_paths: int = DEFAULT_N_ASSEMBLIES, n_jobs: int = DEFAULT_N_JOBS
+    # ) -> Dict[str, DesignResult]:
+    #     """Optimize the assembly graph for library assembly."""
+    #     return super().optimize(n_paths=n_paths, n_jobs=n_jobs)

@@ -610,9 +610,7 @@ def test_library(span_cost):
         df = result.assemblies[0].to_df()
         print(df)
         notes = list(df["notes"])
-        assert "n_clusters: 3" in notes
-        # assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
-        # assert df
+        assert "'n_clusters': 3" in str(notes)
 
 
 @pytest.mark.parametrize("design_class", [Design, LibraryDesign])

@@ -9,6 +9,12 @@ from typing import Union
 import numpy as np
 
 from dasi.utils.sequence.sequence_complexity import DNAStats
+from functools import lru_cache
+
+
+@lru_cache(254)
+def cached_stats_cost(stats: DNAStats, i: int, j: int):
+    return stats.cost(i, j)
 
 
 def stats_cost_arr(stats: DNAStats, i: Iterable[int], j: Iterable[int]):
@@ -17,7 +23,7 @@ def stats_cost_arr(stats: DNAStats, i: Iterable[int], j: Iterable[int]):
             raise ValueError("Iterables are different sizes.")
         elif j == "STOP":
             raise ValueError("Iterables are different sizes")
-        yield stats.cost(_i, _j)
+        yield cached_stats_cost(stats, _i, _j)
 
 
 def get_partitions(stats: DNAStats, x: List[int], delta: int = 0):
@@ -32,18 +38,30 @@ def get_partitions(stats: DNAStats, x: List[int], delta: int = 0):
     return x1, c1, c2
 
 
+def _nearest_step(x, step_size):
+    return ((x - 1) // step_size + 1) * step_size
+
+
 def find_opt_partition(
     stats,
     i: Optional[Union[None, int]] = None,
     j: Optional[Union[None, int]] = None,
     step_size: int = 10,
     delta: Optional[int] = None,
+    use_nearest_step: bool = False
 ):
     """Find the optimal partition in range (i, j) given the stepsize."""
+
+    # readjust positions to nearest step size to benefit from cache
     if i is None:
         i = 0
+    elif use_nearest_step:
+        i = _nearest_step(i, step_size)
     if j is None:
         j = len(stats.seq)
+    elif use_nearest_step:
+        j = min(len(stats.seq), _nearest_step(j, step_size))
+
     x = np.arange(i, j, step_size, dtype=np.int32)
     _, c1, c2 = get_partitions(stats, x, delta=delta)
     c = c1 + c2

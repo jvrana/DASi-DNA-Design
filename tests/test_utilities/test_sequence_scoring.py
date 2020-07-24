@@ -782,3 +782,53 @@ class TestNegativeExamples:
             )
             >= n_misprimings
         )
+
+
+def test_hash1():
+    s1 = random_seq(1000)
+    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    stats1 = f(s1)
+    stats2 = f(s1)
+    stats3 = f(random_seq(1000),)
+    print(hash(stats1))
+    print(hash(stats2))
+    print(hash(stats3))
+    assert hash(stats1) == hash(stats2)
+    assert not hash(stats1) == hash(stats3)
+
+@pytest.mark.parametrize('key', ['repeat_window', 'stats_window', 'hairpin_window'])
+def test_hash2(key):
+    s1 = random_seq(1000)
+    kwargs = {
+        'repeat_window': 20,
+        'stats_window': 20,
+        'hairpin_window': 20
+    }
+    kwargs2 = dict(kwargs)
+    kwargs2[key] += 1
+    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    stats1 = DNAStats(s1, **kwargs)
+    stats2 = DNAStats(s1, **kwargs)
+    stats3 = DNAStats(s1, **kwargs2)
+    assert hash(stats1) == hash(stats2)
+    assert not hash(stats1) == hash(stats3)
+
+@pytest.mark.parametrize('key', ['gc_content_threshold', 'at_content_threshold', 'base_percentage_threshold'])
+def test_hash3(key):
+    s1 = random_seq(1000)
+    kwargs = {
+        'repeat_window': 20,
+        'stats_window': 20,
+        'hairpin_window': 20,
+        'gc_content_threshold': 0.8,
+        'at_content_threshold': 0.8,
+        'base_percentage_threshold': 0.8
+    }
+    kwargs2 = dict(kwargs)
+    kwargs2[key] += 0.1
+    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    stats1 = DNAStats(s1, **kwargs)
+    stats2 = DNAStats(s1, **kwargs)
+    stats3 = DNAStats(s1, **kwargs2)
+    assert hash(stats1) == hash(stats2)
+    assert not hash(stats1) == hash(stats3)

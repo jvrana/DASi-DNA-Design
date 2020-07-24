@@ -14,7 +14,8 @@ Complexity rules borrowed from IDT.
 from functools import lru_cache
 
 import numpy as np
-
+import hashlib
+import json
 
 # TODO:' compute cost for extremes of GC content
 # TODO: this could be a separate library
@@ -82,12 +83,12 @@ class DNAStats:
             repeat signatures. DNAStats.ONLY_WINDOW to perform only
             sliding window calculations.
         """
-        assert isinstance(seq, str)
+        if not isinstance(seq, str):
+            raise ValueError("Expected a str not a '{}'".format(type(seq)))
         seq = seq.upper()
         self.seq = seq
         arr = np.array(list(self.seq))
         self.bases = self.BASES.upper()
-
         self.seq_onehot = self.one_hot(arr, self.bases)
         self.repeat_window = repeat_window
         self.stats_window = stats_window
@@ -154,6 +155,18 @@ class DNAStats:
             self.rev_signatures = None
 
         self.cached_partitions = []
+
+    @property
+    def config(self):
+        return dict(
+            repeat_window=self.repeat_window,
+            stats_window=self.stats_window,
+            hairpin_window=self.hairpin_window,
+            base_percentage_threshold=self.base_percentage_threshold,
+            gc_content_threshold=self.gc_content_threshold,
+            at_content_threshold=self.at_content_threshold,
+            mode=self.mode
+        )
 
     def copy_with_new_seq(self, seq: str):
         return self.__class__(
@@ -476,6 +489,15 @@ class DNAStats:
             d["n_repeats"] + d["n_hairpins"] + np.sum(w1) + np.sum(w2) + d["gc_cost"]
         )
         return total
+
+    @staticmethod
+    def _hash(string: str):
+        return hashlib.sha1(string.encode('utf-8')).hexdigest()
+
+    def __hash__(self):
+        config = json.dumps(self.config)
+        s = self.seq.upper() + config
+        return int(hashlib.sha1(s.encode('utf-8')).hexdigest(), 16)
 
     def __call__(self, i=None, j=None):
         mn = np.mean(self.seq_onehot[:, i:j], axis=1)

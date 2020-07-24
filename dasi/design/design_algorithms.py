@@ -1,6 +1,7 @@
 from multiprocessing import Pool
 from typing import List
 from typing import Tuple
+from typing import Optional
 
 import networkx as nx
 
@@ -53,10 +54,11 @@ def _multiprocessing_assemble_graph(
 
 
 def multiprocessing_assemble_graph(
-    container_factory: AlignmentContainerFactory, span_cost: SpanCost, n_jobs: int
+    container_factory: AlignmentContainerFactory, span_cost: SpanCost, n_jobs: int, query_keys: Optional[List[str]] = None
 ) -> List[nx.DiGraph]:
     """Assemble graphs using multiprocessing."""
-    query_keys = container_factory.alignments.keys()
+    if query_keys is None:
+        query_keys = container_factory.alignments.keys()
     containers = [container_factory.containers()[k] for k in query_keys]
 
     args = [(container, span_cost) for container in containers]

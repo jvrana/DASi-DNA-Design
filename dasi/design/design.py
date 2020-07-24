@@ -14,6 +14,7 @@ from typing import Generator
 from typing import Iterable
 from typing import List
 from typing import Tuple
+from typing import Optional
 
 import networkx as nx
 import pandas as pd
@@ -461,7 +462,7 @@ class Design:
         """List of query keys in this design."""
         return list(self.container_factory.containers())
 
-    def assemble_graphs(self, n_jobs):
+    def assemble_graphs(self, n_jobs, query_keys: Optional[List[str]] = None):
         if n_jobs > 1:
             with self.logger.timeit(
                 "DEBUG",
@@ -469,9 +470,9 @@ class Design:
                     len(self.container_list), n_jobs
                 ),
             ):
-                self._assemble_graphs_with_threads(n_jobs)
+                self._assemble_graphs_with_threads(n_jobs, query_keys=query_keys)
         else:
-            self._assemble_graphs_without_threads()
+            self._assemble_graphs_without_threads(query_keys=query_keys)
 
     def pre_process_graphs(self, **kwargs):
         for qk, graph in self.graphs.items():
@@ -483,22 +484,25 @@ class Design:
             processor.logger = self.logger(processor)
             processor()
 
-    def _assemble_graphs_without_threads(self):
+    def _filter_containers(self, query_keys):
+        if query_keys is None:
+            return self.container_factory.containers()
+        return {k: v for k, v in self.container_factory.containers().items() if k in query_keys}
+
+    def _assemble_graphs_without_threads(self, query_keys: Optional[List[str]]=None):
         """Assemble all assembly graphs for all queries in this design."""
         for query_key, container in self.logger.tqdm(
-            self.container_factory.containers().items(),
+            self._filter_containers(query_keys).items(),
             "INFO",
             desc="assembling graphs (threads=1)",
         ):
             self.graphs[query_key], _ = assemble_graph(container, self.span_cost)
 
-    def _assemble_graphs_with_threads(self, n_jobs=None):
-        query_keys, containers = zip(*self.container_factory.containers().items())
-
+    def _assemble_graphs_with_threads(self, n_jobs=None, query_keys: Optional[List[str]]=None):
+        query_keys, containers = zip(*self._filter_containers(query_keys).items())
         graphs = multiprocessing_assemble_graph(
             self.container_factory, self.span_cost, n_jobs=n_jobs
         )
-
         # update graphs dict
         for qk, g, c in zip(query_keys, graphs, containers):
             self.graphs[qk] = g
@@ -508,12 +512,12 @@ class Design:
         self._results = {}
 
     @log_metadata("compile", additional_metadata={"algorithm": ALGORITHM})
-    def compile(self, n_jobs: int = DEFAULT_N_JOBS, pre_process_kwargs: Dict = None):
+    def compile(self, n_jobs: int = DEFAULT_N_JOBS, query_keys: Optional[List[str]] = None, pre_process_kwargs: Dict = None):
         """Compile materials to assembly graph."""
         self._uncompile()
         with self.logger.timeit("DEBUG", "running blast"):
             self._blast()
-        self.assemble_graphs(n_jobs=n_jobs)
+        self.assemble_graphs(n_jobs=n_jobs, query_keys=query_keys)
         if pre_process_kwargs is None:
             pre_process_kwargs = {}
         self.pre_process_graphs(**pre_process_kwargs)

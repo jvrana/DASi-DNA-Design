@@ -680,8 +680,8 @@ class AssemblyGraphPreProcessor:
         return edges_to_partition
 
     def partition(self, edges: List[Edge]):
-        self.logger.info("Partition {} sequences".format(len(edges)))
-        self.logger.info("Partition not yet implemented.")
+        tracker = self.logger.track("INFO", desc="Partitioning sequences", total=3).enter()
+        tracker.update(0, "{} highly complex sequences".format(len(edges)))
 
         edges_to_partition = self._filter_partition_edges(edges)
 
@@ -693,7 +693,7 @@ class AssemblyGraphPreProcessor:
             step_size=Config.SequenceScoringConfig.partition_step_size,
             delta=Config.SequenceScoringConfig.partition_overlap,
         )
-
+        tracker.update(1, "Partition: locations: {}".format(partitions))
         add_gap_edge = partial(self.graph_builder.add_gap_edge, add_to_graph=False)
         add_overlap_edge = partial(self.graph_builder.add_overlap_edge,
                                    add_to_graph=True,
@@ -747,27 +747,10 @@ class AssemblyGraphPreProcessor:
         for n1, n2, edata in self.graph_builder.G.edges(data=True):
             if edata["cost"] is None:
                 edges.append((n1, n2, edata))
+        tracker.update(2, "Partition: Added {} new edges".format(len(edges)))
         self.graph_builder.update_costs(edges)
         self.score_complexity_edges(edges)
-
-        # # edges = []
-        # # for n1, n2, edata in new_edges:
-        # #     if edata["cost"] is None:
-        # #         edges.append((n1, n2, edata))
-        # new_edges = [e for e in new_edges if e is not None]
-        # for n1, n2, edata in new_edges:
-        #     self.graph_builder.G.add_edge(n1, n2, **edata)
-        # self.logger.info("Paritioned and created {} new edges".format(len(edges)))
-        # self.graph_builder.update_costs(new_edges)
-        #
-        # self.score_complexity_edges(new_edges)
-        #
-        # to_remove = []
-        # for n1, n2, edata in self.graph_builder.G.edges(data=True):
-        #     if edata['cost'] is None:
-        #         to_remove.append((n1, n2))
-        # to_remove = set(to_remove)
-        # self.graph_builder.G.remove_edges_from(to_remove)
+        tracker.exit()
 
     def score_complexity_edges(self, edges):
         bad_edges = []

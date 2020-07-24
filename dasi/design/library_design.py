@@ -350,6 +350,7 @@ class LibraryDesign(Design):
                     adjusted += 1
         tracker.update(4, "Post processing complete")
         tracker.update(4, "Compilation complete")
+        tracker.exit()
 
     def update_library_metadata(self):
         add_clusters(self)

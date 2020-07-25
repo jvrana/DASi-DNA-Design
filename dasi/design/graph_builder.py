@@ -451,10 +451,6 @@ class AssemblyGraphPostProcessor:
     3. (optional) optimal partitions for synthesis fragments
     """
 
-    SCORE_COMPLEXITY = "SCORE_COMPLEXITY"
-    SCORE_MISPRIMINGS = "SCORE_MISPRIMINGS"
-    SCORE_LONG = "SCORE_LONG_PCR_PRODUCTS"
-    PARTITION = "PARTITION_SYNTHETIC_SEQUENCES"
     # TODO: add post processing config
 
     def __init__(
@@ -464,16 +460,22 @@ class AssemblyGraphPostProcessor:
         span_cost: SpanCost,
         seqdb: Dict[str, SeqRecord],
         container: AlignmentContainer,
-        stats_repeat_window: int = SequenceScoringConfig.stats_repeat_window,
-        stats_window: int = SequenceScoringConfig.stats_window,
-        stats_hairpin_window: int = SequenceScoringConfig.stats_hairpin_window,
-        stages: Tuple[str] = (
-            SCORE_COMPLEXITY,
-            SCORE_LONG,
-            SCORE_MISPRIMINGS,
-            PARTITION,
-        ),
+        stats_repeat_window: Optional[int] = None,
+        stats_window: Optional[int] = None,
+        stats_hairpin_window: Optional[int] = None,
+        edge_threshold: Optional[float] = None,
+        stages: Optional[Tuple[str]] = None,
     ):
+        if stats_repeat_window is None:
+            stats_repeat_window = SequenceScoringConfig.stats_repeat_window
+        if stats_window is None:
+            stats_window = SequenceScoringConfig.stats_window
+        if stats_hairpin_window is None:
+            stats_hairpin_window = SequenceScoringConfig.stats_hairpin_window
+        if stages is None:
+            stages = SequenceScoringConfig.post_process_stages
+        if edge_threshold is None:
+            edge_threshold = SequenceScoringConfig.edge_threshold
         self.graph = graph
         self.graph_builder = AssemblyGraphBuilder(container, span_cost=span_cost)
         self.graph_builder.G = graph
@@ -500,8 +502,8 @@ class AssemblyGraphPostProcessor:
         self.COMPLEXITY_THRESHOLD = SequenceScoringConfig.complexity_threshold
         self.logger = logger(self)
         self.span_cost = span_cost
-
         self.stages = stages
+        self.edge_threshold = edge_threshold
 
     @staticmethod
     def optimize_partition(
@@ -722,8 +724,8 @@ class AssemblyGraphPostProcessor:
                         i4 = p
                         i3 = p + Config.SequenceScoringConfig.partition_overlap
 
-                        n3 = AssemblyNode(i3, False, str(uuid4()), overhang=True)
-                        n4 = AssemblyNode(i4, False, str(uuid4()), overhang=True)
+                        n3 = AssemblyNode(i3, False, "BC", overhang=True)
+                        n4 = AssemblyNode(i4, False, "CA", overhang=True)
                         e1 = add_gap_edge(n1, n3, r, origin=False)
                         e2 = add_gap_edge(n1, n3, r, origin=True)
                         if e1 is None and e2 is None:
@@ -738,6 +740,7 @@ class AssemblyGraphPostProcessor:
                             continue
                         new_edges += [e1, e2, e3, e4, e5, e6]
 
+        print(nx.info(self.graph_builder.G))
         for e in new_edges:
             if e is not None:
                 self.graph_builder.G.add_edge(e[0], e[1], **e[2])
@@ -750,6 +753,14 @@ class AssemblyGraphPostProcessor:
         self.score_complexity_edges(edges)
         tracker.exit()
 
+    def remove_inefficient_edges(self):
+        to_remove = []
+        for n1, n2, edata in self.graph_builder.G.edges(data=True):
+            if edata["efficiency"] < self.edge_threshold:
+                to_remove.append((n1, n2))
+        self.graph_builder.G.remove_edges_from(to_remove)
+        self.logger.info("Removed {} inefficient edges".format(len(to_remove)))
+
     def score_complexity_edges(self, edges):
         bad_edges = []
         for n1, n2, edata in self.logger.tqdm(
@@ -759,29 +770,31 @@ class AssemblyGraphPostProcessor:
         return bad_edges
 
     def update(self):
+        self.logger.info("Post Processor: {}".format(self.stages))
         bad_edges = []
 
         self.logger.info("Scoring long PCR products")
         edges = list(self.graph.edges(data=True))
 
-        if self.SCORE_LONG in self.stages:
+        if SequenceScoringConfig.SCORE_LONG in self.stages:
             for n1, n2, edata in self.logger.tqdm(
                 edges, "INFO", desc="Scoring long PCR products"
             ):
                 self.score_long_pcr_products(n1, n2, edata)
-        if self.SCORE_MISPRIMINGS in self.stages:
+        if SequenceScoringConfig.SCORE_MISPRIMINGS in self.stages:
             for n1, n2, edata in self.logger.tqdm(
                 edges, "INFO", desc="Scoring primer misprimings"
             ):
                 self.score_primer_misprimings(n1, n2, edata)
-        if self.SCORE_COMPLEXITY in self.stages:
+        if SequenceScoringConfig.SCORE_COMPLEXITY in self.stages:
             bad_edges += self.score_complexity_edges(edges)
         self.logger.info(
             "Found {} highly complex synthesis segments".format(len(bad_edges))
         )
 
-        # if self.PARTITION in self.stages:
-        #     self.partition(bad_edges)
+        if SequenceScoringConfig.PARTITION in self.stages:
+            self.partition(bad_edges)
+        # self.remove_inefficient_edges()
 
     # TODO: add logging to graph post processor
     # TODO: partition gaps

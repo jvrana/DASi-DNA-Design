@@ -639,3 +639,5 @@ def test_highly_complex_design(span_cost, design_class):
     print(result.assemblies)
     print(result.assemblies[0]._nodes)
     print(result)
+
+    print(design.out())

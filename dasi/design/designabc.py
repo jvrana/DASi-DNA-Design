@@ -418,6 +418,7 @@ class DesignABC(ABC):
     def _pooled_run(args: List[Tuple["Design", str]]) -> Dict[str, DesignResult]:
         design, qk, thread = args
         design.logger.name = "THREAD {}: ".format(thread) + design.logger.name
+
         design.assemble_graphs(query_keys=qk)
         design.postcompile()
         design.optimize()

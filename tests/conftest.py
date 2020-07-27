@@ -36,7 +36,6 @@ pd.set_option("display.width", desired_width)
 # np.set_printoption(linewidth=desired_width)
 pd.set_option("display.max_columns", 20)
 
-
 ##############################
 # Test paths
 ##############################

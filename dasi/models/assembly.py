@@ -159,6 +159,7 @@ def _get_primer_extensions(
         sedge = graph[n2][successors[0]]
         right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
+        # TODO: FIX THIS ANNOYING EXCEPTION
         raise DasiSequenceDesignException(
             "Sequence is cyclic but there are no successors for {}".format(n2)
         )
@@ -171,6 +172,7 @@ def _get_primer_extensions(
         pedge = graph[predecessors[0]][n1]
         left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
+        # TODO: FIX THIS ANNOYING EXCEPTION
         raise DasiSequenceDesignException(
             "Sequence is cyclic but there are no precessors for {}".format(n1)
         )

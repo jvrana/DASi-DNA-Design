@@ -794,6 +794,8 @@ class AssemblyGraphPostProcessor:
 
         if SequenceScoringConfig.PARTITION in self.stages:
             self.partition(bad_edges)
+
+        # TODO: reimplement `remove_inefficient_edges`
         # self.remove_inefficient_edges()
 
     # TODO: add logging to graph post processor

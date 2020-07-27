@@ -8,12 +8,12 @@ from dasi.design import Design
 from dasi.design import LibraryDesign
 
 
-@pytest.mark.parametrize("i", [1, 2, None])
+@pytest.mark.parametrize("i", [1, 2, 3])
 def test_compile_with_filtered_keys(i):
     design = Design.fake(3)
     design._blast()
     query_keys = design.query_keys
-    design.assemble_graphs(n_jobs=1, query_keys=query_keys[:i])
+    design.assemble_graphs(query_keys=query_keys[:i])
     design.post_process_graphs(**{})
     design.optimize()
     assert len(design.results) == i
@@ -24,7 +24,7 @@ def test_compile_with_filtered_keys(i):
 @pytest.mark.parametrize("s", [1, 2])
 def test_pooled_run(n, nseqs, s):
     design = LibraryDesign.fake(nseqs)
-    design.pooled_run(n=n, size=s)
+    design.pooled_run(n_jobs=n, job_size=s)
     assert len(design.graphs) == nseqs
     assert len(design.results) == nseqs
 

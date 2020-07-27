@@ -93,6 +93,8 @@ class DesignABC(ABC):
     QUERIES = "queries"
     FRAGMENTS = "fragments"
     DEFAULT_N_ASSEMBLIES = 3
+    DEFAULT_JOB_SIZE = 1
+    DEFAULT_N_JOBS = 1
     ALGORITHM = Constants.ALGORITHM_DEFAULT
 
     def __init__(self, span_cost=None, seqdb=None, name: str = ""):
@@ -401,9 +403,7 @@ class DesignABC(ABC):
         self.assemble_graphs()
         self.postcompile(post_process_kwargs)
 
-    def run(
-        self, n_paths: int = DEFAULT_N_ASSEMBLIES, post_processing_kwargs: Dict = None
-    ):
+    def _run(self, n_paths: int, post_processing_kwargs: Dict):
         """Run the design. Runs `compile` and `optimize`, returning results
         that can be accessed by `design.results` or by `design.out()`
 
@@ -413,28 +413,70 @@ class DesignABC(ABC):
         self.compile(post_processing_kwargs)
         return self.optimize(n_paths=n_paths)
 
+    def run(
+        self,
+        n_paths: int = None,
+        post_processing_kwargs: Dict = None,
+        n_jobs: int = None,
+        job_size: int = None,
+    ):
+        if n_paths is None:
+            n_paths = self.DEFAULT_N_ASSEMBLIES
+        if n_jobs is None:
+            n_jobs = self.DEFAULT_N_JOBS
+        if job_size is None:
+            job_size = self.DEFAULT_JOB_SIZE
+        if n_jobs > 1:
+            self.pooled_run(
+                n_jobs=n_jobs,
+                job_size=job_size,
+                post_processing_kwargs=post_processing_kwargs,
+            )
+        else:
+            self._run(n_paths=n_paths, post_processing_kwargs=post_processing_kwargs)
+
     # TODO: better multithreaded loggers
     @staticmethod
     def _pooled_run(args: List[Tuple["Design", str]]) -> Dict[str, DesignResult]:
-        design, qk, thread = args
+        design, qk, n_paths, post_processing_kwargs, thread = args
         design.logger.name = "THREAD {}: ".format(thread) + design.logger.name
 
         design.assemble_graphs(query_keys=qk)
-        design.postcompile()
-        design.optimize()
+        design.postcompile(post_processing_kwargs)
+        design.optimize(n_paths=n_paths)
         return design.graphs, design.results
 
-    def pooled_run(self, n: int, size: int = 1):
+    def pooled_run(
+        self,
+        n_jobs: int = None,
+        job_size: int = None,
+        n_paths: int = None,
+        post_processing_kwargs: dict = None,
+    ):
+        if n_paths is None:
+            n_paths = self.DEFAULT_N_ASSEMBLIES
+        if n_jobs is None:
+            n_jobs = self.DEFAULT_N_JOBS
+        if job_size is None:
+            job_size = self.DEFAULT_JOB_SIZE
         self.precompile()
         query_keys = self.query_keys
         if not query_keys:
             raise DasiDesignException("There are no design sequences.")
 
         # divide query_keys
-        chunks = list(chunkify(query_keys, size))
+        chunks = list(chunkify(query_keys, job_size))
         print(chunks)
-        args = list(zip([self] * len(chunks), chunks, range(len(chunks))))
-        with Pool(processes=min(len(chunks), n)) as pool:
+        args = list(
+            zip(
+                [self] * len(chunks),
+                chunks,
+                [n_paths] * len(chunks),
+                [post_processing_kwargs] * len(chunks),
+                range(len(chunks)),
+            )
+        )
+        with Pool(processes=min(len(chunks), n_jobs)) as pool:
             graphs_and_results = pool.map(self._pooled_run, args)
 
         # update graphs and results

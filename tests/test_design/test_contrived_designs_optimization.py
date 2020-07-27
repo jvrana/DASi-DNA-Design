@@ -641,3 +641,20 @@ def test_highly_complex_design(span_cost, design_class):
     print(result)
 
     print(design.out())
+
+
+def test_design_near_origin(span_cost):
+    """Fragments with overlaps."""
+
+    goal = random_record(3000)
+    make_circular_and_id([goal])
+
+    r1 = goal[-40:] + goal[:1000]
+    r3 = goal[950:] + goal[:1]
+    make_linear_and_id([r1, r3])
+
+    design = Design(span_cost)
+    design.add_materials(primers=[], fragments=[r1, r3], queries=[goal], templates=[])
+    design.run()
+    df = design.to_df()[1]
+    print(df)

@@ -137,7 +137,7 @@ def _nodes_to_fullpaths(
 
 
 def _get_closing_edge_indices(
-    nodelist: List[AssemblyNode], query_length: int
+    nodelist: List[AssemblyNode], query_length: int, matrix_dict
 ) -> Tuple[np.ndarray, np.ndarray]:
     node_to_i = {n: i for i, n in enumerate(nodelist)}
     src, dest = [], []
@@ -148,16 +148,19 @@ def _get_closing_edge_indices(
         n2 = AssemblyNode(n.index + query_length, *list(n)[1:])
         if n2 in node_to_i:
             i2 = node_to_i[n2]
-            src.append(i1)
-            dest.append(i2)
+            v = matrix_dict['material'][i1, i2]
+            if not np.isinf(v):
+                src.append(i1)
+                dest.append(i2)
     index = (np.array(src), np.array(dest))
     return index
 
 
 def _get_closure_matrix(
-    mat: np.ndarray, eff: np.ndarray, nodelist: List[AssemblyNode], query_length: int
+    mat: np.ndarray, eff: np.ndarray, nodelist: List[AssemblyNode], query_length: int,
+        matrix_dict: dict
 ) -> Tuple[np.ndarray, np.ndarray]:
-    indices = _get_closing_edge_indices(nodelist, query_length)
+    indices = _get_closing_edge_indices(nodelist, query_length, matrix_dict)
     m = np.full_like(mat, np.inf)
     e = np.full_like(eff, 0.0)
     m[indices] = mat[indices]
@@ -170,7 +173,7 @@ def cyclic_matrix(
 ) -> np.ndarray:
     m1 = np.array(matrix_dict["material"])
     e1 = np.array(matrix_dict["efficiency"])
-    m2, e2 = _get_closure_matrix(m1, e1, nodelist, query_length)
+    m2, e2 = _get_closure_matrix(m1, e1, nodelist, query_length, matrix_dict)
 
     m = m1 + m2.min(1)
     e = e1 * e2.max(1)

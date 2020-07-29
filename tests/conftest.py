@@ -182,6 +182,23 @@ def cached_span_cost(cost_filepath, cost_checksum_filepath):
 
 
 span_cost = cached_span_cost
+
+import pylab as plt
+
+
+@pytest.fixture(autouse=True)
+def patch_plt_show(request, monkeypatch):
+    """Patches the plt.show() method with a save fig method in 'out'"""
+    out = join(dirname(abspath(__file__)), 'out')
+    def _save_fig(filename=None):
+        if filename is None:
+            filename = request.node.nodeid + '.png'
+        plt.savefig(join(out, filename), format='png', dpi=50)
+
+    monkeypatch.setattr(plt, 'show', _save_fig)
+    return _save_fig
+
+
 # def pytest_assertrepr_compare(config, op, left, right):
 #     if op in ("==", "!="):
 #         left_lines = pformat(left).split('\n')

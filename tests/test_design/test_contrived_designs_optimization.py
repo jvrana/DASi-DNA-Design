@@ -620,7 +620,7 @@ def test_highly_complex_design(span_cost, design_class):
     complex_sequence = repeat + random_record(200) + repeat + random_record(1000)
     goal = backbone[1000:] + complex_sequence + backbone[:1000]
     f1 = backbone[:2000]
-    f2 = backbone[1900:]
+    f2 = backbone[1900:2500]
 
     make_linear([f1, f2])
     make_circular([goal])

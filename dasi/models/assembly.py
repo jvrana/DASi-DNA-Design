@@ -174,7 +174,7 @@ def _get_primer_extensions(
     elif cyclic:
         # TODO: FIX THIS ANNOYING EXCEPTION
         raise DasiSequenceDesignException(
-            "Sequence is cyclic but there are no precessors for {}".format(n1)
+            "Sequence is cyclic but there are no predecessors for {}".format(n1)
         )
     else:
         left_ext = 0

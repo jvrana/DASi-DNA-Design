@@ -5,9 +5,11 @@ This performs randomized tests on DASi by generating randomized libraries.
 These tests ought to cover a majority of use cases.
 """
 import json
+import random
 from typing import Callable
 from typing import Union
 
+import numpy as np
 import pytest
 
 from dasi import Design
@@ -154,6 +156,7 @@ def test_design_optimize_cannot_run_before_compile(cached_span_cost):
     design.optimize()
 
 
+@pytest.mark.parametrize("seed", [0])
 @pytest.mark.parametrize(
     "synth_prob",
     [0, 0.3, 0.5, 0.9],
@@ -166,8 +169,10 @@ def test_design_optimize_cannot_run_before_compile(cached_span_cost):
 @pytest.mark.parametrize("shared_length", [0, 1000])
 @pytest.mark.parametrize("design_cls", [LibraryDesign, Design])
 def test_fake_design(
-    cached_span_cost, n_designs, synth_prob, synth_size, design_cls, shared_length
+    cached_span_cost, n_designs, synth_prob, synth_size, design_cls, shared_length, seed
 ):
+    random.seed(seed)
+    np.random.seed(seed)
     design = design_cls.fake(
         span_cost=cached_span_cost,
         n_designs=n_designs,
@@ -181,6 +186,7 @@ def test_fake_design(
     run(design)
 
 
+# TODO: Reindexing tests are still failing
 @pytest.mark.parametrize("reindex", [1000, 3000, 5000])
 def test_reindex_invariant(reindex):
     design1, library = Design.fake(

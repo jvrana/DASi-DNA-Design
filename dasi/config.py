@@ -3,8 +3,8 @@ class Config:
 
     PRIMER3_MIN_ANNEAL_CHECK = 12  #: min n bases to check for misprimings
     PRIMER3_N_RUNS = (
-        15
-    )  #: number of optimization steps to use for primer3 primer designs
+        15  #: number of optimization steps to use for primer3 primer designs
+    )
     ASSEMBLY_COST_THRESHOLD = 10000  #: maximum cost of an assembly
 
     ############
@@ -28,8 +28,8 @@ class Config:
             10
         )  #: threshold for sequence complexity that is not synthesizable by a vendor
         not_synthesizable_efficiency = (
-            0.1
-        )  #: efficiency value for sequence that is not synthesizable
+            0.1  #: efficiency value for sequence that is not synthesizable
+        )
         pcr_length_range_efficiency_multiplier = [
             (4000, 5000, 0.8),
             (5000, 6000, 0.5),

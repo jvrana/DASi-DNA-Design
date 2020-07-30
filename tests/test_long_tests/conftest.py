@@ -86,13 +86,13 @@ def multi_compiled_results(_multi_compiled_design) -> Design:
 
 @pytest.fixture(scope="session")
 def single_processed_results(
-    _single_processed_results
+    _single_processed_results,
 ) -> Tuple[Design, Dict[str, DesignResult]]:
     return _single_processed_results
 
 
 @pytest.fixture(scope="session")
 def multi_processed_results(
-    _multi_processed_results
+    _multi_processed_results,
 ) -> Tuple[Design, Dict[str, DesignResult]]:
     return _multi_processed_results

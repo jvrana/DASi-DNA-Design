@@ -702,7 +702,7 @@ class AlignmentContainer(Sized):
         return list(flatten([g.alignments for g in groups]))
 
     def groups_by_type(
-        self
+        self,
     ) -> Dict[str, List[Union[AlignmentGroup, PCRProductAlignmentGroup]]]:
         """Return alignment groups according to their alignment 'type'.
 

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.Molecule &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.molecule &#8212; dasi 0.1.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -16,8 +16,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dasi.models.MoleculeType" href="dasi.models.MoleculeType.html" />
-    <link rel="prev" title="dasi.models.AssemblyNode" href="dasi.models.AssemblyNode.html" />
+    <link rel="next" title="dasi.models.alignment" href="dasi.models.alignment.html" />
+    <link rel="prev" title="dasi.models.assembly" href="dasi.models.assembly.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -94,7 +94,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -104,9 +104,9 @@
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
+<li class="toctree-l2 current"><a class="reference internal" href="../models.html#modules">modules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dasi.models.molecule</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
@@ -149,11 +149,11 @@
               
                 
   <li>
-    <a href="dasi.models.AssemblyNode.html" title="Previous Chapter: dasi.models.AssemblyNode"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dasi.models.A...</span>
+    <a href="dasi.models.assembly.html" title="Previous Chapter: dasi.models.assembly"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dasi.models.assembly</span>
     </a>
   </li>
   <li>
-    <a href="dasi.models.MoleculeType.html" title="Next Chapter: dasi.models.MoleculeType"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.models.M... &raquo;</span>
+    <a href="dasi.models.alignment.html" title="Next Chapter: dasi.models.alignment"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.models.alignment &raquo;</span>
     </a>
   </li>
               
@@ -163,7 +163,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/dasi.models.Molecule.rst"
+  <a href="../_sources/generated/dasi.models.molecule.rst"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -187,32 +187,123 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="dasi-models-molecule">
-<h1>dasi.models.Molecule<a class="headerlink" href="#dasi-models-molecule" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="dasi.models.Molecule">
-<em class="property">class </em><code class="sig-prename descclassname">dasi.models.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param">molecule_type</em>, <em class="sig-param">alignment_group</em>, <em class="sig-param">sequence</em>, <em class="sig-param">query_region=None</em>, <em class="sig-param">metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.Molecule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>An instance of a molecule type, with a sequence and which alignments are
-assigned to it.</p>
-<dl class="method">
-<dt id="dasi.models.Molecule.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">molecule_type</em>, <em class="sig-param">alignment_group</em>, <em class="sig-param">sequence</em>, <em class="sig-param">query_region=None</em>, <em class="sig-param">metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#Molecule.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.Molecule.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
-</dd></dl>
-
-<p class="rubric">Methods</p>
+  <div class="section" id="module-dasi.models.molecule">
+<span id="dasi-models-molecule"></span><h1>dasi.models.molecule<a class="headerlink" href="#module-dasi.models.molecule" title="Permalink to this headline">¶</a></h1>
+<p>classes representing <em>molecules</em> and types of <em>molecules</em></p>
+<p class="rubric">Classes</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.Molecule.__init__" title="dasi.models.Molecule.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(molecule_type, alignment_group, …)</p></td>
-<td><p>Initialize self.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.ExternalType" title="dasi.models.molecule.ExternalType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExternalType</span></code></a>(name, use_direct, cost[, …])</p></td>
+<td><p>Molecule to be designed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.molecule.InternalType" title="dasi.models.molecule.InternalType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InternalType</span></code></a>(name, design, use_direct, cost)</p></td>
+<td><p>Molecule representing physical molecule that can be provided by the lab.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.Molecule" title="dasi.models.molecule.Molecule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Molecule</span></code></a>(molecule_type, alignment_group, …)</p></td>
+<td><p>An instance of a molecule type, with a sequence and which alignments are assigned to it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.molecule.MoleculeType" title="dasi.models.molecule.MoleculeType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoleculeType</span></code></a>(name, design, use_direct, cost)</p></td>
+<td><p>Molecule metatype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.Reaction" title="dasi.models.molecule.Reaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reaction</span></code></a>(name, inputs, outputs[, metadata])</p></td>
+<td><p>An activity that takes in several Molecules and produces other Molecules.</p></td>
 </tr>
 </tbody>
 </table>
+<p><strong>Classes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.ExternalType" title="dasi.models.molecule.ExternalType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExternalType</span></code></a>(name, use_direct, cost[, …])</p></td>
+<td><p>Molecule to be designed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.molecule.InternalType" title="dasi.models.molecule.InternalType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InternalType</span></code></a>(name, design, use_direct, cost)</p></td>
+<td><p>Molecule representing physical molecule that can be provided by the lab.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.Molecule" title="dasi.models.molecule.Molecule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Molecule</span></code></a>(molecule_type, alignment_group, …)</p></td>
+<td><p>An instance of a molecule type, with a sequence and which alignments are assigned to it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.molecule.MoleculeType" title="dasi.models.molecule.MoleculeType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoleculeType</span></code></a>(name, design, use_direct, cost)</p></td>
+<td><p>Molecule metatype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.Reaction" title="dasi.models.molecule.Reaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reaction</span></code></a>(name, inputs, outputs[, metadata])</p></td>
+<td><p>An activity that takes in several Molecules and produces other Molecules.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="dasi.models.molecule.ExternalType">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.models.molecule.</code><code class="sig-name descname">ExternalType</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">use_direct</em>, <em class="sig-param">cost</em>, <em class="sig-param">efficiency=1.0</em>, <em class="sig-param">synthesize=False</em>, <em class="sig-param">min_size=None</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">description=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#ExternalType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.molecule.ExternalType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dasi.models.molecule.MoleculeType" title="dasi.models.molecule.MoleculeType"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.molecule.MoleculeType</span></code></a></p>
+<p>Molecule to be designed.</p>
+<p>Initializes a new molecule.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.models.molecule.InternalType">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.models.molecule.</code><code class="sig-name descname">InternalType</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">design</em>, <em class="sig-param">use_direct</em>, <em class="sig-param">cost</em>, <em class="sig-param">efficiency=1.0</em>, <em class="sig-param">synthesize=False</em>, <em class="sig-param">min_size=None</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">description=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#InternalType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.molecule.InternalType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dasi.models.molecule.MoleculeType" title="dasi.models.molecule.MoleculeType"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.molecule.MoleculeType</span></code></a></p>
+<p>Molecule representing physical molecule that can be provided by the
+lab.</p>
+<p>Initializes a new molecule.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.models.molecule.Molecule">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.models.molecule.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param">molecule_type</em>, <em class="sig-param">alignment_group</em>, <em class="sig-param">sequence</em>, <em class="sig-param">query_region=None</em>, <em class="sig-param">metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.molecule.Molecule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An instance of a molecule type, with a sequence and which alignments are
+assigned to it.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.models.molecule.MoleculeType">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.models.molecule.</code><code class="sig-name descname">MoleculeType</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">design</em>, <em class="sig-param">use_direct</em>, <em class="sig-param">cost</em>, <em class="sig-param">efficiency=1.0</em>, <em class="sig-param">synthesize=False</em>, <em class="sig-param">min_size=None</em>, <em class="sig-param">max_size=None</em>, <em class="sig-param">description=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#MoleculeType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.molecule.MoleculeType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Molecule metatype.</p>
+<p>Initializes a new molecule.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="dasi.models.molecule.Reaction">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.models.molecule.</code><code class="sig-name descname">Reaction</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">inputs</em>, <em class="sig-param">outputs</em>, <em class="sig-param">metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/molecule.html#Reaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.molecule.Reaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An activity that takes in several Molecules and produces other
+Molecules.</p>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.molecule.Reaction.inputs" title="dasi.models.molecule.Reaction.inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputs</span></code></a></p></td>
+<td><p>input molecules to the reaction</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.molecule.Reaction.outputs" title="dasi.models.molecule.Reaction.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputs</span></code></a></p></td>
+<td><p>output molecule of the reaction</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="dasi.models.molecule.Reaction.inputs">
+<code class="sig-name descname">inputs</code><em class="property"> = None</em><a class="headerlink" href="#dasi.models.molecule.Reaction.inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>input molecules to the reaction</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.models.molecule.Reaction.outputs">
+<code class="sig-name descname">outputs</code><em class="property"> = None</em><a class="headerlink" href="#dasi.models.molecule.Reaction.outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>output molecule of the reaction</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

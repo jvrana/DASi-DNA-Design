@@ -1,40 +1,23 @@
-dasi.models.Assembly
+dasi.models.assembly
 ====================
 
-.. currentmodule:: dasi.models
-
-.. autoclass:: Assembly
+.. automodule:: dasi.models.assembly
 
    
-   .. automethod:: __init__
-
-   
-   .. rubric:: Methods
-
-   .. autosummary::
-   
-      ~Assembly.__init__
-      ~Assembly.cost
-      ~Assembly.edges
-      ~Assembly.edit_distance
-      ~Assembly.nodes
-      ~Assembly.post_validate
-      ~Assembly.print
-      ~Assembly.print_diff
-      ~Assembly.to_csv
-      ~Assembly.to_df
-      ~Assembly.validate_input_nodes
    
    
 
    
    
-   .. rubric:: Attributes
+   .. rubric:: Classes
 
    .. autosummary::
    
-      ~Assembly.cyclic
-      ~Assembly.molecules
-      ~Assembly.reactions
+      Assembly
+      AssemblyNode
+   
+   
+
+   
    
    

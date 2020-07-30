@@ -1,19 +1,23 @@
-dasi.models.Molecule
+dasi.models.molecule
 ====================
 
-.. currentmodule:: dasi.models
-
-.. autoclass:: Molecule
+.. automodule:: dasi.models.molecule
 
    
-   .. automethod:: __init__
+   
+   
 
    
-   .. rubric:: Methods
+   
+   .. rubric:: Classes
 
    .. autosummary::
    
-      ~Molecule.__init__
+      ExternalType
+      InternalType
+      Molecule
+      MoleculeType
+      Reaction
    
    
 

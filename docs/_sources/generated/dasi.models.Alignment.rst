@@ -1,39 +1,27 @@
-dasi.models.Alignment
+dasi.models.alignment
 =====================
 
-.. currentmodule:: dasi.models
-
-.. autoclass:: Alignment
+.. automodule:: dasi.models.alignment
 
    
-   .. automethod:: __init__
-
-   
-   .. rubric:: Methods
-
-   .. autosummary::
-   
-      ~Alignment.__init__
-      ~Alignment.copy
-      ~Alignment.eq_hash
-      ~Alignment.is_perfect_subject
-      ~Alignment.size_ok
-      ~Alignment.sub_region
-      ~Alignment.validate
    
    
 
    
    
-   .. rubric:: Attributes
+   .. rubric:: Classes
 
    .. autosummary::
    
-      ~Alignment.query_key
-      ~Alignment.query_region
-      ~Alignment.subject_key
-      ~Alignment.subject_region
-      ~Alignment.type
-      ~Alignment.uid
+      Alignment
+      AlignmentGroup
+      AlignmentGroupBase
+      MultiPCRProductAlignmentGroup
+      PCRProductAlignmentGroup
+      RepresentsMolecule
+   
+   
+
+   
    
    

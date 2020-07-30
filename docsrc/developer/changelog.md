@@ -1,4 +1,59 @@
 # dasi change log
+## 0.1
+**2020-07-29T18:58:13.632554**
+bug fixes and version changes
+
+ - Many bug fixes to optimization
+ - Multiprocessing runs supported by `Design.run(n_jobs=4)`
+ - Package resolution and updates
+
+
+## 0.0.21a6
+**2020-07-24T13:13:49.134544**
+
+
+ - `Design` and `LibraryDesign` both inherit `DesignABC`
+ - n_jobs paramter removed from `Design.run` and `LibraryDesign.run`
+ - `pooled_run` method added to Design and LibraryDesign for multiprocessed designs.
+
+
+## 0.0.21a5
+**2020-07-23T08:10:37.204277**
+
+
+ - added sequence partitioner
+
+
+## 0.0.21a4
+**2020-07-22T09:51:14.612055**
+
+
+ - report shows coverage and complexity at log scale
+ - sequence complexity in report shows threshold
+ - added 'cost', 'material_cost' and 'efficiency' properties to Assembly
+
+
+## 0.0.21a3
+**2020-07-22T07:53:54.749830**
+
+
+ - Scaling synthetic complexity to ratio of threshold
+
+
+## 0.0.21a2
+**2020-07-21T16:50:34.302394**
+
+
+ - graph preprocessor inherits the Design logger
+
+
+## 0.0.21a1
+**2020-07-21T09:18:20.201799**
+bug fixes
+
+ - Added `elim_extra_reactions` option to `Design.out` to ignore errors where there is more than one reaction that produces a molecule.
+
+
 ## 0.0.21
 **2020-02-19T15:47:30.155731**
 bug fixes with scoring pcrs

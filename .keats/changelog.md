@@ -1,4 +1,13 @@
 # dasi change log
+## 0.1
+**2020-07-29T18:58:13.632554**
+bug fixes and version changes
+
+ - Many bug fixes to optimization
+ - Multiprocessing runs supported by `Design.run(n_jobs=4)`
+ - Package resolution and updates
+
+
 ## 0.0.21a6
 **2020-07-24T13:13:49.134544**
 

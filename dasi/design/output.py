@@ -4,8 +4,10 @@ import json
 import operator
 from copy import deepcopy
 from typing import Dict
+from typing import List
+from typing import Optional
 from typing import Tuple
-from typing import Union, Optional, List
+from typing import Union
 
 import networkx as nx
 
@@ -291,13 +293,14 @@ def _design_property(design, reaction_node_dict, graph):
 
 
 def dasi_design_to_output_json(
-    design: Union["Design", "LibraryDesign"], elim_extra_reactions: bool = False,
-        query_keys: Optional[List[str]] = None
+    design: Union["Design", "LibraryDesign"],
+    elim_extra_reactions: bool = False,
+    query_keys: Optional[List[str]] = None,
 ):
     """Convert a DASi Design instance into an output JSON."""
-    graph = dasi_design_to_dag(design,
-                               elim_extra_reactions=elim_extra_reactions,
-                               query_keys=query_keys)
+    graph = dasi_design_to_dag(
+        design, elim_extra_reactions=elim_extra_reactions, query_keys=query_keys
+    )
     reaction_node_dict = {}
     molecule_node_dict = {}
     sorted_nodes = list(nx.topological_sort(graph))[::-1]
@@ -328,6 +331,49 @@ def dasi_design_to_output_json(
 
     OutputValidator.validate_design_assemblies(output)
     return output
+
+
+def _filter_dict(data, keys):
+    return {k: deepcopy(v) for k, v in data.items() if k in keys}
+
+
+def _filter_by_design_keys(data, keys):
+    filtered = []
+    for d in data:
+        for used in d["used_in_assemblies"]:
+            if used["design_key"] in keys:
+                filtered.append(d)
+                break
+    return filtered
+
+
+def _filter_by_assemblies(data, assemblies):
+    filtered = []
+    for d in data:
+        for used in d["used_in_assemblies"]:
+            if used["assembly"] in assemblies:
+                filtered.append(d)
+                break
+    return filtered
+
+
+def filter_output_by_design_keys(
+    output, keys, only_assemblies: Optional[List[str]] = None
+):
+    new_out = {}
+
+    new_out["metadata"] = deepcopy(output["metadata"])
+    new_out["designs"] = _filter_dict(output["designs"], keys)
+
+    reactions = _filter_by_design_keys(output["reactions"], keys)
+    molecules = _filter_by_design_keys(output["molecules"], keys)
+    if only_assemblies is not None:
+        reactions = _filter_by_assemblies(reactions, only_assemblies)
+        molecules = _filter_by_assemblies(molecules, only_assemblies)
+
+    new_out["reactions"] = reactions
+    new_out["molecules"] = molecules
+    return new_out
 
 
 class OutputValidator:

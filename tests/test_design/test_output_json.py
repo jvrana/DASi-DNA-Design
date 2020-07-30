@@ -5,6 +5,7 @@ import pytest
 from dasi import Design
 from dasi import LibraryDesign
 from dasi.design.output import dasi_design_to_output_json
+from dasi.design.output import filter_output_by_design_keys
 from dasi.design.output import validate_output
 
 
@@ -44,3 +45,12 @@ class TestOutput:
                 for rid in a["final_assembly_reaction"]:
                     reaction = out["reactions"][rid]
                     assert reaction["__name__"] == "Assembly"
+
+    def test_filter_by_design_keys(self, design):
+        out = design.out()
+        keys = list(out["designs"])[:2]
+        filtered_out = filter_output_by_design_keys(out, keys)
+        validate_output(filtered_out, do_raise=True)
+        assert len(out["molecules"]) >= len(filtered_out["molecules"])
+        assert len(out["reactions"]) >= len(filtered_out["reactions"])
+        assert len(out["designs"]) > len(filtered_out["designs"])

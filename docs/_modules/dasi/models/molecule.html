@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.models.molecule &#8212; dasi 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.Design.html">dasi.design.Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.DesignResult.html">dasi.design.DesignResult</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.models.molecule</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;classes representing *molecules* and types of *molecules*&quot;&quot;&quot;
+from copy import copy
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
+
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from numpy import inf
+
+from dasi.constants import Constants
+from dasi.utils import Region
+
+
+# TODO: refactor Molecule and MoleculeTypes, as this is confusing
+<div class="viewcode-block" id="MoleculeType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.MoleculeType">[docs]</a>class MoleculeType:
+    &quot;&quot;&quot;Molecule metatype.&quot;&quot;&quot;
+
+    types = {}
+
+<div class="viewcode-block" id="MoleculeType.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.MoleculeType.html#dasi.models.MoleculeType.__init__">[docs]</a>    def __init__(
+        self,
+        name: str,
+        design: Union[None, Tuple[bool, bool]],
+        use_direct: bool,
+        cost: float,
+        efficiency=1.0,
+        synthesize=False,
+        min_size: int = None,
+        max_size: int = None,
+        description: str = &quot;&quot;,
+    ):
+        &quot;&quot;&quot;Initializes a new molecule.&quot;&quot;&quot;
+        self.name = name
+        self.cost = cost
+        self.use_direct = use_direct
+        self.synthesize = synthesize
+        if name in self.types:
+            raise ValueError(&quot;Cannot re-define molecule type &#39;{}&#39;&quot;.format(name))
+        self.types[name] = self
+        self.efficiency = efficiency
+        self.design = design
+        self.int_or_ext = None
+        self.min_size = min_size
+        self.max_size = max_size
+        self.description = description</div>
+
+    def __repr__(self):
+        return &quot;&lt;{} name=&#39;{}&#39;&gt;&quot;.format(self.__class__.__name__, self.name)</div>
+
+
+<div class="viewcode-block" id="InternalType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.InternalType">[docs]</a>class InternalType(MoleculeType):
+    &quot;&quot;&quot;Molecule representing physical molecule that can be provided by the
+    lab.&quot;&quot;&quot;
+
+    def __init__(
+        self,
+        name: str,
+        design: Tuple[bool, bool],
+        use_direct: bool,
+        cost: float,
+        efficiency=1.0,
+        synthesize: bool = False,
+        min_size: int = None,
+        max_size: int = None,
+        description: str = &quot;&quot;,
+    ):
+        super().__init__(
+            name,
+            use_direct=use_direct,
+            design=design,
+            cost=cost,
+            efficiency=efficiency,
+            synthesize=synthesize,
+            min_size=min_size,
+            max_size=max_size,
+            description=description,
+        )
+        self.design = design
+        self.int_or_ext = &quot;internal&quot;</div>
+
+
+<div class="viewcode-block" id="ExternalType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.ExternalType">[docs]</a>class ExternalType(MoleculeType):
+    &quot;&quot;&quot;Molecule to be designed.&quot;&quot;&quot;
+
+    def __init__(
+        self,
+        name: str,
+        use_direct: bool,
+        cost: float,
+        efficiency=1.0,
+        synthesize: bool = False,
+        min_size: int = None,
+        max_size: int = None,
+        description: str = &quot;&quot;,
+    ):
+        super().__init__(
+            name,
+            use_direct=use_direct,
+            design=None,
+            cost=cost,
+            efficiency=efficiency,
+            synthesize=synthesize,
+            min_size=min_size,
+            max_size=max_size,
+            description=description,
+        )
+        self.int_or_ext = &quot;external&quot;
+
+    def __call__(self, design):
+        copied = copy(self)
+        copied.design = design
+        return copied</div>
+
+
+# TODO: move this to the parameters
+# TODO: efficiencies and base costs could be parameters
+# TODO: min_size and max_size could be parameters
+InternalType(
+    name=Constants.FRAGMENT,
+    design=(False, False),
+    use_direct=True,
+    cost=0.0,
+    efficiency=0.98,
+    description=(
+        &quot;A FRAGMENT is a existing fragment in the lab than can be used &quot;
+        &quot;&#39;as is&#39; and used directly in a reaction.&quot;
+    ),
+)
+
+InternalType(
+    name=Constants.PCR_PRODUCT,
+    design=(True, True),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
+    min_size=100,
+    description=(
+        &quot;A PCR_PRODUCT is a PCR of DNA generated by designing (and synthesizing) &quot;
+        &quot;two new primers and using an existing template to produce the product &quot;
+        &quot;in a PCR reaction. The cost represents the cost of doing the PCR reaction. &quot;
+        &quot;The cost of the primers is not represented here, but in the flanking &quot;
+        &quot;external GAP costs.&quot;
+    ),
+)
+
+InternalType(
+    name=Constants.PCR_PRODUCT_WITH_PRIMERS,
+    design=(False, False),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
+    min_size=100,
+    description=(
+        &quot;A PCR_PRODUCT_WITH_PRIMERS is a PCR of DNA generated by using &quot;
+        &quot;two existing primers and using an existing template to produce the product&quot;
+        &quot;in a PCR reaction. The cost represents the cost of doing the PCR reaction.&quot;
+    ),
+)
+
+InternalType(
+    name=Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER,
+    design=(True, False),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
+    min_size=100,
+    description=(
+        &quot;A PCR_PRODUCT_WITH_RIGHT_PRIMER is a PCR of DNA generated by using &quot;
+        &quot;one existing reverse primer and synthesizing a new forward primer and using &quot;
+        &quot; an existing template to produce the product in a PCR reaction. The cost &quot;
+        &quot;represents the cost of doing the PCR reaction. The cost of the synthesized &quot;
+        &quot;primer is not represented here, but in the external gap cost.&quot;
+    ),
+)
+InternalType(
+    name=Constants.PCR_PRODUCT_WITH_LEFT_PRIMER,
+    design=(False, True),
+    use_direct=False,
+    cost=10.0,
+    efficiency=0.95,
+    min_size=100,
+    description=(
+        &quot;A PCR_PRODUCT_WITH_RIGHT_PRIMER is a PCR of DNA generated by using &quot;
+        &quot;one existing forward primer and synthesizing a new reverse primer and using &quot;
+        &quot; an existing template to produce the product in a PCR reaction. The cost &quot;
+        &quot;represents the cost of doing the PCR reaction. The cost of the synthesized &quot;
+        &quot;primer is not represented here, but in the external gap cost.&quot;
+    ),
+)
+
+InternalType(
+    name=Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS,
+    design=(False, False),
+    use_direct=False,
+    cost=9.0,
+    efficiency=0.95,
+    description=(
+        &quot;A PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS is a product produced by annealing &quot;
+        &quot;two existing primers together in annealing reaction or PCR reaction.&quot;
+    ),
+)
+
+InternalType(
+    name=Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER,
+    design=(False, True),
+    use_direct=False,
+    cost=9.0,
+    efficiency=0.95,
+    description=(
+        &quot;A PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER is a product produced by annealing &quot;
+        &quot;one existing primer with a new designed primer&quot;
+        &quot; together in annealing reaction or PCR reaction.&quot;
+    ),
+)
+
+InternalType(
+    name=Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER,
+    design=(True, False),
+    use_direct=False,
+    cost=9.0,
+    efficiency=0.95,
+    description=(
+        &quot;A PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER is a product produced by annealing &quot;
+        &quot;one existing primer with a new designed primer&quot;
+        &quot; together in annealing reaction or PCR reaction.&quot;
+    ),
+)
+
+# TODO: SYNTHESIZED_FRAGMENT description
+InternalType(
+    name=Constants.SHARED_SYNTHESIZED_FRAGMENT,
+    design=(False, False),
+    use_direct=True,
+    cost=1000.0,
+    efficiency=0.1,
+    description=&quot;&quot;,
+    min_size=100,
+    synthesize=True,
+)
+
+ExternalType(
+    name=Constants.OVERLAP,
+    use_direct=False,
+    cost=0.0,
+    efficiency=1.0,
+    synthesize=False,
+    description=(
+        &quot;A OVERLAP is an external edge where two pieces of DNA overlap forming &quot;
+        &quot;a junction. No new pieces of DNA are required and so the cost is 0. &quot;
+        &quot;The efficiency of the junction depends on the cost settings, the particular &quot;
+        &quot;sequence and amount of overlap&quot;
+    ),
+)
+
+ExternalType(
+    name=Constants.GAP,
+    use_direct=False,
+    cost=0.0,
+    efficiency=1.0,
+    synthesize=True,
+    description=(
+        &quot;A GAP is an external edges where two pieces of DNA do no overlap. The &quot;
+        &quot;gap must be spanned by either a synthesized fragment or by the primers &quot;
+        &quot;on the left and right flanking molecules.&quot;
+    ),
+)
+
+MoleculeType(
+    name=Constants.MISSING,
+    design=None,
+    use_direct=False,
+    cost=inf,
+    efficiency=0.0,
+    synthesize=False,
+    description=(&quot;A missing molecule. For tests.&quot;),
+)
+
+MoleculeType(
+    name=Constants.PRIMER,
+    design=None,
+    use_direct=False,
+    cost=inf,
+    efficiency=0.0,
+    synthesize=False,
+    description=(
+        &quot;A PRIMER is a single stranded piece of DNA that can amplify a pcr product &quot;
+        &quot;from a template.&quot;
+    ),
+)
+
+MoleculeType(
+    name=Constants.TEMPLATE,
+    design=None,
+    use_direct=True,
+    cost=0.0,
+    efficiency=0.0,
+    synthesize=False,
+    description=(&quot;A TEMPLATE is a piece DNA that can be used to make pcr products.&quot;),
+)
+
+MoleculeType(
+    name=Constants.SHARED_FRAGMENT,
+    design=None,
+    use_direct=True,
+    cost=0.0,
+    efficiency=1.0,
+    synthesize=True,
+    description=(
+        &quot;A SHARED_FRAGMENT is a DNA piece that is shared &quot;
+        &quot;between several designs. This information can be used to reduce costs via &quot;
+        &quot;&#39;coalition design&#39;. &quot;
+    ),
+)
+
+
+MoleculeType(
+    name=Constants.PLASMID,
+    design=None,
+    use_direct=False,
+    cost=0.0,
+    efficiency=1.0,
+    synthesize=False,
+    description=(&quot;A PLASMID is a designed DNA sequence.&quot;),
+)
+
+
+<div class="viewcode-block" id="Molecule"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.Molecule">[docs]</a>class Molecule:
+    &quot;&quot;&quot;An instance of a molecule type, with a sequence and which alignments are
+    assigned to it.&quot;&quot;&quot;
+
+<div class="viewcode-block" id="Molecule.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Molecule.html#dasi.models.Molecule.__init__">[docs]</a>    def __init__(
+        self,
+        molecule_type: MoleculeType,
+        alignment_group,
+        sequence: SeqRecord,
+        query_region: Region = None,
+        metadata: Dict = None,
+    ):
+        self.type = molecule_type
+        self.alignment_group = alignment_group
+        assert issubclass(type(sequence), SeqRecord)
+        assert issubclass(type(sequence.seq), Seq)
+        self.sequence = sequence
+        self.metadata = metadata or {}
+        self.query_region = query_region</div>
+
+    def __repr__(self):
+        return &quot;&lt;{cls} name=&#39;{name}&#39; group=&#39;{group}&#39;&gt;&quot;.format(
+            cls=self.__class__.__name__, name=self.type.name, group=self.alignment_group
+        )</div>
+
+
+<div class="viewcode-block" id="Reaction"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.Reaction">[docs]</a>class Reaction:
+    &quot;&quot;&quot;An activity that takes in several Molecules and produces other
+    Molecules.&quot;&quot;&quot;
+
+    class Types:
+        Direct = &quot;Use Direct&quot;
+        Synthesize = &quot;Synthesize&quot;
+        Retrieve = &quot;Retrieve Fragment&quot;
+        PCR = &quot;PCR&quot;
+        Assembly = &quot;Assembly&quot;
+        _Valid = [Direct, Synthesize, Retrieve, PCR, Assembly]
+
+<div class="viewcode-block" id="Reaction.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Reaction.html#dasi.models.Reaction.__init__">[docs]</a>    def __init__(
+        self,
+        name: str,
+        inputs: List[Molecule],
+        outputs: List[Molecule],
+        metadata: dict = None,
+    ):
+        if name not in self.Types._Valid:
+            raise ValueError(
+                &quot;Name &#39;{}&#39; must be one of {}&quot;.format(name, self.Types._Valid)
+            )
+        self.name = name
+        self.inputs = inputs  #: input molecules to the reaction
+        self.outputs = outputs  #: output molecule of the reaction
+        self.metadata = metadata</div>
+
+    def __repr__(self):
+        return &quot;&lt;{cls} name=&#39;{name}&#39; outputs={products} regions={outputs}&gt;&quot;.format(
+            cls=self.__class__.__name__,
+            name=self.name,
+            products=[m.type.name for m in self.outputs],
+            outputs=[m.query_region for m in self.outputs],
+        )</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Introduction &#8212; dasi 0.1.1 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/style.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+    <script>
+    $(function(){
+      $("#includedContent").load("index.html");
+    });
+    </script>
+<div class="container">
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-3">
+                <h1>DASi</h1>
+            </div>
+            <div class="col-md-7">
+            </div>
+        </div>
+        <p>A Python toolkit for automated <b>D</b>NA <b>AS</b>sembly.
+        </p>
+        <hr class="my-4">
+        <div class="tabbable"> <!-- Only required for left/right tabs -->
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab1" data-toggle="tab">Homology Cloning</a></li>
+                <li><a href="#tab2" data-toggle="tab">Library Design</a></li>
+                <li><a href="#tab3" data-toggle="tab">Golden Gate</a></li>
+                <li><a href="#tab3" data-toggle="tab">Combinatorial Design</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab1">
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dasi</span> <span class="kn">import</span> <span class="n">Design</span>
+
+<span class="n">design</span> <span class="o">=</span> <span class="n">Design</span><span class="p">()</span>
+<span class="n">design</span><span class="o">.</span><span class="n">add_materials</span><span class="p">(</span><span class="n">primers</span><span class="o">=</span><span class="n">primers</span><span class="p">,</span> <span class="n">fragments</span><span class="o">=</span><span class="n">fragments</span><span class="p">,</span> <span class="n">templates</span><span class="o">=</span><span class="n">templates</span><span class="p">,</span> <span class="n">queries</span><span class="o">=</span><span class="n">queries</span><span class="p">)</span>
+<span class="n">design</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">design</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+</pre></div>
+                </div>
+                <div class="tab-pane" id="tab2">
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dasi</span> <span class="kn">import</span> <span class="n">LibraryDesign</span>
+
+<span class="n">design</span> <span class="o">=</span> <span class="n">LibraryDesign</span><span class="p">()</span>
+<span class="n">design</span><span class="o">.</span><span class="n">add_materials</span><span class="p">(</span><span class="n">primers</span><span class="o">=</span><span class="n">primers</span><span class="p">,</span> <span class="n">fragments</span><span class="o">=</span><span class="n">fragments</span><span class="p">,</span> <span class="n">templates</span><span class="o">=</span><span class="n">templates</span><span class="p">,</span> <span class="n">queries</span><span class="o">=</span><span class="n">queries</span><span class="p">)</span>
+<span class="n">design</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">design</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+</pre></div>
+                </div>
+                <div class="tab-pane" id="tab3">
+                    <p>Coming soon!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.Design.html">dasi.design.Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.design.DesignResult.html">dasi.design.DesignResult</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.region.html">dasi.utils.region</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="usage.html" title="Next Chapter: Usage"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Usage &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/index.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>DASi is an automatic DNA cloning plan designer aimed for operating on small budgets
+by focusing on material re-use.</p>
+<p>The software converts a nucleotide sequence, or a library of sequences,
+to an executable molecular assembly plan while optimizing material cost,
+assembly efficiency, and assembly time.</p>
+</div>
+<div class="section" id="user-documentation">
+<h1>User Documentation<a class="headerlink" href="#user-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The user documentation contains high-level information for users of DASi.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas/schemas.html">JSON Schemas</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<p>Detailed information about classes and methods of DASi.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="developer-documentation">
+<h1>Developer Documentation<a class="headerlink" href="#developer-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The developer documentation conatins information on how to contribute to DASi.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guidelines.html">Code Guidelines</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="features-and-improvements-road-map">
+<h1>Features and Improvements Road Map<a class="headerlink" href="#features-and-improvements-road-map" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><dl class="simple">
+<dt>^0.0.1</dt><dd><ul>
+<li><p>Cleaner JSON output</p></li>
+<li><p>Scoring PCR reactions for primer misprimings</p></li>
+<li><p>Scoring assembly efficiencies</p></li>
+<li><p>Logging to file</p></li>
+<li><p>PDF design reports</p></li>
+<li><dl class="simple">
+<dt>improved design inputs</dt><dd><ul>
+<li><p>selection of synthesis vendors</p></li>
+<li><p>primer + PCR cost</p></li>
+<li><p>improved API for adding materials</p></li>
+<li><p>control over design algorithms and parameters</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>^0.1</dt><dd><ul>
+<li><p>faster execution times</p></li>
+<li><p>PDF design reports</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>^0.2</dt><dd><ul>
+<li><dl class="simple">
+<dt>linear fragment design</dt><dd><ul>
+<li><p>support for assembly by primer annealing</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>^0.3</dt><dd><ul>
+<li><dl class="simple">
+<dt>improved outputs</dt><dd><ul>
+<li><p>SBOL (XML) output</p></li>
+<li><p>graph output</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>^1.0</dt><dd><ul>
+<li><dl class="simple">
+<dt>deployment</dt><dd><ul>
+<li><p>web interface</p></li>
+<li><p>dockerized container</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>^2.0</dt><dd><ul>
+<li><dl class="simple">
+<dt>Additional assembly strategies</dt><dd><ul>
+<li><p>Golden-gate support</p></li>
+<li><p>Linear assemblies</p></li>
+<li><p>Assembly by primers</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>^3.0</dt><dd><ul>
+<li><p>Hierarchical clonal assembly</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

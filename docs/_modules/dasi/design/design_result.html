@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.design.design_result &#8212; dasi 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/style.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.Design.html">dasi.design.Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.design.DesignResult.html">dasi.design.DesignResult</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.region.html">dasi.utils.region</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for dasi.design.design_result</h1><div class="highlight"><pre>
+<span></span>import bisect
+from typing import Generator
+from typing import Iterable
+from typing import List
+from typing import Tuple
+
+import networkx as nx
+
+from dasi.exceptions import DasiInvalidMolecularAssembly
+from dasi.models import AlignmentContainer
+from dasi.models import Assembly
+from dasi.models import AssemblyNode
+
+
+<div class="viewcode-block" id="DesignResult"><a class="viewcode-back" href="../../../generated/dasi.design.DesignResult.html#dasi.design.DesignResult">[docs]</a>class DesignResult(Iterable):
+    &quot;&quot;&quot;DesignResult container.
+
+    Maintains a list of top assemblies.
+    &quot;&quot;&quot;
+
+<div class="viewcode-block" id="DesignResult.__init__"><a class="viewcode-back" href="../../../generated/dasi.design.DesignResult.html#dasi.design.DesignResult.__init__">[docs]</a>    def __init__(
+        self, container: AlignmentContainer, graph: nx.DiGraph, query_key: str
+    ):
+        self.container = container
+        self.graph = graph
+        self.query_key = query_key
+        self.query = self.container.seqdb[query_key]
+        self._assemblies = []
+        self._keys = []</div>
+
+    @property
+    def seqdb(self):
+        return self.container.seqdb
+
+    @property
+    def assemblies(self) -&gt; Tuple[Assembly, ...]:
+        &quot;&quot;&quot;Return a tuple of all assemblies.
+
+        :return: tuple of all assemblies.
+        &quot;&quot;&quot;
+        return tuple(self._assemblies)
+
+    def _add_assembly_from_path(self, path: List[AssemblyNode]):
+        return Assembly(
+            path,
+            self.container,
+            self.graph,
+            self.query_key,
+            self.query,
+            seqdb=self.seqdb,
+            do_raise=False,
+        )
+
+<div class="viewcode-block" id="DesignResult.add_assembly"><a class="viewcode-back" href="../../../generated/dasi.design.DesignResult.html#dasi.design.DesignResult.add_assembly">[docs]</a>    def add_assembly(
+        self,
+        path: List[AssemblyNode],
+        ignore_invalid: bool = False,
+        allow_invalid: bool = False,
+    ):
+        &quot;&quot;&quot;Add an assembly from a list of nodes.
+
+        :param path: list of nodes
+        :return: None
+        &quot;&quot;&quot;
+
+        assembly = self._add_assembly_from_path(path)
+
+        # Validate the assembly
+        try:
+            assembly.post_validate()
+        except DasiInvalidMolecularAssembly as e:
+            if ignore_invalid:
+                return
+            elif not allow_invalid:
+                raise e
+
+        cost = assembly.compute_cost()
+        n_nodes = len(assembly._nodes)
+        k = (cost, n_nodes)
+        i = bisect.bisect_left(self._keys, k)
+        self._assemblies.insert(i, assembly)
+        self._keys.insert(i, k)
+        return assembly</div>
+
+<div class="viewcode-block" id="DesignResult.add_assemblies"><a class="viewcode-back" href="../../../generated/dasi.design.DesignResult.html#dasi.design.DesignResult.add_assemblies">[docs]</a>    def add_assemblies(
+        self,
+        paths: List[List[AssemblyNode]],
+        ignore_invalid: bool = False,
+        allow_invalid: bool = False,
+    ):
+        &quot;&quot;&quot;Adds a list of assemblies.
+
+        :param paths: list of list of paths
+        :return: None
+        &quot;&quot;&quot;
+        for path in paths:
+            self.add_assembly(
+                path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
+            )</div>
+
+    #
+    #
+    #     for a in self.assemblies:
+    #         for n1, n2, edata in a.edges():
+    #             result = edata[&quot;sequence_result&quot;]
+    #             mol_type = edata[&quot;type_def&quot;]
+    #             if mol_type.int_or_ext == &quot;internal&quot;:
+    #                 pass
+    #                 # add a new reaction
+    #                 # add template
+    #                 # add primers
+    #             elif mol_type.use_direct:
+    #                 pass
+    #                 # add fragment
+    #             elif mol_type.synthesize:
+    #                 pass
+    #                 # add synthesize
+    #             else:
+    #                 pass
+    #                 # raise Exception
+
+    def __iter__(self) -&gt; Generator[Assembly, None, None]:
+        &quot;&quot;&quot;Yield assemblies.
+
+        :yield: assembly
+        &quot;&quot;&quot;
+        for assembly in self.assemblies:
+            yield assembly
+
+    def __getitem__(self, item: str) -&gt; Assembly:
+        return list(self)[item]
+
+    def __str__(self):
+        return &quot;&lt;{cls}, query={qname} {qk} nassemblies={n}&gt;&quot;.format(
+            cls=self.__class__.__name__,
+            qname=self.query.name,
+            qk=self.query_key,
+            n=len(self.assemblies),
+        )</div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

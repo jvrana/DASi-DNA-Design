@@ -1,5 +1,12 @@
 # dasi change log
-## 0.1
+## 0.1.1
+**2020-07-30T11:28:42.177334**
+bug fixes
+
+ - bug fix with pooled runs and frozen graphs
+
+
+## 0.1.0
 **2020-07-29T18:58:13.632554**
 bug fixes and version changes
 
@@ -197,12 +204,5 @@ command-line interface
 ## 0.0.2
 **2019-10-01T15:25:54.613524**
 
-
-
-
-
-## 0.1.0
-**2019-07-13T10:01:24.258900**
-project initialized
 
 

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>dasi.models.AlignmentContainer &#8212; dasi 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/style.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dasi.models.AlignmentContainerFactory" href="dasi.models.AlignmentContainerFactory.html" />
+    <link rel="prev" title="dasi.models.PCRProductAlignmentGroup" href="dasi.models.PCRProductAlignmentGroup.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          DASi</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">DASi <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#getting-started">Getting started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#running-examples">Running examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage.html#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#using-inventory-information-with-dasi">Using inventory information with DASi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage.html#adjusting-design-parameters">Adjusting design parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/schemas.html">JSON Schemas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#default-cost-parameters">Default Cost Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#cost-parameter-schema">Cost Parameter Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#cost-parameters-schema">Cost Parameters Schema</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/schemas.html#design-output-schema">Design Output Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/schemas.html#dasi-design-output">DASi design output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../design.html">Design (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.design</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dasi.design.Design.html">dasi.design.Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.design.LibraryDesign.html">dasi.design.LibraryDesign</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.design.DesignResult.html">dasi.design.DesignResult</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentGroup.html">dasi.models.AlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentGroupBase.html">dasi.models.AlignmentGroupBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.MultiPCRProductAlignmentGroup.html">dasi.models.MultiPCRProductAlignmentGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dasi.models.AlignmentContainer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cost.html">Cost Model (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.cost</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cost.html#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.cost.utils.html">dasi.cost.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../command_line.html">Command Line (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.command_line</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.utils</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#utility-modules">Utility modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.npdf.html">dasi.utils.npdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.region.html">dasi.utils.region</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../utils.html#networkx-utilities">Networkx utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.exceptions.html">dasi.utils.networkx.exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.shortest_path.html">dasi.utils.networkx.shortest_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.utils.networkx.utils.html">dasi.utils.networkx.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.exceptions</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../constants.html">Constants (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.constants</span></code>)</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guidelines.html">Code Guidelines</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="dasi.models.PCRProductAlignmentGroup.html" title="Previous Chapter: dasi.models.PCRProductAlignmentGroup"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dasi.models.P...</span>
+    </a>
+  </li>
+  <li>
+    <a href="dasi.models.AlignmentContainerFactory.html" title="Next Chapter: dasi.models.AlignmentContainerFactory"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.models.A... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/dasi.models.AlignmentContainer.rst"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="dasi-models-alignmentcontainer">
+<h1>dasi.models.AlignmentContainer<a class="headerlink" href="#dasi-models-alignmentcontainer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dasi.models.AlignmentContainer">
+<em class="property">class </em><code class="sig-prename descclassname">dasi.models.</code><code class="sig-name descname">AlignmentContainer</code><span class="sig-paren">(</span><em class="sig-param">seqdb</em>, <em class="sig-param">alignments=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sized</span></code></p>
+<p>Container for a set of query-to-subject alignments for a single query.</p>
+<dl class="simple">
+<dt>Instance Attributes/Properties:</dt><dd><dl class="simple">
+<dt>alignments  list of alignments for the container</dt><dd><p>List[Alignment]</p>
+</dd>
+<dt>seqdb       key to SeqRecord dictionary</dt><dd><p>Dict[str, SeqRecord]</p>
+</dd>
+<dt>logger      the instance’s logger</dt><dd><p>Loggable</p>
+</dd>
+</dl>
+</dd>
+<dt>This class contains:</dt><dd><ol class="arabic simple">
+<li><p>Methods grouping alignments together according to those</p></li>
+</ol>
+</dd>
+<dt>alignments that share the same starting and ending points.</dt><dd><ol class="arabic simple" start="2">
+<li><p>Methods for ‘expanding’ alignments</p></li>
+</ol>
+</dd>
+</dl>
+<p><strong>Methods</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer._alignment_hash" title="dasi.models.AlignmentContainer._alignment_hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_alignment_hash</span></code></a>(a)</p></td>
+<td><p>A hashable representation of an alignment for grouping.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer._create_pcr_product_alignment" title="dasi.models.AlignmentContainer._create_pcr_product_alignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_create_pcr_product_alignment</span></code></a>(…)</p></td>
+<td><p>Create a new alignment group for a PCR product.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer._make_subgroup" title="dasi.models.AlignmentContainer._make_subgroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_make_subgroup</span></code></a>(group, a, b, atype)</p></td>
+<td><p>Make a subgroup at the specified indices.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.clean_alignments" title="dasi.models.AlignmentContainer.clean_alignments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_alignments</span></code></a>()</p></td>
+<td><p>Remove redundant alignments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.copy_groups" title="dasi.models.AlignmentContainer.copy_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_groups</span></code></a>(alignment_groups, atype)</p></td>
+<td><p>Copy alignments from the list of groups to a new alignment type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.expand" title="dasi.models.AlignmentContainer.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>([expand_overlaps, expand_primers, …])</p></td>
+<td><p>Alignment expansion algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.expand_overlaps" title="dasi.models.AlignmentContainer.expand_overlaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_overlaps</span></code></a>(alignment_groups[, atype, …])</p></td>
+<td><p>Expand the list of alignments from existing regions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.expand_primer_pairs" title="dasi.models.AlignmentContainer.expand_primer_pairs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_primer_pairs</span></code></a>(alignment_groups[, lim_size])</p></td>
+<td><p>Creates new alignments for all possible primer pairs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.find_groups_by_pos" title="dasi.models.AlignmentContainer.find_groups_by_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_groups_by_pos</span></code></a>(a, b, group_type[, groups])</p></td>
+<td><p>Return a list of groups that have the same positions (a, b) and same group_type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.freeze" title="dasi.models.AlignmentContainer.freeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">freeze</span></code></a>()</p></td>
+<td><p>Freeze the container, disallowing further modifications to alignments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.get_groups_by_types" title="dasi.models.AlignmentContainer.get_groups_by_types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_groups_by_types</span></code></a>(types)</p></td>
+<td><p>Return AlignmentGroups by fragment type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.groups_by_type" title="dasi.models.AlignmentContainer.groups_by_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">groups_by_type</span></code></a>()</p></td>
+<td><p>Return alignment groups according to their alignment ‘type’.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.redundent_alignment_groups" title="dasi.models.AlignmentContainer.redundent_alignment_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redundent_alignment_groups</span></code></a>(alignments)</p></td>
+<td><p>Return AlignmentGroups that have been grouped by alignment_hash.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.unfreeze" title="dasi.models.AlignmentContainer.unfreeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfreeze</span></code></a>()</p></td>
+<td><p>Unfreeze the container, allowing modifications to alignments.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Attributes</strong></p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.types" title="dasi.models.AlignmentContainer.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types</span></code></a></p></td>
+<td><p>Return all valid types.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">seqdb</em>, <em class="sig-param">alignments=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.__init__" title="dasi.models.AlignmentContainer.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(seqdb[, alignments])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.expand" title="dasi.models.AlignmentContainer.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>([expand_overlaps, expand_primers, …])</p></td>
+<td><p>Alignment expansion algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.expand_overlaps" title="dasi.models.AlignmentContainer.expand_overlaps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_overlaps</span></code></a>(alignment_groups[, atype, …])</p></td>
+<td><p>Expand the list of alignments from existing regions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_primer_extension_products</span></code>([…])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.expand_primer_pairs" title="dasi.models.AlignmentContainer.expand_primer_pairs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_primer_pairs</span></code></a>(alignment_groups[, lim_size])</p></td>
+<td><p>Creates new alignments for all possible primer pairs.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_alignments_by_span</span></code>(alignments, region)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.find_groups_by_pos" title="dasi.models.AlignmentContainer.find_groups_by_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_groups_by_pos</span></code></a>(a, b, group_type[, groups])</p></td>
+<td><p>Return a list of groups that have the same positions (a, b) and same group_type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.freeze" title="dasi.models.AlignmentContainer.freeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">freeze</span></code></a>()</p></td>
+<td><p>Freeze the container, disallowing further modifications to alignments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alignments_by_types</span></code>(types)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.get_groups_by_types" title="dasi.models.AlignmentContainer.get_groups_by_types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_groups_by_types</span></code></a>(types)</p></td>
+<td><p>Return AlignmentGroups by fragment type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">groups</span></code>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.MultiPCRProductAlignmentGroup" title="dasi.models.alignment.MultiPCRProductAlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiPCRProductAlignmentGroup</span></code></a>]]</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.groups_by_type" title="dasi.models.AlignmentContainer.groups_by_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">groups_by_type</span></code></a>()</p></td>
+<td><p>Return alignment groups according to their alignment ‘type’.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pcr_alignment_groups</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.redundent_alignment_groups" title="dasi.models.AlignmentContainer.redundent_alignment_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redundent_alignment_groups</span></code></a>(alignments)</p></td>
+<td><p>Return AlignmentGroups that have been grouped by alignment_hash.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.unfreeze" title="dasi.models.AlignmentContainer.unfreeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfreeze</span></code></a>()</p></td>
+<td><p>Unfreeze the container, allowing modifications to alignments.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">alignments</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.AlignmentContainer.types" title="dasi.models.AlignmentContainer.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">types</span></code></a></p></td>
+<td><p>Return all valid types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">valid_types</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer._alignment_hash">
+<em class="property">static </em><code class="sig-name descname">_alignment_hash</code><span class="sig-paren">(</span><em class="sig-param">a</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer._alignment_hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer._alignment_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>A hashable representation of an alignment for grouping.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer._create_pcr_product_alignment">
+<code class="sig-name descname">_create_pcr_product_alignment</code><span class="sig-paren">(</span><em class="sig-param">template_group</em>, <em class="sig-param">fwd</em>, <em class="sig-param">rev</em>, <em class="sig-param">alignment_type</em>, <em class="sig-param">lim_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer._create_pcr_product_alignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer._create_pcr_product_alignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new alignment group for a PCR product.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Situations the PCRProductAlignmentGroup represents:
+
+            &lt;--------
+------------------
+----&gt;
+
+               &lt;--------
+   ------------------
+--------&gt;
+
+
+        &lt;-----
+   ------------------
+--------&gt;
+
+
+              &lt;------
+   ------------------
+--------&gt;
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template_group</strong> (<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>) – </p></li>
+<li><p><strong>fwd</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p></li>
+<li><p><strong>rev</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p></li>
+<li><p><strong>alignment_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer._make_subgroup">
+<code class="sig-name descname">_make_subgroup</code><span class="sig-paren">(</span><em class="sig-param">group</em>, <em class="sig-param">a</em>, <em class="sig-param">b</em>, <em class="sig-param">atype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer._make_subgroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer._make_subgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a subgroup at the specified indices.</p>
+<p>Returns None if a, b and the indices of the group.query_region
+or if a == b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.clean_alignments">
+<code class="sig-name descname">clean_alignments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.clean_alignments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.clean_alignments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove redundant alignments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.copy_groups">
+<code class="sig-name descname">copy_groups</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em>, <em class="sig-param">atype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.copy_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.copy_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy alignments from the list of groups to a new alignment type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.expand">
+<code class="sig-name descname">expand</code><span class="sig-paren">(</span><em class="sig-param">expand_overlaps=True</em>, <em class="sig-param">expand_primers=True</em>, <em class="sig-param">expand_primer_dimers=False</em>, <em class="sig-param">lim_size=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.expand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.expand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alignment expansion algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expand_overlaps</strong> – if True, expand overlaps</p></li>
+<li><p><strong>expand_primers</strong> – if True, expand primer pairs</p></li>
+<li><p><strong>expand_primer_dimers</strong> – if True, expand primer dimer pairs</p></li>
+<li><p><strong>lim_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, limit the size of the alignment according to theri
+Molecule definitions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.expand_overlaps">
+<code class="sig-name descname">expand_overlaps</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em>, <em class="sig-param">atype='PCR_PRODUCT'</em>, <em class="sig-param">lim_size=True</em>, <em class="sig-param">pass_condition=None</em>, <em class="sig-param">include_left=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.expand_overlaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.expand_overlaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand the list of alignments from existing regions. Produces new fragments in
+the following two situations:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if `include_left`
+|--------|          alignment 1
+    |--------|      alignment 2
+|---|               new alignment
+
+
+|--------|          alignment 1
+     |--------|     alignment 2
+     |---|          new alignment
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alignment_groups</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]) – list of alignment groups to expand</p></li>
+<li><p><strong>atype</strong> – the alignment type label for expanded alignments</p></li>
+<li><p><strong>lim_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, only add alignments that pass the size limitations</p></li>
+<li><p><strong>pass_condition</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – an optional callable that takes group_a (AlignmentGroup)
+and group_b (AlignmentGroup). If the returned value is False, alignments
+are skipped.</p></li>
+<li><p><strong>include_left</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, will add overlapping region and the left
+region up to the overlap.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of new alignments</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.expand_primer_pairs">
+<code class="sig-name descname">expand_primer_pairs</code><span class="sig-paren">(</span><em class="sig-param">alignment_groups</em>, <em class="sig-param">lim_size=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.expand_primer_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.expand_primer_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates new alignments for all possible primer pairs. Searches for
+fwd and rev primer pairs that exist within other alignments and
+produces all combinations of alignments that can form from these primer
+pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.find_groups_by_pos">
+<code class="sig-name descname">find_groups_by_pos</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">b</em>, <em class="sig-param">group_type</em>, <em class="sig-param">groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.find_groups_by_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.find_groups_by_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of groups that have the same positions (a, b) and same
+group_type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – starting position</p></li>
+<li><p><strong>b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – ending position</p></li>
+<li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – group_type</p></li>
+<li><p><strong>groups</strong> – optional list of groups to search</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.PCRProductAlignmentGroup" title="dasi.models.alignment.PCRProductAlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code></a>]]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of groups</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.freeze">
+<code class="sig-name descname">freeze</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Freeze the container, disallowing further modifications to
+alignments.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.get_groups_by_types">
+<code class="sig-name descname">get_groups_by_types</code><span class="sig-paren">(</span><em class="sig-param">types</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.get_groups_by_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.get_groups_by_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return AlignmentGroups by fragment type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>types</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – list of types</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.groups_by_type">
+<code class="sig-name descname">groups_by_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.groups_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.groups_by_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return alignment groups according to their alignment ‘type’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.PCRProductAlignmentGroup" title="dasi.models.alignment.PCRProductAlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code></a>]]]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.redundent_alignment_groups">
+<em class="property">classmethod </em><code class="sig-name descname">redundent_alignment_groups</code><span class="sig-paren">(</span><em class="sig-param">alignments</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.redundent_alignment_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.redundent_alignment_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return AlignmentGroups that have been grouped by alignment_hash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.types">
+<em class="property">property </em><code class="sig-name descname">types</code><a class="headerlink" href="#dasi.models.AlignmentContainer.types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all valid types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, …]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dasi.models.AlignmentContainer.unfreeze">
+<code class="sig-name descname">unfreeze</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment_container.html#AlignmentContainer.unfreeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentContainer.unfreeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unfreeze the container, allowing modifications to alignments.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2019, University of Washington.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

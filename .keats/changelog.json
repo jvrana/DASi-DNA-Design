@@ -1,4 +1,11 @@
 {
+  "0.1.1": {
+    "description": "bug fixes",
+    "date": "2020-07-30T11:28:42.177334",
+    "changes": [
+      "bug fix with pooled runs and frozen graphs"
+    ]
+  },
   "0.1.0": {
     "description": "bug fixes and version changes",
     "date": "2020-07-29T18:58:13.632554",

@@ -28,13 +28,13 @@ def mark(name, values, f=None, prefix="", suffix=""):
 @mark(
     "args",
     [
-        (3, 4, Design),
+        # (3, 4, Design),
         (5, 6, Design),
-        (6, 7, Design),
-        (1, 2, Design),
-        (2, 3, Design),
-        (1, 6, Design),
-        (1, 6, LibraryDesign),
+        # (6, 7, Design),
+        # (1, 2, Design),
+        # (2, 3, Design),
+        # (1, 6, Design),
+        # (1, 6, LibraryDesign),
     ],
     prefix="index=",
 )
@@ -58,7 +58,7 @@ def test_example_0(args):
     design.add_primers(primers)
     design.add_templates(plasmids)
     design.add_queries(goals[i[0] : i[1]])
-    design.run(n_jobs=4)
+    design.run(n_jobs=None)
 
     # assert successful runs
     print(design.status)

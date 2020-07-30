@@ -750,7 +750,7 @@ class AssemblyGraphPostProcessor:
                 edges.append((n1, n2, edata))
         tracker.update(2, "Partition: Added {} new edges".format(len(edges)))
         self.graph_builder.update_costs(edges)
-        self.score_complexity_edges(edges)
+        self.score_complexity_edges(list(self.graph_builder.G.edges(data=True)))
         tracker.exit()
 
     def remove_inefficient_edges(self):

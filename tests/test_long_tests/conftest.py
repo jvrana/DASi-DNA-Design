@@ -35,7 +35,7 @@ def _processed_results(here, paths, cached_span_cost) -> Callable:
             design = Design(span_cost=cached_span_cost)
             design.add_materials(primers=primers, templates=templates, queries=queries)
             if n_jobs > 1:
-                design.pooled_run(n_jobs, 1)
+                design._run_with_pool(n_jobs, 1)
             else:
                 design.run()
             return design, design.results

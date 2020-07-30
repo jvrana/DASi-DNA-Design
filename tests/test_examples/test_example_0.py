@@ -34,13 +34,12 @@ def mark(name, values, f=None, prefix="", suffix=""):
         # (1, 2, Design),
         # (2, 3, Design),
         # (1, 6, Design),
-        # (1, 6, LibraryDesign),
+        (None, None, LibraryDesign),
     ],
     prefix="index=",
 )
 def test_example_0(args):
     i0, i1, DesignCls = args
-    i = (i0, i1)
     random.seed(0)
     np.random.seed(0)
 
@@ -57,8 +56,9 @@ def test_example_0(args):
     design.add_fragments(fragments)
     design.add_primers(primers)
     design.add_templates(plasmids)
-    design.add_queries(goals[i[0] : i[1]])
-    design.run(n_jobs=None)
+    s = slice(i0, i1)
+    design.add_queries(goals[s])
+    design.run(n_jobs=4)
 
     # assert successful runs
     print(design.status)

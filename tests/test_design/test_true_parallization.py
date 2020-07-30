@@ -24,7 +24,7 @@ def test_compile_with_filtered_keys(i):
 @pytest.mark.parametrize("s", [1, 2])
 def test_pooled_run(n, nseqs, s):
     design = LibraryDesign.fake(nseqs)
-    design.pooled_run(n_jobs=n, job_size=s)
+    design._run_with_pool(n_jobs=n, job_size=s)
     assert len(design.graphs) == nseqs
     assert len(design.results) == nseqs
 
@@ -37,7 +37,7 @@ def test_compare_pooled_run():
         np.random.seed(0)
 
         design = LibraryDesign.fake(10)
-        design.pooled_run(16, 1)
+        design._run_with_pool(16, 1)
         return design
 
     def run():

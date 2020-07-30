@@ -726,8 +726,6 @@ class AssemblyGraphPostProcessor:
                         if e5 is None and e6 is None:
                             continue
                         new_edges += [e1, e2, e3, e4, e5, e6]
-
-        print(nx.info(self.graph_builder.G))
         for e in new_edges:
             if e is not None:
                 self.graph_builder.G.add_edge(e[0], e[1], **e[2])

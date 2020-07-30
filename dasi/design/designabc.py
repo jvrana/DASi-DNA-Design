@@ -427,14 +427,14 @@ class DesignABC(ABC):
         if job_size is None:
             job_size = self.DEFAULT_JOB_SIZE
         if n_jobs > 1:
-            self.pooled_run(
+            self._run_with_pool(
                 n_jobs=n_jobs,
                 job_size=job_size,
                 post_processing_kwargs=post_processing_kwargs,
             )
         else:
             self._run(n_paths=n_paths, post_processing_kwargs=post_processing_kwargs)
-
+        self._freeze_graphs()
     # TODO: better multithreaded loggers
     @staticmethod
     def _pooled_run(args: List[Tuple["Design", str]]) -> Dict[str, DesignResult]:
@@ -446,7 +446,7 @@ class DesignABC(ABC):
         design.optimize(n_paths=n_paths)
         return design.graphs, design.results
 
-    def pooled_run(
+    def _run_with_pool(
         self,
         n_jobs: int = None,
         job_size: int = None,
@@ -487,7 +487,6 @@ class DesignABC(ABC):
             combined_graphs.update(g)
         self.graphs = combined_graphs
         self._results = combined_results
-        self._freeze_graphs()
         return self.results
 
     @property
@@ -539,7 +538,6 @@ class DesignABC(ABC):
                 "Design must be compiled before running optimization.'"
             )
         self._results = self._optimize(n_paths)
-        self._freeze_graphs()
         return self._results
 
     def _freeze_graphs(self):

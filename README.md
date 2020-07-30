@@ -1,6 +1,7 @@
 # DASi DNA Design
 
 [![PyPI version](https://badge.fury.io/py/dasi.svg)](https://badge.fury.io/py/dasi)
+![Build package](https://github.com/jvrana/DASi-DNA-Design/workflows/Build%20package/badge.svg)
 
 **DASi** is an automatic DNA cloning plan designer aimed for operating on small budgets
 by focusing on material re-use.

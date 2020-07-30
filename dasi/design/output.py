@@ -5,7 +5,7 @@ import operator
 from copy import deepcopy
 from typing import Dict
 from typing import Tuple
-from typing import Union
+from typing import Union, Optional, List
 
 import networkx as nx
 
@@ -53,10 +53,13 @@ def dasi_design_to_dag(
     design: Union["Design", "LibraryDesign"],
     validate: bool = True,
     elim_extra_reactions: bool = False,
+    query_keys: Optional[List[str]] = None,
 ) -> nx.DiGraph:
     # TODO: standard way to display SeqRecord
     graph = nx.DiGraph()
     for q_i, (qk, result) in enumerate(design.results.items()):
+        if query_keys and qk not in query_keys:
+            continue
         for a_i, a in enumerate(result.assemblies):
             dk = (qk, a_i)
             for r in a.reactions:
@@ -288,10 +291,13 @@ def _design_property(design, reaction_node_dict, graph):
 
 
 def dasi_design_to_output_json(
-    design: Union["Design", "LibraryDesign"], elim_extra_reactions: bool = False
+    design: Union["Design", "LibraryDesign"], elim_extra_reactions: bool = False,
+        query_keys: Optional[List[str]] = None
 ):
     """Convert a DASi Design instance into an output JSON."""
-    graph = dasi_design_to_dag(design, elim_extra_reactions=elim_extra_reactions)
+    graph = dasi_design_to_dag(design,
+                               elim_extra_reactions=elim_extra_reactions,
+                               query_keys=query_keys)
     reaction_node_dict = {}
     molecule_node_dict = {}
     sorted_nodes = list(nx.topological_sort(graph))[::-1]

@@ -9,7 +9,7 @@ import pytest
 from Bio import SeqIO
 
 from dasi import Design
-
+from dasi import LibraryDesign
 
 here = abspath(dirname(__file__))
 fixtures = join(here, "fixtures")
@@ -26,18 +26,21 @@ def mark(name, values, f=None, prefix="", suffix=""):
 
 
 @mark(
-    "i",
+    "args",
     [
-        (3, 4),
-        # (5, 6),
-        # (6, 7),
-        # (1, 2),
-        # (2, 3),
+        (3, 4, Design),
+        (5, 6, Design),
+        (6, 7, Design),
+        (1, 2, Design),
+        (2, 3, Design),
+        (1, 6, Design),
+        (1, 6, LibraryDesign),
     ],
     prefix="index=",
 )
-def test_example_0(i):
-
+def test_example_0(args):
+    i0, i1, DesignCls = args
+    i = (i0, i1)
     random.seed(0)
     np.random.seed(0)
 
@@ -55,8 +58,14 @@ def test_example_0(i):
     design.add_primers(primers)
     design.add_templates(plasmids)
     design.add_queries(goals[i[0] : i[1]])
-    design.run()
+    design.run(n_jobs=4)
+
+    # assert successful runs
+    print(design.status)
+    for v in design.status.values():
+        assert v["success"] is True
+
+    # output JSON
     out = design.out()
 
-    # print(json.dumps(out, indent=2))
     print(design.to_df()[1])

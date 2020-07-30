@@ -4,11 +4,9 @@ import os
 import random
 import warnings
 from glob import glob
-from itertools import zip_longest
 from os.path import abspath
 from os.path import dirname
 from os.path import join
-from pprint import pformat
 from typing import Dict
 
 import numpy as np
@@ -187,6 +185,10 @@ def cached_span_cost(cost_filepath, cost_checksum_filepath):
 
 span_cost = cached_span_cost
 
+##############################
+# Auto Fixtures
+##############################
+
 
 @pytest.fixture(autouse=True)
 def patch_plt_show(request, monkeypatch):
@@ -209,13 +211,6 @@ def patch_plt_show(request, monkeypatch):
 @pytest.fixture(autouse=True, scope="function")
 def random_seed(request):
     seed = request.param_index
+    print("RANDOM SEED({})".format(seed))
     random.seed(seed)
     np.random.seed(seed)
-
-
-# def pytest_assertrepr_compare(config, op, left, right):
-#     if op in ("==", "!="):
-#         left_lines = pformat(left).split('\n')
-#         right_lines = pformat(right).split('\n')
-#         lines = zip_longest(left_lines, right_lines, fillvalue='')
-#         return ['{} {} {}'.format(l[0], op, l[1]) for l in lines]

@@ -1,4 +1,4 @@
-name: Build package (retry)
+name: Build package
 
 on:
   push:

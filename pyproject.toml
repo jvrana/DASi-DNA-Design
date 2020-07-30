@@ -35,7 +35,7 @@ pandas = [
 # these are really dev dependencies, but cannot
 # be optional due to weird non-obvious reasons with Poetry
 pre-commit = {version = "^1.17", optional = true}
-black = {version = "19.10b0", allow-prereleases = true, python = "^3.6", markers = "platform_python_implementation == 'CPython'"}
+black = {version = "19.10b0", allow-prereleases = true, optional = true, python = "^3.6", markers = "platform_python_implementation == 'CPython'"}
 flake8 = {version = "^3.7", optional = true}
 autodocsumm = {version = "^0.1.11", optional = true}
 recommonmark = {version = "^0.6.0", optional = true}

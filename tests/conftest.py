@@ -1,5 +1,7 @@
+import functools
 import hashlib
 import os
+import random
 import warnings
 from glob import glob
 from itertools import zip_longest
@@ -9,6 +11,8 @@ from os.path import join
 from pprint import pformat
 from typing import Dict
 
+import numpy as np
+import pylab as plt
 import pytest
 from Bio import BiopythonParserWarning
 from pyblast import BioBlastFactory
@@ -183,9 +187,6 @@ def cached_span_cost(cost_filepath, cost_checksum_filepath):
 
 span_cost = cached_span_cost
 
-import pylab as plt
-import functools
-
 
 @pytest.fixture(autouse=True)
 def patch_plt_show(request, monkeypatch):
@@ -203,10 +204,6 @@ def patch_plt_show(request, monkeypatch):
     monkeypatch.setattr(plt, "show", _save_fig)
     monkeypatch.setattr(plt.Figure, "show", _save_self_fig)
     return _save_fig
-
-
-import random
-import numpy as np
 
 
 @pytest.fixture(autouse=True, scope="function")

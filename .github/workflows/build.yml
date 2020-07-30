@@ -4,12 +4,9 @@ on:
   push:
     branches:
     - master
-    - development
-    - release/*
   pull_request:
     branches: 
     - master
-    - development
 
 jobs:
   build:
@@ -18,7 +15,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v1
@@ -39,7 +36,7 @@ jobs:
         poetry install
     - name: Install Blast for NCBI
       run: |
-        poetry run pyblast install --email justin.vrana@gmail.com --platform "linux(X64 chip)"
+        poetry run pyblast install --email justin.vrana@gmail.com --platform "linux(X64 chip)" --force --interactive=0
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -49,4 +46,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        poetry run pytest tests -v -m "not benchmark"
+        poetry run pytest

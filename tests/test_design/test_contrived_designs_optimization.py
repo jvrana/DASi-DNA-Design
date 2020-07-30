@@ -291,8 +291,8 @@ def test_design_with_overlaps_with_templates(span_cost):
         (970, True, "A", True),
         (1950, True, "B", False),
         (1950, True, "A", False),
-        (3000 - 40, True, "B", False),
-        (3000 - 40, False, "A", False),
+        (3000, True, "B", True),
+        (3000 - 40, False, "A", True),
         (4000, True, "B", True),
     ]
 
@@ -464,7 +464,7 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1100, True, "A", False), (1225, False, "B", False)]
+    expected_path = [(1177, False, "A", False), (1300, True, "B", False)]
 
     check_design_result(design, expected_path)
 

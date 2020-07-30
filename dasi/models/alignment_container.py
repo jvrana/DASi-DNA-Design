@@ -410,6 +410,12 @@ class AlignmentContainer(Sized):
                 )
         return pairs
 
+    def expand_at_breakpoints(self,
+                              alignment_groups: List[AlignmentGroup],
+                              breakpoints: List[int]
+                              ):
+        pass
+
     def expand_primer_pairs(
         self, alignment_groups: List[AlignmentGroup], lim_size: bool = True
     ) -> List[Alignment]:
@@ -577,6 +583,7 @@ class AlignmentContainer(Sized):
         return alignments
 
     # TODO: break apart long alignments
+    # TODO: refactor this into "expansion rules"
     def expand(
         self,
         expand_overlaps=True,
@@ -599,6 +606,9 @@ class AlignmentContainer(Sized):
         )
         if lim_size:
             templates = [t for t in templates if t.size_ok()]
+
+        # TODO: Expand at highly complex sequences
+        #       Use windowed complexity and find inflection points above the threshold
 
         if expand_primers:
             # NOTE: does not need to append alignments

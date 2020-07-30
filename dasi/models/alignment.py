@@ -7,6 +7,7 @@ import functools
 import operator
 from collections.abc import Sized
 from typing import Dict
+from typing import Generator
 from typing import List
 from typing import Union
 
@@ -271,7 +272,7 @@ class AlignmentGroup(AlignmentGroupBase):
         if len(indices) != len(self.alignments):
             raise ValueError(
                 "Cannot reindex. Length of indices ({}) does not match length of"
-                " alignments ({})".format(len(indices), len(self.groupings))
+                " alignments ({})".format(len(indices), len(self._groupings))
             )
         self._alignments = tuple(self._alignments[i] for i in indices)
 
@@ -394,9 +395,10 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
     Now, there are alot of ways to produce PCR products.
     """
 
-    __slots__ = list(set(AlignmentGroupBase.__slots__ + ["_groupings", "_templates"]))
+    __slots__ = list(set(AlignmentGroupBase.__slots__ + ["_groupings"]))
 
     EXPECTED_KEYS = "fwd", "rev", "template"
+    TEMPLATE_ACCESSOR = "adjusted_template"
 
     def __init__(
         self,
@@ -419,29 +421,29 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
             for key in self.EXPECTED_KEYS:
                 if key not in g:
                     raise ValueError("Grouping is missing key '{}'".format(key))
-
         self._groupings = groupings
-        self._templates = [None] * len(self.groupings)
+        self._templates = [None] * len(self._groupings)
         alignments = self._get_alignments()
         super().__init__(
             alignments=alignments, query_region=query_region, group_type=group_type
         )
 
-    @property
-    def groupings(self):
-        return self._groupings
+    # @property
+    # def groupings(self):
+    #     return self._groupings
 
     def _get_alignments(self):
         accumulated = {}
         for key in self.EXPECTED_KEYS:
             accumulated.setdefault(key, list())
-            for g in self.groupings:
+            for g in self._groupings:
                 if g[key]:
                     accumulated[key].append(g[key])
 
         alignments = []
         for key in self.EXPECTED_KEYS:
             alignments += accumulated[key]
+
         return alignments
 
     def reindex_groupings(self, indices: List[int]):
@@ -450,14 +452,13 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         :param indices: list of indices
         :return: None
         """
-        if len(indices) != len(self.groupings):
+        if len(indices) != len(self._groupings):
             raise ValueError(
                 "Cannot reindex. Length of indices ({}) does not match length of "
-                "groups ({})".format(len(indices), len(self.groupings))
+                "groups ({})".format(len(indices), len(self._groupings))
             )
         self._groupings = tuple(self._groupings[i] for i in indices)
         self._alignments = tuple(self._get_alignments())
-        self._templates = [None] * len(self.groupings)
 
     def prioritize_groupings(self, indices: List[int]):
         """Prioritize groupings by pushing groupings at the given indices into
@@ -467,7 +468,7 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         :return: None
         """
         other_indices = []
-        for i in range(len(self.groupings)):
+        for i in range(len(self._groupings)):
             if i not in indices:
                 other_indices.append(i)
         new_indices = indices + other_indices
@@ -478,12 +479,43 @@ class MultiPCRProductAlignmentGroup(AlignmentGroupBase):
         """Here we take the intersection of the template.query_region and query
         region. WHY???
 
+        Notes this is **not** the 'template' key of the groupings.
+
+        .. note::
+            The result of this alignment is used in the primer design.
+
         :param index:
         :return:
         """
+        group = self._groupings[index]
 
-        if self._templates[index] is None:
-            template = self.groupings[index]["template"]
+        if self.TEMPLATE_ACCESSOR not in group:
+            template = self._groupings[index]["template"]
             intersection = template.query_region.intersection(self.query_region)
-            self._templates[index] = template.sub_region(intersection.a, intersection.b)
-        return self._templates[index]
+            group[self.TEMPLATE_ACCESSOR] = template.sub_region(
+                intersection.a, intersection.b
+            )
+        return group[self.TEMPLATE_ACCESSOR]
+
+    def iter_templates(self) -> Generator[Alignment, None, None]:
+        """Generator of templates from `get_template`"""
+        for i in range(len(self._groupings)):
+            yield self.get_template(i)
+
+    def get_fwd(self, index: int = 0) -> Alignment:
+        """Get the forward alignment at the specified index.
+
+        :param index: index of the grouping to access
+        :return: alignment
+        """
+        group = self._groupings[index]
+        return group["fwd"]
+
+    def get_rev(self, index: int = 0):
+        """Get the reverse alignment at the specified index.
+
+        :param index: index of the grouping to access
+        :return: alignment
+        """
+        group = self._groupings[index]
+        return group["rev"]

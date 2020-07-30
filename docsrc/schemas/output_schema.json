@@ -124,10 +124,14 @@
           "properties": {
             "sequence": {
               "$ref": "#/definitions/sequence"
+            },
+            "__meta__": {
+              "type": "object"
             }
           },
           "required": [
-            "sequence"
+            "sequence",
+            "__meta__"
           ]
         }
       ]

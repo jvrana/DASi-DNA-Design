@@ -27,6 +27,8 @@ class Config:
         complexity_threshold = (
             10
         )  #: threshold for sequence complexity that is not synthesizable by a vendor
+        edge_threshold = 0.05  #: edges with efficiencies below this threshold will be
+        # removed.
         not_synthesizable_efficiency = (
             0.1
         )  #: efficiency value for sequence that is not synthesizable
@@ -35,3 +37,15 @@ class Config:
             (5000, 6000, 0.5),
             (6000, 1000, 0.2),
         ]  #: multiplier to apply to the efficiency if PCR is within the given length range
+        partition_overlap = 30  #: overlap when partitioning a highly complex sequence
+        partition_step_size = 10  #: step size to approximate optimal partition
+        SCORE_COMPLEXITY = "SCORE_COMPLEXITY"
+        SCORE_MISPRIMINGS = "SCORE_MISPRIMINGS"
+        SCORE_LONG = "SCORE_LONG_PCR_PRODUCTS"
+        PARTITION = "PARTITION_SYNTHETIC_SEQUENCES"
+        post_process_stages = (
+            SCORE_COMPLEXITY,
+            SCORE_LONG,
+            SCORE_MISPRIMINGS,
+            PARTITION,
+        )

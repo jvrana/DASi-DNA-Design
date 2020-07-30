@@ -1,4 +1,6 @@
 from collections import OrderedDict
+from typing import Dict
+from typing import Hashable
 from typing import List
 from typing import Tuple
 
@@ -7,6 +9,7 @@ import numpy as np
 
 from dasi.exceptions import DasiDesignException
 from dasi.exceptions import DASiWarning
+from dasi.models import AssemblyNode
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multipoint_shortest_path
@@ -78,10 +81,19 @@ def only_ab(w, nodelist):
     return w
 
 
-def only_long(w, query_length, nodelist):
+def only_long(w: np.ndarray, query_length: int, nodelist: List[Hashable]):
+    # filter array based on nodes that span longer than the query
     index = np.array([n.index for n in nodelist]).reshape(1, -1)
     length = index - index.T
     w[np.where(length < query_length)] = np.inf
+    return w
+
+
+def only_short(w: np.ndarray, query_length: int, nodelist: List[Hashable]):
+    # filter array based on nodes that span longer than the query
+    index = np.array([n.index for n in nodelist]).reshape(1, -1)
+    length = index - index.T
+    w[np.where(length >= query_length)] = np.inf
     return w
 
 
@@ -115,16 +127,71 @@ def _nodes_to_fullpaths(
     for nodes in cycle_endpoints:
         if n_paths is not None and len(unique_cyclic_paths) >= n_paths:
             break
-        path = _multinode_to_shortest_path(graph, nodes, cyclic)
-        if path not in unique_cyclic_paths:
-            unique_cyclic_paths.append(path)
+        try:
+            path = _multinode_to_shortest_path(graph, nodes, cyclic)
+            if path not in unique_cyclic_paths:
+                unique_cyclic_paths.append(path)
+        except nx.NetworkXNoPath:
+            pass
     return unique_cyclic_paths
+
+
+def _get_closing_edge_indices(
+    nodelist: List[AssemblyNode], query_length: int, matrix_dict
+) -> Tuple[np.ndarray, np.ndarray]:
+    node_to_i = {n: i for i, n in enumerate(nodelist)}
+    src, dest = [], []
+
+    # closing edge indices
+    for n in nodelist:
+        i1 = node_to_i[n]
+        n2 = AssemblyNode(n.index + query_length, *list(n)[1:])
+        if n2 in node_to_i:
+            i2 = node_to_i[n2]
+            v = matrix_dict['material'][i1, i2]
+            if not np.isinf(v):
+                src.append(i1)
+                dest.append(i2)
+    index = (np.array(src), np.array(dest))
+    return index
+
+
+def _get_closure_matrix(
+    mat: np.ndarray, eff: np.ndarray, nodelist: List[AssemblyNode], query_length: int,
+        matrix_dict: dict
+) -> Tuple[np.ndarray, np.ndarray]:
+    indices = _get_closing_edge_indices(nodelist, query_length, matrix_dict)
+    m = np.full_like(mat, np.inf)
+    e = np.full_like(eff, 0.0)
+    if len(indices[0]):
+        m[indices] = mat[indices]
+        e[indices] = eff[indices]
+    return m, e
+
+
+def cyclic_matrix(
+    matrix_dict: Dict[str, np.matrix], nodelist: List[AssemblyNode], query_length: int
+) -> np.ndarray:
+    m1 = np.array(matrix_dict["material"])
+    e1 = np.array(matrix_dict["efficiency"])
+    m2, e2 = _get_closure_matrix(m1, e1, nodelist, query_length, matrix_dict)
+
+    m = m1 + m2.min(1)
+    e = e1 * e2.max(1)
+
+    w = np.divide(m, e)
+    fill_diag_inf(w)
+    return w
 
 
 def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
 ) -> Tuple[List[List[tuple]], List[float]]:
+
+    # get ordered nodelist and nodekeys
     nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
+
+    # 2D matrix of 'efficiency' and 'material' costs
     weight_matrix, matrix_dict, ori_matrix_dict = sympy_floyd_warshall(
         graph,
         f=path_length_config["f"],
@@ -133,36 +200,10 @@ def optimize_graph(
         dtype=np.float64,
         return_all=True,
     )
+    matrix_dict = {k: np.array(v) for k, v in matrix_dict.items()}
 
     if cyclic:
-        # add the closing edge
-        closed_matrix_dict = OrderedDict({k: v.copy() for k, v in matrix_dict.items()})
-
-        # # fold at length
-        # fold_at_length = []
-        # for n in nodelist:
-        #     if n.index > query_length:
-        #         n = AssemblyNode(n.index - query_length, *list(n)[1:])
-        #     fold_at_length.append(node_to_i[n])
-
-        for k, v in closed_matrix_dict.items():
-            m1 = matrix_dict[k].copy()
-            m1 = only_long(m1, query_length, nodelist)
-
-            # TODO: do we need to fold this?
-            m2 = ori_matrix_dict[k][:, :].T
-            # m2 = ori_matrix_dict[k][:, fold_at_length].T
-            closed_matrix_dict[k] = accumulate_helper(
-                path_length_config["accumulators"].get(k, "sum"), m1, m2
-            )
-
-        symbols, func = str_to_symbols_and_func(path_length_config["f"])
-        closed_wmatrix = func(*[np.asarray(m) for m in closed_matrix_dict.values()])
-        closed_wmatrix = replace_nan_with_inf(closed_wmatrix)
-
-        fill_diag_inf(closed_wmatrix)
-        # only_ab(closed_wmatrix, nodelist)
-        weight_matrix = closed_wmatrix
+        weight_matrix = cyclic_matrix(matrix_dict, nodelist, query_length)
     else:
         raise NotImplementedError("Linear assemblies not yet implemented.")
 
@@ -179,7 +220,7 @@ def optimize_graph(
         trimmed_nodes, trimmed_costs = zip(*nodes_and_costs)
     else:
         trimmed_nodes, trimmed_costs = [], []
-    paths = _nodes_to_fullpaths(graph, trimmed_nodes, False, n_paths=n_paths)
+    paths = _nodes_to_fullpaths(graph, trimmed_nodes, cyclic, n_paths=n_paths)
 
     if len(paths) < n_paths:
         DASiWarning(

@@ -40,6 +40,7 @@ from functools import wraps
 from itertools import tee
 from typing import Any
 from typing import Callable
+from typing import Generator
 from typing import Iterable
 from typing import List
 from typing import Tuple
@@ -246,3 +247,14 @@ def argsorted(
 def lexsorted(keys: Iterable, target: Iterable[T], key: Callable) -> List[T]:
     sorted_indices = argsorted(enumerate(tee(keys)[0]), key=key)
     return [target[i] for i in sorted_indices]
+
+
+def chunkify(arr: Iterable[T], chunk_size: int) -> Generator[List[T], None, None]:
+    new_list = []
+    for x in tee(arr, 1)[0]:
+        new_list.append(x)
+        if len(new_list) == chunk_size:
+            yield new_list
+            new_list = []
+    if new_list:
+        yield new_list

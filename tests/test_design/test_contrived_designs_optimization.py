@@ -135,8 +135,8 @@ def check_design_result(
     df2 = expected_solution.to_df()
     print(df2)
 
-    print("Best: {}".format(best_solution.cost()))
-    print("Expected: {}".format(expected_solution.cost()))
+    print("Best: {}".format(best_solution.cost))
+    print("Expected: {}".format(expected_solution.cost))
 
     if check_path:
         # check DataFrame
@@ -150,8 +150,8 @@ def check_design_result(
             assert e1 == e2, "{} != {}".format(e1, e2)
 
     if check_cost:
-        assert best_solution.cost() <= expected_solution.cost()
-        assert expected_solution.cost() != np.inf
+        assert best_solution.cost <= expected_solution.cost
+        assert expected_solution.cost != np.inf
 
     design.to_df()
 
@@ -291,8 +291,8 @@ def test_design_with_overlaps_with_templates(span_cost):
         (970, True, "A", True),
         (1950, True, "B", False),
         (1950, True, "A", False),
-        (3000 - 40, True, "B", False),
-        (3000 - 40, False, "A", False),
+        (3000, True, "B", True),
+        (3000 - 40, False, "A", True),
         (4000, True, "B", True),
     ]
 
@@ -464,7 +464,7 @@ def test_fully_overlapped(span_cost):
         primers=[p1, p2, p3], templates=[r1], queries=[goal], fragments=[]
     )
 
-    expected_path = [(1100, True, "A", False), (1225, False, "B", False)]
+    expected_path = [(1177, False, "A", False), (1300, True, "B", False)]
 
     check_design_result(design, expected_path)
 
@@ -538,7 +538,7 @@ def test_case2(span_cost):
     result = list(results.values())[0]
     for a in result.assemblies:
         print(a)
-        print(a.cost())
+        print(a.compute_cost())
         for n1, n2, edata in a.edges():
             print(n1, n2)
 
@@ -606,10 +606,55 @@ def test_library(span_cost):
     results = design.optimize()
 
     for result in results.values():
-        print(result.assemblies[0].cost())
+        print(result.assemblies[0].compute_cost())
         df = result.assemblies[0].to_df()
         print(df)
         notes = list(df["notes"])
-        assert "n_clusters: 3" in notes
-        # assert Constants.SHARED_SYNTHESIZED_FRAGMENT in df.type
-        # assert df
+        assert "'n_clusters': 3" in str(notes)
+
+
+@pytest.mark.parametrize("design_class", [Design, LibraryDesign])
+def test_highly_complex_design(span_cost, design_class):
+    backbone = random_record(3000)
+    repeat = random_record(30)
+    complex_sequence = repeat + random_record(200) + repeat + random_record(1000)
+    goal = backbone[1000:] + complex_sequence + backbone[:1000]
+    f1 = backbone[:2000]
+    f2 = backbone[1900:2500]
+
+    make_linear([f1, f2])
+    make_circular([goal])
+
+    design = design_class(span_cost)
+    design.n_jobs = 1
+    design.add_materials(primers=[], templates=[f1, f2], queries=[goal], fragments=[])
+
+    design.compile()
+    design.optimize()
+
+    print(design.to_df()[1])
+
+    results = list(design.results.values())
+    result = results[0]
+    print(result.assemblies)
+    print(result.assemblies[0]._nodes)
+    print(result)
+
+    print(design.out())
+
+
+def test_design_near_origin(span_cost):
+    """Fragments with overlaps."""
+
+    goal = random_record(3000)
+    make_circular_and_id([goal])
+
+    r1 = goal[-40:] + goal[:1000]
+    r3 = goal[950:] + goal[:1]
+    make_linear_and_id([r1, r3])
+
+    design = Design(span_cost)
+    design.add_materials(primers=[], fragments=[r1, r3], queries=[goal], templates=[])
+    design.run()
+    df = design.to_df()[1]
+    print(df)

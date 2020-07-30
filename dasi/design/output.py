@@ -1,6 +1,8 @@
 import functools
 import hashlib
+import json
 import operator
+from copy import deepcopy
 from typing import Dict
 from typing import Tuple
 from typing import Union
@@ -47,7 +49,11 @@ def rhash(rxn: Reaction, assembly_id: int) -> Tuple:
     return tuple(x + [tuple(inputs)] + [tuple(outputs)])
 
 
-def dasi_design_to_dag(design: Union["Design", "LibraryDesign"]) -> nx.DiGraph:
+def dasi_design_to_dag(
+    design: Union["Design", "LibraryDesign"],
+    validate: bool = True,
+    elim_extra_reactions: bool = False,
+) -> nx.DiGraph:
     # TODO: standard way to display SeqRecord
     graph = nx.DiGraph()
     for q_i, (qk, result) in enumerate(design.results.items()):
@@ -67,33 +73,50 @@ def dasi_design_to_dag(design: Union["Design", "LibraryDesign"]) -> nx.DiGraph:
                     graph.add_node(n2, molecule=out_mol)
                     graph.nodes[n2].setdefault("design_keys", set()).add(dk)
                     graph.add_edge(r1, n2)
-    _validate_dag_graph(graph)
+    if validate:
+        _validate_dag_graph(graph, elim_extra_reactions=elim_extra_reactions)
     return graph
 
 
-def _validate_dag_graph(graph: nx.DiGraph):
-    """Validates the DASi DAG graph."""
+def _validate_num_reactions(graph: nx.DiGraph, elim_extra_reactions: bool = False):
+    """Validate that each DNA fragment for each plasmid has exactly one
+    reaction. Optionally, remove these reactions from the final DAG.
+
+    :param graph:
+    :param elim_extra_reactions:
+    :return:
+    """
+    nodes_to_remove = []
     for n2, ndata2 in graph.nodes(data=True):
         ########################
         # validate each non-plasmid is expected to
         # have at most one reaction
         ########################
         molecule = ndata2.get("molecule", None)
+
         if molecule and molecule.type is not MoleculeType.types[C.PLASMID]:
             predecessors = list(graph.predecessors(n2))
             if len(predecessors) > 1:
-                msg = str(n2)
-                for n1 in graph.predecessors(n2):
-                    msg += "\n\t" + str(n1)
-                raise ValueError(
-                    "Molecule {} has more than one reaction.\n{}".format(n2, msg)
-                )
+                if elim_extra_reactions:
+                    for n1 in list(graph.predecessors(n2))[1:]:
+                        nodes_to_remove.append(n1)
+                else:
+                    msg = str(n2)
+                    for n1 in graph.predecessors(n2):
+                        msg += "\n\t" + str(n1)
+                    raise ValueError(
+                        "Molecule {} has more than one reaction.\n{}".format(n2, msg)
+                    )
 
-        ########################
-        # validate each reaction
-        # has expected number of
-        # predecessors and successors
-        ########################
+    if nodes_to_remove:
+        for n1 in nodes_to_remove:
+            graph.remove_node(n1)
+
+
+def _validate_reactions(graph):
+    """Validate each reaction has expected number of predecessors and
+    successors."""
+    for n2, ndata2 in graph.nodes(data=True):
         reaction = ndata2.get("reaction", None)
         if reaction:
             predecessors = list(graph.predecessors(n2))
@@ -111,6 +134,12 @@ def _validate_dag_graph(graph: nx.DiGraph):
                     " match the number of outputs for the reaction"
                     " ({})".format(len(successors), len(reaction.outputs))
                 )
+
+
+def _validate_dag_graph(graph: nx.DiGraph, elim_extra_reactions: bool = False):
+    """Validates the DASi DAG graph."""
+    _validate_num_reactions(graph, elim_extra_reactions)
+    _validate_reactions(graph)
 
 
 def _used_in_designs(ndata: Dict) -> Dict:
@@ -175,6 +204,20 @@ def _reactions_property(
     return property_reaction
 
 
+def _clean_metadata(metadata):
+    cleaned = {}
+    for k, v in metadata.items():
+        if isinstance(v, dict):
+            cleaned[k] = _clean_metadata(v)
+        else:
+            try:
+                json.dumps(v)
+                cleaned[k] = v
+            except Exception:
+                pass
+    return cleaned
+
+
 def _molecules_property(
     graph: nx.DiGraph,
     reaction_node_dict: Dict[str, int],
@@ -191,6 +234,7 @@ def _molecules_property(
                 "__name__": mol.type.name,
                 "__index__": index,
                 "__type__": "molecule",
+                "__meta__": deepcopy(_clean_metadata(mol.metadata)),
                 "sequence": seqrecord_to_json(mol.sequence),
                 "used_in_assemblies": _used_in_designs(ndata),
                 "used_as_input_to_reactions": used_as_inputs,
@@ -200,13 +244,12 @@ def _molecules_property(
     return property_molecule
 
 
-def _design_property(design, reaction_node_dict):
+def _design_property(design, reaction_node_dict, graph):
     status = design.status
 
     def _reaction_summ(r, a_i):
-
         return {
-            "reaction_index": reaction_node_dict[rhash(r, a_i)],
+            "reaction_index": reaction_node_dict.get(rhash(r, a_i)),
             "metadata": {
                 "cost": r.metadata["cost"],
                 "materials": r.metadata["cost"],
@@ -227,20 +270,28 @@ def _design_property(design, reaction_node_dict):
         qstatus["sequence"] = seqrecord_to_json(design.seqdb[qk])
         for a_i, adata in enumerate(qstatus["assemblies"]):
             assembly = design.results[qk].assemblies[a_i]
-            adata["summary"] = [
-                _reaction_summ(r, a_i) for r in assembly.nonassembly_reactions
+
+            nonassembly_reactions = [
+                r for r in assembly.nonassembly_reactions if rhash(r, a_i) in graph
             ]
+            assembly_reactions = [
+                r for r in assembly.assembly_reactions if rhash(r, a_i) in graph
+            ]
+
+            adata["summary"] = [_reaction_summ(r, a_i) for r in nonassembly_reactions]
             adata["final_assembly_reaction"] = [
-                reaction_node_dict[rhash(r, a_i)] for r in assembly.assembly_reactions
+                reaction_node_dict[rhash(r, a_i)] for r in assembly_reactions
             ]
 
             # TODO: run start
     return status
 
 
-def dasi_design_to_output_json(design: Union["Design", "LibraryDesign"]):
+def dasi_design_to_output_json(
+    design: Union["Design", "LibraryDesign"], elim_extra_reactions: bool = False
+):
     """Convert a DASi Design instance into an output JSON."""
-    graph = dasi_design_to_dag(design)
+    graph = dasi_design_to_dag(design, elim_extra_reactions=elim_extra_reactions)
     reaction_node_dict = {}
     molecule_node_dict = {}
     sorted_nodes = list(nx.topological_sort(graph))[::-1]
@@ -262,9 +313,24 @@ def dasi_design_to_output_json(design: Union["Design", "LibraryDesign"]):
         else:
             raise ValueError
 
-    return {
+    output = {
         "metadata": design.metadata,
-        "designs": _design_property(design, reaction_node_dict),
+        "designs": _design_property(design, reaction_node_dict, graph),
         "molecules": _molecules_property(graph, reaction_node_dict, molecule_node_dict),
         "reactions": _reactions_property(graph, reaction_node_dict, molecule_node_dict),
     }
+
+    OutputValidator.validate_design_assemblies(output)
+    return output
+
+
+class OutputValidator:
+    @classmethod
+    def validate_design_assemblies(cls, out):
+        for d in out["designs"].values():
+            for a in d["assemblies"]:
+                for rid in a["final_assembly_reaction"]:
+                    reaction = out["reactions"][rid]
+                    assert reaction["__name__"] == "Assembly"
+
+    # TODO: In Silico from output json, compare to original sequences

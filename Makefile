@@ -7,6 +7,7 @@ init:
 	curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 	poetry self:update
 	poetry install
+	poetry install -E documentation -E styling
 	poetry run pre-commit install
 	poetry run pyblast install
 	poetry run pyblast status

@@ -38,3 +38,9 @@ def test_copy_preserves_direction():
 def test():
     r = Region(6001, 6000 - 60, 3000, cyclic=True, direction=1)
     print(r.slices())
+
+
+def test_region_contains_index():
+    r = Region(2000, 3260, 4260, cyclic=True, index=0)
+    g = 2120 in r
+    assert g

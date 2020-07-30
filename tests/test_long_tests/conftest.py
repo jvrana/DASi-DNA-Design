@@ -23,10 +23,8 @@ LIM_NUM_DESIGNS = None
 
 @pytest.fixture(scope="session")
 def _processed_results(here, paths, cached_span_cost) -> Callable:
-    def _get_results_func(n_jobs, only_compile=False, precompiled=None):
-        if precompiled:
-            design = precompiled
-        else:
+    def _get_results_func(n_jobs):
+        if True:
             print("PROCESSING!")
             primers = make_linear(load_fasta_glob(paths["primers"]))
             templates = load_genbank_glob(paths["templates"])
@@ -36,63 +34,24 @@ def _processed_results(here, paths, cached_span_cost) -> Callable:
 
             design = Design(span_cost=cached_span_cost)
             design.add_materials(primers=primers, templates=templates, queries=queries)
-            design.n_jobs = n_jobs
-            design.compile()
-        if only_compile:
-            return design, {}
-        else:
-            print("OPTIMIZING!")
-            for container in design.containers.values():
-                print(len(container.groups()))
-            results = design.optimize()
-            return design, results
+            if n_jobs > 1:
+                design.pooled_run(n_jobs, 1)
+            else:
+                design.run()
+            return design, design.results
 
     return _get_results_func
 
 
 @pytest.fixture(scope="session")
-def _single_compiled_design(_processed_results) -> Design:
-    return _processed_results(1, only_compile=True)[0]
-
-
-@pytest.fixture(scope="session")
-def _multi_compiled_design(_processed_results) -> Design:
-    return _processed_results(10, only_compile=True)[0]
-
-
-@pytest.fixture(scope="session")
-def _single_processed_results(
-    _processed_results, _single_compiled_design
-) -> Tuple[Design, Dict[str, DesignResult]]:
-    return _processed_results(1, precompiled=_single_compiled_design)
-
-
-@pytest.fixture(scope="session")
-def _multi_processed_results(
-    _processed_results, _multi_compiled_design
-) -> Tuple[Design, Dict[str, DesignResult]]:
-    return _processed_results(10, precompiled=_multi_compiled_design)
-
-
-@pytest.fixture(scope="session")
-def single_compiled_results(_single_compiled_design) -> Design:
-    return _single_compiled_design
-
-
-@pytest.fixture(scope="session")
-def multi_compiled_results(_multi_compiled_design) -> Design:
-    return _multi_compiled_design
-
-
-@pytest.fixture(scope="session")
 def single_processed_results(
-    _single_processed_results,
+    _processed_results
 ) -> Tuple[Design, Dict[str, DesignResult]]:
-    return _single_processed_results
+    return _processed_results(1)
 
 
 @pytest.fixture(scope="session")
 def multi_processed_results(
-    _multi_processed_results,
+    _processed_results
 ) -> Tuple[Design, Dict[str, DesignResult]]:
-    return _multi_processed_results
+    return _processed_results(10)

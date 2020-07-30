@@ -159,6 +159,7 @@ def _get_primer_extensions(
         sedge = graph[n2][successors[0]]
         right_ext = _no_none_or_nan(sedge["lprimer_left_ext"], sedge["left_ext"])
     elif cyclic:
+        # TODO: FIX THIS ANNOYING EXCEPTION
         raise DasiSequenceDesignException(
             "Sequence is cyclic but there are no successors for {}".format(n2)
         )
@@ -171,8 +172,9 @@ def _get_primer_extensions(
         pedge = graph[predecessors[0]][n1]
         left_ext = _no_none_or_nan(pedge["rprimer_right_ext"], pedge["right_ext"])
     elif cyclic:
+        # TODO: FIX THIS ANNOYING EXCEPTION
         raise DasiSequenceDesignException(
-            "Sequence is cyclic but there are no precessors for {}".format(n1)
+            "Sequence is cyclic but there are no predecessors for {}".format(n1)
         )
     else:
         left_ext = 0
@@ -251,13 +253,11 @@ def _design_pcr_product_primers(
         tkey = group.subject_keys[0]
         template = group.alignments[0]
     else:
-        grouping = group.groupings[0]
-        template = group.get_template(0)
-        assert grouping["template"].subject_key == template.subject_key
+        template = group.get_template()
 
         # get primer keys
-        fwd = grouping["fwd"]
-        rev = grouping["rev"]
+        fwd = group.get_fwd()
+        rev = group.get_rev()
         tkey = template.subject_key
         if fwd:
             lkey = fwd.subject_key
@@ -672,15 +672,33 @@ class Assembly(Iterable):
         return is_circular(self.query)
 
     # TODO: consolidate this with shortest path utils in networkx
-    def cost(self):
+    def compute_cost(self):
+        c = self._compute_cost()
+        if np.isinf(c["material"]):
+            return np.inf
+        return c["material"] / c["efficiency"]
+
+    def _compute_cost(self):
         material = 0
         efficiency = 1.0
         for _, _, edata in self.edges():
             material += edata["material"]
             efficiency *= edata["efficiency"]
         if efficiency == 0:
-            return np.inf
-        return material / efficiency
+            return {"material": np.inf, "efficiency": 0.0}
+        return {"material": material, "efficiency": efficiency}
+
+    @property
+    def cost(self):
+        return self.compute_cost()
+
+    @property
+    def material_cost(self):
+        return self._compute_cost()["material"]
+
+    @property
+    def efficiency(self):
+        return self._compute_cost()["efficiency"]
 
     def edges(self, data=True) -> Iterable[Tuple[AssemblyNode, AssemblyNode, Dict]]:
         for n1, n2 in self._sorted_edges():
@@ -723,7 +741,7 @@ class Assembly(Iterable):
     def print(self):
         print("query_name: {}".format(self.query.name))
         print("query_key: {}".format(self.query_key))
-        print("Cost: {}".format(self.cost()))
+        print("Cost: {}".format(self.compute_cost()))
         df = self.to_df()
         print(df)
 

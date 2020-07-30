@@ -1,14 +1,16 @@
+import functools
 import hashlib
 import os
+import random
 import warnings
 from glob import glob
-from itertools import zip_longest
 from os.path import abspath
 from os.path import dirname
 from os.path import join
-from pprint import pformat
 from typing import Dict
 
+import numpy as np
+import pylab as plt
 import pytest
 from Bio import BiopythonParserWarning
 from pyblast import BioBlastFactory
@@ -35,7 +37,6 @@ desired_width = 500
 pd.set_option("display.width", desired_width)
 # np.set_printoption(linewidth=desired_width)
 pd.set_option("display.max_columns", 20)
-
 
 ##############################
 # Test paths
@@ -183,9 +184,33 @@ def cached_span_cost(cost_filepath, cost_checksum_filepath):
 
 
 span_cost = cached_span_cost
-# def pytest_assertrepr_compare(config, op, left, right):
-#     if op in ("==", "!="):
-#         left_lines = pformat(left).split('\n')
-#         right_lines = pformat(right).split('\n')
-#         lines = zip_longest(left_lines, right_lines, fillvalue='')
-#         return ['{} {} {}'.format(l[0], op, l[1]) for l in lines]
+
+##############################
+# Auto Fixtures
+##############################
+
+
+@pytest.fixture(autouse=True)
+def patch_plt_show(request, monkeypatch):
+    """Patches the plt.show() method with a save fig method in 'out'."""
+    out = join(dirname(abspath(__file__)), "out")
+
+    def _save_fig(filename=None):
+        if filename is None:
+            filename = "{}_{}.png".format(request.node.name, request.param_index)
+        plt.savefig(join(out, filename), format="png", dpi=50)
+
+    def _save_self_fig(_, filename=None):
+        return functools.partial(_save_fig, filename=filename)
+
+    monkeypatch.setattr(plt, "show", _save_fig)
+    monkeypatch.setattr(plt.Figure, "show", _save_self_fig)
+    return _save_fig
+
+
+@pytest.fixture(autouse=True, scope="function")
+def random_seed(request):
+    seed = request.param_index
+    print("RANDOM SEED({})".format(seed))
+    random.seed(seed)
+    np.random.seed(seed)

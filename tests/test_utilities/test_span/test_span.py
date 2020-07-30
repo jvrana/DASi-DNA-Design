@@ -114,6 +114,10 @@ class TestContains:
         else:
             assert not i in s
 
+    def test_contains_index(self):
+        s = Span(2000, 3260, 4260, cyclic=True, index=0)
+        assert 2120 in s
+
     class TestContainsCyclic:
         @pytest.mark.parametrize("i", range(90, 100))
         def test_contains_cyclic_1(self, i):

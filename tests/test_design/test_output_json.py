@@ -30,5 +30,17 @@ class TestOutput:
         validate_output(out)
 
     def test_to_out_json(self, design):
-        out = design.out()
+        out = design.out(elim_extra_reactions=True)
         assert out
+
+    def test_to_out_json_dumps(self, design):
+        out = design.out()
+        assert json.dumps(out)
+
+    def test_validate_output_json(self, design):
+        out = design.out()
+        for d in out["designs"].values():
+            for a in d["assemblies"]:
+                for rid in a["final_assembly_reaction"]:
+                    reaction = out["reactions"][rid]
+                    assert reaction["__name__"] == "Assembly"

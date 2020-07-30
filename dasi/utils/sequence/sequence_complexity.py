@@ -14,7 +14,8 @@ Complexity rules borrowed from IDT.
 from functools import lru_cache
 
 import numpy as np
-
+import hashlib
+import json
 
 # TODO:' compute cost for extremes of GC content
 # TODO: this could be a separate library
@@ -82,12 +83,12 @@ class DNAStats:
             repeat signatures. DNAStats.ONLY_WINDOW to perform only
             sliding window calculations.
         """
-        assert isinstance(seq, str)
+        if not isinstance(seq, str):
+            raise ValueError("Expected a str not a '{}'".format(type(seq)))
         seq = seq.upper()
         self.seq = seq
         arr = np.array(list(self.seq))
         self.bases = self.BASES.upper()
-
         self.seq_onehot = self.one_hot(arr, self.bases)
         self.repeat_window = repeat_window
         self.stats_window = stats_window
@@ -98,11 +99,11 @@ class DNAStats:
         if not mode:
             mode = self.DEFAULT_MODE
         self.mode = mode
-        if conv_seed_repeat:
+        if conv_seed_repeat is not None:
             self.conv_seed_repeat = conv_seed_repeat
         else:
             self.conv_seed_repeat = np.random.uniform(0.0, 100.0, size=repeat_window)
-        if conv_seed_hairpin:
+        if conv_seed_hairpin is not None:
             self.conv_seed_hairpin = conv_seed_hairpin
         else:
             self.conv_seed_hairpin = np.random.uniform(0.0, 100.0, size=hairpin_window)
@@ -154,6 +155,32 @@ class DNAStats:
             self.rev_signatures = None
 
         self.cached_partitions = []
+
+    @property
+    def config(self):
+        return dict(
+            repeat_window=self.repeat_window,
+            stats_window=self.stats_window,
+            hairpin_window=self.hairpin_window,
+            base_percentage_threshold=self.base_percentage_threshold,
+            gc_content_threshold=self.gc_content_threshold,
+            at_content_threshold=self.at_content_threshold,
+            mode=self.mode
+        )
+
+    def copy_with_new_seq(self, seq: str):
+        return self.__class__(
+            seq,
+            repeat_window=self.repeat_window,
+            stats_window=self.stats_window,
+            hairpin_window=self.hairpin_window,
+            base_percentage_threshold=self.base_percentage_threshold,
+            gc_content_threshold=self.gc_content_threshold,
+            at_content_threshold=self.at_content_threshold,
+            conv_seed_repeat=self.conv_seed_repeat,
+            conv_seed_hairpin=self.conv_seed_hairpin,
+            mode=self.mode,
+        )
 
     @staticmethod
     def one_hot(sequence, categories):
@@ -416,7 +443,10 @@ class DNAStats:
         :param j: end of the slice (exclusive)
         :return: tuple of repeat counts found in left and right slices respectively.
         """
-
+        if i < 0:
+            raise IndexError("i={} cannot be < 0")
+        if j > len(self.seq):
+            raise IndexError("j={} cannot be >= length {}".format(j, len(self.seq)))
         kmer_length = self.hairpin_window
 
         # we ust signatures (src) of kmers inside i:j...
@@ -459,6 +489,15 @@ class DNAStats:
             d["n_repeats"] + d["n_hairpins"] + np.sum(w1) + np.sum(w2) + d["gc_cost"]
         )
         return total
+
+    @staticmethod
+    def _hash(string: str):
+        return hashlib.sha1(string.encode('utf-8')).hexdigest()
+
+    def __hash__(self):
+        config = json.dumps(self.config)
+        s = self.seq.upper() + config
+        return int(hashlib.sha1(s.encode('utf-8')).hexdigest(), 16)
 
     def __call__(self, i=None, j=None):
         mn = np.mean(self.seq_onehot[:, i:j], axis=1)
@@ -507,6 +546,10 @@ def count_misprimings_in_amplicon(
     """
     if j == i:
         return 0
+    if i < 0:
+        raise IndexError("i cannot be < 0")
+    if j < 0:
+        raise IndexError("j cannot be < 0")
     elif j < i and not cyclic:
         raise IndexError(
             "Invalid indices provided. "
@@ -539,10 +582,10 @@ def count_misprimings_in_amplicon(
     #         i -= delta
     #         j -= delta
     stats = cached_stats(seq, min_primer_anneal)
-    n1 = stats.count_repeats_from_slice(i, i + max_primer_anneal)
+    n1 = stats.count_repeats_from_slice(i, min(i + max_primer_anneal, len(seq) - 1))
     k = j - max_primer_anneal
     if k < 0:
         n2 = 0
     else:
-        n2 = stats.count_repeats_from_slice(j - max_primer_anneal, j)
+        n2 = stats.count_repeats_from_slice(max(j - max_primer_anneal, 0), j)
     return n1 + n2

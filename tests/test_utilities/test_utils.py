@@ -1,6 +1,7 @@
 import numpy as np
 
 from dasi.utils import bisect_slice_between
+from dasi.utils import chunkify
 from dasi.utils import sort_cycle
 
 
@@ -38,3 +39,18 @@ def test_benchmark_bisect_slice_between(benchmark):
         return bisect_slice_between(a, a, b[0], b[1])
 
     benchmark(f)
+
+
+def test_chunkify1():
+    x = list(chunkify([1, 2, 3, 4], 1))
+    assert x == [[1], [2], [3], [4]]
+
+
+def test_chunkify2():
+    x = list(chunkify([1, 2, 3, 4, 5], 2))
+    assert x == [[1, 2], [3, 4], [5]]
+
+
+def test_chunkify3():
+    x = list(chunkify([1, 2, 3, 4, 5], 6))
+    assert x == [[1, 2, 3, 4, 5]]

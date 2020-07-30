@@ -16,7 +16,7 @@ class TestReport:
         d.run()
         return d
 
-    def test_plot_coverage(self, design):
+    def test_plot_coverage(self, design, patch_plt_show):
         report = Report(design)
         for qk in design.containers:
             report.plot_coverage_of_container(design.containers[qk], design.seqdb[qk])

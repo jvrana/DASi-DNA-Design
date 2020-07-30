@@ -197,7 +197,6 @@ class TestDNAStats:
         print(stats.cost())
         assert stats.cost() < 15
 
-        print("OK")
         print(
             DNAStats(
                 "CGAGACCACTCGGGACTTCCGGCCATAGCGTACCGTTTTGTGACAAAACCCCCACTCGAACGTGAGAAAACCCTTCTCTTCATGTAATTCCCCCACAGTCCGCGGGTCGGTCAAACCTGGATAAGGTAAAGACTAATATCTAAACCTGCTGGAGAGTCGAACCGCGGTCTTAGGCCCACGCAGAGTGTATGTTATTCGTCTGCCGCTATATCGGTCAACACTAGTTGACGGATAGGAATGTTGGATTAACGCGTCTCCAACGCTGGGATACCCTCGCAAAATTTTCCCGATACTATCCGGAATCTCTAACGCCGTTGGTTTGGGCTCCCAACCACCCGTGAACTTCTAACACGAGAATCACCGCTGGAGCGCGCGCCTTCTCTCAATTTACCTGAGCTTTCGCTTCCTACTTAGCAGAATCGTGAACCTAAATTTTAGCAGCTTCAAGTCAGTTACGCTCGACACTTCCGATTCCAGGTAAAATAACCACTTCTAAGGTTCGTGACTGGTTCTCTATTCAACGCACGCGGTGCCCTCGCGGGTCCTCTGCTGCCGGGAAGCACATGATTGCCAGCTTGTTAAACAACACAAGGTGGCCAATCTCAAACTCGCATAAGCCCTGTTTTTTCTTGCAAGCTGCAACCGAGCATTCCTTCAGTCAGTGGTGGTTTTTCAAAACTATTCCTATGGGTGCTGACACGTGTGTAATTGTTTTCTACTATCTCTCGGTTTATAGCGTAGTTGCCGAGGCTATTGAGTCTCCTTTGCTAATAGCTAAGGTGGAAATTTTTTTTTTTTTGAACCGGGTGAATATACTTGATACATCAATAGCCCCTAGCGTATTGTACCCGTCACGGGCTCAAATACTCTGCCCAGGGCGATACCATGGAAGTTCTCGTAACATACAATGGATCTGGGCCGTCATCGCTTGATGCTCTAGAAGAAAAAGCAGAGACCGGCCATTACCGCGTCAACTAACACGCCTCAGGCCGGGGTTAACACTAGGTGTGT",
@@ -302,14 +301,11 @@ class TestDNAStats:
         assert n == 1
 
     def test_count_misprimings_from_slice_case3(self):
-        """Here we have a sequence of Ns with a predicted hairpin at indices.
-
-        [100:130] and [200:230].
-        """
+        """repeats are very near the edge."""
         repeat = random_seq(30)
-        seq = "N" * 100 + repeat + "N" * 100 + revcomp(repeat) + "N" * 107
+        seq = "N" + repeat + "N" * 100 + revcomp(repeat) + "N"
         stats = DNAStats(seq, 1, 1, hairpin_window=30)
-        n = stats.count_repeats_from_slice(100, 130)
+        n = stats.count_repeats_from_slice(1, 31)
         assert n == 1
 
     @pytest.mark.parametrize("ij", [(100, 130), (160, 190), (260, 290)])
@@ -335,6 +331,46 @@ class TestDNAStats:
         stats = DNAStats(seq, 1, 1, hairpin_window=30)
         n = stats.count_repeats_from_slice(i, j)
         assert n == 2
+
+    def test_count_misprimings_from_slice_case5(self):
+        """Here we have a sequence of Ns with a predicted hairpin at indices.
+
+        [100:130] and [200:230].
+        """
+        repeat = random_seq(30)
+        seq = "N" * 100 + repeat + "N" * 100 + revcomp(repeat) + "N" * 107
+        stats = DNAStats(seq, 1, 1, hairpin_window=30)
+        n = stats.count_repeats_from_slice(100, 130)
+        assert n == 1
+
+    @pytest.mark.parametrize("dist_from_left", [0, 1])
+    @pytest.mark.parametrize("dist_from_right", [0, 1])
+    @pytest.mark.parametrize("left_or_right", ["left", "right"])
+    @pytest.mark.parametrize("rc", [True, False])
+    def test_count_misprimings_from_slice_edge_cases(
+        self, dist_from_left, dist_from_right, left_or_right, rc
+    ):
+        """Here one of the repeats is on the 3' (right) end of the sequence."""
+        repeat = random_seq(30)
+        r1 = repeat
+        r2 = repeat
+
+        if left_or_right == "left" and rc:
+            r1 = revcomp(r1)
+        elif left_or_right == "right" and rc:
+            r2 = revcomp(r2)
+
+        seq = "N" * dist_from_left + r1 + "N" * 100 + r2 + "N" * dist_from_right
+        stats = DNAStats(seq, 1, 1, hairpin_window=30)
+
+        if left_or_right == "left":
+            n = stats.count_repeats_from_slice(dist_from_left, dist_from_left + 30)
+            assert n == 1
+        else:
+            n = stats.count_repeats_from_slice(
+                dist_from_left + 30 + 100, dist_from_left + 30 + 100 + 30
+            )
+            assert n == 1
 
 
 class TestPositiveRCExamples:
@@ -746,3 +782,53 @@ class TestNegativeExamples:
             )
             >= n_misprimings
         )
+
+
+def test_hash1():
+    s1 = random_seq(1000)
+    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    stats1 = f(s1)
+    stats2 = f(s1)
+    stats3 = f(random_seq(1000),)
+    print(hash(stats1))
+    print(hash(stats2))
+    print(hash(stats3))
+    assert hash(stats1) == hash(stats2)
+    assert not hash(stats1) == hash(stats3)
+
+@pytest.mark.parametrize('key', ['repeat_window', 'stats_window', 'hairpin_window'])
+def test_hash2(key):
+    s1 = random_seq(1000)
+    kwargs = {
+        'repeat_window': 20,
+        'stats_window': 20,
+        'hairpin_window': 20
+    }
+    kwargs2 = dict(kwargs)
+    kwargs2[key] += 1
+    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    stats1 = DNAStats(s1, **kwargs)
+    stats2 = DNAStats(s1, **kwargs)
+    stats3 = DNAStats(s1, **kwargs2)
+    assert hash(stats1) == hash(stats2)
+    assert not hash(stats1) == hash(stats3)
+
+@pytest.mark.parametrize('key', ['gc_content_threshold', 'at_content_threshold', 'base_percentage_threshold'])
+def test_hash3(key):
+    s1 = random_seq(1000)
+    kwargs = {
+        'repeat_window': 20,
+        'stats_window': 20,
+        'hairpin_window': 20,
+        'gc_content_threshold': 0.8,
+        'at_content_threshold': 0.8,
+        'base_percentage_threshold': 0.8
+    }
+    kwargs2 = dict(kwargs)
+    kwargs2[key] += 0.1
+    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    stats1 = DNAStats(s1, **kwargs)
+    stats2 = DNAStats(s1, **kwargs)
+    stats3 = DNAStats(s1, **kwargs2)
+    assert hash(stats1) == hash(stats2)
+    assert not hash(stats1) == hash(stats3)

@@ -1295,7 +1295,7 @@ documentation = ["nbsphinx", "sphinx_autodoc_typehints", "sphinx-jsonschema", "s
 styling = ["flake8", "black", "pre-commit"]
 
 [metadata]
-content-hash = "49fa64928a754d6ad559200849f7d8b6135d0d9298968d49f1a5542fe9827087"
+content-hash = "d07d7af4f63692cb0726328d3b5019a9865f2eab00024ba3f12e5c3fe16d74ea"
 python-versions = "^3.6.1"
 
 [metadata.files]

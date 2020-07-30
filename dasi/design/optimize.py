@@ -163,8 +163,9 @@ def _get_closure_matrix(
     indices = _get_closing_edge_indices(nodelist, query_length, matrix_dict)
     m = np.full_like(mat, np.inf)
     e = np.full_like(eff, 0.0)
-    m[indices] = mat[indices]
-    e[indices] = eff[indices]
+    if len(indices[0]):
+        m[indices] = mat[indices]
+        e[indices] = eff[indices]
     return m, e
 
 

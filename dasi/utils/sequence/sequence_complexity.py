@@ -16,6 +16,18 @@ from functools import lru_cache
 import numpy as np
 import hashlib
 import json
+from copy import copy as do_copy
+from copy import deepcopy as do_deepcopy
+
+
+class DNAStatsMeta(object):
+
+    def __init__(self):
+        self.fwd_signatures = None
+        self.rev_signatures = None
+        self.rolling_stats = None
+        self.repeat_signatures = None
+
 
 # TODO:' compute cost for extremes of GC content
 # TODO: this could be a separate library
@@ -41,6 +53,20 @@ class DNAStats:
     ONLY_WINDOW = ("window",)
     ONLY_HAIRPIN = ("hairpin",)
     ONLY_REPEAT = "repeat"
+
+    __slicable__ = [
+        'fwd_signatures', 'rev_signatures', 'repeat_signatures',
+        'seq', 'seq_onehot', 'rolling_stats'
+    ]
+
+    __copyable__ = [
+        'bases', 'repeat_window',
+        'stats_window', 'hairpin_window', 'gc_content_threshold',
+        'at_content_threshold', 'base_percentage_threshold',
+        'conv_seed_repeat', 'mode', 'conv_seed_hairpin'
+    ]
+
+    __slots__ = __copyable__ + __slicable__
 
     def __init__(
         self,
@@ -154,7 +180,40 @@ class DNAStats:
             self.fwd_signatures = None
             self.rev_signatures = None
 
-        self.cached_partitions = []
+    def _view(self, index: slice = None, copy: bool = False, deepcopy: bool = False):
+        x = object.__new__(self.__class__)
+        for k in self.__slots__:
+            v = getattr(self, k)
+            if k in self.__slicable__:
+                if copy or deepcopy:
+                    if isinstance(v, np.ndarray):
+                        v = v.copy()
+                    else:
+                        v = do_copy(v)
+                if index:
+                    if isinstance(v, np.ndarray):
+                        if v.ndim == 1:
+                            v = v[index]
+                        else:
+                            v = v[:, index]
+                    else:
+                        v = v[index]
+            elif k in self.__copyable__:
+                if deepcopy:
+                    v = do_deepcopy(getattr(self, k))
+                else:
+                    v = do_copy(getattr(self, k))
+            setattr(x, k, v)
+        return x
+
+    def copy(self, index: slice = None):
+        return self._view(index=index, copy=True)
+
+    def deepcopy(self, index: slice = None):
+        return self._view(index=index, deepcopy=True)
+
+    def view(self, index: slice = None):
+        return self._view(index=index)
 
     @property
     def config(self):
@@ -318,119 +377,6 @@ class DNAStats:
             arg = c.argmin()
             return a[arg], c[arg]
 
-    def partition(
-        self,
-        step,
-        overlap,
-        i=None,
-        j=None,
-        border=100,
-        stopping_threshold=10,
-        window=None,
-        use_cache=True,
-    ):
-        if j is None:
-            j = len(self.seq)
-        if i is None:
-            i = 0
-
-        if use_cache:
-            for cached in self.cached_partitions:
-                if i >= cached[0] and j <= cached[1]:
-                    if cached[2]["cost"] < stopping_threshold:
-                        window = (
-                            cached[2]["index_1"][1] - overlap,
-                            cached[2]["index_2"][0] + overlap,
-                        )
-                elif i <= cached[0] and j >= cached[1]:
-                    if cached[2]["cost"] > stopping_threshold:
-                        return []
-
-        if not window:
-            window = (i, j)
-
-        to_search = []
-        for index in range(window[0], window[1], step):
-            i1 = index
-            i2 = index - overlap
-            if i2 <= border:
-                continue
-            if i1 > len(self.seq) - border:
-                continue
-            to_search.append((i1, i2))
-
-        if not to_search:
-            return []
-
-        search_index = int(len(to_search) / 2)
-        searched_costs = []
-        searched = []
-        while search_index not in searched:
-
-            searched.append(search_index)
-
-            try:
-                i1, i2 = to_search[search_index]
-            except IndexError:
-                print(search_index)
-                print(len(to_search))
-                raise IndexError
-
-            c1 = self.cost(None, i1)
-            c2 = self.cost(i2, None)
-            c = c1 + c2
-
-            searched_costs.append((c, c1, c2, i1, i2, search_index))
-
-            if c1 > c2:
-                search_index = int(search_index / 2)
-            elif c2 > c1:
-                search_index = int((len(to_search) - search_index) / 2) + search_index
-
-            if c < stopping_threshold:
-                break
-
-        searched_costs = sorted(searched_costs)
-        c, c1, c2, i1, i2, search_index = searched_costs[0]
-
-        partitions = self.partition_scan(
-            1,
-            overlap=overlap,
-            i=i,
-            j=j,
-            window=(min(i1, i2) - overlap, max(i1, i2) + overlap),
-        )
-        if use_cache:
-            self.cached_partitions.append((i, j, partitions[0]))
-        return partitions
-
-    def partition_scan(self, step, overlap, i=None, j=None, window=None):
-        if j is None:
-            j = len(self.seq)
-        if i is None:
-            i = 0
-
-        if not window:
-            window = (i, j)
-
-        costs = []
-        for x in range(window[0], window[1], step):
-            i2, j2 = x, x - overlap
-
-            c1 = self.cost(i, i2)
-            c2 = self.cost(j2, j)
-            costs.append(
-                {
-                    "cost": c1 + c2,
-                    "cost_1": c1,
-                    "cost_2": c2,
-                    "index_1": (i, i2),
-                    "index_2": (j2, j),
-                }
-            )
-        costs = sorted(costs, key=lambda x: x["cost"])
-        return costs
-
     def count_repeats_from_slice(self, i, j):
         """Counts the number of repeats found in slices [0, i) and [j, None) of
         all kmers in the sequence found within the [i, j) slice.
@@ -499,18 +445,27 @@ class DNAStats:
         s = self.seq.upper() + config
         return int(hashlib.sha1(s.encode('utf-8')).hexdigest(), 16)
 
-    def __call__(self, i=None, j=None):
+    def gc_cost(self, i, j):
         mn = np.mean(self.seq_onehot[:, i:j], axis=1)
         gi = self.bases.index("G")
         ci = self.bases.index("C")
         gc = mn[gi] + mn[ci]
         gccost = abs(gc * 100.0 - 50) * 17 / 25.0
+        return gccost
+
+    def __call__(self, i=None, j=None):
         return {
             "n_repeats": self.slice_repeats(i, j),
             "n_hairpins": self.slice_hairpins(i, j),
             "window_cost": self.window_cost(i, j),
-            "gc_cost": gccost,
+            "gc_cost": self.gc_cost(i, j)
         }
+
+    def __len__(self):
+        return len(self.seq)
+
+    def __getitem__(self, item):
+        return self.view(item)
 
 
 @lru_cache(512)
@@ -589,3 +544,4 @@ def count_misprimings_in_amplicon(
     else:
         n2 = stats.count_repeats_from_slice(max(j - max_primer_anneal, 0), j)
     return n1 + n2
+

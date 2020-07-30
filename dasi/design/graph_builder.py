@@ -569,28 +569,15 @@ class AssemblyGraphPostProcessor:
         else:
             edata["cost"] = edata["material"] / edata["efficiency"]
 
-    def _complexity_to_efficiency(self, edata):
+    def _complexity_to_efficiency(self, edata: dict) -> bool:
+        if not edata["complexity"] >= 0.0:
+            raise ValueError("Complexity is not defined. {}".format(edata))
         ratio = edata["complexity"] / self.COMPLEXITY_THRESHOLD
         if ratio >= 1.0:
             e = SequenceScoringConfig.not_synthesizable_efficiency / ratio
             self._adj_eff(edata, e)
             return True
         return False
-
-    def score_synthetic_dna(self, n1, n2, edata):
-        bad_edges = []
-        if edata["type_def"].synthesize:
-            span = edata["span"]
-            if "complexity" not in edata:
-                if span > 0:
-                    # TODO: cyclic may not always be tru
-                    r = self._edge_to_region(n1, n2)
-                    complexity = self.stats.cost(r.a, r.c)
-                    edata["complexity"] = complexity
-                    if self._complexity_to_efficiency(edata):
-                        add_edge_note(edata, "highly_complex", True)
-                        bad_edges.append((n1, n2, edata))
-        return bad_edges
 
     @staticmethod
     def _is_pcr_product(edata):
@@ -761,13 +748,37 @@ class AssemblyGraphPostProcessor:
         self.graph_builder.G.remove_edges_from(to_remove)
         self.logger.info("Removed {} inefficient edges".format(len(to_remove)))
 
-    def score_complexity_edges(self, edges):
-        bad_edges = []
+    def _score_syn_dna(self, n1: AssemblyNode, n2: AssemblyNode, edata: dict) -> List[Edge]:
+        if edata["type_def"].synthesize:
+            span = edata["span"]
+            if span > 0:
+                # TODO: cyclic may not always be true
+                region = self._edge_to_region(n1, n2)
+                a = region.a
+                c = region.c
+                if c < a:
+                    c += region.context_length
+                assert c <= len(self.stats)
+                complexity = self.stats.cost(a, c)
+                if not complexity >= 0.0:
+                    pass
+                edata["complexity"] = complexity
+                if self._complexity_to_efficiency(edata):
+                    add_edge_note(edata, "highly_complex", True)
+                    return True
+        return False
+
+    def score_complexity_edges(self, edges: List[Edge] = None) -> List[Edge]:
+        """Score synthetic edges"""
+        if edges is None:
+            edges = self.graph.edges(data=True)
+        complex_edges = []
         for n1, n2, edata in self.logger.tqdm(
             edges, "INFO", desc="Scoring synthetic DNA"
         ):
-            bad_edges += self.score_synthetic_dna(n1, n2, edata)
-        return bad_edges
+            if self._score_syn_dna(n1, n2, edata):
+                complex_edges.append((n1, n2, edata))
+        return complex_edges
 
     def update(self):
         self.logger.info("Post Processor: {}".format(self.stages))

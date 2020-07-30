@@ -11,10 +11,10 @@ from flaky import flaky
 from dasi.utils.sequence.sequence_complexity import count_misprimings_in_amplicon
 from dasi.utils.sequence.sequence_complexity import DNAStats
 
-##########################################
-## Utility methods
-##########################################
 
+##########################################
+# Utility methods
+##########################################
 
 def random_seq(length, bases=None):
     """Produce a randomized sequence."""
@@ -240,51 +240,6 @@ class TestDNAStats:
 
         print(stats.cost(1000, 1500))
         print(stats.cost(None, None))
-
-    @flaky(max_runs=3, min_passes=3)
-    def test_partitioner(self):
-        repeat = random_seq(40)
-        seq = random_seq(2000) + repeat + random_seq(100) + revcomp(repeat)
-
-        stats = DNAStats(seq, 14, 20, 20)
-
-        partitions = stats.partition(10, overlap=25, stopping_threshold=10)
-        p = partitions[0]
-        print(p)
-
-        safe_start = 2000 + 40
-        safe_end = 2000 + 40 + 100
-        assert p["index_1"][1] > safe_start
-        assert p["index_1"][1] < safe_end
-
-        assert p["index_2"][0] >= safe_start - 14
-        assert p["index_2"][0] < safe_end
-        assert p["cost"] < 10
-        assert p["cost"] < stats.cost()
-
-    @flaky(max_runs=3, min_passes=3)
-    def test_partitioner_cached(self):
-        repeat = random_seq(40)
-        seq = random_seq(2000) + repeat + random_seq(100) + revcomp(repeat)
-
-        stats = DNAStats(seq, 13, 20, 20)
-
-        stats.partition(10, overlap=25, stopping_threshold=10)
-        partitions = stats.partition(
-            10, overlap=25, stopping_threshold=10, i=10, j=None
-        )
-        p = partitions[0]
-        print(p)
-
-        safe_start = 2000 + 40
-        safe_end = 2000 + 40 + 100
-        assert p["index_1"][1] > safe_start
-        assert p["index_1"][1] < safe_end
-
-        assert p["index_2"][0] >= safe_start - 14
-        assert p["index_2"][0] < safe_end
-        assert p["cost"] < 10
-        assert p["cost"] < stats.cost()
 
     def test_count_misprimings_from_slice_case1(self):
         repeat = random_seq(30)
@@ -832,3 +787,25 @@ def test_hash3(key):
     stats3 = DNAStats(s1, **kwargs2)
     assert hash(stats1) == hash(stats2)
     assert not hash(stats1) == hash(stats3)
+
+def test_view():
+    seq = random_seq(1000)
+    stats = DNAStats(seq, 14, 20, 20)
+    stats2 = stats.view(slice(None, None))
+
+def test_copy():
+    seq = random_seq(1000)
+    stats = DNAStats(seq, 14, 20, 20)
+    stats2 = stats.copy(slice(None, None))
+
+@pytest.mark.parametrize('index', [30, 400, None])
+def test_slice(index):
+    seq = random_seq(1000)
+    stats = DNAStats(seq, 14, 20, 20)
+    stats2 = stats[:index]
+    if index is None:
+        assert len(stats2) == len(stats)
+    else:
+        assert len(stats2) == index
+    print(stats.cost())
+    print(stats2.cost())

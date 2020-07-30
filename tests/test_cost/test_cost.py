@@ -5,9 +5,7 @@ import pylab as plt
 import pytest
 
 from dasi.cost import open_params
-from dasi.cost import PrimerCostModel
 from dasi.cost import SpanCost
-from dasi.cost import SynthesisCostModel
 from dasi.cost import validate_params
 from dasi.exceptions import DasiCostParameterValidationError
 

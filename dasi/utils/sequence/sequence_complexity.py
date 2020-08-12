@@ -11,17 +11,16 @@ Complexity rules borrowed from IDT.
 * GC scew?
 * windowed scew?
 """
-from functools import lru_cache
-
-import numpy as np
 import hashlib
 import json
 from copy import copy as do_copy
 from copy import deepcopy as do_deepcopy
+from functools import lru_cache
+
+import numpy as np
 
 
-class DNAStatsMeta(object):
-
+class DNAStatsMeta:
     def __init__(self):
         self.fwd_signatures = None
         self.rev_signatures = None
@@ -55,15 +54,25 @@ class DNAStats:
     ONLY_REPEAT = "repeat"
 
     __slicable__ = [
-        'fwd_signatures', 'rev_signatures', 'repeat_signatures',
-        'seq', 'seq_onehot', 'rolling_stats'
+        "fwd_signatures",
+        "rev_signatures",
+        "repeat_signatures",
+        "seq",
+        "seq_onehot",
+        "rolling_stats",
     ]
 
     __copyable__ = [
-        'bases', 'repeat_window',
-        'stats_window', 'hairpin_window', 'gc_content_threshold',
-        'at_content_threshold', 'base_percentage_threshold',
-        'conv_seed_repeat', 'mode', 'conv_seed_hairpin'
+        "bases",
+        "repeat_window",
+        "stats_window",
+        "hairpin_window",
+        "gc_content_threshold",
+        "at_content_threshold",
+        "base_percentage_threshold",
+        "conv_seed_repeat",
+        "mode",
+        "conv_seed_hairpin",
     ]
 
     __slots__ = __copyable__ + __slicable__
@@ -224,7 +233,7 @@ class DNAStats:
             base_percentage_threshold=self.base_percentage_threshold,
             gc_content_threshold=self.gc_content_threshold,
             at_content_threshold=self.at_content_threshold,
-            mode=self.mode
+            mode=self.mode,
         )
 
     def copy_with_new_seq(self, seq: str):
@@ -438,12 +447,12 @@ class DNAStats:
 
     @staticmethod
     def _hash(string: str):
-        return hashlib.sha1(string.encode('utf-8')).hexdigest()
+        return hashlib.sha1(string.encode("utf-8")).hexdigest()
 
     def __hash__(self):
         config = json.dumps(self.config)
         s = self.seq.upper() + config
-        return int(hashlib.sha1(s.encode('utf-8')).hexdigest(), 16)
+        return int(hashlib.sha1(s.encode("utf-8")).hexdigest(), 16)
 
     def gc_cost(self, i, j):
         mn = np.mean(self.seq_onehot[:, i:j], axis=1)
@@ -458,7 +467,7 @@ class DNAStats:
             "n_repeats": self.slice_repeats(i, j),
             "n_hairpins": self.slice_hairpins(i, j),
             "window_cost": self.window_cost(i, j),
-            "gc_cost": self.gc_cost(i, j)
+            "gc_cost": self.gc_cost(i, j),
         }
 
     def __len__(self):
@@ -544,4 +553,3 @@ def count_misprimings_in_amplicon(
     else:
         n2 = stats.count_repeats_from_slice(max(j - max_primer_anneal, 0), j)
     return n1 + n2
-

@@ -1,4 +1,5 @@
 import functools
+from functools import lru_cache
 from itertools import repeat
 from itertools import zip_longest
 from typing import Iterable
@@ -9,7 +10,6 @@ from typing import Union
 import numpy as np
 
 from dasi.utils.sequence.sequence_complexity import DNAStats
-from functools import lru_cache
 
 
 @lru_cache(254)
@@ -48,7 +48,7 @@ def find_opt_partition(
     j: Optional[Union[None, int]] = None,
     step_size: int = 10,
     delta: Optional[int] = None,
-    use_nearest_step: bool = False
+    use_nearest_step: bool = False,
 ):
     """Find the optimal partition in range (i, j) given the stepsize."""
 

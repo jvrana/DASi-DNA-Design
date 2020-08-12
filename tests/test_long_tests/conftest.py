@@ -45,13 +45,13 @@ def _processed_results(here, paths, cached_span_cost) -> Callable:
 
 @pytest.fixture(scope="session")
 def single_processed_results(
-    _processed_results
+    _processed_results,
 ) -> Tuple[Design, Dict[str, DesignResult]]:
     return _processed_results(1)
 
 
 @pytest.fixture(scope="session")
 def multi_processed_results(
-    _processed_results
+    _processed_results,
 ) -> Tuple[Design, Dict[str, DesignResult]]:
     return _processed_results(10)

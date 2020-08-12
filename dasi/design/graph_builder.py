@@ -746,7 +746,9 @@ class AssemblyGraphPostProcessor:
         self.graph_builder.G.remove_edges_from(to_remove)
         self.logger.info("Removed {} inefficient edges".format(len(to_remove)))
 
-    def _score_syn_dna(self, n1: AssemblyNode, n2: AssemblyNode, edata: dict) -> List[Edge]:
+    def _score_syn_dna(
+        self, n1: AssemblyNode, n2: AssemblyNode, edata: dict
+    ) -> List[Edge]:
         if edata["type_def"].synthesize:
             span = edata["span"]
             if span > 0:
@@ -767,7 +769,7 @@ class AssemblyGraphPostProcessor:
         return False
 
     def score_complexity_edges(self, edges: List[Edge] = None) -> List[Edge]:
-        """Score synthetic edges"""
+        """Score synthetic edges."""
         if edges is None:
             edges = self.graph.edges(data=True)
         complex_edges = []

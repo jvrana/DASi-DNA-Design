@@ -41,6 +41,7 @@ def outdir(paths):
     # os.remove(join(out, 'primers.fasta'))
 
 
+@pytest.mark.slowtest
 def test_cli(outdir):
     cli = DasiCLI(join(here, ".test_out"))
     cli.run()

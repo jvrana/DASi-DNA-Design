@@ -29,6 +29,24 @@ from dasi.log import logger
 warnings.simplefilter("ignore", BiopythonParserWarning)
 logger.set_level("DEBUG")
 
+
+def pytest_configure(config):
+    # register an additional marker
+    config.addinivalue_line("markers", "slowtest: marks a long running test")
+    config.addinivalue_line("markers", "benchmark: marks a benchmarking test")
+
+
+def _pytest_auto_mark_benchmark(item):
+    """Automatically mark tests that use the `benchmark` fixture."""
+    marks = [mark for mark in item.iter_markers(name="benchmark")]
+    if not marks and "benchmark" in item.funcargnames:
+        item.add_marker(pytest.mark.benchmark)
+
+
+def pytest_runtest_setup(item):
+    _pytest_auto_mark_benchmark(item)
+
+
 ##############################
 # Setup pandas display options
 ##############################

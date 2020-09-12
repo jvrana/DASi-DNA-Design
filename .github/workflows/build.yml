@@ -1,15 +1,9 @@
 name: Build package
 
 on:
-  push:
-    branches:
-    - master
-    - development
-    - release/*
   pull_request:
     branches: 
     - master
-    - development
 
 jobs:
   build:
@@ -52,7 +46,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        poetry run pytest tests -x -n auto --cov=./ --cov-report=xml
+        poetry run pytest tests -x -n auto --cov=./ --cov-report=xml -m "not slowtest and not benchmark"
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:

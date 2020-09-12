@@ -130,7 +130,7 @@ default_parameters_path = join(here, "default_parameters.json")
 def open_params(path=None):
     if path is None:
         path = default_parameters_path
-    with open(path, "r") as f:
+    with open(path) as f:
         params = json.load(f)
     return params
 

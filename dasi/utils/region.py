@@ -225,7 +225,7 @@ class Span(Container, Iterable, Sized):
         self,
         a: int,
         b: int,
-        l: int,
+        length: int,
         cyclic=False,
         index=0,
         ignore_wrap=False,
@@ -307,8 +307,8 @@ class Span(Container, Iterable, Sized):
         :type a: int
         :param b: end of the span (exclusive)
         :type b: int
-        :param l: context length of the region
-        :type l: int
+        :param length: context length of the region
+        :type length: int
         :param cyclic: whether the underlying context is cyclic
         :type cyclic: bool
         :param index: the starting index of the region
@@ -330,7 +330,7 @@ class Span(Container, Iterable, Sized):
             print(b)
         a = int(a)
         b = int(b)
-        self._context_length = int(l)
+        self._context_length = int(length)
         self._index = index
         self._cyclic = cyclic
         self._strict = strict
@@ -347,19 +347,19 @@ class Span(Container, Iterable, Sized):
             bounds = self.bounds()
             if not bounds[0] <= a < bounds[1]:
                 raise IndexError(
-                    "Start {} must be in [{}, {})".format(a, index, index + l)
+                    "Start {} must be in [{}, {})".format(a, index, index + length)
                 )
             if not bounds[0] <= b <= bounds[1]:
                 raise IndexError(
-                    "End {} must be in [{}, {}]".format(b, index, index + l)
+                    "End {} must be in [{}, {}]".format(b, index, index + length)
                 )
 
         if self._ignore_wrap:
             start_wrap = 0
             end_wrap = 0
         else:
-            start_wrap = int((a - index) / l)
-            end_wrap = int((b - index - 1) / l)
+            start_wrap = int((a - index) / length)
+            end_wrap = int((b - index - 1) / length)
 
         if self._abs_wrap is False and start_wrap > end_wrap:
             self._a = a
@@ -383,11 +383,11 @@ class Span(Container, Iterable, Sized):
         _a = a - index
         _b = b - index
 
-        if _a >= l or _a < 0:
+        if _a >= length or _a < 0:
             self._a = self.t(_a, False)
         else:
             self._a = a
-        if _b > l:
+        if _b > length:
             self._b = self.t(_b - 1, False) + 1
         elif _b < 0:
             self._b = self.t(_b, False) + 1
@@ -405,9 +405,9 @@ class Span(Container, Iterable, Sized):
         # the context
         if not ignore_wrap and end_wrap - start_wrap:
             if self._abs_wrap:
-                _c = self._b + abs(end_wrap - start_wrap) * l
+                _c = self._b + abs(end_wrap - start_wrap) * length
             else:
-                _c = self._b + (end_wrap - start_wrap) * l
+                _c = self._b + (end_wrap - start_wrap) * length
             self._c = _c
         else:
             self._c = self._b
@@ -860,8 +860,7 @@ class Span(Container, Iterable, Sized):
         return sum([r[1] - r[0] for r in self.ranges()])
 
     def __iter__(self) -> Generator[int, None, None]:
-        for i in chain(*[range(*x) for x in self.ranges()]):
-            yield i
+        yield from chain(*[range(*x) for x in self.ranges()])
 
     def __invert__(self):
         return self.invert()

@@ -112,9 +112,9 @@ class TestContains:
         if 10 <= i < 50:
             assert i in s
         else:
-            assert not i in s
+            assert i not in s
 
-    def test_contains_index(self):
+    def test_contains_index2(self):
         s = Span(2000, 3260, 4260, cyclic=True, index=0)
         assert 2120 in s
 
@@ -144,19 +144,19 @@ class TestContains:
             s1 = Span(10, 50, 100, True)
             s2 = Span(20, 30, 100, True)
             assert s2 in s1
-            assert not s1 in s2
+            assert s1 not in s2
 
         def test_contains_empty(self):
             s1 = Span(10, 50, 100, True)
             s2 = Span(30, 30, 100, True)
             assert s2 in s1
-            assert not s1 in s2
+            assert s1 not in s2
 
         def test_contains_empty2(self):
             s1 = Span(10, 50, 100, True)
             s2 = Span(10, 10, 100, True)
             assert s2 in s1
-            assert not s1 in s2
+            assert s1 not in s2
 
         def test_contains_self(self):
             s1 = Span(10, 50, 100, True)
@@ -180,14 +180,14 @@ class TestContains:
             assert s1 not in s2
 
         def test_contains_example(self):
-            r1 = Span(5947, 4219, 9408, True)
+            Span(5947, 4219, 9408, True)
             with pytest.raises(IndexError):
-                r2 = Span(9408, 4219, 9408, True)
+                Span(9408, 4219, 9408, True)
 
         def test_contains_example2(self):
-            r1 = Span(59, 42, 94, True)
+            Span(59, 42, 94, True)
             with pytest.raises(IndexError):
-                r2 = Span(94, 42, 94, True)
+                Span(94, 42, 94, True)
 
 
 class TestIntersection:
@@ -522,6 +522,7 @@ class TestGetSlice:
         span = Span(8, 22, 10, cyclic=True)
         x = "abcdefghijklmnopqrstuv"
         y = span.get_slice(x)
+        print(y)
 
     def test_get_slice_list_of_ints(self):
         span = Span(8, 22, 10, cyclic=True)

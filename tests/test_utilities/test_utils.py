@@ -30,17 +30,6 @@ def test_benchmark_bisect_slice_between(benchmark):
     benchmark(f)
 
 
-def test_benchmark_bisect_slice_between(benchmark):
-    a = np.random.randint(0, 1000, 1000)
-    a.sort()
-
-    def f():
-        b = np.random.randint(0, 1000, 2)
-        return bisect_slice_between(a, a, b[0], b[1])
-
-    benchmark(f)
-
-
 def test_chunkify1():
     x = list(chunkify([1, 2, 3, 4], 1))
     assert x == [[1], [2], [3], [4]]

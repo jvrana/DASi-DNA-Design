@@ -1,4 +1,5 @@
 from typing import List
+from typing import TypeVar
 from typing import Union
 
 import numpy as np
@@ -6,11 +7,12 @@ import pylab as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.lines import Line2D
 
-from dasi.utils.sequence import DNAStats
 from dasi.config import Config
+from dasi.utils.sequence import DNAStats
 
-# from dasi.design import Design
-# from dasi.design import LibraryDesign
+
+DesignType = TypeVar("Design")
+
 
 # TODO: Implement assembly report
 #       1. Coverage report for all groups (total and per each)
@@ -23,7 +25,7 @@ from dasi.config import Config
 
 
 class Report:
-    def __init__(self, design: Union["Design", "LibraryDesign"]):
+    def __init__(self, design: DesignType):
         self.design = design
 
     def plot_coverage(self, keys: List = None, show: bool = False):
@@ -66,13 +68,13 @@ class Report:
         ax1.set_title("Total Alignment Coverage")
         ax1.set_ylabel("Coverage")
         ax1.set_xlabel("bp")
-        ax1.set_yscale('log')
+        ax1.set_yscale("log")
         ax1.plot(np.sum(data, axis=0))
 
         ax2.set_title("Alignment Coverage")
         ax2.set_ylabel("Coverage")
         ax2.set_xlabel("bp")
-        ax2.set_yscale('log')
+        ax2.set_yscale("log")
         ax2.plot(data.T)
         ax2.legend(keys, loc="center left", ncol=1, bbox_to_anchor=(1.0, 0.5))
 
@@ -97,12 +99,15 @@ class Report:
             costs_arr.append(y)
             bp_arr.append(x)
 
-        ax3.axhline(y=Config.SequenceScoringConfig.complexity_threshold,
-                    color='k', linestyle='-')
-        ax3.set_yscale('log')
+        ax3.axhline(
+            y=Config.SequenceScoringConfig.complexity_threshold,
+            color="k",
+            linestyle="-",
+        )
+        ax3.set_yscale("log")
         ax3.set_xlabel("bp")
         ax3.set_ylabel("Complexity")
-        ax3.set_title("Sequence Complexity".format(window))
+        ax3.set_title("Sequence Complexity ({})".format(window))
 
         for x, y, l in zip(bp_arr, costs_arr, windows):
             ax3.plot(x, y, label=l)
@@ -230,4 +235,4 @@ class AlignmentPlotter:
 
                     ax.add_line(line1)
                     ax.add_line(line2)
-        plt.show()
+        return fig, ax

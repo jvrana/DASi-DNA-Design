@@ -36,9 +36,9 @@ def random_span(context_len):
     return Region(start, end, context_len, cyclic=True, direction=1)
 
 
-def random_span_with_len(context_len, l):
-    start = random.randint(0, context_len - l)
-    end = start + l
+def random_span_with_len(context_len, length):
+    start = random.randint(0, context_len - length)
+    end = start + length
     return Region(start, end, context_len, direction=1, cyclic=True)
 
 

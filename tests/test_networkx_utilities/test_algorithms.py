@@ -11,9 +11,8 @@ from dasi.utils.networkx import sympy_dijkstras
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multisource_dijkstras
 
-COMPARISON_THRESHOLD = (
-    0.03
-)  # within 1% due to floating point errors during accumulating of multiple floats
+# within 1% due to floating point errors during accumulating of multiple floats
+COMPARISON_THRESHOLD = 0.03
 EDGE_COMPARISON_THRESHOLD = 0.05
 
 
@@ -296,7 +295,7 @@ class TestDijkstras:
         assert path_length[2] == 100 * 2 / 0.5 ** 2
         assert path_length[3] == 100 * 3 / 0.5 ** 3
 
-    def test_simple_path(self):
+    def test_simple_path2(self):
         G = nx.path_graph(4)
         G.add_edge(0, 1, weight=100, eff=0.5)
         G.add_edge(1, 2, weight=100, eff=0.5)
@@ -331,6 +330,7 @@ class TestDijkstras:
         G.add_edge(2, 3, weight=100, eff=0.5)
         G.add_edge(3, 4, weight=100, eff=0.5)
         G.add_edge(0, 5, weight=200, eff=0.75)
+        G.add_edge(5, 6, weight=200, eff=0.75)
         G.add_edge(5, 6, weight=200, eff=0.75)
         G.add_edge(6, 7, weight=200, eff=0.75)
         G.add_edge(7, 4, weight=200, eff=0.75)

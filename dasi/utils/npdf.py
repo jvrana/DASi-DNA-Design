@@ -565,8 +565,7 @@ class NumpyDataFrameIndexer(MappingABC):
         return len(self.df.columns)
 
     def __iter__(self) -> Generator[str, None, None]:
-        for c in self.df.columns:
-            yield c
+        yield from self.df.columns
 
     def __contains__(self, item: str) -> bool:
         for c in self:

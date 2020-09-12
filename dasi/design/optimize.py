@@ -148,7 +148,7 @@ def _get_closing_edge_indices(
         n2 = AssemblyNode(n.index + query_length, *list(n)[1:])
         if n2 in node_to_i:
             i2 = node_to_i[n2]
-            v = matrix_dict['material'][i1, i2]
+            v = matrix_dict["material"][i1, i2]
             if not np.isinf(v):
                 src.append(i1)
                 dest.append(i2)
@@ -157,8 +157,11 @@ def _get_closing_edge_indices(
 
 
 def _get_closure_matrix(
-    mat: np.ndarray, eff: np.ndarray, nodelist: List[AssemblyNode], query_length: int,
-        matrix_dict: dict
+    mat: np.ndarray,
+    eff: np.ndarray,
+    nodelist: List[AssemblyNode],
+    query_length: int,
+    matrix_dict: dict,
 ) -> Tuple[np.ndarray, np.ndarray]:
     indices = _get_closing_edge_indices(nodelist, query_length, matrix_dict)
     m = np.full_like(mat, np.inf)
@@ -187,7 +190,6 @@ def cyclic_matrix(
 def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
 ) -> Tuple[List[List[tuple]], List[float]]:
-
     # get ordered nodelist and nodekeys
     nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
 

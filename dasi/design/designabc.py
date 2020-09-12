@@ -16,6 +16,7 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import TypeVar
 
 import networkx as nx
 import pandas as pd
@@ -47,6 +48,9 @@ from dasi.utils import chunkify
 from dasi.utils import log_metadata
 from dasi.utils import perfect_subject
 from dasi.utils.sequence import generate_fake_designs
+
+DesignType = TypeVar("Design")
+
 
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
@@ -435,9 +439,10 @@ class DesignABC(ABC):
         else:
             self._run(n_paths=n_paths, post_processing_kwargs=post_processing_kwargs)
         self._freeze_graphs()
+
     # TODO: better multithreaded loggers
     @staticmethod
-    def _pooled_run(args: List[Tuple["Design", str]]) -> Dict[str, DesignResult]:
+    def _pooled_run(args: List[Tuple[DesignType, str]]) -> Dict[str, DesignResult]:
         design, qk, n_paths, post_processing_kwargs, thread = args
         design.logger.name = "THREAD {}: ".format(thread) + design.logger.name
 
@@ -677,9 +682,11 @@ class DesignABC(ABC):
         else:
             return x[1]
 
-    def out(self, fmt: str = "json",
-            elim_extra_reactions: bool = False,
-            query_keys: Optional[List[str]] = None
+    def out(
+        self,
+        fmt: str = "json",
+        elim_extra_reactions: bool = False,
+        query_keys: Optional[List[str]] = None,
     ):
         """Return the results of the design as a validates output JSON.
 
@@ -689,8 +696,7 @@ class DesignABC(ABC):
         """
         if fmt.lower() == "json":
             output = dasi_design_to_output_json(
-                self, elim_extra_reactions=elim_extra_reactions,
-                query_keys=query_keys
+                self, elim_extra_reactions=elim_extra_reactions, query_keys=query_keys
             )
             validate_output(output)
             return output

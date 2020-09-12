@@ -24,19 +24,23 @@ class Config:
         mispriming_min_anneal = 12  #: minimum bp to look for misprimings
         mispriming_max_anneal = 30  #: maximum expected bp for a primer
         mispriming_penalty = 0.5  #: multiplier to apply to each mispriming
-        complexity_threshold = (
-            10
-        )  #: threshold for sequence complexity that is not synthesizable by a vendor
-        edge_threshold = 0.05  #: edges with efficiencies below this threshold will be
-        # removed.
-        not_synthesizable_efficiency = (
-            0.1  #: efficiency value for sequence that is not synthesizable
-        )
+
+        #: threshold for sequence complexity that is not synthesizable by a vendor
+        complexity_threshold = 10
+
+        #: edges with efficiencies below this threshold will be removed.
+        edge_threshold = 0.05
+
+        #: efficiency value for sequence that is not synthesizable
+        not_synthesizable_efficiency = 0.1
+
+        #: multiplier to apply to the efficiency if PCR is within the given length range
         pcr_length_range_efficiency_multiplier = [
             (4000, 5000, 0.8),
             (5000, 6000, 0.5),
             (6000, 1000, 0.2),
-        ]  #: multiplier to apply to the efficiency if PCR is within the given length range
+        ]
+
         partition_overlap = 30  #: overlap when partitioning a highly complex sequence
         partition_step_size = 10  #: step size to approximate optimal partition
         SCORE_COMPLEXITY = "SCORE_COMPLEXITY"

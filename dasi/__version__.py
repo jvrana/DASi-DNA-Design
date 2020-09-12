@@ -3,7 +3,7 @@
 __version__ = "0.1.1"
 __name__ = "dasi"
 __title__ = "dasi"
-__authors__ = ['Justin Vrana <justin.vrana@gmail.com>']
+__authors__ = ["Justin Vrana <justin.vrana@gmail.com>"]
 __repo__ = None
 __homepage__ = "https://github.com/jvrana/dasi-dna-design"
 __description__ = "Automated DNA assembly planner for Python"

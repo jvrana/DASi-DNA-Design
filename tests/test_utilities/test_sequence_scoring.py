@@ -16,6 +16,7 @@ from dasi.utils.sequence.sequence_complexity import DNAStats
 # Utility methods
 ##########################################
 
+
 def random_seq(length, bases=None):
     """Produce a randomized sequence."""
     if bases is None:
@@ -89,12 +90,12 @@ def replace_rc_pairs(to_replace, replace_with, a, b, c):
 
 
 def gen_seq(
-    i, j, l, window, insert_loc, repeat_i, repeat_l, rc, to_replace, replace_with
+    i, j, length, window, insert_loc, repeat_i, repeat_l, rc, to_replace, replace_with
 ):
     repeat_j = repeat_l + repeat_i
 
     left_flank = random_seq(i)
-    right_flank = random_seq(l - j)
+    right_flank = random_seq(length - j)
     amplicon_left_window = random_seq(window)
     amplicon_internal = random_seq(j - i - window * 2)
     amplicon_right_window = random_seq(window)
@@ -115,17 +116,17 @@ def gen_seq(
     amplicon = seqs["left_window"] + seqs["internal"] + seqs["right_window"]
 
     seq = seqs["left_flank"] + amplicon + seqs["right_flank"]
-    assert len(seq) == l, "testing sequence was constructed incorrectly"
+    assert len(seq) == length, "testing sequence was constructed incorrectly"
     return seq
 
 
 def gen_seq_with_rc_pairs(
-    i, j, l, window, insert_loc, repeat_i, repeat_l, to_replace, replace_with
+    i, j, length, window, insert_loc, repeat_i, repeat_l, to_replace, replace_with
 ):
     repeat_j = repeat_l + repeat_i
 
     left_flank = "N" * i  # random_seq(i)
-    right_flank = "N" * (l - j)  # random_seq(l - j)
+    right_flank = "N" * (length - j)  # random_seq(l - j)
     amplicon_left_window = random_seq(window)
     amplicon_internal = "N" * (j - i - window * 2)  # random_seq(j - i - window * 2)
     amplicon_right_window = random_seq(window)
@@ -153,17 +154,13 @@ def gen_seq_with_rc_pairs(
     )
 
     for s in sequences:
-        if not len(s) == l:
-            raise ValueError("{} != {}".format(len(s), l))
+        if not len(s) == length:
+            raise ValueError("{} != {}".format(len(s), length))
 
     return sequences
 
 
-##########################################
-## DNAStats tests
-##########################################
-
-
+# DNAStats tests
 class TestDNAStats:
     """Test the DNAStats instance."""
 
@@ -199,7 +196,27 @@ class TestDNAStats:
 
         print(
             DNAStats(
-                "CGAGACCACTCGGGACTTCCGGCCATAGCGTACCGTTTTGTGACAAAACCCCCACTCGAACGTGAGAAAACCCTTCTCTTCATGTAATTCCCCCACAGTCCGCGGGTCGGTCAAACCTGGATAAGGTAAAGACTAATATCTAAACCTGCTGGAGAGTCGAACCGCGGTCTTAGGCCCACGCAGAGTGTATGTTATTCGTCTGCCGCTATATCGGTCAACACTAGTTGACGGATAGGAATGTTGGATTAACGCGTCTCCAACGCTGGGATACCCTCGCAAAATTTTCCCGATACTATCCGGAATCTCTAACGCCGTTGGTTTGGGCTCCCAACCACCCGTGAACTTCTAACACGAGAATCACCGCTGGAGCGCGCGCCTTCTCTCAATTTACCTGAGCTTTCGCTTCCTACTTAGCAGAATCGTGAACCTAAATTTTAGCAGCTTCAAGTCAGTTACGCTCGACACTTCCGATTCCAGGTAAAATAACCACTTCTAAGGTTCGTGACTGGTTCTCTATTCAACGCACGCGGTGCCCTCGCGGGTCCTCTGCTGCCGGGAAGCACATGATTGCCAGCTTGTTAAACAACACAAGGTGGCCAATCTCAAACTCGCATAAGCCCTGTTTTTTCTTGCAAGCTGCAACCGAGCATTCCTTCAGTCAGTGGTGGTTTTTCAAAACTATTCCTATGGGTGCTGACACGTGTGTAATTGTTTTCTACTATCTCTCGGTTTATAGCGTAGTTGCCGAGGCTATTGAGTCTCCTTTGCTAATAGCTAAGGTGGAAATTTTTTTTTTTTTGAACCGGGTGAATATACTTGATACATCAATAGCCCCTAGCGTATTGTACCCGTCACGGGCTCAAATACTCTGCCCAGGGCGATACCATGGAAGTTCTCGTAACATACAATGGATCTGGGCCGTCATCGCTTGATGCTCTAGAAGAAAAAGCAGAGACCGGCCATTACCGCGTCAACTAACACGCCTCAGGCCGGGGTTAACACTAGGTGTGT",
+                "CGAGACCACTCGGGACTTCCGGCCATAGCGTACCGTTTTGTGACAAA"
+                "ACCCCCACTCGAACGTGAGAAAACCCTTCTCTTCATGTAATTCCCCCACA"
+                "GTCCGCGGGTCGGTCAAACCTGGATAAGGTAAAGACTAATATCTAAACCT"
+                "GCTGGAGAGTCGAACCGCGGTCTTAGGCCCACGCAGAGTGTATGTTA"
+                "TTCGTCTGCCGCTATATCGGTCAACACTAGTTGACGGATAGGAATGTTGG"
+                "ATTAACGCGTCTCCAACGCTGGGATACCCTCGCAAAATTTTCCCGAT"
+                "ACTATCCGGAATCTCTAACGCCGTTGGTTTGGGCTCCCAACCACCCGTG"
+                "AACTTCTAACACGAGAATCACCGCTGGAGCGCGCGCCTTCTCTCAATT"
+                "TACCTGAGCTTTCGCTTCCTACTTAGCAGAATCGTGAACCTAAATTTTA"
+                "GCAGCTTCAAGTCAGTTACGCTCGACACTTCCGATTCCAGGTAAAATA"
+                "ACCACTTCTAAGGTTCGTGACTGGTTCTCTATTCAACGCACGCGGTGCCC"
+                "TCGCGGGTCCTCTGCTGCCGGGAAGCACATGATTGCCAGCTTGTTAA"
+                "ACAACACAAGGTGGCCAATCTCAAACTCGCATAAGCCCTGTTTTTTCTTG"
+                "CAAGCTGCAACCGAGCATTCCTTCAGTCAGTGGTGGTTTTTCAAAAC"
+                "TATTCCTATGGGTGCTGACACGTGTGTAATTGTTTTCTACTATCTCTCG"
+                "GTTTATAGCGTAGTTGCCGAGGCTATTGAGTCTCCTTTGCTAATAGCT"
+                "AAGGTGGAAATTTTTTTTTTTTTGAACCGGGTGAATATACTTGATACAT"
+                "CAATAGCCCCTAGCGTATTGTACCCGTCACGGGCTCAAATACTCTGCC"
+                "CAGGGCGATACCATGGAAGTTCTCGTAACATACAATGGATCTGGGCCGT"
+                "CATCGCTTGATGCTCTAGAAGAAAAAGCAGAGACCGGCCATTACCGCG"
+                "TCAACTAACACGCCTCAGGCCGGGGTTAACACTAGGTGTGT",
                 14,
                 20,
                 20,
@@ -441,11 +458,11 @@ class TestPositiveExamples:
         repeat_length, kmer, n_misprimings = repeat_length__kmer__num_misprimings
         i, j = ij
         window = self.WINDOW
-        l = self.LENGTH
+        length = self.LENGTH
         seq = gen_seq(
             i=i,
             j=j,
-            l=l,
+            length=length,
             window=window,
             insert_loc=100,
             repeat_i=repeat_i,
@@ -489,11 +506,11 @@ class TestPositiveExamples:
         repeat_length, kmer, n_misprimings = repeat_length__kmer__num_misprimings
         i, j = ij
         window = self.WINDOW
-        l = self.LENGTH
+        length = self.LENGTH
         seq = gen_seq(
             i=i,
             j=j,
-            l=l,
+            length=length,
             window=window,
             insert_loc=100,
             repeat_i=repeat_i,
@@ -531,11 +548,11 @@ class TestPositiveExamples:
         repeat_length, kmer, n_misprimings = repeat_length__kmer__num_misprimings
         i, j = ij
         window = self.WINDOW
-        l = self.LENGTH
+        length = self.LENGTH
         seq = gen_seq(
             i=i,
             j=j,
-            l=l,
+            length=length,
             window=window,
             insert_loc=100,
             repeat_i=repeat_i,
@@ -574,7 +591,7 @@ class TestPositiveCyclicExamples:
         seq = gen_seq(
             i=i,
             j=j,
-            l=1000,
+            length=1000,
             window=window,
             insert_loc=100,
             repeat_i=0,
@@ -604,7 +621,7 @@ class TestPositiveCyclicExamples:
         ids=["left_window", "right_window"],
     )
     def test_cyclic_indices(self, to_replace, replace_with):
-        l = 1000
+        length = 1000
         i = 200
         j = 800
         window = 30
@@ -612,7 +629,7 @@ class TestPositiveCyclicExamples:
         seq1, seq2 = gen_seq_with_rc_pairs(
             i=i,
             j=j,
-            l=l,
+            length=length,
             window=window,
             insert_loc=10,
             repeat_i=0,
@@ -630,7 +647,7 @@ class TestPositiveCyclicExamples:
         shift = 100
         delta = i + shift
         seq3 = seq1[delta:] + seq1[:delta]
-        i = l - shift
+        i = length - shift
         j = j - delta
 
         # cyclic misprimings
@@ -666,13 +683,13 @@ class TestNegativeExamples:
         repeats."""
         i, j = 150, 850
         repeat_i = 0
-        l = 1000
+        length = 1000
         kmer = 20
         window, expect = window_results
         seq = gen_seq(
             i=i,
             j=j,
-            l=l,
+            length=length,
             window=window,
             insert_loc=100,
             repeat_i=repeat_i,
@@ -722,7 +739,7 @@ class TestNegativeExamples:
         seq = gen_seq(
             i=i,
             j=j,
-            l=1000,
+            length=1000,
             window=window,
             insert_loc=100,
             repeat_i=repeat_i,
@@ -741,64 +758,78 @@ class TestNegativeExamples:
 
 def test_hash1():
     s1 = random_seq(1000)
-    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
+    f = functools.partial(
+        DNAStats, repeat_window=14, stats_window=20, hairpin_window=20
+    )
     stats1 = f(s1)
     stats2 = f(s1)
-    stats3 = f(random_seq(1000),)
+    stats3 = f(
+        random_seq(1000),
+    )
     print(hash(stats1))
     print(hash(stats2))
     print(hash(stats3))
     assert hash(stats1) == hash(stats2)
     assert not hash(stats1) == hash(stats3)
 
-@pytest.mark.parametrize('key', ['repeat_window', 'stats_window', 'hairpin_window'])
+
+@pytest.mark.parametrize("key", ["repeat_window", "stats_window", "hairpin_window"])
 def test_hash2(key):
     s1 = random_seq(1000)
-    kwargs = {
-        'repeat_window': 20,
-        'stats_window': 20,
-        'hairpin_window': 20
-    }
+    kwargs = {"repeat_window": 20, "stats_window": 20, "hairpin_window": 20}
     kwargs2 = dict(kwargs)
     kwargs2[key] += 1
-    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
     stats1 = DNAStats(s1, **kwargs)
     stats2 = DNAStats(s1, **kwargs)
     stats3 = DNAStats(s1, **kwargs2)
     assert hash(stats1) == hash(stats2)
     assert not hash(stats1) == hash(stats3)
 
-@pytest.mark.parametrize('key', ['gc_content_threshold', 'at_content_threshold', 'base_percentage_threshold'])
+
+@pytest.mark.parametrize(
+    "key", ["gc_content_threshold", "at_content_threshold", "base_percentage_threshold"]
+)
 def test_hash3(key):
     s1 = random_seq(1000)
     kwargs = {
-        'repeat_window': 20,
-        'stats_window': 20,
-        'hairpin_window': 20,
-        'gc_content_threshold': 0.8,
-        'at_content_threshold': 0.8,
-        'base_percentage_threshold': 0.8
+        "repeat_window": 20,
+        "stats_window": 20,
+        "hairpin_window": 20,
+        "gc_content_threshold": 0.8,
+        "at_content_threshold": 0.8,
+        "base_percentage_threshold": 0.8,
     }
     kwargs2 = dict(kwargs)
     kwargs2[key] += 0.1
-    f = functools.partial(DNAStats, repeat_window=14, stats_window=20, hairpin_window=20)
     stats1 = DNAStats(s1, **kwargs)
     stats2 = DNAStats(s1, **kwargs)
     stats3 = DNAStats(s1, **kwargs2)
     assert hash(stats1) == hash(stats2)
     assert not hash(stats1) == hash(stats3)
 
+
+# TODO: actually test that underlying data is the same for the view
 def test_view():
     seq = random_seq(1000)
     stats = DNAStats(seq, 14, 20, 20)
     stats2 = stats.view(slice(None, None))
+    assert stats is not stats2
+    assert stats.cost(1, 1000) == stats.cost(1, 1000)
+    print(stats)
+    print(stats2)
+
 
 def test_copy():
     seq = random_seq(1000)
     stats = DNAStats(seq, 14, 20, 20)
     stats2 = stats.copy(slice(None, None))
+    assert stats is not stats2
+    assert stats.cost(1, 1000) == stats.cost(1, 1000)
+    print(stats)
+    print(stats2)
 
-@pytest.mark.parametrize('index', [30, 400, None])
+
+@pytest.mark.parametrize("index", [30, 400, None])
 def test_slice(index):
     seq = random_seq(1000)
     stats = DNAStats(seq, 14, 20, 20)

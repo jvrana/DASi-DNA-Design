@@ -361,7 +361,7 @@ def pcr_amplify(
             span = Span(
                 i,
                 j,
-                context_length=len(original_template.seq),
+                length=len(original_template.seq),
                 cyclic=cyclic,
                 ignore_wrap=True,
             )

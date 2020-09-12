@@ -225,7 +225,7 @@ def optimize_graph(
     paths = _nodes_to_fullpaths(graph, trimmed_nodes, cyclic, n_paths=n_paths)
 
     if len(paths) < n_paths:
-        DASiWarning(
+        raise DASiWarning(
             "Number of paths returned is less than requested paths {} < {}".format(
                 len(paths), n_paths
             )

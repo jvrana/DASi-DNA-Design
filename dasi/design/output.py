@@ -24,6 +24,7 @@ from dasi.utils.biopython import seqrecord_to_json
 DesignType = TypeVar("Design")
 
 
+# TODO: Add "Order Primer" to list of reactions
 def validate_output(data, do_raise: bool = True):
     return validate_with_schema(
         data,

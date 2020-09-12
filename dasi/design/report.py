@@ -10,7 +10,6 @@ from matplotlib.lines import Line2D
 from dasi.config import Config
 from dasi.utils.sequence import DNAStats
 
-
 DesignType = TypeVar("Design")
 
 

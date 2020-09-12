@@ -763,9 +763,7 @@ def test_hash1():
     )
     stats1 = f(s1)
     stats2 = f(s1)
-    stats3 = f(
-        random_seq(1000),
-    )
+    stats3 = f(random_seq(1000))
     print(hash(stats1))
     print(hash(stats2))
     print(hash(stats3))
@@ -817,6 +815,7 @@ def test_view():
     assert stats.cost(1, 1000) == stats.cost(1, 1000)
     print(stats)
     print(stats2)
+
 
 
 def test_copy():

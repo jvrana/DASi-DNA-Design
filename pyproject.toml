@@ -51,6 +51,7 @@ pytest = "^5.0"
 pytest-benchmark = "^3.2"
 dictdiffer = "^0.8.0"
 flaky = "^3.6"
+pytest-cov = "^2.10.1"
 
 [tool.poetry.extras]
 documentation = ["nbsphinx", "sphinx_autodoc_typehints", "sphinx-jsonschema", "sphinx", "sphinx-bootstrap-theme"]

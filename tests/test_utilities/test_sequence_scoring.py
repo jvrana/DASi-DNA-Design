@@ -817,7 +817,6 @@ def test_view():
     print(stats2)
 
 
-
 def test_copy():
     seq = random_seq(1000)
     stats = DNAStats(seq, 14, 20, 20)

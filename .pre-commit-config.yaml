@@ -25,3 +25,8 @@ repos:
     hooks:
     -   id: reorder-python-imports
         args: [--py3-plus]
+-   repo: https://github.com/jvrana/poetry-hooks
+    rev: 0.1.0
+    hooks:
+    -   id: poetry-version-up
+    -   id: poetry-export

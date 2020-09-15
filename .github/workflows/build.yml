@@ -47,8 +47,7 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest tests -m "not slowtest and not benchmark" --cov=./ --cov-report=xml
-    - if: succeeded() || failed()
-      name: Upload coverage to Codecov
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
         flags: pytest

@@ -500,40 +500,6 @@ def test_a_reverse_pcr_fragment(span_cost):
     check_design_result(design, expected_path)
 
 
-def test_case2(span_cost):
-    goal = random_record(5000)
-    make_circular_and_id([goal])
-
-    p1 = goal[1096 : 1096 + 20]
-    p2 = goal[694 - 20 : 694].reverse_complement()
-
-    p3 = goal[665 - 20 : 665].reverse_complement()
-
-    t1 = random_seq(100) + goal[1000:] + goal[:700] + random_seq(100)
-
-    make_linear_and_id([p1, p2, p3])
-    make_circular_and_id([t1])
-
-    design = Design(span_cost)
-
-    design.add_materials(
-        primers=[p1, p2, p3], templates=[t1], queries=[goal], fragments=[]
-    )
-
-    expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
-
-    check_design_result(design, expected_path)
-
-    design.compile()
-    results = design.optimize()
-    result = list(results.values())[0]
-    for a in result.assemblies:
-        print(a)
-        print(a.compute_cost())
-        for n1, n2, edata in a.edges():
-            print(n1, n2)
-
-
 class TestOutput:
     @pytest.fixture
     def example_design(self, span_cost):

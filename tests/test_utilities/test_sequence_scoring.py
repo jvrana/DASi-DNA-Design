@@ -334,7 +334,8 @@ class TestDNAStats:
 
         seq = "N" * dist_from_left + r1 + "N" * 100 + r2 + "N" * dist_from_right
         stats = DNAStats(seq, 1, 1, hairpin_window=30)
-
+        print(seq)
+        print(seq[dist_from_left:dist_from_left+30])
         if left_or_right == "left":
             n = stats.count_repeats_from_slice(dist_from_left, dist_from_left + 30)
             assert n == 1

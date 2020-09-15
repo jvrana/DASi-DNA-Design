@@ -409,7 +409,7 @@ class DNAStats:
 
         # too look for signatures (dest) in the left and right flanks
         left_flank_indices = np.arange(0, i)
-        right_flank_indices = np.arange(j, len(self.seq) - kmer_length)
+        right_flank_indices = np.arange(j, len(self.seq) - kmer_length + 1)
         dest_indices = np.concatenate([left_flank_indices, right_flank_indices])
 
         src = self.fwd_signatures[src_indices]

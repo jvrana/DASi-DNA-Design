@@ -17,7 +17,6 @@ from uuid import uuid4
 import networkx as nx
 from Bio import Restriction
 from Bio import SeqIO
-from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
 from Bio.SeqFeature import CompoundLocation
 from Bio.SeqFeature import ExactPosition
@@ -362,7 +361,7 @@ def pcr_amplify(
             span = Span(
                 i,
                 j,
-                context_length=len(original_template.seq),
+                length=len(original_template.seq),
                 cyclic=cyclic,
                 ignore_wrap=True,
             )
@@ -511,7 +510,7 @@ class GibsonAssembler:
         records = [graph.nodes[n]["record"] for n in cycle]
         stored_features = cls._collect_features(records)
 
-        record = SeqRecord(Seq("", alphabet=generic_dna))
+        record = SeqRecord(Seq(""))
 
         c1 = cycle[-1:] + cycle[:-1]
         c2 = cycle

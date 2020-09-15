@@ -196,8 +196,8 @@ class LibraryDesign(DesignABC):
 
     def _expand_synthesized_fragments(self):
         """
-            1. copy groups from SHARED_FRAGMENTS to SYNTHESIZED_FRAGMENT
-            2. expand overlaps for SYNTHESIZED_FRAGMENTS
+        1. copy groups from SHARED_FRAGMENTS to SYNTHESIZED_FRAGMENT
+        2. expand overlaps for SYNTHESIZED_FRAGMENTS
         """
         for query_key, container in self.container_factory.containers().items():
             # expand the share fragments using their own endpoints

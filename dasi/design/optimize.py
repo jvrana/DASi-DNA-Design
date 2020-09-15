@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from typing import Dict
 from typing import Hashable
 from typing import List
@@ -13,14 +12,11 @@ from dasi.models import AssemblyNode
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multipoint_shortest_path
-from dasi.utils.networkx.algorithms import accumulate_helper
-from dasi.utils.networkx.algorithms import str_to_symbols_and_func
-from dasi.utils.networkx.utils import replace_nan_with_inf
+
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'
 # and 'efficiency' for a given path
-
 path_length_config = {
     "f": "material / efficiency ",
     "accumulators": {"efficiency": "product"},
@@ -190,7 +186,6 @@ def cyclic_matrix(
 def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
 ) -> Tuple[List[List[tuple]], List[float]]:
-
     # get ordered nodelist and nodekeys
     nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
 
@@ -226,7 +221,7 @@ def optimize_graph(
     paths = _nodes_to_fullpaths(graph, trimmed_nodes, cyclic, n_paths=n_paths)
 
     if len(paths) < n_paths:
-        DASiWarning(
+        raise DASiWarning(
             "Number of paths returned is less than requested paths {} < {}".format(
                 len(paths), n_paths
             )

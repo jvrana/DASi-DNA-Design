@@ -36,20 +36,14 @@ def test_indexing(index):
     assert s[-2] == 8
 
 
+@pytest.mark.parametrize("length", range(1, 5))
 @pytest.mark.parametrize("index", range(-5, 5))
-@pytest.mark.parametrize("l", range(5))
-def test_slicing_open_left(l, index):
+def test_slicing_open_left2(length, index):
     s = Span(90, 10, 100, True, index)
-    assert len(s[:l]) == l
-
-
-@pytest.mark.parametrize("l", range(1, 5))
-@pytest.mark.parametrize("index", range(-5, 5))
-def test_slicing_open_left(l, index):
-    s = Span(90, 10, 100, True, index)
-    print(s[-l:])
-    assert len(s[-l:]) == l
+    print(s[-length:])
+    assert len(s[-length:]) == length
 
 
 def test_full():
     s = Span(1, 9410, 9409, False, index=1)
+    assert len(s) == 9409

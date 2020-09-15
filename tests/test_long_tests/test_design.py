@@ -178,9 +178,6 @@ class TestHasAssemblies:
         for result in results.values():
             assert result.assemblies
 
-
-@pytest.mark.slow
-class TestReactions:
     def test_multi_reactions(self, multi_processed_results):
         design, results = multi_processed_results
         for result in results.values():

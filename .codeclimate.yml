@@ -1,0 +1,12 @@
+version: "2"
+exclude_patterns:
+- dist/
+- docs/
+- **/tests/
+- **/test/
+- db/
+- conf/
+- config/
+- **/vendor/
+- **/node_modules/
+- docsrc/

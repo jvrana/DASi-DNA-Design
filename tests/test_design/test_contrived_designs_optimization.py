@@ -356,15 +356,6 @@ def test_design_with_overhang_primers(repeat, span_cost):
     check_design_result(design, expected_path)
 
 
-def test_amplify_fragment(span_cost):
-    goal = random_record(4000)
-    make_circular_and_id([goal])
-
-    f1 = goal[500:3000]
-    f2 = goal[1000:4000]
-    f3 = goal[:500]
-
-
 def test_requires_synthesis(span_cost):
     goal = random_record(4000)
     make_circular_and_id([goal])
@@ -416,7 +407,7 @@ def test_very_long_synthesizable_region(span_cost):
     r1 = goal[4177:4255]
     r2 = goal[4188:4225]
 
-    make_linear_and_id([r1])
+    make_linear_and_id([r1, r2])
 
     design = Design(span_cost)
     design.add_materials(primers=[], templates=[r1], queries=[goal], fragments=[])
@@ -531,7 +522,7 @@ def test_case2(span_cost):
 
     expected_path = [(1238, True, "A", False), (1282, True, "B", False)]
 
-    # check_design_result(design, expected_path)
+    check_design_result(design, expected_path)
 
     design.compile()
     results = design.optimize()

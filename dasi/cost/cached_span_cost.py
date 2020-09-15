@@ -24,7 +24,7 @@ def hashfiles(files, hash="sha1", hashfunc=None):
     contents = ""
     sorted_path = sorted(files)
     for file in sorted_path:
-        with open(file, "r") as f:
+        with open(file) as f:
             contents += hashfunc(f.read())
     return hashfunc(contents)
 
@@ -39,7 +39,7 @@ def cached(path, save_func, load_func, checksum_path, logger=None):
     different_checksum = True
     checksum = cost_module_checksum()
     if os.path.isfile(checksum_path):
-        with open(checksum_path, "r") as f:
+        with open(checksum_path) as f:
             stored_checksum = f.read().strip()
             if stored_checksum == checksum:
                 different_checksum = False

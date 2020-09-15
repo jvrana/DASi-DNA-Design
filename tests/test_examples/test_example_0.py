@@ -44,7 +44,7 @@ def test_example_0(args):
     np.random.seed(0)
 
     def open_gb(path):
-        with open(join(fixtures, path), "r") as f:
+        with open(join(fixtures, path)) as f:
             return list(SeqIO.parse(f, format="genbank"))
 
     fragments = open_gb("fragments_0.gb")
@@ -67,5 +67,5 @@ def test_example_0(args):
 
     # output JSON
     out = design.out()
-
+    print(out)
     print(design.to_df()[1])

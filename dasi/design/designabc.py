@@ -16,6 +16,7 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import TypeVar
 
 import networkx as nx
 import pandas as pd
@@ -47,6 +48,9 @@ from dasi.utils import chunkify
 from dasi.utils import log_metadata
 from dasi.utils import perfect_subject
 from dasi.utils.sequence import generate_fake_designs
+
+DesignType = TypeVar("Design")
+
 
 BLAST_PENALTY_CONFIG = {
     "gapopen": 3,
@@ -438,7 +442,7 @@ class DesignABC(ABC):
 
     # TODO: better multithreaded loggers
     @staticmethod
-    def _pooled_run(args: List[Tuple["Design", str]]) -> Dict[str, DesignResult]:
+    def _pooled_run(args: List[Tuple[DesignType, str]]) -> Dict[str, DesignResult]:
         design, qk, n_paths, post_processing_kwargs, thread = args
         design.logger.name = "THREAD {}: ".format(thread) + design.logger.name
 

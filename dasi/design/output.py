@@ -7,6 +7,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import TypeVar
 from typing import Union
 
 import networkx as nx
@@ -19,6 +20,8 @@ from dasi.models import Reaction
 from dasi.schemas import Schemas
 from dasi.schemas import validate_with_schema
 from dasi.utils.biopython import seqrecord_to_json
+
+DesignType = TypeVar("Design")
 
 
 # TODO: Add "Order Primer" to list of reactions
@@ -53,7 +56,7 @@ def rhash(rxn: Reaction, assembly_id: int) -> Tuple:
 
 
 def dasi_design_to_dag(
-    design: Union["Design", "LibraryDesign"],
+    design: DesignType,
     validate: bool = True,
     elim_extra_reactions: bool = False,
     query_keys: Optional[List[str]] = None,
@@ -294,7 +297,7 @@ def _design_property(design, reaction_node_dict, graph):
 
 
 def dasi_design_to_output_json(
-    design: Union["Design", "LibraryDesign"],
+    design: DesignType,
     elim_extra_reactions: bool = False,
     query_keys: Optional[List[str]] = None,
 ):

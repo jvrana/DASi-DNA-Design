@@ -1,18 +1,15 @@
 import json
 from abc import ABC
 from abc import abstractmethod
-from functools import partial
 from os.path import abspath
 from os.path import dirname
 from os.path import join
 from typing import Tuple
 from typing import Union
 
-import jsonschema
 import msgpack
 import numpy as np
 import pandas as pd
-import seaborn as sns
 
 from .utils import df_to_np_ranged
 from .utils import lexargmin
@@ -130,7 +127,7 @@ default_parameters_path = join(here, "default_parameters.json")
 def open_params(path=None):
     if path is None:
         path = default_parameters_path
-    with open(path, "r") as f:
+    with open(path) as f:
         params = json.load(f)
     return params
 
@@ -180,12 +177,12 @@ class CostBuilder(ABC):
         df = pd.concat(dfs)
         return df
 
-    @property
-    def plot(self):
-        """Plot attributes across 'span' from the pandas.DataFrame."""
-        return partial(
-            sns.lineplot, data=self.to_df(), x="span", y="cost", hue="condition"
-        )
+    # @property
+    # def plot(self):
+    #     """Plot attributes across 'span' from the pandas.DataFrame."""
+    #     return partial(
+    #         sns.lineplot, data=self.to_df(), x="span", y="cost", hue="condition"
+    #     )
 
     # TODO: what if there is a gap in the span?
     def cost(

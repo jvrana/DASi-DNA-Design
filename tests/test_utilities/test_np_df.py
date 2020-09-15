@@ -95,7 +95,7 @@ def test_concat_raises(a):
     c = a.copy()
     c.col["C"] = np.arange(100, 110)
     with pytest.raises(NumpyDataFrameException):
-        d = NumpyDataFrame.concat([a, c])
+        NumpyDataFrame.concat([a, c])
 
 
 def test_concat_fills_missing(a):

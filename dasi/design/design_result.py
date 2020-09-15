@@ -124,8 +124,7 @@ class DesignResult(Iterable):
 
         :yield: assembly
         """
-        for assembly in self.assemblies:
-            yield assembly
+        yield from self.assemblies
 
     def __getitem__(self, item: str) -> Assembly:
         return list(self)[item]

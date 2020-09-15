@@ -692,3 +692,6 @@ tests/sequence_design.csv
 tests/test_designs/designs.json
 tests/test_designs/library_design.csv
 tests/test_designs/library_summary.csv
+**/.benchmarks
+*.json
+*.csv

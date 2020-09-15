@@ -88,6 +88,7 @@ def test_run_with_n_jobs(design_cls, n_jobs, n_designs):
 
 
 # TODO: fix library generation for faked plasmids with simliar sequences
+@pytest.mark.slowtest
 def test_cost_comparison_library():
     design1, library = Design.fake(
         n_designs=3,

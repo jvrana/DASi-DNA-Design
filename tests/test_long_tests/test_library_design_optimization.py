@@ -29,7 +29,7 @@ def test_library_design_to_df(paths, here, span_cost):
     design.logger.set_level("DEBUG")
     design.compile()
     results = design.optimize()
-
+    print(results)
     a, b, c = design.to_df()
     a.to_csv("library_design.csv")
     b.to_csv("library_summary.csv")

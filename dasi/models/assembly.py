@@ -15,7 +15,6 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import primer3plus
-from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
@@ -409,7 +408,7 @@ def _design_edge(
         for x in ["LEFT", "RIGHT"]:
             primer_seq = pair[x]["OVERHANG"] + pair[x]["SEQUENCE"]
             primer_group = pair[x]["GROUP"]
-            primer_record = SeqRecord(Seq(primer_seq, generic_dna))
+            primer_record = SeqRecord(Seq(primer_seq))
             primer = Molecule(
                 MoleculeType.types[Constants.PRIMER],
                 primer_group,
@@ -869,5 +868,4 @@ class Assembly(Iterable):
         return self.edit_distance(other) == 0
 
     def __iter__(self) -> Generator[AssemblyNode, None, None]:
-        for n in self.nodes(data=False):
-            yield n
+        yield from self.nodes(data=False)

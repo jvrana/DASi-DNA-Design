@@ -41,7 +41,8 @@ class TestPostProcess:
         """This test adds a new unique node 'n3' with a unique type to simulate
         adding a partitioning to the graph.
 
-        Such a procedure might be used for highly complex sequences."""
+        Such a procedure might be used for highly complex sequences.
+        """
         goal = random_record(4000)
         make_circular_and_id([goal])
 

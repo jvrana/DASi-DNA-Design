@@ -278,7 +278,7 @@ class TestCheckValuesForSpanCost:
             )
 
     @small_span
-    def test_no_primer_material_cost(self, cached_span_cost, span):
+    def test_no_primer_material_cost2(self, cached_span_cost, span):
         span, check_ext = span
         df1 = cached_span_cost.cost(span, (0, 0))
 

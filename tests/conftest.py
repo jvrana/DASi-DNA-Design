@@ -10,6 +10,7 @@ from os.path import join
 from typing import Dict
 
 import numpy as np
+import pandas as pd
 import pylab as plt
 import pytest
 from Bio import BiopythonParserWarning
@@ -28,10 +29,27 @@ from dasi.log import logger
 warnings.simplefilter("ignore", BiopythonParserWarning)
 logger.set_level("DEBUG")
 
+
+def pytest_configure(config):
+    # register an additional marker
+    config.addinivalue_line("markers", "slowtest: marks a long running test")
+    config.addinivalue_line("markers", "benchmark: marks a benchmarking test")
+
+
+def _pytest_auto_mark_benchmark(item):
+    """Automatically mark tests that use the `benchmark` fixture."""
+    marks = [mark for mark in item.iter_markers(name="benchmark")]
+    if not marks and "benchmark" in item.funcargnames:
+        item.add_marker(pytest.mark.benchmark)
+
+
+def pytest_runtest_setup(item):
+    _pytest_auto_mark_benchmark(item)
+
+
 ##############################
 # Setup pandas display options
 ##############################
-import pandas as pd
 
 desired_width = 500
 pd.set_option("display.width", desired_width)
@@ -41,6 +59,8 @@ pd.set_option("display.max_columns", 20)
 ##############################
 # Test paths
 ##############################
+
+
 @pytest.fixture(scope="session")
 def here():
     return dirname(abspath(__file__))
@@ -100,6 +120,8 @@ def blast_factory(paths) -> BioBlastFactory:
 ##############################
 # Cost Fixtures
 ##############################
+
+
 def hashfiles(files, hash="sha1", hashfunc=None):
     if not hashfunc:
 
@@ -109,7 +131,7 @@ def hashfiles(files, hash="sha1", hashfunc=None):
     contents = ""
     sorted_path = sorted(files)
     for file in sorted_path:
-        with open(file, "r") as f:
+        with open(file) as f:
             contents += hashfunc(f.read())
     return hashfunc(contents)
 
@@ -126,7 +148,7 @@ def cached(path, save_func, load_func, checksum_path, logger=None):
     different_checksum = True
     checksum = cost_module_checksum()
     if os.path.isfile(checksum_path):
-        with open(checksum_path, "r") as f:
+        with open(checksum_path) as f:
             stored_checksum = f.read().strip()
             if stored_checksum == checksum:
                 different_checksum = False
@@ -190,27 +212,18 @@ span_cost = cached_span_cost
 ##############################
 
 
-@pytest.fixture(autouse=True)
-def patch_plt_show(request, monkeypatch):
-    """Patches the plt.show() method with a save fig method in 'out'."""
-    out = join(dirname(abspath(__file__)), "out")
-
-    def _save_fig(filename=None):
-        if filename is None:
-            filename = "{}_{}.png".format(request.node.name, request.param_index)
-        plt.savefig(join(out, filename), format="png", dpi=50)
-
-    def _save_self_fig(_, filename=None):
-        return functools.partial(_save_fig, filename=filename)
-
-    monkeypatch.setattr(plt, "show", _save_fig)
-    monkeypatch.setattr(plt.Figure, "show", _save_self_fig)
-    return _save_fig
-
-
 @pytest.fixture(autouse=True, scope="function")
 def random_seed(request):
     seed = request.param_index
     print("RANDOM SEED({})".format(seed))
     random.seed(seed)
     np.random.seed(seed)
+
+
+@pytest.fixture(autouse=True)
+def patch_matplotlib_show(tmpdir, monkeypatch):
+    def patched_show(*args, **kwargs):
+        path = tmpdir.join("image.png")
+        plt.savefig(path, format="png")
+
+    monkeypatch.setattr(plt, "show", patched_show)

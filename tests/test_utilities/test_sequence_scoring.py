@@ -373,7 +373,7 @@ class TestPositiveRCExamples:
         kwargs = dict(
             i=i,
             j=j,
-            l=500,
+            length=500,
             window=window,
             insert_loc=10,
             repeat_i=5,

@@ -12,7 +12,7 @@ from dasi.models import AssemblyNode
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multipoint_shortest_path
-
+from warnings import warn
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes 'material'
@@ -221,11 +221,8 @@ def optimize_graph(
     paths = _nodes_to_fullpaths(graph, trimmed_nodes, cyclic, n_paths=n_paths)
 
     if len(paths) < n_paths:
-        raise DASiWarning(
-            "Number of paths returned is less than requested paths {} < {}".format(
-                len(paths), n_paths
-            )
-        )
+        warn("Number of paths returned is less than requested paths {} < {}".format(
+                len(paths), n_paths), DASiWarning)
 
     _check_paths(paths)
     return paths, trimmed_costs

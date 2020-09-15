@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [ master, 'release*']
-  push:
-    branchs: [ master ]
 jobs:
   build:
 

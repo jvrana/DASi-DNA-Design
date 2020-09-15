@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.assembly &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.assembly &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -16,8 +16,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dasi.models.molecule" href="dasi.models.molecule.html" />
-    <link rel="prev" title="dasi.models.AlignmentContainerFactory" href="dasi.models.AlignmentContainerFactory.html" />
+    <link rel="next" title="dasi.models.AssemblyNode" href="dasi.models.AssemblyNode.html" />
+    <link rel="prev" title="Models (dasi.models)" href="../models.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,9 +92,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -104,10 +104,10 @@
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.PCRProductAlignmentGroup.html">dasi.models.PCRProductAlignmentGroup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainer.html">dasi.models.AlignmentContainer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AlignmentContainerFactory.html">dasi.models.AlignmentContainerFactory</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../models.html#modules">modules</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dasi.models.assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -149,11 +149,11 @@
               
                 
   <li>
-    <a href="dasi.models.AlignmentContainerFactory.html" title="Previous Chapter: dasi.models.AlignmentContainerFactory"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; dasi.models.A...</span>
+    <a href="../models.html" title="Previous Chapter: Models (dasi.models)"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Models (dasi.models)</span>
     </a>
   </li>
   <li>
-    <a href="dasi.models.molecule.html" title="Next Chapter: dasi.models.molecule"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.models.molecule &raquo;</span>
+    <a href="dasi.models.AssemblyNode.html" title="Next Chapter: dasi.models.AssemblyNode"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">dasi.models.A... &raquo;</span>
     </a>
   </li>
               
@@ -163,7 +163,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/dasi.models.assembly.rst"
+  <a href="../_sources/generated/dasi.models.Assembly.rst"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -197,10 +197,10 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.Assembly" title="dasi.models.assembly.Assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code></a>(nodes, container, …[, do_raise])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.Assembly" title="dasi.models.assembly.Assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code></a>(nodes, container, …[, do_raise])</p></td>
 <td><p>Should take in a path, graph, container, seqdb to produce relevant information.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>(index, expandable, type, overhang)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>(index, expandable, type, overhang)</p></td>
 <td><p>tuple representing a location on a goal sequence</p></td>
 </tr>
 </tbody>
@@ -212,10 +212,10 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.Assembly" title="dasi.models.assembly.Assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code></a>(nodes, container, …[, do_raise])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.Assembly" title="dasi.models.assembly.Assembly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Assembly</span></code></a>(nodes, container, …[, do_raise])</p></td>
 <td><p>Should take in a path, graph, container, seqdb to produce relevant information.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>(index, expandable, type, overhang)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>(index, expandable, type, overhang)</p></td>
 <td><p>tuple representing a location on a goal sequence</p></td>
 </tr>
 </tbody>
@@ -227,10 +227,10 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly._design_primers" title="dasi.models.assembly._design_primers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_design_primers</span></code></a>(template, region, lseq, rseq)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly._design_primers" title="dasi.models.assembly._design_primers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_design_primers</span></code></a>(template, region, lseq, rseq)</p></td>
 <td><p>Design primers flanking the specified.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly._get_primer_extensions" title="dasi.models.assembly._get_primer_extensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_primer_extensions</span></code></a>(graph, n1, n2[, cyclic])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly._get_primer_extensions" title="dasi.models.assembly._get_primer_extensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_get_primer_extensions</span></code></a>(graph, n1, n2[, cyclic])</p></td>
 <td><p>Return the left and right primer extensions for the given <em>internal</em> fragment.</p></td>
 </tr>
 </tbody>
@@ -248,7 +248,7 @@ information.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.Assembly._head" title="dasi.models.assembly.Assembly._head"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_head</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.Assembly._head" title="dasi.models.assembly.Assembly._head"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_head</span></code></a>()</p></td>
 <td><p>Get the ‘first’ ‘A’ node.</p></td>
 </tr>
 </tbody>
@@ -273,16 +273,16 @@ information.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode._asdict" title="dasi.models.assembly.AssemblyNode._asdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_asdict</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode._asdict" title="dasi.models.assembly.AssemblyNode._asdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_asdict</span></code></a>()</p></td>
 <td><p>Return a new OrderedDict which maps field names to their values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode._make" title="dasi.models.assembly.AssemblyNode._make"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_make</span></code></a>(iterable)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode._make" title="dasi.models.assembly.AssemblyNode._make"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_make</span></code></a>(iterable)</p></td>
 <td><p>Make a new AssemblyNode object from a sequence or iterable</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode._replace" title="dasi.models.assembly.AssemblyNode._replace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_replace</span></code></a>(**kwds)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode._replace" title="dasi.models.assembly.AssemblyNode._replace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_replace</span></code></a>(**kwds)</p></td>
 <td><p>Return a new AssemblyNode object replacing specified fields with new values</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode.count" title="dasi.models.assembly.AssemblyNode.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode.count" title="dasi.models.assembly.AssemblyNode.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
 </tbody>
@@ -294,16 +294,16 @@ information.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode.expandable" title="dasi.models.assembly.AssemblyNode.expandable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expandable</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode.expandable" title="dasi.models.assembly.AssemblyNode.expandable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expandable</span></code></a></p></td>
 <td><p>Alias for field number 1</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode.index" title="dasi.models.assembly.AssemblyNode.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode.index" title="dasi.models.assembly.AssemblyNode.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a></p></td>
 <td><p>Alias for field number 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode.overhang" title="dasi.models.assembly.AssemblyNode.overhang"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overhang</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode.overhang" title="dasi.models.assembly.AssemblyNode.overhang"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overhang</span></code></a></p></td>
 <td><p>Alias for field number 3</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.models.assembly.AssemblyNode.type" title="dasi.models.assembly.AssemblyNode.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode.type" title="dasi.models.assembly.AssemblyNode.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></p></td>
 <td><p>Alias for field number 2</p></td>
 </tr>
 </tbody>
@@ -398,8 +398,8 @@ successor edge and its <cite>left_ext</cite> or <cite>lprimer_left_ext</cite>.</
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>graph</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DiGraph</span></code>) – assembly graph</p></li>
-<li><p><strong>n1</strong> (<a class="reference internal" href="#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>) – source node on the graph</p></li>
-<li><p><strong>n2</strong> (<a class="reference internal" href="#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>) – end node on the graph</p></li>
+<li><p><strong>n1</strong> (<a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>) – source node on the graph</p></li>
+<li><p><strong>n2</strong> (<a class="reference internal" href="dasi.models.assembly.html#dasi.models.assembly.AssemblyNode" title="dasi.models.assembly.AssemblyNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssemblyNode</span></code></a>) – end node on the graph</p></li>
 <li><p><strong>cyclic</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether the</p></li>
 </ul>
 </dd>

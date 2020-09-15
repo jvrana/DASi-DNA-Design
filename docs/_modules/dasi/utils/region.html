@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.utils.region &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.utils.region &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,9 +90,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -401,7 +401,7 @@ from typing import Union
         self,
         a: int,
         b: int,
-        l: int,
+        length: int,
         cyclic=False,
         index=0,
         ignore_wrap=False,
@@ -483,8 +483,8 @@ from typing import Union
         :type a: int
         :param b: end of the span (exclusive)
         :type b: int
-        :param l: context length of the region
-        :type l: int
+        :param length: context length of the region
+        :type length: int
         :param cyclic: whether the underlying context is cyclic
         :type cyclic: bool
         :param index: the starting index of the region
@@ -506,7 +506,7 @@ from typing import Union
             print(b)
         a = int(a)
         b = int(b)
-        self._context_length = int(l)
+        self._context_length = int(length)
         self._index = index
         self._cyclic = cyclic
         self._strict = strict
@@ -523,19 +523,19 @@ from typing import Union
             bounds = self.bounds()
             if not bounds[0] &lt;= a &lt; bounds[1]:
                 raise IndexError(
-                    &quot;Start {} must be in [{}, {})&quot;.format(a, index, index + l)
+                    &quot;Start {} must be in [{}, {})&quot;.format(a, index, index + length)
                 )
             if not bounds[0] &lt;= b &lt;= bounds[1]:
                 raise IndexError(
-                    &quot;End {} must be in [{}, {}]&quot;.format(b, index, index + l)
+                    &quot;End {} must be in [{}, {}]&quot;.format(b, index, index + length)
                 )
 
         if self._ignore_wrap:
             start_wrap = 0
             end_wrap = 0
         else:
-            start_wrap = int((a - index) / l)
-            end_wrap = int((b - index - 1) / l)
+            start_wrap = int((a - index) / length)
+            end_wrap = int((b - index - 1) / length)
 
         if self._abs_wrap is False and start_wrap &gt; end_wrap:
             self._a = a
@@ -559,11 +559,11 @@ from typing import Union
         _a = a - index
         _b = b - index
 
-        if _a &gt;= l or _a &lt; 0:
+        if _a &gt;= length or _a &lt; 0:
             self._a = self.t(_a, False)
         else:
             self._a = a
-        if _b &gt; l:
+        if _b &gt; length:
             self._b = self.t(_b - 1, False) + 1
         elif _b &lt; 0:
             self._b = self.t(_b, False) + 1
@@ -581,9 +581,9 @@ from typing import Union
         # the context
         if not ignore_wrap and end_wrap - start_wrap:
             if self._abs_wrap:
-                _c = self._b + abs(end_wrap - start_wrap) * l
+                _c = self._b + abs(end_wrap - start_wrap) * length
             else:
-                _c = self._b + (end_wrap - start_wrap) * l
+                _c = self._b + (end_wrap - start_wrap) * length
             self._c = _c
         else:
             self._c = self._b
@@ -1036,8 +1036,7 @@ from typing import Union
         return sum([r[1] - r[0] for r in self.ranges()])
 
     def __iter__(self) -&gt; Generator[int, None, None]:
-        for i in chain(*[range(*x) for x in self.ranges()]):
-            yield i
+        yield from chain(*[range(*x) for x in self.ranges()])
 
     def __invert__(self):
         return self.invert()

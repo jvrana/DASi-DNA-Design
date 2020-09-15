@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.MultiPCRProductAlignmentGroup &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.MultiPCRProductAlignmentGroup &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,9 +92,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -192,7 +192,7 @@
 <dl class="class">
 <dt id="dasi.models.MultiPCRProductAlignmentGroup">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.models.</code><code class="sig-name descname">MultiPCRProductAlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">groupings</em>, <em class="sig-param">query_region</em>, <em class="sig-param">group_type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#MultiPCRProductAlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.MultiPCRProductAlignmentGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroupBase" title="dasi.models.alignment.AlignmentGroupBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.alignment.AlignmentGroupBase</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.alignment.AlignmentGroupBase</span></code></p>
 <p>A PCR Product Alignment with redundant forward primer, reverse primer,
 and template alignments.</p>
 <p>Essentially, this represents region of a designed sequence <em>that could</em>
@@ -207,7 +207,7 @@ sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>groupings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]]) – dictionary of groupings with the “fwd”, “rev” and “template”
+<li><p><strong>groupings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]]) – dictionary of groupings with the “fwd”, “rev” and “template”
 keys.</p></li>
 <li><p><strong>query_region</strong> (<a class="reference internal" href="dasi.utils.region.html#dasi.utils.region.Region" title="dasi.utils.region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>) – query region</p></li>
 <li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – group type</p></li>
@@ -275,7 +275,7 @@ sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>groupings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]]) – dictionary of groupings with the “fwd”, “rev” and “template”
+<li><p><strong>groupings</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]]) – dictionary of groupings with the “fwd”, “rev” and “template”
 keys.</p></li>
 <li><p><strong>query_region</strong> (<a class="reference internal" href="dasi.utils.region.html#dasi.utils.region.Region" title="dasi.utils.region.Region"><code class="xref py py-class docutils literal notranslate"><span class="pre">Region</span></code></a>) – query region</p></li>
 <li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – group type</p></li>
@@ -347,7 +347,7 @@ keys.</p></li>
 <dd class="field-odd"><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – index of the grouping to access</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a></p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>alignment</p>
@@ -395,7 +395,7 @@ region. WHY???</p>
 <dd><p>Generator of templates from <cite>get_template</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>, <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -459,7 +459,7 @@ bounded molecule type.</p>
 and subject regions at the specified new indicies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroupBase" title="dasi.models.alignment.AlignmentGroupBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroupBase</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroupBase</span></code></p>
 </dd>
 </dl>
 </dd></dl>

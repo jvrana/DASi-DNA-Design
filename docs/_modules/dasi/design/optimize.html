@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.optimize &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.design.optimize &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,9 +90,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -174,8 +174,7 @@
     <div class="body col-md-12 content" role="main">
       
   <h1>Source code for dasi.design.optimize</h1><div class="highlight"><pre>
-<span></span>from collections import OrderedDict
-from typing import Dict
+<span></span>from typing import Dict
 from typing import Hashable
 from typing import List
 from typing import Tuple
@@ -189,14 +188,11 @@ from dasi.models import AssemblyNode
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multipoint_shortest_path
-from dasi.utils.networkx.algorithms import accumulate_helper
-from dasi.utils.networkx.algorithms import str_to_symbols_and_func
-from dasi.utils.networkx.utils import replace_nan_with_inf
+
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes &#39;material&#39;
 # and &#39;efficiency&#39; for a given path
-
 path_length_config = {
     &quot;f&quot;: &quot;material / efficiency &quot;,
     &quot;accumulators&quot;: {&quot;efficiency&quot;: &quot;product&quot;},
@@ -324,7 +320,7 @@ def _get_closing_edge_indices(
         n2 = AssemblyNode(n.index + query_length, *list(n)[1:])
         if n2 in node_to_i:
             i2 = node_to_i[n2]
-            v = matrix_dict[&#39;material&#39;][i1, i2]
+            v = matrix_dict[&quot;material&quot;][i1, i2]
             if not np.isinf(v):
                 src.append(i1)
                 dest.append(i2)
@@ -333,8 +329,11 @@ def _get_closing_edge_indices(
 
 
 def _get_closure_matrix(
-    mat: np.ndarray, eff: np.ndarray, nodelist: List[AssemblyNode], query_length: int,
-        matrix_dict: dict
+    mat: np.ndarray,
+    eff: np.ndarray,
+    nodelist: List[AssemblyNode],
+    query_length: int,
+    matrix_dict: dict,
 ) -&gt; Tuple[np.ndarray, np.ndarray]:
     indices = _get_closing_edge_indices(nodelist, query_length, matrix_dict)
     m = np.full_like(mat, np.inf)
@@ -363,7 +362,6 @@ def cyclic_matrix(
 def optimize_graph(
     graph: nx.DiGraph, query_length: int, cyclic: bool, n_paths: int
 ) -&gt; Tuple[List[List[tuple]], List[float]]:
-
     # get ordered nodelist and nodekeys
     nodelist, nodekeys = sort_with_keys(list(graph.nodes()), key=lambda x: x[0])
 
@@ -399,7 +397,7 @@ def optimize_graph(
     paths = _nodes_to_fullpaths(graph, trimmed_nodes, cyclic, n_paths=n_paths)
 
     if len(paths) &lt; n_paths:
-        DASiWarning(
+        raise DASiWarning(
             &quot;Number of paths returned is less than requested paths {} &lt; {}&quot;.format(
                 len(paths), n_paths
             )

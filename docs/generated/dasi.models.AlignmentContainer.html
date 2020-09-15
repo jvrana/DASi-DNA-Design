@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.AlignmentContainer &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.AlignmentContainer &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,9 +92,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -316,7 +316,7 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_alignments_by_types</span></code>(types)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">rtype</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]</p>
 </dd>
 </dl>
 </p></td>
@@ -327,7 +327,7 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">groups</span></code>()</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">rtype</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.MultiPCRProductAlignmentGroup" title="dasi.models.alignment.MultiPCRProductAlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiPCRProductAlignmentGroup</span></code></a>]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiPCRProductAlignmentGroup</span></code>]]</p>
 </dd>
 </dl>
 </p></td>
@@ -398,9 +398,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>template_group</strong> (<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>) – </p></li>
-<li><p><strong>fwd</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p></li>
-<li><p><strong>rev</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p></li>
+<li><p><strong>template_group</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>) – </p></li>
+<li><p><strong>fwd</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
+<li><p><strong>rev</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
 <li><p><strong>alignment_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
 </ul>
 </dd>
@@ -418,7 +418,7 @@
 or if a == b</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,7 +474,7 @@ the following two situations:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alignment_groups</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]) – list of alignment groups to expand</p></li>
+<li><p><strong>alignment_groups</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>]) – list of alignment groups to expand</p></li>
 <li><p><strong>atype</strong> – the alignment type label for expanded alignments</p></li>
 <li><p><strong>lim_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, only add alignments that pass the size limitations</p></li>
 <li><p><strong>pass_condition</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – an optional callable that takes group_a (AlignmentGroup)
@@ -485,7 +485,7 @@ region up to the overlap.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of new alignments</p>
@@ -502,7 +502,7 @@ produces all combinations of alignments that can form from these primer
 pairs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list</p>
@@ -525,7 +525,7 @@ group_type.</p>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.PCRProductAlignmentGroup" title="dasi.models.alignment.PCRProductAlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code></a>]]</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code>]]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of groups</p>
@@ -549,7 +549,7 @@ alignments.</p>
 <dd class="field-odd"><p><strong>types</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – list of types</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]]</p>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>]]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p></p>
@@ -563,7 +563,7 @@ alignments.</p>
 <dd><p>Return alignment groups according to their alignment ‘type’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>, <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.PCRProductAlignmentGroup" title="dasi.models.alignment.PCRProductAlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code></a>]]]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PCRProductAlignmentGroup</span></code>]]]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict</p>
@@ -577,10 +577,10 @@ alignments.</p>
 <dd><p>Return AlignmentGroups that have been grouped by alignment_hash.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p>
+<dd class="field-odd"><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroup" title="dasi.models.alignment.AlignmentGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code></a>]</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroup</span></code>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p></p>

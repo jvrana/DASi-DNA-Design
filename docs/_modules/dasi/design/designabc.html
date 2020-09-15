@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.designabc &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.design.designabc &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,9 +90,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -192,6 +192,7 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import TypeVar
 
 import networkx as nx
 import pandas as pd
@@ -223,6 +224,9 @@ from dasi.utils import chunkify
 from dasi.utils import log_metadata
 from dasi.utils import perfect_subject
 from dasi.utils.sequence import generate_fake_designs
+
+DesignType = TypeVar(&quot;Design&quot;)
+
 
 BLAST_PENALTY_CONFIG = {
     &quot;gapopen&quot;: 3,
@@ -611,9 +615,10 @@ class DesignABC(ABC):
         else:
             self._run(n_paths=n_paths, post_processing_kwargs=post_processing_kwargs)
         self._freeze_graphs()
+
     # TODO: better multithreaded loggers
     @staticmethod
-    def _pooled_run(args: List[Tuple[&quot;Design&quot;, str]]) -&gt; Dict[str, DesignResult]:
+    def _pooled_run(args: List[Tuple[DesignType, str]]) -&gt; Dict[str, DesignResult]:
         design, qk, n_paths, post_processing_kwargs, thread = args
         design.logger.name = &quot;THREAD {}: &quot;.format(thread) + design.logger.name
 
@@ -853,7 +858,12 @@ class DesignABC(ABC):
         else:
             return x[1]
 
-    def out(self, fmt: str = &quot;json&quot;, elim_extra_reactions: bool = False):
+    def out(
+        self,
+        fmt: str = &quot;json&quot;,
+        elim_extra_reactions: bool = False,
+        query_keys: Optional[List[str]] = None,
+    ):
         &quot;&quot;&quot;Return the results of the design as a validates output JSON.
 
         The output JSON is follows the following schema, see
@@ -862,7 +872,7 @@ class DesignABC(ABC):
         &quot;&quot;&quot;
         if fmt.lower() == &quot;json&quot;:
             output = dasi_design_to_output_json(
-                self, elim_extra_reactions=elim_extra_reactions
+                self, elim_extra_reactions=elim_extra_reactions, query_keys=query_keys
             )
             validate_output(output)
             return output

@@ -1,6 +1,13 @@
 # dasi change log
+## 0.2
+**2020-09-11T21:22:29.937623**
+dependencies update
+
+
+
+
 ## 0.1.1
-**2020-07-30T11:28:42.177334**
+**2020-08-12T09:57:02.927797**
 bug fixes
 
  - bug fix with pooled runs and frozen graphs

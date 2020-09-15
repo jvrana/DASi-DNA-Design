@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Constants (dasi.constants) &#8212; dasi 0.1.1 documentation</title>
+    <title>Constants (dasi.constants) &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,9 +92,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -229,31 +229,40 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.OVERLAP" title="dasi.constants.Constants.OVERLAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OVERLAP</span></code></a></p></td>
 <td><p>region that represents overlapping molecules</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT" title="dasi.constants.Constants.PCR_PRODUCT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT</span></code></a></p></td>
+<td><p>an alignment that is to be generated from a PCR product</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER" title="dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT_WITH_LEFT_PRIMER</span></code></a></p></td>
+<td><p>PCR product with existing left primer</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS" title="dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT_WITH_PRIMERS</span></code></a></p></td>
 <td><p>PCR product that can be produces from existing primers</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PLASMID" title="dasi.constants.Constants.PLASMID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLASMID</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER" title="dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PCR_PRODUCT_WITH_RIGHT_PRIMER</span></code></a></p></td>
+<td><p>PCR product with existing right primer</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PLASMID" title="dasi.constants.Constants.PLASMID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLASMID</span></code></a></p></td>
 <td><p>the designed plasmid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER" title="dasi.constants.Constants.PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER" title="dasi.constants.Constants.PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER</span></code></a></p></td>
 <td><p>a primer binding alignment</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER</span></code></a></p></td>
 <td><p>a pcr product that uses no template, but extends an existing fwd primer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS</span></code></a></p></td>
 <td><p>a pcr product that uses no template, but extends two primers</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER" title="dasi.constants.Constants.PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER</span></code></a></p></td>
 <td><p>a pcr product that uses no template, but extends an existing rev primer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_FRAGMENT" title="dasi.constants.Constants.SHARED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_FRAGMENT</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_FRAGMENT" title="dasi.constants.Constants.SHARED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_FRAGMENT</span></code></a></p></td>
 <td><p>A fragment alignment that is shared with other queries for potential reuse</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT" title="dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_SYNTHESIZED_FRAGMENT</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT" title="dasi.constants.Constants.SHARED_SYNTHESIZED_FRAGMENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHARED_SYNTHESIZED_FRAGMENT</span></code></a></p></td>
 <td><p>explicit definition of a synthesized DNA fragment</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dasi.constants.Constants.TEMPLATE" title="dasi.constants.Constants.TEMPLATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMPLATE</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.constants.Constants.TEMPLATE" title="dasi.constants.Constants.TEMPLATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TEMPLATE</span></code></a></p></td>
 <td><p>A template alignment group.</p></td>
 </tr>
 </tbody>
@@ -289,9 +298,27 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT">
+<code class="sig-name descname">PCR_PRODUCT</code><em class="property"> = 'PCR_PRODUCT'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT" title="Permalink to this definition">¶</a></dt>
+<dd><p>an alignment that is to be generated from a PCR product</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER">
+<code class="sig-name descname">PCR_PRODUCT_WITH_LEFT_PRIMER</code><em class="property"> = 'PCR_PRODUCT_WITH_LEFT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_LEFT_PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>PCR product with existing left primer</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS">
 <code class="sig-name descname">PCR_PRODUCT_WITH_PRIMERS</code><em class="property"> = 'PCR_PRODUCT_WITH_PRIMERS'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_PRIMERS" title="Permalink to this definition">¶</a></dt>
 <dd><p>PCR product that can be produces from existing primers</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER">
+<code class="sig-name descname">PCR_PRODUCT_WITH_RIGHT_PRIMER</code><em class="property"> = 'PCR_PRODUCT_WITH_RIGHT_PRIMER'</em><a class="headerlink" href="#dasi.constants.Constants.PCR_PRODUCT_WITH_RIGHT_PRIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>PCR product with existing right primer</p>
 </dd></dl>
 
 <dl class="attribute">

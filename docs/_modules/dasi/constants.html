@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.constants &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.constants &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,9 +90,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -190,34 +190,40 @@ This module provides DASi constants.
     ################
     # INTERNAL TYPES
     ################
-    FRAGMENT = (
-        &quot;PRE-MADE DNA FRAGMENT&quot;
-    )  #: an alignment that is generate from an already existing PCR product or fragment
-    PCR_PRODUCT = (
-        &quot;PCR_PRODUCT&quot;  #: an alignment that is to be generated from a PCR product
-    )
-    PCR_PRODUCT_WITH_PRIMERS = (
-        &quot;PCR_PRODUCT_WITH_PRIMERS&quot;
-    )  #: PCR product that can be produces from existing primers
-    PCR_PRODUCT_WITH_LEFT_PRIMER = (
-        &quot;PCR_PRODUCT_WITH_LEFT_PRIMER&quot;  #: PCR product with existing left primer
-    )
-    PCR_PRODUCT_WITH_RIGHT_PRIMER = (
-        &quot;PCR_PRODUCT_WITH_RIGHT_PRIMER&quot;  #: PCR product with existing right primer
-    )
-    PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS = (
-        &quot;PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS&quot;
-    )  #: a pcr product that uses no template, but extends two primers
+
+    #: an alignment that is generate from an already existing PCR product or fragment
+    FRAGMENT = &quot;PRE-MADE DNA FRAGMENT&quot;
+
+    #: an alignment that is to be generated from a PCR product
+    PCR_PRODUCT = &quot;PCR_PRODUCT&quot;
+
+    #: PCR product that can be produces from existing primers
+    PCR_PRODUCT_WITH_PRIMERS = &quot;PCR_PRODUCT_WITH_PRIMERS&quot;
+
+    #: PCR product with existing left primer
+    PCR_PRODUCT_WITH_LEFT_PRIMER = &quot;PCR_PRODUCT_WITH_LEFT_PRIMER&quot;
+
+    #: PCR product with existing right primer
+    PCR_PRODUCT_WITH_RIGHT_PRIMER = &quot;PCR_PRODUCT_WITH_RIGHT_PRIMER&quot;
+
+    #: a pcr product that uses no template, but extends two primers
+    PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS = &quot;PRIMER_EXTENSION_PRODUCT_WITH_PRIMERS&quot;
+
+    #: a pcr product that uses no template, but extends an existing fwd primer.
     PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER = (
         &quot;PRIMER_EXTENSION_PRODUCT_WITH_LEFT_PRIMER&quot;
-    )  #: a pcr product that uses no template, but extends an existing fwd primer.
+    )
+
+    #: a pcr product that uses no template, but extends an existing rev primer.
     PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER = (
         &quot;PRIMER_EXTENSION_PRODUCT_WITH_RIGHT_PRIMER&quot;
-    )  #: a pcr product that uses no template, but extends an existing rev primer.
-    SHARED_SYNTHESIZED_FRAGMENT = (
-        &quot;SHARED_SYNTHESIZED_FRAGMENT&quot;
-    )  #: explicit definition of a synthesized DNA fragment
-    PLASMID = &quot;PLASMID&quot;  #: the designed plasmid
+    )
+
+    #: explicit definition of a synthesized DNA fragment
+    SHARED_SYNTHESIZED_FRAGMENT = &quot;SHARED_SYNTHESIZED_FRAGMENT&quot;
+
+    #: the designed plasmid
+    PLASMID = &quot;PLASMID&quot;
 
     ################
     # EXTERNAL TYPES
@@ -228,9 +234,8 @@ This module provides DASi constants.
     #################
     # MOLECULES TYPES
     #################
-    SHARED_FRAGMENT = (
-        &quot;FRAGMENT_SHARED_WITH_OTHER_QUERIES&quot;
-    )  #: A fragment alignment that is shared with other queries for potential reuse
+    #: A fragment alignment that is shared with other queries for potential reuse
+    SHARED_FRAGMENT = &quot;FRAGMENT_SHARED_WITH_OTHER_QUERIES&quot;
     TEMPLATE = &quot;TEMPLATE&quot;  #: A template alignment group. Not an actual molecule.
     MISSING = &quot;__MISSING&quot;  #: missing region
     PRIMER = &quot;PRIMER&quot;  #: a primer binding alignment

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.AlignmentGroup &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.AlignmentGroup &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,9 +92,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -192,13 +192,13 @@
 <dl class="class">
 <dt id="dasi.models.AlignmentGroup">
 <em class="property">class </em><code class="sig-prename descclassname">dasi.models.</code><code class="sig-name descname">AlignmentGroup</code><span class="sig-paren">(</span><em class="sig-param">alignments</em>, <em class="sig-param">group_type</em>, <em class="sig-param">name=None</em>, <em class="sig-param">meta=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dasi/models/alignment.html#AlignmentGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dasi.models.AlignmentGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroupBase" title="dasi.models.alignment.AlignmentGroupBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.alignment.AlignmentGroupBase</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dasi.models.alignment.AlignmentGroupBase</span></code></p>
 <p>A representative Alignment representing a group of alignments sharing
 the same starting and ending position for a query sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p></li>
+<li><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
 <li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
 <li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p></li>
 <li><p><strong>query_region</strong> – </p></li>
@@ -251,7 +251,7 @@ the same starting and ending position for a query sequence.</p>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]) – </p></li>
+<li><p><strong>alignments</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]) – </p></li>
 <li><p><strong>group_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – </p></li>
 <li><p><strong>name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p></li>
 <li><p><strong>query_region</strong> – </p></li>
@@ -271,7 +271,7 @@ the same starting and ending position for a query sequence.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dasi.models.AlignmentGroup.__init__" title="dasi.models.AlignmentGroup.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(alignments, group_type[, name, meta])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">type alignments</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.Alignment" title="dasi.models.alignment.Alignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code></a>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Alignment</span></code>]</p>
 </dd>
 </dl>
 </p></td>
@@ -376,7 +376,7 @@ bounded molecule type.</p>
 and subject regions at the specified new indicies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dasi.models.alignment.html#dasi.models.alignment.AlignmentGroupBase" title="dasi.models.alignment.AlignmentGroupBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroupBase</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentGroupBase</span></code></p>
 </dd>
 </dl>
 </dd></dl>

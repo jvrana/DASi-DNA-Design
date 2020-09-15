@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.assembly &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.assembly &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,9 +90,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -191,7 +191,6 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import primer3plus
-from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from more_itertools import pairwise
@@ -218,7 +217,7 @@ from dasi.utils import Region
 from dasi.utils import sort_cycle
 
 
-<div class="viewcode-block" id="_design_primers"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models._design_primers">[docs]</a>def _design_primers(
+<div class="viewcode-block" id="_design_primers"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models.assembly._design_primers">[docs]</a>def _design_primers(
     template: str,
     region: Region,
     lseq: Union[None, str],
@@ -315,7 +314,7 @@ def _no_none_or_nan(*i):
             return _i
 
 
-<div class="viewcode-block" id="_get_primer_extensions"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models._get_primer_extensions">[docs]</a>def _get_primer_extensions(
+<div class="viewcode-block" id="_get_primer_extensions"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models.assembly._get_primer_extensions">[docs]</a>def _get_primer_extensions(
     graph: nx.DiGraph, n1: &quot;AssemblyNode&quot;, n2: &quot;AssemblyNode&quot;, cyclic: bool = True
 ) -&gt; Tuple[int, int]:
     &quot;&quot;&quot;Return the left and right primer extensions for the given *internal*
@@ -585,7 +584,7 @@ def _design_edge(
         for x in [&quot;LEFT&quot;, &quot;RIGHT&quot;]:
             primer_seq = pair[x][&quot;OVERHANG&quot;] + pair[x][&quot;SEQUENCE&quot;]
             primer_group = pair[x][&quot;GROUP&quot;]
-            primer_record = SeqRecord(Seq(primer_seq, generic_dna))
+            primer_record = SeqRecord(Seq(primer_seq))
             primer = Molecule(
                 MoleculeType.types[Constants.PRIMER],
                 primer_group,
@@ -619,7 +618,7 @@ AssemblyNode = namedtuple(
 )  #: tuple representing a location on a goal sequence
 
 
-<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models.Assembly">[docs]</a>class Assembly(Iterable):
+<div class="viewcode-block" id="Assembly"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models.assembly.Assembly">[docs]</a>class Assembly(Iterable):
     &quot;&quot;&quot;Should take in a path, graph, container, seqdb to produce relevant
     information.&quot;&quot;&quot;
 
@@ -664,7 +663,7 @@ AssemblyNode = namedtuple(
         &quot;notes&quot;,
     )
 
-<div class="viewcode-block" id="Assembly.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Assembly.html#dasi.models.Assembly.__init__">[docs]</a>    def __init__(
+    def __init__(
         self,
         nodes: List[AssemblyNode],
         container: AlignmentContainer,
@@ -691,7 +690,7 @@ AssemblyNode = namedtuple(
         nx.freeze(self.graph)
 
         if do_raise:
-            self.post_validate(do_raise)</div>
+            self.post_validate(do_raise)
 
     @property
     def reactions(self):
@@ -741,7 +740,7 @@ AssemblyNode = namedtuple(
                 &quot; length &#39;{}&#39;&quot;.format(total_span, len(self.query))
             )
 
-<div class="viewcode-block" id="Assembly._head"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models.Assembly._head">[docs]</a>    def _head(self):
+<div class="viewcode-block" id="Assembly._head"><a class="viewcode-back" href="../../../generated/dasi.models.assembly.html#dasi.models.assembly.Assembly._head">[docs]</a>    def _head(self):
         &quot;&quot;&quot;Get the &#39;first&#39; &#39;A&#39; node.&quot;&quot;&quot;
         x = sorted(list(self.graph.nodes), key=lambda n: (n.type == &quot;B&quot;, n.index))
         return x[0]</div>
@@ -1045,8 +1044,7 @@ AssemblyNode = namedtuple(
         return self.edit_distance(other) == 0
 
     def __iter__(self) -&gt; Generator[AssemblyNode, None, None]:
-        for n in self.nodes(data=False):
-            yield n</div>
+        yield from self.nodes(data=False)</div>
 </pre></div>
 
     </div>

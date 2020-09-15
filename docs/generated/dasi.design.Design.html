@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.Design &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.design.Design &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
@@ -42,7 +42,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -92,9 +92,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -107,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -238,7 +238,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.filter_perfect_subject" title="dasi.design.Design.filter_perfect_subject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_perfect_subject</span></code></a>(results)</p></td>
 <td><p>return only results whose subject is 100% aligned to query.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.out" title="dasi.design.Design.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt, elim_extra_reactions])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.out" title="dasi.design.Design.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt, elim_extra_reactions, query_keys])</p></td>
 <td><p>Return the results of the design as a validates output JSON.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dasi.design.Design.out_jsonschema" title="dasi.design.Design.out_jsonschema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_jsonschema</span></code></a>()</p></td>
@@ -335,7 +335,7 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.out" title="dasi.design.Design.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt, elim_extra_reactions])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dasi.design.Design.out" title="dasi.design.Design.out"><code class="xref py py-obj docutils literal notranslate"><span class="pre">out</span></code></a>([fmt, elim_extra_reactions, query_keys])</p></td>
 <td><p>Return the results of the design as a validates output JSON.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">path_to_edge_costs</span></code>(path, graph)</p></td>
@@ -555,7 +555,7 @@ that can be accessed by <cite>design.results</cite> or by <cite>design.out()</ci
 
 <dl class="method">
 <dt id="dasi.design.Design.out">
-<code class="sig-name descname">out</code><span class="sig-paren">(</span><em class="sig-param">fmt='json'</em>, <em class="sig-param">elim_extra_reactions=False</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.Design.out" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">out</code><span class="sig-paren">(</span><em class="sig-param">fmt='json'</em>, <em class="sig-param">elim_extra_reactions=False</em>, <em class="sig-param">query_keys=None</em><span class="sig-paren">)</span><a class="headerlink" href="#dasi.design.Design.out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the results of the design as a validates output JSON.</p>
 <p>The output JSON is follows the following schema, see
 :type fmt: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>

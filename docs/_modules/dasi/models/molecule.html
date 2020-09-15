@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.models.molecule &#8212; dasi 0.1.1 documentation</title>
+    <title>dasi.models.molecule &#8212; dasi 0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -90,9 +90,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../models.html">Models (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dasi.models</span></code>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.AssemblyNode.html">dasi.models.AssemblyNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.Molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Molecule.html">dasi.models.molecule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.MoleculeType.html">dasi.models.MoleculeType</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Reaction.html">dasi.models.Reaction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/dasi.models.Alignment.html">dasi.models.Alignment</a></li>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../models.html#modules">modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.assembly.html">dasi.models.assembly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.molecule.html">dasi.models.molecule</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment.html">dasi.models.Alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/dasi.models.alignment_container.html">dasi.models.alignment_container</a></li>
 </ul>
 </li>
@@ -190,12 +190,12 @@ from dasi.utils import Region
 
 
 # TODO: refactor Molecule and MoleculeTypes, as this is confusing
-<div class="viewcode-block" id="MoleculeType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.MoleculeType">[docs]</a>class MoleculeType:
+<div class="viewcode-block" id="MoleculeType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.molecule.MoleculeType">[docs]</a>class MoleculeType:
     &quot;&quot;&quot;Molecule metatype.&quot;&quot;&quot;
 
     types = {}
 
-<div class="viewcode-block" id="MoleculeType.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.MoleculeType.html#dasi.models.MoleculeType.__init__">[docs]</a>    def __init__(
+<div class="viewcode-block" id="MoleculeType.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.MoleculeType.html#dasi.models.molecule.MoleculeType.__init__">[docs]</a>    def __init__(
         self,
         name: str,
         design: Union[None, Tuple[bool, bool]],
@@ -226,7 +226,7 @@ from dasi.utils import Region
         return &quot;&lt;{} name=&#39;{}&#39;&gt;&quot;.format(self.__class__.__name__, self.name)</div>
 
 
-<div class="viewcode-block" id="InternalType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.InternalType">[docs]</a>class InternalType(MoleculeType):
+<div class="viewcode-block" id="InternalType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.molecule.InternalType">[docs]</a>class InternalType(MoleculeType):
     &quot;&quot;&quot;Molecule representing physical molecule that can be provided by the
     lab.&quot;&quot;&quot;
 
@@ -257,7 +257,7 @@ from dasi.utils import Region
         self.int_or_ext = &quot;internal&quot;</div>
 
 
-<div class="viewcode-block" id="ExternalType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.ExternalType">[docs]</a>class ExternalType(MoleculeType):
+<div class="viewcode-block" id="ExternalType"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.molecule.ExternalType">[docs]</a>class ExternalType(MoleculeType):
     &quot;&quot;&quot;Molecule to be designed.&quot;&quot;&quot;
 
     def __init__(
@@ -502,11 +502,11 @@ MoleculeType(
 )
 
 
-<div class="viewcode-block" id="Molecule"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.Molecule">[docs]</a>class Molecule:
+<div class="viewcode-block" id="Molecule"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.molecule.Molecule">[docs]</a>class Molecule:
     &quot;&quot;&quot;An instance of a molecule type, with a sequence and which alignments are
     assigned to it.&quot;&quot;&quot;
 
-<div class="viewcode-block" id="Molecule.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Molecule.html#dasi.models.Molecule.__init__">[docs]</a>    def __init__(
+    def __init__(
         self,
         molecule_type: MoleculeType,
         alignment_group,
@@ -520,7 +520,7 @@ MoleculeType(
         assert issubclass(type(sequence.seq), Seq)
         self.sequence = sequence
         self.metadata = metadata or {}
-        self.query_region = query_region</div>
+        self.query_region = query_region
 
     def __repr__(self):
         return &quot;&lt;{cls} name=&#39;{name}&#39; group=&#39;{group}&#39;&gt;&quot;.format(
@@ -528,7 +528,7 @@ MoleculeType(
         )</div>
 
 
-<div class="viewcode-block" id="Reaction"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.Reaction">[docs]</a>class Reaction:
+<div class="viewcode-block" id="Reaction"><a class="viewcode-back" href="../../../generated/dasi.models.molecule.html#dasi.models.molecule.Reaction">[docs]</a>class Reaction:
     &quot;&quot;&quot;An activity that takes in several Molecules and produces other
     Molecules.&quot;&quot;&quot;
 
@@ -540,7 +540,7 @@ MoleculeType(
         Assembly = &quot;Assembly&quot;
         _Valid = [Direct, Synthesize, Retrieve, PCR, Assembly]
 
-<div class="viewcode-block" id="Reaction.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Reaction.html#dasi.models.Reaction.__init__">[docs]</a>    def __init__(
+<div class="viewcode-block" id="Reaction.__init__"><a class="viewcode-back" href="../../../generated/dasi.models.Reaction.html#dasi.models.molecule.Reaction.__init__">[docs]</a>    def __init__(
         self,
         name: str,
         inputs: List[Molecule],

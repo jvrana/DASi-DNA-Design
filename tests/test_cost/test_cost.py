@@ -24,18 +24,18 @@ def test_invalid_json():
         SpanCost.from_json(params)
 
 
-class TestPlotters:
-    def test_plot_primer_cost(self, primer_cost):
-        primer_cost.plot()
-        plt.show()
-
-    def test_plot_syn_cost(self, syn_cost):
-        syn_cost.plot()
-        plt.show()
-
-    def test_plot_span_cost(self, span_cost):
-        span_cost.plot()
-        plt.show()
+# class TestPlotters:
+#     def test_plot_primer_cost(self, primer_cost):
+#         primer_cost.plot()
+#         plt.show()
+#
+#     def test_plot_syn_cost(self, syn_cost):
+#         syn_cost.plot()
+#         plt.show()
+#
+#     def test_plot_span_cost(self, span_cost):
+#         span_cost.plot()
+#         plt.show()
 
 
 class TestDf:

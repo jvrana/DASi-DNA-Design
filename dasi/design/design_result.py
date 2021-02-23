@@ -97,7 +97,6 @@ class DesignResult(Iterable):
             self.add_assembly(
                 path, ignore_invalid=ignore_invalid, allow_invalid=allow_invalid
             )
-
     #
     #
     #     for a in self.assemblies:

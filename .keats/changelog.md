@@ -1,4 +1,11 @@
 # dasi change log
+## 0.2.1
+**2021-02-23T11:57:53.222705**
+updated version
+
+
+
+
 ## 0.2
 **2020-09-11T21:22:29.937623**
 dependencies update

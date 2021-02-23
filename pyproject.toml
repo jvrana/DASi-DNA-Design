@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dasi"
-version = "0.2"
+version = "0.2.1"
 description = "Automated DNA assembly planner for Python"
 authors = ["Justin Vrana <justin.vrana@gmail.com>"]
 classifiers = [
@@ -18,7 +18,7 @@ networkx = "^2.3"
 tqdm = "^4.32"
 loggable-jdv = "^0.1.5"
 msgpack = "^0.6.1"
-msgpack-numpy = "^0.4.4"
+msgpack-numpy = "^0.4.7"
 sympy = "^1.4"
 numpy = "^1.17"
 biopython = "^1.78"
@@ -30,6 +30,8 @@ primer3plus = "^1.0.8"
 pandas = [
     {"version" = "^1.1.0", "python" = "^3.7"}
 ]
+pyblastbio = "^0.9"
+jdna = "^0.2"
 
 # these are really dev dependenciesad, but cannot
 # be optional due to weird non-obvious reasons with Poetry
@@ -43,8 +45,6 @@ sphinx-jsonschema = {version = "^1.11", optional = true}
 sphinx = {version = "^2.2", optional = true}
 sphinx-bootstrap-theme = {version = "^0.7.1", optional = true}
 black = {version = "^20.8b1", optional = true}
-pyblastbio = "^0.9"
-jdna = "^0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"
@@ -54,7 +54,7 @@ flaky = "^3.6"
 pytest-cov = "^2.10.1"
 
 [tool.poetry.extras]
-documentation = ["nbsphinx", "sphinx_autodoc_typehints", "sphinx-jsonschema", "sphinx", "sphinx-bootstrap-theme"]
+documentation = ["nbsphinx", "autodocsumm", "recommonmark", "sphinx_autodoc_typehints", "sphinx-jsonschema", "sphinx", "sphinx-bootstrap-theme"]
 styling = ["flake8", "black", "pre-commit"]
 
 [tool.poetry.scripts]

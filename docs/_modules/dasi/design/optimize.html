@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>dasi.design.optimize &#8212; dasi 0.2 documentation</title>
+    <title>dasi.design.optimize &#8212; dasi 0.2.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           DASi</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -188,7 +188,7 @@ from dasi.models import AssemblyNode
 from dasi.utils import sort_with_keys
 from dasi.utils.networkx import sympy_floyd_warshall
 from dasi.utils.networkx import sympy_multipoint_shortest_path
-
+from warnings import warn
 
 # definition of how to compute path length
 # c = SUM(m) / PRODUCT(e), where m and e are arrays of attributes &#39;material&#39;
@@ -397,11 +397,8 @@ def optimize_graph(
     paths = _nodes_to_fullpaths(graph, trimmed_nodes, cyclic, n_paths=n_paths)
 
     if len(paths) &lt; n_paths:
-        raise DASiWarning(
-            &quot;Number of paths returned is less than requested paths {} &lt; {}&quot;.format(
-                len(paths), n_paths
-            )
-        )
+        warn(&quot;Number of paths returned is less than requested paths {} &lt; {}&quot;.format(
+                len(paths), n_paths), DASiWarning)
 
     _check_paths(paths)
     return paths, trimmed_costs

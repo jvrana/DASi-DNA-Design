@@ -136,7 +136,7 @@ html_static_path = ["_static"]
 html_context = {
     "version": version,
     "github": dasi.__homepage__,
-    "repo": dasi.__repo__,
+    "repo": dasi.__repository__,
     "aquarium_page": "https://www.aquarium.bio/",
     "display_github": True,  # Integrate GitHub
     "github_user": "jvrana",  # Username

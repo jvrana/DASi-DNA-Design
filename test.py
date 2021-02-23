@@ -1,0 +1,2 @@
+import msgpack_numpy
+
